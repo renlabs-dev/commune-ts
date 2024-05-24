@@ -1,6 +1,3 @@
-import "./globals.css";
-import "@repo/ui/styles.css";
-
 import type { ReactNode } from "react";
 import { ToastProvider } from "./context/toast";
 import { PolkadotProvider } from "./context/polkadot";
