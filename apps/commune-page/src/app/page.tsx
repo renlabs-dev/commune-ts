@@ -4,7 +4,7 @@ export default function Page(): JSX.Element {
   return (
     <main>
       <Test />
-      <div className="font-bold">yo</div>
+      <div className="font-bold">y</div>
     </main>
   );
 }
