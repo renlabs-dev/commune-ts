@@ -6,6 +6,7 @@ interface HeaderProps {
   logoSrc: string;
   title: string;
   navigationLinks: { name: string; href: string; external: boolean }[];
+  wallet: JSX.Element;
 }
 
 export function Header(props: HeaderProps): JSX.Element {
@@ -38,6 +39,7 @@ export function Header(props: HeaderProps): JSX.Element {
             </Link>
           ))}
         </div>
+        {props.wallet}
         {/* mobile menu here */}
       </nav>
     </header>
