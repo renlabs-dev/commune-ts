@@ -1,19 +1,12 @@
 # commune-app
 
-### Style/Structure Guite
-
-- `camelCase` convention for **component props**
-- `UpperCamelCase` convention for **types**, **traits** and **react components**.
-- `snake_case` convention for **attributes**, **variables**, **functions**, and **macros**.
-- `SCREAMING_SNAKE_CASE` convention for **constants**.
-
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
+- `commune-page`: a [Next.js](https://nextjs.org/) app
 - `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared through `apps` applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@repo/providers`: a stub package that exports the `PolkadotProvider` and `ToastProvider`
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
