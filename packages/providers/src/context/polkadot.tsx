@@ -5,8 +5,19 @@ import {
   type InjectedAccountWithMeta,
   type InjectedExtension,
 } from "@polkadot/extension-inject/types";
+import type { SubmittableResult } from "@polkadot/api";
 import { ApiPromise, WsProvider } from "@polkadot/api";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
+import { toast } from "react-toastify";
+import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "../components/wallet-modal";
+import { calculateAmount } from "../utils";
+import type {
+  Stake,
+  TransactionResult,
+  Transfer,
+  TransferStake,
+} from "../types";
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -22,6 +33,11 @@ interface PolkadotContextType {
   handleConnect: () => void;
   accounts: InjectedAccountWithMeta[];
   selectedAccount: InjectedAccountWithMeta | null;
+
+  addStake: (stake: Stake) => Promise<void>;
+  removeStake: (stake: Stake) => Promise<void>;
+  transfer: (transfer: Transfer) => Promise<void>;
+  transferStake: (transfer: TransferStake) => Promise<void>;
 }
 
 const PolkadotContext = createContext<PolkadotContextType | null>(null);
@@ -130,6 +146,126 @@ export function PolkadotProvider({
     setOpenModal(false);
   }
 
+  // == Transactions ==
+
+  async function sendTransaction(
+    transactionType: string,
+    transaction: SubmittableExtrinsic<"promise">,
+    callback?: (result: TransactionResult) => void
+  ): Promise<void> {
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
+
+    try {
+      const injector = await polkadotApi.web3FromAddress(
+        selectedAccount.address
+      );
+
+      await transaction.signAndSend(
+        selectedAccount.address,
+        { signer: injector.signer },
+        (result: SubmittableResult) => {
+          if (result.status.isInBlock) {
+            callback?.({
+              finalized: false,
+              status: "PENDING",
+              message: `${transactionType} in progress`,
+            });
+          }
+
+          if (result.status.isFinalized) {
+            const success = result.findRecord("system", "ExtrinsicSuccess");
+            const failed = result.findRecord("system", "ExtrinsicFailed");
+
+            if (success) {
+              toast.success(`${transactionType} successful`);
+              callback?.({
+                finalized: true,
+                status: "SUCCESS",
+                message: `${transactionType} successful`,
+              });
+            } else if (failed) {
+              const [dispatchError] = failed.event.data as unknown as [
+                DispatchError,
+              ];
+              let msg = `${transactionType} failed: ${dispatchError.toString()}`;
+
+              if (dispatchError.isModule) {
+                const mod = dispatchError.asModule;
+                const error = api.registry.findMetaError(mod);
+
+                if (error.section && error.name) {
+                  msg = `${transactionType} failed: ${error.name}`;
+                }
+              }
+
+              toast.error(msg);
+              callback?.({ finalized: true, status: "ERROR", message: msg });
+            }
+          }
+        }
+      );
+    } catch (err) {
+      toast.error(err as string);
+    }
+  }
+
+  async function addStake({
+    netUid,
+    validator,
+    amount,
+    callback,
+  }: Stake): Promise<void> {
+    if (!api?.tx.subspaceModule.addStake) return;
+
+    const transaction = api.tx.subspaceModule.addStake(
+      netUid,
+      validator,
+      calculateAmount(amount)
+    );
+    await sendTransaction("Staking", transaction, callback);
+  }
+
+  async function removeStake({
+    netUid,
+    validator,
+    amount,
+    callback,
+  }: Stake): Promise<void> {
+    if (!api?.tx.subspaceModule.removeStake) return;
+
+    const transaction = api.tx.subspaceModule.removeStake(
+      netUid,
+      validator,
+      calculateAmount(amount)
+    );
+    await sendTransaction("Unstaking", transaction, callback);
+  }
+
+  async function transfer({ to, amount, callback }: Transfer): Promise<void> {
+    if (!api?.tx.balances.transfer) return;
+
+    const transaction = api.tx.balances.transfer(to, calculateAmount(amount));
+    await sendTransaction("Transfer", transaction, callback);
+  }
+
+  async function transferStake({
+    fromValidator,
+    toValidator,
+    amount,
+    netUid,
+    callback,
+  }: TransferStake): Promise<void> {
+    if (!api?.tx.subspaceModule.transferStake) return;
+
+    const transaction = api.tx.subspaceModule.transferStake(
+      netUid,
+      fromValidator,
+      toValidator,
+      calculateAmount(amount)
+    );
+    await sendTransaction("Transfer Stake", transaction, callback);
+  }
+
   return (
     <PolkadotContext.Provider
       value={{
@@ -137,9 +273,14 @@ export function PolkadotProvider({
         isConnected,
         isInitialized,
 
-        handleConnect: handleConnectWrapper,
         accounts,
         selectedAccount,
+        handleConnect: handleConnectWrapper,
+
+        addStake,
+        removeStake,
+        transfer,
+        transferStake,
       }}
     >
       <WalletModal
