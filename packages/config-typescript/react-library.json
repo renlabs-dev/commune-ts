@@ -4,11 +4,11 @@
   "extends": "./base.json",
   "compilerOptions": {
     "lib": [
-      "ES2015",
+      "ES2021",
       "DOM"
     ],
     "module": "ESNext",
-    "target": "ES6",
+    "target": "ESNext",
     "jsx": "react-jsx",
     "noEmit": true
   }

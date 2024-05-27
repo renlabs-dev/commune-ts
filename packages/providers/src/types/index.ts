@@ -26,3 +26,21 @@ export interface TransferStake {
   netUid: number;
   callback?: (status: TransactionResult) => void;
 }
+
+// == Governance ==
+export interface Vote {
+  proposalId: number;
+  vote: boolean;
+  callback?: (status: TransactionResult) => void;
+}
+
+export interface AddCustomProposal {
+  IpfsHash: string;
+  callback?: (status: TransactionResult) => void;
+}
+
+export interface AddDaoApplication {
+  IpfsHash: string;
+  applicationKey: string;
+  callback?: (status: TransactionResult) => void;
+}

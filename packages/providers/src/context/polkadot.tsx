@@ -13,10 +13,13 @@ import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "../components/wallet-modal";
 import { calculateAmount } from "../utils";
 import type {
+  AddCustomProposal,
+  AddDaoApplication,
   Stake,
   TransactionResult,
   Transfer,
   TransferStake,
+  Vote,
 } from "../types";
 
 interface PolkadotApiState {
@@ -38,6 +41,10 @@ interface PolkadotContextType {
   removeStake: (stake: Stake) => Promise<void>;
   transfer: (transfer: Transfer) => Promise<void>;
   transferStake: (transfer: TransferStake) => Promise<void>;
+
+  voteProposal: (vote: Vote) => Promise<void>;
+  addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
+  addDaoApplication: (application: AddDaoApplication) => Promise<void>;
 }
 
 const PolkadotContext = createContext<PolkadotContextType | null>(null);
@@ -266,6 +273,43 @@ export function PolkadotProvider({
     await sendTransaction("Transfer Stake", transaction, callback);
   }
 
+  // == Governance ==
+
+  async function voteProposal({
+    proposalId,
+    vote,
+    callback,
+  }: Vote): Promise<void> {
+    if (!api?.tx.subspaceModule.voteProposal) return;
+
+    const transaction = api.tx.subspaceModule.voteProposal(proposalId, vote);
+    await sendTransaction("Vote", transaction, callback);
+  }
+
+  async function addCustomProposal({
+    IpfsHash,
+    callback,
+  }: AddCustomProposal): Promise<void> {
+    if (!api?.tx.subspaceModule.addCustomProposal) return;
+
+    const transaction = api.tx.subspaceModule.addCustomProposal(IpfsHash);
+    await sendTransaction("Create Custom Proposal", transaction, callback);
+  }
+
+  async function addDaoApplication({
+    IpfsHash,
+    applicationKey,
+    callback,
+  }: AddDaoApplication): Promise<void> {
+    if (!api?.tx.subspaceModule.addDaoApplication) return;
+
+    const transaction = api.tx.subspaceModule.addDaoApplication(
+      applicationKey,
+      IpfsHash
+    );
+    await sendTransaction("Create S0 Applicaiton", transaction, callback);
+  }
+
   return (
     <PolkadotContext.Provider
       value={{
@@ -281,6 +325,10 @@ export function PolkadotProvider({
         removeStake,
         transfer,
         transferStake,
+
+        voteProposal,
+        addCustomProposal,
+        addDaoApplication,
       }}
     >
       <WalletModal
