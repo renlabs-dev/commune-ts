@@ -1,5 +1,8 @@
 // == Numbers ==
 
+import type { Codec } from "@polkadot/types/types";
+import { DAO_SHEMA, type DaoApplications } from "../types";
+
 export function calculateAmount(amount: string): number {
   return Math.floor(Number(amount) * 10 ** 9);
 }
@@ -25,4 +28,15 @@ export function fromNano(nano: number | bigint): number {
 export function formatToken(nano: number | bigint): string {
   const amount = fromNano(nano);
   return amount.toFixed(2);
+}
+
+// == Governance ==
+
+export function parseDaos(valueRaw: Codec): DaoApplications | null {
+  const value = valueRaw.toPrimitive();
+  const validated = DAO_SHEMA.safeParse(value);
+  if (!validated.success) {
+    return null;
+  }
+  return validated.data as unknown as DaoApplications;
 }

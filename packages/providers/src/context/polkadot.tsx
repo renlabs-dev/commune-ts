@@ -15,12 +15,18 @@ import { calculateAmount } from "../utils";
 import type {
   AddCustomProposal,
   AddDaoApplication,
+  DaoApplications,
   Stake,
   TransactionResult,
   Transfer,
   TransferStake,
   Vote,
 } from "../types";
+import {
+  getBalance,
+  getDaoApplications,
+  getGlobalDaoTreasury,
+} from "../querys";
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -37,14 +43,19 @@ interface PolkadotContextType {
   accounts: InjectedAccountWithMeta[];
   selectedAccount: InjectedAccountWithMeta | null;
 
+  balance: string;
+
   addStake: (stake: Stake) => Promise<void>;
   removeStake: (stake: Stake) => Promise<void>;
   transfer: (transfer: Transfer) => Promise<void>;
   transferStake: (transfer: TransferStake) => Promise<void>;
-
   voteProposal: (vote: Vote) => Promise<void>;
+
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
+
+  curatorApplications: DaoApplications[] | null;
+  globalDaoTreasury: string;
 }
 
 const PolkadotContext = createContext<PolkadotContextType | null>(null);
@@ -68,6 +79,14 @@ export function PolkadotProvider({
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
+
+  const [balance, setBalance] = useState("0");
+
+  const [curatorApplications, setCuratorApplications] = useState<
+    DaoApplications[] | null
+  >(null);
+
+  const [globalDaoTreasury, setGlobalDaoTreasury] = useState<string>("0");
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -153,7 +172,32 @@ export function PolkadotProvider({
     setOpenModal(false);
   }
 
-  // == Transactions ==
+  // == Set State ==
+
+  useEffect(() => {
+    if (!api || !selectedAccount) return;
+
+    void getBalance({
+      api,
+      address: selectedAccount.address,
+    }).then((parsedBalance) => {
+      setBalance(parsedBalance);
+    });
+  }, [api, selectedAccount]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    void getDaoApplications(api).then((daos) => {
+      setCuratorApplications(daos);
+    });
+
+    void getGlobalDaoTreasury(api).then((treasury) => {
+      setGlobalDaoTreasury(treasury);
+    });
+  }, [api]);
+
+  // == Transaction Handler ==
 
   async function sendTransaction(
     transactionType: string,
@@ -215,6 +259,8 @@ export function PolkadotProvider({
       toast.error(err as string);
     }
   }
+
+  // == Transactions ==
 
   async function addStake({
     netUid,
@@ -321,10 +367,15 @@ export function PolkadotProvider({
         selectedAccount,
         handleConnect: handleConnectWrapper,
 
+        balance,
+
         addStake,
         removeStake,
         transfer,
         transferStake,
+
+        curatorApplications,
+        globalDaoTreasury,
 
         voteProposal,
         addCustomProposal,
