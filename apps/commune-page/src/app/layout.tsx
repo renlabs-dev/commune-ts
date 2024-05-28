@@ -21,7 +21,9 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en">
-      <body className={`bg-green-950 ${cairo.className}`}>
+      <body
+        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className}`}
+      >
         <Providers>
           <Header
             logoSrc="/logo.svg"
