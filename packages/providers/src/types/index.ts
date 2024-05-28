@@ -1,7 +1,20 @@
-// == Transactions ==
 import { z } from "zod";
 import type { Tagged } from "rustie";
 
+// == Stake ==
+
+export interface StakeData {
+  blockNumber: number;
+  blockHashHex: string;
+  stakeOut: {
+    total: bigint;
+    perAddr: Map<string, bigint>;
+    perNet: Map<number, bigint>;
+    perAddrPerNet: Map<number, Map<string, bigint>>;
+  };
+}
+
+// == Transactions ==
 export interface TransactionResult {
   finalized: boolean;
   message: string | null;

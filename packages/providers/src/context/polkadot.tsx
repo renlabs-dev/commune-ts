@@ -17,12 +17,14 @@ import type {
   AddDaoApplication,
   DaoApplications,
   Stake,
+  StakeData,
   TransactionResult,
   Transfer,
   TransferStake,
   Vote,
 } from "../types";
 import {
+  getAllStakeOut,
   getBalance,
   getDaoApplications,
   getGlobalDaoTreasury,
@@ -56,6 +58,8 @@ interface PolkadotContextType {
 
   curatorApplications: DaoApplications[] | null;
   globalDaoTreasury: string;
+
+  stakeData: StakeData | null;
 }
 
 const PolkadotContext = createContext<PolkadotContextType | null>(null);
@@ -85,8 +89,9 @@ export function PolkadotProvider({
   const [curatorApplications, setCuratorApplications] = useState<
     DaoApplications[] | null
   >(null);
-
   const [globalDaoTreasury, setGlobalDaoTreasury] = useState<string>("0");
+
+  const [stakeData, setStakeData] = useState<StakeData | null>(null);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -194,6 +199,10 @@ export function PolkadotProvider({
 
     void getGlobalDaoTreasury(api).then((treasury) => {
       setGlobalDaoTreasury(treasury);
+    });
+
+    void getAllStakeOut(api).then((stake) => {
+      setStakeData(stake);
     });
   }, [api]);
 
@@ -380,6 +389,8 @@ export function PolkadotProvider({
         voteProposal,
         addCustomProposal,
         addDaoApplication,
+
+        stakeData,
       }}
     >
       <WalletModal

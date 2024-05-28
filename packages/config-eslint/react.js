@@ -38,6 +38,7 @@ module.exports = {
   rules: {
     "import/no-default-export": "off",
     "eslint-comments/require-description": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
   },
   overrides: [
     {
