@@ -11,23 +11,26 @@ import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "../components/wallet-modal";
-import { calculateAmount } from "../utils";
-import type {
-  AddCustomProposal,
-  AddDaoApplication,
-  DaoApplications,
-  Stake,
-  StakeData,
-  TransactionResult,
-  Transfer,
-  TransferStake,
-  Vote,
+import { calculateAmount, handleCustomProposals } from "../utils";
+import {
+  isNotNull,
+  type AddCustomProposal,
+  type AddDaoApplication,
+  type DaoApplications,
+  type ProposalState,
+  type Stake,
+  type StakeData,
+  type TransactionResult,
+  type Transfer,
+  type TransferStake,
+  type Vote,
 } from "../types";
 import {
   getAllStakeOut,
   getBalance,
   getDaoApplications,
   getGlobalDaoTreasury,
+  getProposals,
 } from "../querys";
 
 interface PolkadotApiState {
@@ -58,6 +61,8 @@ interface PolkadotContextType {
 
   curatorApplications: DaoApplications[] | null;
   globalDaoTreasury: string;
+
+  proposals: ProposalState[] | null;
 
   stakeData: StakeData | null;
 }
@@ -93,11 +98,15 @@ export function PolkadotProvider({
 
   const [stakeData, setStakeData] = useState<StakeData | null>(null);
 
+  const [proposals, setProposals] = useState<ProposalState[] | null>(null);
+
   const [openModal, setOpenModal] = useState(false);
 
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
+
+  // == Initialize Polkadot ==
 
   async function loadPolkadotApi(): Promise<void> {
     const { web3Accounts, web3Enable, web3FromAddress } = await import(
@@ -193,6 +202,10 @@ export function PolkadotProvider({
   useEffect(() => {
     if (!api) return;
 
+    void getAllStakeOut(api).then((stake) => {
+      setStakeData(stake);
+    });
+
     void getDaoApplications(api).then((daos) => {
       setCuratorApplications(daos);
     });
@@ -200,9 +213,27 @@ export function PolkadotProvider({
     void getGlobalDaoTreasury(api).then((treasury) => {
       setGlobalDaoTreasury(treasury);
     });
+  }, [api]);
 
-    void getAllStakeOut(api).then((stake) => {
-      setStakeData(stake);
+  useEffect(() => {
+    if (!api) return;
+
+    void getProposals(api).then(async (proposal) => {
+      setProposals(proposal);
+
+      await handleCustomProposals(proposal).then((results) => {
+        const newProposalList: ProposalState[] = [...proposal];
+
+        results.filter(isNotNull).forEach((result) => {
+          const { id, customData } = result;
+          const parsedProposal = newProposalList.find((p) => p.id === id);
+          if (!parsedProposal) {
+            return;
+          }
+          parsedProposal.customData = customData;
+        });
+        setProposals(newProposalList);
+      });
     });
   }, [api]);
 
@@ -385,6 +416,8 @@ export function PolkadotProvider({
 
         curatorApplications,
         globalDaoTreasury,
+
+        proposals,
 
         voteProposal,
         addCustomProposal,
