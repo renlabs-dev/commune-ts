@@ -1,7 +1,7 @@
 import "@polkadot/api-augment";
 import type { ApiPromise } from "@polkadot/api";
-import { formatToken, parseDaos } from "../utils";
-import { StakeData, type DaoApplications } from "../types";
+import { formatToken, parseDaos, parseProposal } from "../utils";
+import type { DaoApplications, Proposal } from "../types";
 
 // == Balance ==
 
@@ -21,6 +21,23 @@ export async function getBalance({
 
   const balanceNum = Number(free);
   return formatToken(balanceNum);
+}
+
+// == Proposals ==
+
+export async function getProposals(api: ApiPromise): Promise<Proposal[]> {
+  const proposalsRaw = await api.query.subspaceModule.proposals.entries();
+
+  const proposals = [];
+  for (const proposalItem of proposalsRaw) {
+    const [, valueRaw] = proposalItem;
+    const proposal = parseProposal(valueRaw);
+
+    proposals.push(proposal);
+  }
+
+  proposals.reverse();
+  return proposals as Proposal[];
 }
 
 // == S0 Applications ==
@@ -99,5 +116,5 @@ export async function getAllStakeOut(api: ApiPromise) {
     blockNumber,
     blockHashHex,
     stakeOut: { total, perAddr, perNet, perAddrPerNet },
-  } as StakeData;
+  };
 }
