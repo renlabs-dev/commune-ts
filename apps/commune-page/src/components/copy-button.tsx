@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { DocumentDuplicateIcon } from "@heroicons/react/20/solid";
 
-type TCodeComponentProps = { code: string };
+interface CodeComponentProps {
+  code: string;
+}
 
-export function CopyButton(props: TCodeComponentProps) {
+export function CopyButton(props: CodeComponentProps) {
   const { code } = props;
   const [copied, setCopied] = useState(false);
 
