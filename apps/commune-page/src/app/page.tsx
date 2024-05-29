@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "./loading";
+import { Loading } from "@repo/ui/loading";
 import { HeroSection } from "../components/sections/hero-section";
 import { WelcomeSection } from "../components/sections/welcome";
 import { sections } from "../utils/mocks/sections-mock";

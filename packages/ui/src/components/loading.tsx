@@ -1,6 +1,4 @@
-import React from "react";
-
-function Loading() {
+export function Loading() {
   return (
     <div role="status" className="grid h-screen w-screen place-content-center">
       <svg
@@ -23,5 +21,3 @@ function Loading() {
     </div>
   );
 }
-
-export default Loading;

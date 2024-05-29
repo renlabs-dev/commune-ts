@@ -16,6 +16,7 @@ export interface StakeData {
 }
 
 // == Transactions ==
+
 export interface TransactionResult {
   finalized: boolean;
   message: string | null;
@@ -46,7 +47,7 @@ export interface TransferStake {
 // == Governance ==
 export interface Vote {
   proposalId: number;
-  vote: boolean;
+  vote: string; // TODO i think this should be a boolean
   callback?: (status: TransactionResult) => void;
 }
 
@@ -79,7 +80,7 @@ export interface DaoApplications {
   payingFor: SS58Address;
   data: string;
   body?: CustomDaoData;
-  status: TransactionResult;
+  status: DaoStatus;
   applicationCost: number;
 }
 
@@ -125,6 +126,13 @@ export type CustomProposalDataState = Result<
 >;
 export interface ProposalState extends Proposal {
   customData?: CustomProposalDataState;
+}
+
+export interface ProposalStakeInfo {
+  stakeFor: bigint;
+  stakeAgainst: bigint;
+  stakeVoted: bigint;
+  stakeTotal: bigint;
 }
 
 // == Schemas ==
@@ -213,3 +221,40 @@ export const CUSTOM_PROPOSAL_METADATA_SCHEMA = z.object({
   title: z.string().optional(),
   body: z.string().optional(),
 });
+
+export const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
+  // # Global
+  maxNameLength: "Max Name Length",
+  maxAllowedSubnets: "Max Allowed Subnets",
+  maxAllowedModules: "Max Allowed Modules",
+  unitEmission: "Unit Emission",
+  floorDelegationFee: "Floor Delegation Fee",
+  maxRegistrationsPerBlock: "Max Registrations Per Block",
+  targetRegistrationsPerInterval: "Target Registrations Per Interval",
+  targetRegistrationsInterval: "Target Registrations Interval",
+  burnRate: "Burn Rate",
+  minBurn: "Min Burn",
+  maxBurn: "Max Burn",
+  adjustmentAlpha: "Adjustment Alpha",
+  minStake: "Min Stake",
+  maxAllowedWeights: "Max Allowed Weights",
+  minWeightStake: "Min Weight Stake",
+  proposalCost: "Proposal Cost",
+  proposalExpiration: "Proposal Expiration",
+  proposalParticipationThreshold: "Proposal Participation Threshold",
+  // # Subnet
+  founder: "Founder",
+  founderShare: "Founder Share",
+  immunityPeriod: "Immunity Period",
+  incentiveRatio: "Incentive Ratio",
+  maxAllowedUids: "Max Allowed UIDs",
+  // maxAllowedWeights: "Max Allowed Weights",
+  maxStake: "Max Stake",
+  maxWeightAge: "Max Weight Age",
+  minAllowedWeights: "Min Allowed Weights",
+  // minStake: "Min Stake",
+  name: "Name",
+  tempo: "Tempo",
+  trustRatio: "Trust Ratio",
+  voteMode: "Vote Mode",
+};

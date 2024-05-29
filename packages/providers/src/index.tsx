@@ -1,3 +1,4 @@
+import * as types from "./types";
 import type { ReactNode } from "react";
 import { ToastProvider } from "./context/toast";
 import { PolkadotProvider } from "./context/polkadot";
@@ -15,4 +16,4 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
   );
 }
 
-export { Providers, WalletButton };
+export { Providers, WalletButton, types };

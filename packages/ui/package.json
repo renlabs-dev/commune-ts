@@ -8,6 +8,7 @@
     "./styles.css": "./dist/index.css",
     "./card": "./src/components/card.tsx",
     "./header": "./src/components/header.tsx",
+    "./loading": "./src/components/loading.tsx",
     "./data": "./src/data.ts",
     "./fonts": "./src/fonts.ts"
   },

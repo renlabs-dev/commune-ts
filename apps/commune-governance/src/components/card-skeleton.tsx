@@ -1,6 +1,6 @@
 import { Card } from "./card";
 
-export const CardSkeleton = () => {
+export function CardSkeleton() {
   return (
     <Card.Root>
       <Card.Header className="flex-col-reverse">
@@ -36,4 +36,4 @@ export const CardSkeleton = () => {
       </Card.Body>
     </Card.Root>
   );
-};
+}

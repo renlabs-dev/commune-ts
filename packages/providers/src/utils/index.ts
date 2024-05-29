@@ -10,7 +10,9 @@ import {
   type CustomProposalDataState,
   URL_SCHEMA,
   CUSTOM_PROPOSAL_METADATA_SCHEMA,
+  ProposalStakeInfo,
 } from "../types";
+import { assert } from "tsafe";
 
 export function calculateAmount(amount: string): number {
   return Math.floor(Number(amount) * 10 ** 9);
@@ -147,4 +149,64 @@ export function handleCustomProposals(
     promises.push(prom);
   }
   return Promise.all(promises);
+}
+
+export function getProposalNetuid(proposal: Proposal): number | null {
+  return match(proposal.data)({
+    custom: function (/*v: string*/): null {
+      return null;
+    },
+    globalParams: function (/*v: unknown*/): null {
+      return null;
+    },
+    subnetParams: function ({ netuid }): number {
+      return netuid;
+    },
+    subnetCustom: function ({ netuid }): number {
+      return netuid;
+    },
+    expired: function (): null {
+      return null;
+    },
+  });
+}
+
+const sum = (arr: Iterable<bigint>) =>
+  Array.from(arr).reduce((a, b) => a + b, 0n);
+
+export function computeVotes(
+  stakeMap: Map<string, bigint>,
+  votesFor: string[],
+  votesAgainst: string[],
+  stakeTotal?: bigint
+): ProposalStakeInfo {
+  let stakeFor = 0n;
+  let stakeAgainst = 0n;
+  let stakeVoted = 0n;
+
+  if (stakeTotal == null) {
+    stakeTotal = sum(stakeMap.values());
+  }
+
+  for (const voteAddr of votesFor) {
+    const stake = stakeMap.get(voteAddr);
+    if (stake == null) {
+      // console.warn(`Key ${voteAddr} not found in stake map`);
+      continue;
+    }
+    stakeFor += stake;
+    stakeVoted += stake;
+  }
+
+  for (const voteAddr of votesAgainst) {
+    const stake = stakeMap.get(voteAddr);
+    if (stake == null) {
+      console.warn(`Key ${voteAddr} not found in stake map`);
+      continue;
+    }
+    stakeAgainst += stake;
+    stakeVoted += stake;
+  }
+
+  return { stakeFor, stakeAgainst, stakeVoted, stakeTotal };
 }
