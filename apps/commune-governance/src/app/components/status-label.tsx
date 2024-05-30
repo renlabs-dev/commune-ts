@@ -5,7 +5,7 @@ interface StatusLabelProps {
   className?: string;
 }
 
-export function StatusLabel(props: StatusLabelProps) {
+export function StatusLabel(props: StatusLabelProps): JSX.Element {
   const { result, className = "" } = props;
   const votingStatus = {
     Pending: (
@@ -37,5 +37,6 @@ export function StatusLabel(props: StatusLabelProps) {
       </Label>
     ),
   };
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return votingStatus[result ?? "Pending"];
 }

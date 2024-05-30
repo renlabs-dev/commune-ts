@@ -2,7 +2,9 @@
 
 ### Apps and Packages
 
-- `commune-page`: a [Next.js](https://nextjs.org/) app
+- `commune-page`: a [Next.js](https://nextjs.org/) for the landing page
+- `commune-governance`: a [Next.js](https://nextjs.org/) for the community governance application
+
 - `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared through `apps` applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo

@@ -8,11 +8,11 @@ export const applicationsList = [
     href: links.governance,
     icon: (
       <Image
-        src={"/governance-icon.svg"}
         alt="Governance icon"
-        width={75}
-        height={75}
         className="mb-5 w-10"
+        height={75}
+        src="/governance-icon.svg"
+        width={75}
       />
     ),
   },
@@ -22,11 +22,11 @@ export const applicationsList = [
     href: links.docs,
     icon: (
       <Image
-        src={"/docs-icon.svg"}
         alt="Docs icon"
-        width={75}
-        height={75}
         className="mb-5 w-10"
+        height={75}
+        src="/docs-icon.svg"
+        width={75}
       />
     ),
   },
@@ -37,11 +37,11 @@ export const applicationsList = [
     href: links.blog,
     icon: (
       <Image
-        src={"/updates-icon.svg"}
         alt="Updates icon"
-        width={75}
-        height={75}
         className="mb-5 w-10"
+        height={75}
+        src="/updates-icon.svg"
+        width={75}
       />
     ),
   },
@@ -51,11 +51,11 @@ export const applicationsList = [
     href: links.discord,
     icon: (
       <Image
-        src={"/community-icon.svg"}
         alt="Community icon"
-        width={75}
-        height={75}
         className="mb-5 w-10"
+        height={75}
+        src="/community-icon.svg"
+        width={75}
       />
     ),
   },

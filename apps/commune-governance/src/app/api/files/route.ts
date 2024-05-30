@@ -1,8 +1,8 @@
-export const runtime = "edge";
-
 import { NextResponse, type NextRequest } from "next/server";
 
-export function config() {
+export const runtime = "edge";
+
+export function config(): { api: { bodyParser: false } } {
   return {
     api: {
       bodyParser: false,
@@ -10,7 +10,7 @@ export function config() {
   };
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const data = await request.formData();
     const file: File | null = data.get("file") as unknown as File;

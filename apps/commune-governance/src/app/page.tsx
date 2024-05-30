@@ -1,24 +1,24 @@
 "use client";
 
 import { usePolkadot } from "@repo/providers/src/context/polkadot";
-import { SS58Address } from "@repo/providers/src/types";
+import type { SS58Address } from "@repo/providers/src/types";
 import { useState } from "react";
-import { Vote } from "../components/vote-label";
 import { computeVotes, getProposalNetuid } from "@repo/providers/src/utils";
-import { ProposalCard } from "../components/proposal-card";
-import { DaoCard } from "../components/dao-card";
-import { Container } from "../components/container";
-import { BalanceSection } from "../components/balance-section";
-import { ProposalListHeader } from "../components/proposal-list-header";
-import { CardSkeleton } from "../components/card-skeleton";
+import type { Vote } from "./components/vote-label";
+import { ProposalCard } from "./components/proposal-card";
+import { DaoCard } from "./components/dao-card";
+import { Container } from "./components/container";
+import { BalanceSection } from "./components/balance-section";
+import { ProposalListHeader } from "./components/proposal-list-header";
+import { CardSkeleton } from "./components/card-skeleton";
 
-export default function HomePage() {
+export default function HomePage(): JSX.Element {
   const { proposals, curatorApplications, stakeData, selectedAccount } =
     usePolkadot();
 
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
 
-  const handleIsLoading = (type: "proposals" | "daos") => {
+  function handleIsLoading(type: "proposals" | "daos"): boolean {
     switch (type) {
       case "daos":
         return curatorApplications == null;
@@ -29,7 +29,7 @@ export default function HomePage() {
       default:
         return false;
     }
-  };
+  }
 
   const isLoading = handleIsLoading(viewMode);
 
@@ -38,8 +38,8 @@ export default function HomePage() {
     votesFor,
     selectedAccountAddress,
   }: {
-    votesAgainst: Array<string>;
-    votesFor: Array<string>;
+    votesAgainst: string[];
+    votesFor: string[];
     selectedAccountAddress: SS58Address;
   }): Vote => {
     if (votesAgainst.includes(selectedAccountAddress)) return "AGAINST";
@@ -47,7 +47,9 @@ export default function HomePage() {
     return "UNVOTED";
   };
 
-  const renderProposals = () => {
+  // TODO check this fucker
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  function renderProposals() {
     const proposalsContent = proposals?.map((proposal) => {
       const voted = handleUserVotes({
         votesAgainst: proposal.votesAgainst,
@@ -58,19 +60,19 @@ export default function HomePage() {
       const netuid = getProposalNetuid(proposal);
       let proposalStakeInfo = null;
       if (stakeData != null) {
-        const stake_map =
+        const stakeMap =
           netuid != null
             ? stakeData.stakeOut.perAddrPerNet.get(netuid) ??
               new Map<string, bigint>()
             : stakeData.stakeOut.perAddr;
         proposalStakeInfo = computeVotes(
-          stake_map,
+          stakeMap,
           proposal.votesFor,
           proposal.votesAgainst
         );
       }
       return (
-        <div key={proposal.id} className="animate-fade-in-down">
+        <div className="animate-fade-in-down" key={proposal.id}>
           <ProposalCard
             key={proposal.id}
             proposal={proposal}
@@ -81,19 +83,21 @@ export default function HomePage() {
       );
     });
     return proposalsContent;
-  };
+  }
 
-  const renderDaos = () => {
-    const daosContent = curatorApplications?.map((curatorApplications) => {
+  // TODO check this fucker
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  function renderDaos() {
+    const daosContent = curatorApplications?.map((daos) => {
       return (
-        <div key={curatorApplications.id}>
-          <DaoCard key={curatorApplications.id} dao={curatorApplications} />
+        <div key={daos.id}>
+          <DaoCard dao={daos} key={daos.id} />
         </div>
       );
     });
 
     return daosContent;
-  };
+  }
 
   const content = viewMode === "proposals" ? renderProposals() : renderDaos();
 
@@ -103,11 +107,11 @@ export default function HomePage() {
         <Container>
           <BalanceSection className="hidden lg:flex" />
 
-          <ProposalListHeader viewMode={viewMode} setViewMode={setViewMode} />
+          <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
 
           <div className="max-w-6xl px-4 py-8 mx-auto space-y-10">
             {!isLoading && content}
-            {isLoading && <CardSkeleton />}
+            {isLoading ? <CardSkeleton /> : null}
           </div>
         </Container>
       </div>

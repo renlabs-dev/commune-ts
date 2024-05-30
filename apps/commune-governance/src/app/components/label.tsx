@@ -3,7 +3,7 @@ interface LabelProps {
   className?: string;
 }
 
-export function Label({ children, className = "" }: LabelProps) {
+export function Label({ children, className = "" }: LabelProps): JSX.Element {
   return (
     <div
       className={`flex gap-1 items-center px-4 py-1 text-sm font-semibold ${className}`}

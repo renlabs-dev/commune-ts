@@ -1,7 +1,7 @@
 import {
-  CustomProposalDataState,
   PARAM_FIELD_DISPLAY_NAMES,
-  ProposalState,
+  type CustomProposalDataState,
+  type ProposalState,
 } from "@repo/providers/src/types";
 import { match } from "rustie";
 
@@ -27,7 +27,7 @@ function paramsToMarkdown(params: Record<string, unknown>): string {
 
     items.push(`${label}: ${formattedValue}`);
   }
-  return items.join(" |  ") + "\n";
+  return `${items.join(" |  ")}\n`;
 }
 
 function handleCustomProposalData(
@@ -39,23 +39,23 @@ function handleCustomProposalData(
     return {
       title: null,
       body: null,
-      netuid: netuid,
+      netuid,
     };
   }
   return match(dataState)({
-    Err: function ({ message }): ProposalCardFields {
+    Err({ message }): ProposalCardFields {
       return {
         title: `⚠️😠 Failed fetching proposal data for proposal #${proposalId}`,
         body: `⚠️😠 Error fetching proposal data for proposal #${proposalId}:  \n${message}`,
-        netuid: netuid,
+        netuid,
         invalid: true,
       };
     },
-    Ok: function (data): ProposalCardFields {
+    Ok(data): ProposalCardFields {
       return {
         title: data.title ?? null,
         body: data.body ?? null,
-        netuid: netuid,
+        netuid,
       };
     },
   });
@@ -66,9 +66,9 @@ function handleProposalParams(
   params: Record<string, unknown>,
   netuid: number | "GLOBAL"
 ): ProposalCardFields {
-  const title =
-    `Parameters proposal #${proposalId} for ` +
-    (netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`);
+  const title = `Parameters proposal #${proposalId} for ${
+    netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`
+  }`;
   return {
     title,
     body: paramsToMarkdown(params),
@@ -78,27 +78,27 @@ function handleProposalParams(
 
 export const handleProposal = (proposal: ProposalState): ProposalCardFields =>
   match(proposal.data)({
-    custom: function (/*rawData*/): ProposalCardFields {
+    custom(/*rawData*/): ProposalCardFields {
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
         "GLOBAL"
       );
     },
-    subnetCustom: function ({ netuid /*rawData*/ }): ProposalCardFields {
+    subnetCustom({ netuid /*rawData*/ }): ProposalCardFields {
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
         netuid
       );
     },
-    globalParams: function (params): ProposalCardFields {
+    globalParams(params): ProposalCardFields {
       return handleProposalParams(proposal.id, params, "GLOBAL");
     },
-    subnetParams: function ({ netuid, params }): ProposalCardFields {
+    subnetParams({ netuid, params }): ProposalCardFields {
       return handleProposalParams(proposal.id, params, netuid);
     },
-    expired: function (): ProposalCardFields {
+    expired(): ProposalCardFields {
       return {
         title: `Proposal #${proposal.id} has expired`,
         body: "This proposal has expired.",

@@ -1,24 +1,21 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { toast } from "react-toastify";
-
 import { z } from "zod";
-import { TransactionResult } from "@repo/providers/src/types";
+import type { TransactionResult } from "@repo/providers/src/types";
 import { usePolkadot } from "@repo/providers/src/context/polkadot";
 import { Loading } from "@repo/ui/loading";
 import { cairo } from "@repo/ui/fonts";
+import { toast } from "@repo/providers/src/context/toast";
 
-// Define Zod schemas
 const proposalSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
 });
 
-export function CreateProposal() {
+export function CreateProposal(): JSX.Element {
   const router = useRouter();
   const { isConnected, addCustomProposal, balance } = usePolkadot();
 
@@ -27,10 +24,14 @@ export function CreateProposal() {
   const [uploading, setUploading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const toggleModalMenu = () => setModalOpen(!modalOpen);
+  function toggleModalMenu(): void {
+    setModalOpen(!modalOpen);
+  }
 
   const [editMode, setEditMode] = useState(true);
-  const toggleEditMode = () => setEditMode(!editMode);
+  function toggleEditMode(): void {
+    setEditMode(!editMode);
+  }
 
   const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
     {
@@ -40,11 +41,11 @@ export function CreateProposal() {
     }
   );
 
-  const handleCallback = (callbackReturn: TransactionResult) => {
+  function handleCallback(callbackReturn: TransactionResult): void {
     setTransactionStatus(callbackReturn);
-  };
+  }
 
-  const uploadFile = async (fileToUpload: File) => {
+  async function uploadFile(fileToUpload: File): Promise<void> {
     try {
       setUploading(true);
       const data = new FormData();
@@ -64,7 +65,7 @@ export function CreateProposal() {
       const proposalCost = 10000;
 
       if (Number(balance) > proposalCost) {
-        addCustomProposal({
+        void addCustomProposal({
           IpfsHash: `ipfs://${ipfs.IpfsHash}`,
           callback: handleCallback,
         });
@@ -80,13 +81,12 @@ export function CreateProposal() {
       }
       router.refresh();
     } catch (e) {
-      console.error(e);
       setUploading(false);
       toast.error("Error uploading proposal");
     }
-  };
+  }
 
-  const HandleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function HandleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     setTransactionStatus({
       status: "STARTING",
@@ -110,28 +110,28 @@ export function CreateProposal() {
     }
 
     const proposalData = JSON.stringify({
-      title: title,
-      body: body,
+      title,
+      body,
     });
     const blob = new Blob([proposalData], { type: "application/json" });
     const fileToUpload = new File([blob], "proposal.json", {
       type: "application/json",
     });
     void uploadFile(fileToUpload);
-  };
+  }
 
   return (
     <>
       <button
-        type="button"
-        onClick={toggleModalMenu}
         className="w-full px-4 py-2 text-gray-400 border border-gray-500 hover:border-green-600 hover:text-green-600 hover:bg-green-600/5 min-w-auto lg:w-auto"
+        onClick={toggleModalMenu}
+        type="button"
       >
         Create New Proposal
       </button>
       <div
-        role="dialog"
         className={`relative z-50 ${modalOpen ? "visible" : "hidden"} -mr-2`}
+        role="dialog"
       >
         {/* Backdrop */}
         <div className="fixed inset-0 transition-opacity bg-black bg-opacity-60 backdrop-blur-sm" />
@@ -152,28 +152,28 @@ export function CreateProposal() {
                 </div>
 
                 <button
-                  type="button"
-                  onClick={toggleModalMenu}
                   className="p-2 transition duration-200"
+                  onClick={toggleModalMenu}
+                  type="button"
                 >
                   <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
               {/* Modal Body */}
-              <form onSubmit={HandleSubmit} className="dark:bg-light-dark">
+              <form className="dark:bg-light-dark" onSubmit={HandleSubmit}>
                 <div className="flex flex-col gap-4 p-6">
                   <div className="flex gap-2">
                     <button
-                      type="button"
-                      onClick={toggleEditMode}
                       className={`border px-4 py-1  ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+                      onClick={toggleEditMode}
+                      type="button"
                     >
                       Edit
                     </button>
                     <button
-                      type="button"
-                      onClick={toggleEditMode}
                       className={` border px-4 py-1 ${!editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+                      onClick={toggleEditMode}
+                      type="button"
                     >
                       Preview
                     </button>
@@ -182,32 +182,36 @@ export function CreateProposal() {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          type="text"
-                          placeholder="Your proposal title here..."
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
                           className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setTitle(e.target.value);
+                          }}
+                          placeholder="Your proposal title here..."
+                          type="text"
+                          value={title}
                         />
                         <textarea
-                          placeholder="Your proposal here... (Markdown supported)"
-                          value={body}
-                          rows={5}
-                          onChange={(e) => setBody(e.target.value)}
                           className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setBody(e.target.value);
+                          }}
+                          placeholder="Your proposal here... (Markdown supported)"
+                          rows={5}
+                          value={body}
                         />
                       </div>
                     ) : (
                       <div className="p-4 py-10">
-                        {body && (
+                        {body ? (
                           <MarkdownPreview
+                            className={`line-clamp-4 ${cairo.className}`}
                             source={`# ${title}\n${body}`}
                             style={{
                               backgroundColor: "transparent",
                               color: "white",
                             }}
-                            className={`line-clamp-4 ${cairo.className}`}
                           />
-                        )}
+                        ) : null}
                         {/* TODO: skeleton for markdown body */}
                       </div>
                     )}
@@ -221,7 +225,7 @@ export function CreateProposal() {
                       {uploading ? "Uploading..." : "Submit Proposal"}
                     </button>
                   </div>
-                  {transactionStatus.status && (
+                  {transactionStatus.status ? (
                     <p
                       className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"}  ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
                     >
@@ -231,7 +235,7 @@ export function CreateProposal() {
                         ))}
                       {transactionStatus.message}
                     </p>
-                  )}
+                  ) : null}
 
                   <div className="flex flex-wrap items-center gap-1 pt-2 text-sm text-white">
                     <div className="flex items-center gap-1">
@@ -240,8 +244,8 @@ export function CreateProposal() {
                     </div>
                     <span>
                       <Link
-                        href="https://mirror.xyz/0xD80E194aBe2d8084fAecCFfd72877e63F5822Fc5/FUvj1g9rPyVm8Ii_qLNu-IbRQPiCHkfZDLAmlP00M1Q"
                         className="text-blue-500 hover:underline"
+                        href="https://mirror.xyz/0xD80E194aBe2d8084fAecCFfd72877e63F5822Fc5/FUvj1g9rPyVm8Ii_qLNu-IbRQPiCHkfZDLAmlP00M1Q"
                         target="_blank"
                       >
                         Check how to create a proposal with the CLI tool

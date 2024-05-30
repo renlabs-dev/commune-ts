@@ -4,15 +4,14 @@ import { match } from "rustie";
 import {
   DAO_SHEMA,
   PROPOSAL_SHEMA,
+  URL_SCHEMA,
+  CUSTOM_PROPOSAL_METADATA_SCHEMA,
   type Proposal,
   type DaoApplications,
   type ProposalState,
   type CustomProposalDataState,
-  URL_SCHEMA,
-  CUSTOM_PROPOSAL_METADATA_SCHEMA,
-  ProposalStakeInfo,
+  type ProposalStakeInfo,
 } from "../types";
-import { assert } from "tsafe";
 
 export function calculateAmount(amount: string): number {
   return Math.floor(Number(amount) * 10 ** 9);
@@ -109,7 +108,7 @@ export async function handleCustomProposalData(
 export function handleCustomProposals(
   proposals: Proposal[],
   handler?: (id: number, proposalState: ProposalState) => void
-) {
+): Promise<({ id: number; customData: CustomProposalDataState } | null)[]> {
   const promises = [];
   for (const proposal of proposals) {
     const prom = match(proposal.data)({
@@ -120,7 +119,6 @@ export function handleCustomProposals(
           ...proposal,
           customData: metadata,
         };
-        // eslint-disable-next-line eqeqeq
         if (handler != null) handler(proposal.id, proposalState);
 
         return { id: proposal.id, customData: metadata };
@@ -132,7 +130,6 @@ export function handleCustomProposals(
           ...proposal,
           customData: metadata,
         };
-        // eslint-disable-next-line eqeqeq
         if (handler != null) handler(proposal.id, proposalState);
         return { id: proposal.id, customData: metadata };
       },
@@ -153,26 +150,27 @@ export function handleCustomProposals(
 
 export function getProposalNetuid(proposal: Proposal): number | null {
   return match(proposal.data)({
-    custom: function (/*v: string*/): null {
+    custom(/*v: string*/): null {
       return null;
     },
-    globalParams: function (/*v: unknown*/): null {
+    globalParams(/*v: unknown*/): null {
       return null;
     },
-    subnetParams: function ({ netuid }): number {
+    subnetParams({ netuid }): number {
       return netuid;
     },
-    subnetCustom: function ({ netuid }): number {
+    subnetCustom({ netuid }): number {
       return netuid;
     },
-    expired: function (): null {
+    expired(): null {
       return null;
     },
   });
 }
 
-const sum = (arr: Iterable<bigint>) =>
-  Array.from(arr).reduce((a, b) => a + b, 0n);
+function sum(arr: Iterable<bigint>): bigint {
+  return Array.from(arr).reduce((a, b) => a + b, 0n);
+}
 
 export function computeVotes(
   stakeMap: Map<string, bigint>,
@@ -185,13 +183,13 @@ export function computeVotes(
   let stakeVoted = 0n;
 
   if (stakeTotal == null) {
+    // eslint-disable-next-line no-param-reassign
     stakeTotal = sum(stakeMap.values());
   }
 
   for (const voteAddr of votesFor) {
     const stake = stakeMap.get(voteAddr);
     if (stake == null) {
-      // console.warn(`Key ${voteAddr} not found in stake map`);
       continue;
     }
     stakeFor += stake;
@@ -201,7 +199,6 @@ export function computeVotes(
   for (const voteAddr of votesAgainst) {
     const stake = stakeMap.get(voteAddr);
     if (stake == null) {
-      console.warn(`Key ${voteAddr} not found in stake map`);
       continue;
     }
     stakeAgainst += stake;

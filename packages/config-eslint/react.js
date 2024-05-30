@@ -36,9 +36,8 @@ module.exports = {
   ignorePatterns: ["node_modules/", "dist/", ".eslintrc.js", "**/*.css"],
   // add rules configurations here
   rules: {
+    eqeqeq: "off",
     "import/no-default-export": "off",
-    "eslint-comments/require-description": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
   },
   overrides: [
     {
