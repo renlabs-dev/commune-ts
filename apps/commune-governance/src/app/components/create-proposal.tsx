@@ -160,7 +160,7 @@ export function CreateProposal(): JSX.Element {
                 </button>
               </div>
               {/* Modal Body */}
-              <form className="dark:bg-light-dark" onSubmit={HandleSubmit}>
+              <form onSubmit={HandleSubmit}>
                 <div className="flex flex-col gap-4 p-6">
                   <div className="flex gap-2">
                     <button

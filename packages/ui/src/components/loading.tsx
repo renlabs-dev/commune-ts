@@ -6,7 +6,7 @@ export function Loading(): JSX.Element {
     >
       <svg
         aria-hidden="true"
-        className="ui-h-8 ui-w-8 ui-animate-spin ui-fill-blue-400 ui-text-gray-200 ui-dark:text-gray-600"
+        className="ui-h-8 ui-w-8 ui-animate-spin ui-fill-blue-400 ui-text-gray-200"
         fill="none"
         viewBox="0 0 100 101"
         xmlns="http://www.w3.org/2000/svg"

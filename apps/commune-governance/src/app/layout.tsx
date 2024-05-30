@@ -7,6 +7,7 @@ import { Header } from "@repo/ui/header";
 import { Footer } from "@repo/ui/footer";
 import { Providers, WalletButton } from "@repo/providers";
 import { applicationsList } from "../utils/applications-list";
+import { links } from "@repo/ui/data";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -29,7 +30,9 @@ export default function RootLayout({
         <Providers>
           <Header
             logoSrc="/logo.svg"
-            navigationLinks={[]}
+            navigationLinks={[
+              { name: "Home", href: links.landing_page, external: true },
+            ]}
             title="Community Governance"
             wallet={<WalletButton />}
           />

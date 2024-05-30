@@ -27,19 +27,21 @@ export function Header(props: HeaderProps): JSX.Element {
             {props.title}
           </h3>
         </Link>
-        <div className="ui-hidden ui-lg:flex ui-lg:gap-6">
-          {props.navigationLinks.map(({ name, href, external }) => (
-            <Link
-              className="ui-flex ui-flex-col ui-items-center ui-text-lg ui-font-normal ui-leading-6 ui-text-white ui-hover:text-green-500 ui-transition ui-duration-500"
-              href={href}
-              key={name}
-              target={external ? "_blank" : "_self"}
-            >
-              {name}
-            </Link>
-          ))}
+        <div className="ui-flex ui-items-center ui-gap-6">
+          <div className="ui-hidden lg:ui-flex lg:ui-gap-6">
+            {props.navigationLinks.map(({ name, href, external }) => (
+              <Link
+                className="ui-flex ui-flex-col ui-items-center ui-text-lg ui-font-normal ui-leading-6 ui-text-white hover:ui-text-green-500 ui-transition ui-duration-500"
+                href={href}
+                key={name}
+                target={external ? "_blank" : "_self"}
+              >
+                {name}
+              </Link>
+            ))}
+          </div>
+          {props.wallet}
         </div>
-        {props.wallet}
         {/* mobile menu here */}
       </nav>
     </header>
