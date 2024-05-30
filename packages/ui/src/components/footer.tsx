@@ -60,7 +60,7 @@ export function Footer(props: FooterProps): JSX.Element {
           <div className="ui-flex ui-space-x-5 ui-px-4">
             {socialList.map((item) => (
               <Link
-                className="ui-leading-6 ui-text-subtitle hover:ui-text-gray-800 hover:ui-underline dark:ui-text-white"
+                className="ui-leading-6 ui-text-subtitle hover:ui-text-gray-800 hover:ui-underline"
                 href={item.href}
                 key={item.name}
               >

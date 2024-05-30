@@ -24,7 +24,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
   }
 
   const commonButtonClass =
-    "flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100/10 text-title dark:text-white p-1.5 hover:bg-gray-100/[0.15]";
+    "flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100/10 p-1.5 hover:bg-gray-100/[0.15]";
 
   const { params, activeTutorial, activeContent, prefix } = props;
   return (

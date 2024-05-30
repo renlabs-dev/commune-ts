@@ -18,8 +18,8 @@ export function handleDescription(description: string | null): JSX.Element {
   if (!presenceCount && !description) return <p>loading...</p>;
   if (!description) {
     return (
-      <div className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-2xl bg-green-400" />
+      <div className="ui-flex ui-items-centerui-gap-1">
+        <span className="ui-h-2 ui-w-2 ui-rounded-2xl ui-bg-green-400" />
         <p>{presenceCount} Online (Discord)</p>
       </div>
     );
