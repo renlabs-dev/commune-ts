@@ -6,7 +6,7 @@
 // import { DocSidebar } from "../../components/doc-sidebar";
 // import { tutorials } from "./tutorials";
 
-// export const runtime = "edge";
+export const runtime = "edge";
 
 export default function Docs(): JSX.Element {
   return <div>wip</div>;
