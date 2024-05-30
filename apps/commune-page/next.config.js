@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   transpilePackages: ["@repo/ui"],
 };
-
 
 // import nextMDX from "@next/mdx";
 // import rehypePrettyCode from "rehype-pretty-code";
@@ -61,4 +60,3 @@ module.exports = {
 // };
 
 // export default withMDX(nextConfig);
-

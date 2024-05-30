@@ -28,7 +28,10 @@
     "rehype-pretty-code": "^0.13.1",
     "shiki": "^1.6.1",
     "unified": "^11.0.4",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "lil-gui": "^0.19.2",
+    "raw-loader": "^4.0.2",
+    "three": "^0.164.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.1",
