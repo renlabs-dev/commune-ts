@@ -4,7 +4,9 @@ import "@repo/ui/styles.css";
 import type { Metadata } from "next";
 import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
+import { Footer } from "@repo/ui/footer";
 import { Providers, WalletButton } from "@repo/providers";
+import { applicationsList } from "../utils/applications-list";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -32,6 +34,7 @@ export default function RootLayout({
             wallet={<WalletButton />}
           />
           {children}
+          <Footer applicationsList={applicationsList} />
         </Providers>
       </body>
     </html>

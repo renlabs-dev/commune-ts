@@ -25,7 +25,6 @@ export default function Page(): JSX.Element {
         );
       })}
       <FrequentQuestions />
-      {/* <Footer /> */}
     </Suspense>
   );
 }

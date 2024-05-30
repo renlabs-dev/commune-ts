@@ -1,39 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 // import Animation from "@/app/components/Animation";
+import { handleDescription } from "@repo/ui/discord-widget";
 import { CountUpArea } from "../count-up-area";
 import { applicationsList } from "../../../utils/applications-list";
 
-const serverId = "941362322000203776";
-const uri = `https://discord.com/api/guilds/${serverId}/widget.json`;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getDiscordWidgetData(): Promise<any> {
-  try {
-    const res = await fetch(uri, { next: { revalidate: 5000 } });
-    return res.json();
-  } catch (error) {
-    return null;
-  }
-}
-
-export async function HeroSection(): Promise<JSX.Element> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { presenceCount } = await getDiscordWidgetData();
-
-  function handleDescription(description: string | null): JSX.Element {
-    if (!presenceCount && !description) return <p>loading...</p>;
-    if (!description) {
-      return (
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-2 rounded-2xl bg-green-400" />
-          <p>{presenceCount} Online (Discord)</p>
-        </div>
-      );
-    }
-    return <p>{description}</p>;
-  }
-
+export function HeroSection(): JSX.Element {
   return (
     <div
       className="flex w-full flex-col justify-center overflow-hidden text-gray-400"

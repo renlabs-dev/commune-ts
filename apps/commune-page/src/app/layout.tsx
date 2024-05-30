@@ -4,8 +4,10 @@ import "@repo/ui/styles.css";
 import type { Metadata } from "next";
 import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
+import { Footer } from "@repo/ui/footer";
 import { links } from "@repo/ui/data";
 import { Providers, WalletButton } from "@repo/providers";
+import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -37,6 +39,7 @@ export default function RootLayout({
             wallet={<WalletButton />}
           />
           {children}
+          <Footer applicationsList={applicationsList} />
         </Providers>
       </body>
     </html>
