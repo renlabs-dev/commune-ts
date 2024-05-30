@@ -6,8 +6,8 @@ import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
 import { Footer } from "@repo/ui/footer";
 import { Providers, WalletButton } from "@repo/providers";
-import { applicationsList } from "../utils/applications-list";
 import { links } from "@repo/ui/data";
+import { applicationsList } from "../utils/applications-list";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className}`}
+        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
           <Header

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-// import Animation from "@/app/components/Animation";
 import { handleDescription } from "@repo/ui/discord-widget";
+import Animation from "../animation/index";
 import { CountUpArea } from "../count-up-area";
 import { applicationsList } from "../../../utils/applications-list";
 
@@ -43,7 +43,9 @@ export function HeroSection(): JSX.Element {
           </div>
         </div>
         <div className="0 relative flex h-96 flex-col items-center justify-center border-b border-gray-500 p-4 md:h-full lg:w-[45%] lg:flex-row lg:border-none lg:p-0">
-          <div className="-z-50 animate-fade-in-up">{/* <Animation /> */}</div>
+          <div className="-z-50 animate-fade-in-up">
+            <Animation />
+          </div>
 
           <Link
             className="absolute bottom-0 mb-4 hidden w-full items-center justify-center border border-gray-500 bg-black/50 px-5 py-3 hover:border-gray-500  hover:bg-black/70 hover:text-gray-200 md:flex lg:bottom-8 lg:left-8 lg:mb-0 lg:w-auto lg:justify-start"
@@ -73,7 +75,7 @@ export function HeroSection(): JSX.Element {
               >
                 {app.icon}
                 <div
-                  className="flex flex-row justify-between gap-6 md:flex-col xl:flex-row"
+                  className="flex flex-row justify-between gap-6 mt-2 md:flex-col xl:flex-row"
                   id="welcome"
                 >
                   <div>

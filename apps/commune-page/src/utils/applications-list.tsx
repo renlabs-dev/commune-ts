@@ -9,10 +9,10 @@ export const applicationsList = [
     icon: (
       <Image
         alt="Governance icon"
-        className="mb-5 w-10"
-        height={75}
+        className="mb-5 w-12"
+        height={45}
         src="/governance-icon.svg"
-        width={75}
+        width={45}
       />
     ),
   },
@@ -23,10 +23,10 @@ export const applicationsList = [
     icon: (
       <Image
         alt="Docs icon"
-        className="mb-5 w-10"
-        height={75}
+        className="mb-5 w-12"
+        height={45}
         src="/docs-icon.svg"
-        width={75}
+        width={45}
       />
     ),
   },
@@ -38,10 +38,10 @@ export const applicationsList = [
     icon: (
       <Image
         alt="Updates icon"
-        className="mb-5 w-10"
-        height={75}
+        className="mb-5 w-12"
+        height={45}
         src="/updates-icon.svg"
-        width={75}
+        width={45}
       />
     ),
   },
@@ -52,10 +52,10 @@ export const applicationsList = [
     icon: (
       <Image
         alt="Community icon"
-        className="mb-5 w-10"
-        height={75}
+        className="mb-5 w-12"
+        height={45}
         src="/community-icon.svg"
-        width={75}
+        width={45}
       />
     ),
   },
