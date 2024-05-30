@@ -1,7 +1,7 @@
 import "@polkadot/api-augment";
 import type { ApiPromise } from "@polkadot/api";
 import { formatToken, parseDaos, parseProposal } from "../utils";
-import type { DaoApplications, Proposal } from "../types";
+import type { DaoApplications, LastBlock, Proposal } from "../types";
 
 // == Balance ==
 
@@ -66,7 +66,7 @@ export async function getGlobalDaoTreasury(api: ApiPromise): Promise<string> {
 
 // == RPC ==
 
-export async function lastBlock(api: ApiPromise) {
+export async function lastBlock(api: ApiPromise): Promise<LastBlock> {
   const blockHeader = await api.rpc.chain.getHeader();
   const blockNumber = blockHeader.number.toNumber();
   const blockHash = blockHeader.hash;
@@ -81,7 +81,16 @@ export async function lastBlock(api: ApiPromise) {
   };
 }
 
-export async function getAllStakeOut(api: ApiPromise) {
+export async function getAllStakeOut(api: ApiPromise): Promise<{
+  blockNumber: number;
+  blockHashHex: `0x${string}`;
+  stakeOut: {
+    total: bigint;
+    perAddr: Map<string, bigint>;
+    perNet: Map<number, bigint>;
+    perAddrPerNet: Map<number, Map<string, bigint>>;
+  };
+}> {
   const { apiAtBlock, blockNumber, blockHashHex } = await lastBlock(api);
   const stakeToQuery = await apiAtBlock.query.subspaceModule.stakeTo.entries();
 

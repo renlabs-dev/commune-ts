@@ -1,9 +1,12 @@
-export function Loading() {
+export function Loading(): JSX.Element {
   return (
-    <div className="grid h-screen w-screen place-content-center" role="status">
+    <div
+      className="ui-grid ui-h-screen ui-w-screen ui-place-content-center"
+      role="status"
+    >
       <svg
         aria-hidden="true"
-        className="h-8 w-8 animate-spin fill-blue-400 text-gray-200 dark:text-gray-600"
+        className="ui-h-8 ui-w-8 ui-animate-spin ui-fill-blue-400 ui-text-gray-200 ui-dark:text-gray-600"
         fill="none"
         viewBox="0 0 100 101"
         xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +20,7 @@ export function Loading() {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="ui-sr-only">Loading...</span>
     </div>
   );
 }

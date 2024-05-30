@@ -1,6 +1,9 @@
 import { z } from "zod";
 import type { Enum, Tagged } from "rustie";
 import { assert, type Extends } from "tsafe";
+import type { Header } from "@polkadot/types/interfaces";
+import type { IU8a } from "@polkadot/types/types";
+import type { ApiDecoration } from "@polkadot/api/types";
 
 // == Stake ==
 
@@ -133,6 +136,14 @@ export interface ProposalStakeInfo {
   stakeAgainst: bigint;
   stakeVoted: bigint;
   stakeTotal: bigint;
+}
+
+export interface LastBlock {
+  blockHeader: Header;
+  blockNumber: number;
+  blockHash: IU8a;
+  blockHashHex: `0x${string}`;
+  apiAtBlock: ApiDecoration<"promise">;
 }
 
 // == Schemas ==

@@ -7,7 +7,9 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./header": "./src/components/header.tsx",
+    "./footer": "./src/components/footer.tsx",
     "./loading": "./src/components/loading.tsx",
+    "./discord-widget": "./src/components/discord-widget.tsx",
     "./data": "./src/data.ts",
     "./fonts": "./src/fonts.ts"
   },
