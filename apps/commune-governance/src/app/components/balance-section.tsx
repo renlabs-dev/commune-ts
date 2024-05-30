@@ -1,11 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Skeleton } from "./skeleton";
 import { usePolkadot } from "@repo/providers/src/context/polkadot";
 import { formatToken } from "@repo/providers/src/utils";
+import { Skeleton } from "./skeleton";
 
-export function BalanceSection({ className }: { className?: string }) {
+export function BalanceSection({
+  className,
+}: {
+  className?: string;
+}): JSX.Element {
   const {
     isInitialized,
     handleConnect,
@@ -23,7 +27,7 @@ export function BalanceSection({ className }: { className?: string }) {
     userStakeWeight = userStakeEntry ?? 0n;
   }
 
-  const handleShowStakeWeight = () => {
+  function handleShowStakeWeight(): JSX.Element {
     if (userStakeWeight != null) {
       return (
         <p>
@@ -36,12 +40,19 @@ export function BalanceSection({ className }: { className?: string }) {
     if (isInitialized && !selectedAccount) {
       return (
         <div>
-          <button onClick={() => handleConnect()}>Connect your wallet</button>
+          <button
+            onClick={() => {
+              handleConnect();
+            }}
+            type="button"
+          >
+            Connect your wallet
+          </button>
         </div>
       );
     }
     return <Skeleton className="w-1/5 py-3 md:mt-1 lg:w-2/5" />;
-  };
+  }
 
   return (
     <div
@@ -62,7 +73,7 @@ export function BalanceSection({ className }: { className?: string }) {
               DAO treasury funds
             </span>
           </div>
-          <Image src={"/dao-icon.svg"} width={40} height={40} alt="Dao Icon" />
+          <Image alt="Dao Icon" height={40} src="/dao-icon.svg" width={40} />
         </div>
 
         <div className="flex flex-row items-center justify-between border-b border-gray-500 p-6 pr-6 lg:w-1/3 lg:border-b-0 lg:pr-10">
@@ -80,10 +91,10 @@ export function BalanceSection({ className }: { className?: string }) {
             </span>
           </div>
           <Image
-            src={"/wallet-icon.svg"}
-            width={40}
-            height={40}
             alt="Wallet Icon"
+            height={40}
+            src="/wallet-icon.svg"
+            width={40}
           />
         </div>
 
@@ -95,10 +106,10 @@ export function BalanceSection({ className }: { className?: string }) {
             </span>
           </div>
           <Image
-            src={"/globe-icon.svg"}
-            width={40}
-            height={40}
             alt="Globe Icon"
+            height={40}
+            src="/globe-icon.svg"
+            width={40}
           />
         </div>
       </div>

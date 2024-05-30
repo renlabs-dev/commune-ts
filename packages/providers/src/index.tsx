@@ -1,5 +1,5 @@
-import * as types from "./types";
 import type { ReactNode } from "react";
+import * as types from "./types";
 import { ToastProvider } from "./context/toast";
 import { PolkadotProvider } from "./context/polkadot";
 import { WalletButton } from "./components/wallet-button";

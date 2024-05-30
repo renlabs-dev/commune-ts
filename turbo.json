@@ -25,6 +25,7 @@
     }
   },
   "globalEnv": [
-    "NEXT_PUBLIC_WS_ENDPOINT"
+    "NEXT_PUBLIC_WS_ENDPOINT",
+    "PINATA_JWT"
   ]
 }

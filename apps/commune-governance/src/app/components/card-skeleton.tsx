@@ -1,6 +1,6 @@
 import { Card } from "./card";
 
-export function CardSkeleton() {
+export function CardSkeleton(): JSX.Element {
   return (
     <Card.Root>
       <Card.Header className="flex-col-reverse">

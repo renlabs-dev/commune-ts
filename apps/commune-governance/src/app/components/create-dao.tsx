@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
-
 import { z } from "zod";
 import { cairo } from "@repo/ui/fonts";
 import { Loading } from "@repo/ui/loading";
-import { TransactionResult } from "@repo/providers/src/types";
+import type { TransactionResult } from "@repo/providers/src/types";
 import { usePolkadot } from "@repo/providers/src/context/polkadot";
 import { toast } from "@repo/providers/src/context/toast";
 
@@ -19,7 +17,7 @@ const daoSchema = z.object({
   body: z.string().min(1, "Body is required"),
 });
 
-export function CreateDao() {
+export function CreateDao(): JSX.Element {
   const router = useRouter();
   const { isConnected, addDaoApplication, balance } = usePolkadot();
 
@@ -32,10 +30,14 @@ export function CreateDao() {
   const [uploading, setUploading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const toggleModalMenu = () => setModalOpen(!modalOpen);
+  function toggleModalMenu(): void {
+    setModalOpen(!modalOpen);
+  }
 
   const [editMode, setEditMode] = useState(true);
-  const toggleEditMode = () => setEditMode(!editMode);
+  function toggleEditMode(): void {
+    setEditMode(!editMode);
+  }
 
   const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
     {
@@ -45,11 +47,11 @@ export function CreateDao() {
     }
   );
 
-  const handleCallback = (TransactionReturn: TransactionResult) => {
+  function handleCallback(TransactionReturn: TransactionResult): void {
     setTransactionStatus(TransactionReturn);
-  };
+  }
 
-  const uploadFile = async (fileToUpload: File) => {
+  async function uploadFile(fileToUpload: File): Promise<void> {
     try {
       setUploading(true);
       const data = new FormData();
@@ -69,7 +71,7 @@ export function CreateDao() {
       const daoApplicationCost = 1000;
 
       if (Number(balance) > daoApplicationCost) {
-        addDaoApplication({
+        void addDaoApplication({
           applicationKey,
           IpfsHash: `ipfs://${ipfs.IpfsHash}`,
           callback: handleCallback,
@@ -86,13 +88,12 @@ export function CreateDao() {
       }
       router.refresh();
     } catch (e) {
-      console.error(e);
       setUploading(false);
       toast.error("Error uploading S0 Applicaiton");
     }
-  };
+  }
 
-  const HandleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function HandleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     setTransactionStatus({
       status: "STARTING",
@@ -119,28 +120,28 @@ export function CreateDao() {
 
     const daoData = JSON.stringify({
       discord_id: discordId,
-      title: title,
-      body: body,
+      title,
+      body,
     });
     const blob = new Blob([daoData], { type: "application/json" });
     const fileToUpload = new File([blob], "dao.json", {
       type: "application/json",
     });
     void uploadFile(fileToUpload);
-  };
+  }
 
   return (
     <>
       <button
-        type="button"
-        onClick={toggleModalMenu}
         className="w-full px-4 py-2 text-gray-400 border border-gray-500 hover:border-green-600 hover:text-green-600 hover:bg-green-600/5 min-w-auto lg:w-auto"
+        onClick={toggleModalMenu}
+        type="button"
       >
         Create New S0 Application
       </button>
       <div
-        role="dialog"
         className={`relative z-50 ${modalOpen ? "visible" : "hidden"} -mr-2`}
+        role="dialog"
       >
         {/* Backdrop */}
         <div className="fixed inset-0 transition-opacity bg-black bg-opacity-60 backdrop-blur-sm" />
@@ -161,9 +162,9 @@ export function CreateDao() {
                 </div>
 
                 <button
-                  type="button"
-                  onClick={toggleModalMenu}
                   className="p-2 transition duration-200"
+                  onClick={toggleModalMenu}
+                  type="button"
                 >
                   <XMarkIcon className="w-6 h-6 fill-white" />
                 </button>
@@ -173,16 +174,16 @@ export function CreateDao() {
                 <div className="flex flex-col gap-4 p-6">
                   <div className="flex gap-2">
                     <button
-                      type="button"
-                      onClick={toggleEditMode}
                       className={`border px-4 py-1  ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+                      onClick={toggleEditMode}
+                      type="button"
                     >
                       Edit
                     </button>
                     <button
-                      type="button"
-                      onClick={toggleEditMode}
                       className={`border px-4 py-1 ${!editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+                      onClick={toggleEditMode}
+                      type="button"
                     >
                       Preview
                     </button>
@@ -191,46 +192,54 @@ export function CreateDao() {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          type="text"
+                          className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setApplicationKey(e.target.value);
+                          }}
                           placeholder="Application Key (ss58)"
+                          type="text"
                           value={applicationKey}
-                          onChange={(e) => setApplicationKey(e.target.value)}
-                          className="w-full p-3 text-white bg-black"
                         />
                         <input
-                          type="text"
+                          className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setDiscordId(e.target.value);
+                          }}
                           placeholder="Discord ID"
+                          type="text"
                           value={discordId}
-                          onChange={(e) => setDiscordId(e.target.value)}
-                          className="w-full p-3 text-white bg-black"
                         />
                         <input
-                          type="text"
-                          placeholder="Application title"
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
                           className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setTitle(e.target.value);
+                          }}
+                          placeholder="Application title"
+                          type="text"
+                          value={title}
                         />
                         <textarea
-                          placeholder="Application body... (Markdown supported)"
-                          value={body}
-                          rows={5}
-                          onChange={(e) => setBody(e.target.value)}
                           className="w-full p-3 text-white bg-black"
+                          onChange={(e) => {
+                            setBody(e.target.value);
+                          }}
+                          placeholder="Application body... (Markdown supported)"
+                          rows={5}
+                          value={body}
                         />
                       </div>
                     ) : (
                       <div className="p-4 py-10">
-                        {body && (
+                        {body ? (
                           <MarkdownPreview
+                            className={`line-clamp-4 ${cairo.className}`}
                             source={`# ${title}\n${body}`}
                             style={{
                               backgroundColor: "transparent",
                               color: "white",
                             }}
-                            className={`line-clamp-4 ${cairo.className}`}
                           />
-                        )}
+                        ) : null}
                         {/* TODO: skeleton for markdown body */}
                       </div>
                     )}
@@ -244,7 +253,7 @@ export function CreateDao() {
                       {uploading ? "Uploading..." : "Submit S0 Application"}
                     </button>
                   </div>
-                  {transactionStatus.status && (
+                  {transactionStatus.status ? (
                     <p
                       className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"}  ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
                     >
@@ -254,7 +263,7 @@ export function CreateDao() {
                         ))}
                       {transactionStatus.message}
                     </p>
-                  )}
+                  ) : null}
 
                   <div className="flex items-start gap-1 mt-1 text-white">
                     <InformationCircleIcon className="mt-0.5 h-4 w-4 fill-green-500 text-sm" />
@@ -262,8 +271,8 @@ export function CreateDao() {
                       Please make sure, that your application meets all of the
                       criteria defined in this{" "}
                       <Link
-                        href="https://mirror.xyz/0xD80E194aBe2d8084fAecCFfd72877e63F5822Fc5/SuhIlcUugotYhf2QmVTd3mI05RCycqSFrJfCxuEHet0"
                         className="text-blue-500 hover:underline"
+                        href="https://mirror.xyz/0xD80E194aBe2d8084fAecCFfd72877e63F5822Fc5/SuhIlcUugotYhf2QmVTd3mI05RCycqSFrJfCxuEHet0"
                         target="_blank"
                       >
                         article

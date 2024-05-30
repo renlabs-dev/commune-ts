@@ -40,6 +40,8 @@ module.exports = {
   ignorePatterns: ["node_modules/", "dist/"],
   // add rules configurations here
   rules: {
+    eqeqeq: "off",
     "import/no-default-export": "off",
+    "eslint-comments/require-description": "off",
   },
 };

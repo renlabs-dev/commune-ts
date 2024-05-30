@@ -3,7 +3,7 @@ interface CardProps {
   className?: string;
 }
 
-function CardRoot(props: CardProps) {
+function CardRoot(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return (
     <div className={`border border-gray-500 bg-black/50 ${className}`}>
@@ -12,7 +12,7 @@ function CardRoot(props: CardProps) {
   );
 }
 
-function CardHeader(props: CardProps) {
+function CardHeader(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return (
     <div
@@ -23,7 +23,7 @@ function CardHeader(props: CardProps) {
   );
 }
 
-function CardBody(props: CardProps) {
+function CardBody(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return <div className={`p-4 ${className}`}>{children}</div>;
 }

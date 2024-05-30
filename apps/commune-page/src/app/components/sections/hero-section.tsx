@@ -2,12 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 // import Animation from "@/app/components/Animation";
 import { CountUpArea } from "../count-up-area";
-import { applicationsList } from "../../utils/applications-list";
+import { applicationsList } from "../../../utils/applications-list";
 
 const serverId = "941362322000203776";
 const uri = `https://discord.com/api/guilds/${serverId}/widget.json`;
 
-async function getDiscordWidgetData() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getDiscordWidgetData(): Promise<any> {
   try {
     const res = await fetch(uri, { next: { revalidate: 5000 } });
     return res.json();
@@ -16,26 +17,27 @@ async function getDiscordWidgetData() {
   }
 }
 
-export const HeroSection = async () => {
-  const { presence_count } = await getDiscordWidgetData();
+export async function HeroSection(): Promise<JSX.Element> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { presenceCount } = await getDiscordWidgetData();
 
-  const handleDescription = (description: string | null) => {
-    if (!presence_count && !description) return <p>loading...</p>;
+  function handleDescription(description: string | null): JSX.Element {
+    if (!presenceCount && !description) return <p>loading...</p>;
     if (!description) {
       return (
         <div className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-2xl bg-green-400" />
-          <p>{presence_count} Online (Discord)</p>
+          <p>{presenceCount} Online (Discord)</p>
         </div>
       );
     }
     return <p>{description}</p>;
-  };
+  }
 
   return (
     <div
-      id="hero"
       className="flex w-full flex-col justify-center overflow-hidden text-gray-400"
+      id="hero"
     >
       <div className="flex flex-col lg:flex-row">
         <div className="flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] lg:max-w-[60%] lg:border-r">
@@ -47,11 +49,11 @@ export const HeroSection = async () => {
                   incentivized coordination network.
                 </p>
                 <Image
-                  src="/logo-asci.svg"
-                  width={200}
-                  height={100}
                   alt="Commune ai logo"
                   className="w-full py-4"
+                  height={100}
+                  src="/logo-asci.svg"
+                  width={200}
                 />
                 <p className="mt-1 text-lg">
                   Protocol and Market System for Incentive-driven Coordination
@@ -72,16 +74,16 @@ export const HeroSection = async () => {
           <div className="-z-50 animate-fade-in-up">{/* <Animation /> */}</div>
 
           <Link
-            href={"#welcome"}
             className="absolute bottom-0 mb-4 hidden w-full items-center justify-center border border-gray-500 bg-black/50 px-5 py-3 hover:border-gray-500  hover:bg-black/70 hover:text-gray-200 md:flex lg:bottom-8 lg:left-8 lg:mb-0 lg:w-auto lg:justify-start"
+            href="#welcome"
           >
             View More
             <Image
-              src={"/arrow-down-icon.svg"}
               alt="Community icon"
-              width={75}
-              height={75}
               className="ml-1 w-5"
+              height={75}
+              src="/arrow-down-icon.svg"
+              width={75}
             />
           </Link>
         </div>
@@ -89,29 +91,29 @@ export const HeroSection = async () => {
 
       <div className="flex justify-center border-t border-gray-500">
         <div className="flex w-full max-w-screen-2xl flex-col md:flex-row">
-          {applicationsList.map((app, index) => {
+          {applicationsList.map((app) => {
             return (
               <Link
-                key={index}
-                href={app.href}
-                target={app.target ? app.target : "_self"}
                 className="w-full border-b border-gray-500 p-8 px-4 last:border-none hover:bg-black/20 hover:text-gray-300 lg:border-b-0 lg:border-l lg:border-r lg:p-16 lg:py-16 lg:first:border-none"
+                href={app.href}
+                key={app.title}
+                target={app.target ? app.target : "_self"}
               >
                 {app.icon}
                 <div
-                  id="welcome"
                   className="flex flex-row justify-between gap-6 md:flex-col xl:flex-row"
+                  id="welcome"
                 >
                   <div>
                     <p className="text-white">{app.title}</p>
                     {handleDescription(app.description)}
                   </div>
                   <Image
-                    src={"/arrow-link-icon.svg"}
                     alt="link icon"
-                    width={75}
-                    height={75}
                     className="w-12 border border-green-500 bg-black/50 p-3 hover:bg-black/70"
+                    height={75}
+                    src="/arrow-link-icon.svg"
+                    width={75}
                   />
                 </div>
               </Link>
@@ -121,4 +123,4 @@ export const HeroSection = async () => {
       </div>
     </div>
   );
-};
+}

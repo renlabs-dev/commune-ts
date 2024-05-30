@@ -1,19 +1,19 @@
 import { links } from "@repo/ui/data";
 import Link from "next/link";
 
-type THyperLink = {
+interface HyperLink {
   children?: React.ReactNode;
   href: string;
-};
+}
 
-function Hyperlink(props: THyperLink) {
+function Hyperlink(props: HyperLink): JSX.Element {
   const { children, href } = props;
 
   return (
     <Link
-      target="_blank"
-      href={href}
       className="text-green-500 hover:underline"
+      href={href}
+      target="_blank"
     >
       {children}
     </Link>

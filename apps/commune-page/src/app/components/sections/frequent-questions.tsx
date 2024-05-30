@@ -2,13 +2,11 @@
 
 import Image from "next/image";
 import { Disclosure } from "@headlessui/react";
-import { faqData } from "../../utils/mocks/frequent-questions";
+import { faqData } from "../../../utils/mocks/frequent-questions";
 
-export function FrequentQuestions() {
+export function FrequentQuestions(): JSX.Element {
   return (
-    <section
-      className={`relative divide-y overflow-hidden text-left text-white`}
-    >
+    <section className="relative divide-y overflow-hidden text-left text-white">
       <div className="">
         <Disclosure as="div">
           {({ open }) => (
@@ -19,7 +17,7 @@ export function FrequentQuestions() {
                     <div className="flex w-full flex-col space-y-4 py-12 ">
                       <h2 className="w-[80%] text-3xl font-medium text-white lg:text-5xl">
                         Frequently asked
-                        <span className={`text-green-500`}> questions</span>
+                        <span className="text-green-500"> questions</span>
                       </h2>
                       <p className="font-medium text-gray-400">
                         A Knowledge Treasure Trove
@@ -28,15 +26,15 @@ export function FrequentQuestions() {
 
                     <span className="hover:bg-green-950/150 flex items-center border border-gray-500 bg-black/50 py-4 transition duration-200">
                       <Image
-                        src={"/arrow-down-icon.svg"}
-                        width={50}
-                        height={50}
-                        alt={"read"}
+                        alt="read"
                         className={
                           open
                             ? "h-5 rotate-0 transform animate-open-accordion"
                             : "h-5 -rotate-90 transform animate-close-accordion"
                         }
+                        height={50}
+                        src="/arrow-down-icon.svg"
+                        width={50}
                       />
                     </span>
                   </Disclosure.Button>

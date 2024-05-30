@@ -4,16 +4,13 @@ import Intro from "./intro.mdx";
 import Basics from "./basics.mdx";
 import WeightSystem from "./weight-system.mdx";
 import Governance from "./governance.mdx";
-
 // Installation
 import SetupCommune from "./setup-commune.mdx";
 import SetupWallet from "./setup-wallet.mdx";
-
 // Modules
 import WhatIsModule from "./what-is-a-module.mdx";
 import ModuleRegister from "./module-register.mdx";
 import ModuleConnect from "./module-connect.mdx";
-
 // Subnets
 import WhatIsSubnet from "./what-is-a-subnet.mdx";
 import ParticipatingOnSubnet from "./participating-on-a-subnet.mdx";
@@ -25,21 +22,17 @@ import GeneralSubnet from "./general-subnet.mdx";
 import GeneralSubnetDao from "./general-subnet-dao.mdx";
 import YumaSubnets from "./yuma-subnets.mdx";
 import SubnetList from "./subnet-list.mdx";
-
 // Working with Keys
 import KeyBasics from "./key-basics.mdx";
 import BalanceOperations from "./balance-operations.mdx";
-
 // Mining
 import WhatIsMining from "./what-is-mining.mdx";
 import CreateMiner from "./create-miner.mdx";
 import RunMiner from "./run-miner.mdx";
-
 // Validating
 import WhatIsValidating from "./what-is-validating.mdx";
 import CreateValidator from "./create-validator.mdx";
 import RunValidator from "./run-validator.mdx";
-
 // Subspace
 import CommuneBlockchain from "./commune-blockchain.mdx";
 import GlobalParameters from "./global-parameters.mdx";

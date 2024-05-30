@@ -1,3 +1,10 @@
+/** @type {import('next').NextConfig} */
+module.exports = {
+  reactStrictMode: true,
+  transpilePackages: ["@repo/ui"],
+};
+
+
 // import nextMDX from "@next/mdx";
 // import rehypePrettyCode from "rehype-pretty-code";
 // import { visit } from "unist-util-visit";
@@ -55,8 +62,3 @@
 
 // export default withMDX(nextConfig);
 
-/** @type {import('next').NextConfig} */
-module.exports = {
-  reactStrictMode: true,
-  transpilePackages: ["@repo/ui"],
-};

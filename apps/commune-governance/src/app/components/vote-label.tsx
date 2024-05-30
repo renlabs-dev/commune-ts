@@ -6,11 +6,11 @@ interface VoteLabelProps {
   vote: Vote;
 }
 
-export function VoteLabel(props: VoteLabelProps) {
+export function VoteLabel(props: VoteLabelProps): JSX.Element {
   const { vote } = props;
 
   const votingStatus = {
-    UNVOTED: <></>,
+    UNVOTED: <>{}</>,
     FAVORABLE: (
       <Label className="text-green-500 border border-green-500">
         Favorable
@@ -20,5 +20,7 @@ export function VoteLabel(props: VoteLabelProps) {
       <Label className="text-red-500 border border-red-500">Against</Label>
     ),
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return votingStatus[vote || "UNVOTED"];
 }
