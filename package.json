@@ -6,7 +6,9 @@
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "deploy-commune-page": "yarn run build && (cd apps/commune-page/ && npx @cloudflare/next-on-pages@1)",
+    "deploy-commune-governance": "yarn run build && (cd apps/commune-governance/ && npx @cloudflare/next-on-pages@1)"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
