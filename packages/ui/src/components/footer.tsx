@@ -15,7 +15,7 @@ interface FooterProps {
 export function Footer(props: FooterProps): JSX.Element {
   return (
     <footer className="ui-flex ui-flex-col">
-      <div className="ui-px-4 lg:ui-px-20">
+      <div className="ui-px-4 px-4 xl:ui-px-4">
         <div className="ui-mx-auto ui-max-w-screen-2xl ui-space-y-12">
           <div className="ui-flex ui-flex-col ui-gap-6 ui-pt-10 lg:ui-flex-row lg:ui-items-center lg:ui-gap-16 lg:ui-pt-20">
             <div className="ui-space-y-5">

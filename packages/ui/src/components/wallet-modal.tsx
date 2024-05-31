@@ -24,13 +24,10 @@ export function WalletModal({
       className={`ui-fixed ui-inset-0 ui-z-[100] ${open ? "ui-block" : "ui-hidden"}`}
       role="dialog"
     >
-      {/* Backdrop */}
-      <div className="ui-absolute ui-inset-0 ui-bg-black/50" />
-
       {/* Modal */}
-      <div className="ui-fixed ui-inset-0 ui-z-10 ui-w-screen ui-overflow-y-auto">
+      <div className="ui-fixed ui-top-16 ui-z-10 ui-right-0 ui-overflow-y-auto">
         <div className="ui-flex ui-min-h-full ui-items-center ui-justify-center ui-p-4 ui-text-center">
-          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/50 ui-text-left ui-text-white">
+          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/70 ui-backdrop-blur-sm ui-text-left ui-text-white">
             {/* Modal Header */}
             <div className="ui-flex ui-flex-col ui-items-center ui-justify-between ui-gap-3 ui-border-b ui-p-6 md:ui-flex-row">
               <div className="ui-flex ui-flex-col ui-items-center md:ui-flex-row">
