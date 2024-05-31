@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import * as types from "./types";
 import { ToastProvider } from "./context/toast";
 import { PolkadotProvider } from "./context/polkadot";
-import { WalletButton } from "./components/wallet-button";
+import { WalletButtonWithHook } from "./components/wallet-button-with-hook";
 
 function Providers({ children }: { children: ReactNode }): JSX.Element {
   return (
@@ -16,4 +16,4 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
   );
 }
 
-export { Providers, WalletButton, types };
+export { Providers, WalletButtonWithHook, types };

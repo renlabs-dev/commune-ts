@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
 import { Footer } from "@repo/ui/footer";
-import { Providers, WalletButton } from "@repo/providers";
+import { Providers, WalletButtonWithHook } from "@repo/providers";
 import { links } from "@repo/ui/data";
 import { applicationsList } from "../utils/applications-list";
 
@@ -34,7 +34,7 @@ export default function RootLayout({
               { name: "Home", href: links.landing_page, external: true },
             ]}
             title="Community Governance"
-            wallet={<WalletButton />}
+            wallet={<WalletButtonWithHook />}
           />
           {children}
           <Footer applicationsList={applicationsList} />

@@ -1,10 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { type InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-import Link from "next/link";
-import { toast } from "../context/toast";
+import type { InjectedAccountWithMeta } from "../types";
 
 export function WalletModal({
   open,
@@ -22,31 +21,31 @@ export function WalletModal({
 
   return (
     <div
-      className={`fixed inset-0 z-[100] ${open ? "block" : "hidden"} animate-fade-in-down`}
+      className={`ui-fixed ui-inset-0 ui-z-[100] ${open ? "ui-block" : "ui-hidden"}`}
       role="dialog"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[url(/bg-pattern.svg)]" />
+      <div className="ui-absolute ui-inset-0 ui-bg-black/50" />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-center justify-center p-4 text-center">
-          <div className="relative w-[100%] max-w-3xl transform overflow-hidden border bg-black/50 text-left text-white">
+      <div className="ui-fixed ui-inset-0 ui-z-10 ui-w-screen ui-overflow-y-auto">
+        <div className="ui-flex ui-min-h-full ui-items-center ui-justify-center ui-p-4 ui-text-center">
+          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/50 ui-text-left ui-text-white">
             {/* Modal Header */}
-            <div className="flex flex-col items-center justify-between gap-3 border-b p-6 md:flex-row">
-              <div className="flex flex-col items-center md:flex-row">
+            <div className="ui-flex ui-flex-col ui-items-center ui-justify-between ui-gap-3 ui-border-b ui-p-6 md:ui-flex-row">
+              <div className="ui-flex ui-flex-col ui-items-center md:ui-flex-row">
                 <Image
                   alt="Module Logo"
                   height={32}
                   src="/logo.svg"
                   width={32}
                 />
-                <h3 className="pl-2 text-xl font-light leading-6">
+                <h3 className="ui-pl-2 ui-text-xl ui-font-light ui-leading-6">
                   Select Wallet
                 </h3>
               </div>
               <button
-                className="border p-2 transition duration-200"
+                className="ui-border ui-p-2 ui-transition ui-duration-200"
                 onClick={() => {
                   setOpen(false);
                 }}
@@ -57,36 +56,36 @@ export function WalletModal({
             </div>
 
             {/* Modal Body */}
-            <div className="flex flex-col gap-y-4 overflow-y-auto p-6">
+            <div className="ui-flex ui-flex-col ui-gap-y-4 ui-overflow-y-auto ui-p-6">
               {wallets.map((item) => (
                 <button
-                  className={`text-md flex cursor-pointer items-center gap-x-3 overflow-auto border p-5 ${selectedAccount === item ? "border-green-500" : " border-white"}`}
+                  className={`ui-text-md ui-flex ui-cursor-pointer ui-items-center ui-gap-x-3 ui-overflow-auto ui-border ui-p-5 ${selectedAccount === item ? "ui-border-green-500" : "ui-border-white"}`}
                   key={item.address}
                   onClick={() => {
                     setSelectedAccount(item);
                   }}
                   type="button"
                 >
-                  <div className="flex flex-col items-start gap-1">
+                  <div className="ui-flex ui-flex-col ui-items-start ui-gap-1">
                     <span className="font-semibold">{item.meta.name}</span>
                     <span>{item.address}</span>
                   </div>
                 </button>
               ))}
               {!wallets.length && (
-                <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-gray-300">
-                  <div className="flex flex-col gap-2">
+                <div className="ui-flex ui-h-full ui-flex-col ui-items-center ui-justify-center ui-gap-4 ui-text-center ui-text-sm ui-text-gray-300">
+                  <div className="ui-flex ui-flex-col ui-gap-2">
                     <p>
-                      <b className="text-red-500">No wallet found</b>. Please
+                      <b className="ui-text-red-500">No wallet found</b>. Please
                       install a Wallet extension or check permission settings.
                     </p>
                   </div>
                   <p>
                     If you don&apos;t have a wallet, we recomend one of these:
                   </p>
-                  <div className="flex gap-3">
+                  <div className="ui-flex ui-gap-3">
                     <Link
-                      className="text-blue-600"
+                      className="ui-text-blue-600"
                       href="https://subwallet.app/"
                       rel="noreferrer"
                       target="_blank"
@@ -94,7 +93,7 @@ export function WalletModal({
                       SubWallet
                     </Link>
                     <Link
-                      className="text-blue-600"
+                      className="ui-text-blue-600"
                       href="https://polkadot.js.org/extension/"
                       rel="noreferrer"
                       target="_blank"
@@ -105,11 +104,10 @@ export function WalletModal({
                 </div>
               )}
               <button
-                className={`w-full border  p-4 text-xl font-semibold ${selectedAccount ? "border-green-500  text-green-500" : "border-gray-500 text-gray-300"} transition hover:bg-white/5`}
+                className={`ui-w-full ui-border ui-p-4 ui-text-xl ui-font-semibold ${selectedAccount ? "ui-border-green-500 ui-text-green-500" : "ui-border-gray-500 ui-text-gray-300"} ui-transition hover:ui-bg-white/5`}
                 disabled={!selectedAccount}
                 onClick={() => {
                   if (!selectedAccount) {
-                    toast.error("No account selected");
                     return;
                   }
                   handleWalletSelections(selectedAccount);

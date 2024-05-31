@@ -38,6 +38,7 @@ module.exports = {
   rules: {
     eqeqeq: "off",
     "import/no-default-export": "off",
+    "eslint-comments/require-description": "off",
   },
   overrides: [
     {

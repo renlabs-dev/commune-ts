@@ -10,7 +10,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
-import { WalletModal } from "../components/wallet-modal";
+import { WalletModal } from "@repo/ui/wallet-modal";
 import { calculateAmount, handleCustomProposals } from "../utils";
 import {
   isNotNull,
@@ -129,7 +129,6 @@ export function PolkadotProvider({
     return () => {
       void api?.disconnect();
     };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsEndpoint]);
 
