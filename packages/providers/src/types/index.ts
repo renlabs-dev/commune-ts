@@ -5,6 +5,8 @@ import type { Header } from "@polkadot/types/interfaces";
 import type { IU8a } from "@polkadot/types/types";
 import type { ApiDecoration } from "@polkadot/api/types";
 
+export type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+
 // == Stake ==
 
 export interface StakeData {

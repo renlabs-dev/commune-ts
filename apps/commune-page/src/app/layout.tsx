@@ -6,7 +6,7 @@ import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
 import { Footer } from "@repo/ui/footer";
 import { links } from "@repo/ui/data";
-import { Providers, WalletButton } from "@repo/providers";
+import { Providers, WalletButtonWithHook } from "@repo/providers";
 import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function RootLayout({
               { name: "Join Community", href: links.discord, external: true },
             ]}
             title="Commune AI"
-            wallet={<WalletButton />}
+            wallet={<WalletButtonWithHook />}
           />
           {children}
           <Footer applicationsList={applicationsList} />

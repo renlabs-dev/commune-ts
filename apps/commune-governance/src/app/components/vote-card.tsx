@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import type { TransactionResult } from "@repo/providers/src/types";
 import { usePolkadot } from "@repo/providers/src/context/polkadot";
-import { WalletButton } from "@repo/providers";
+import { WalletButtonWithHook } from "@repo/providers";
 import type { Vote } from "./vote-label";
 import { Card } from "./card";
 
@@ -84,7 +84,7 @@ export function VoteCard(props: {
           </div>
         ) : null}
 
-        {!isConnected && <WalletButton />}
+        {!isConnected && <WalletButtonWithHook />}
 
         {isConnected ? (
           <button
