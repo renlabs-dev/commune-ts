@@ -298,6 +298,7 @@ function createAnimation({ container, debug }) {
   function createControls() {
     controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
+    controls.enableZoom = false;
   }
 
   function playIntroAnimation() {

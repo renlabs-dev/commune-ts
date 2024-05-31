@@ -12,7 +12,7 @@ export function HeroSection(): JSX.Element {
       id="hero"
     >
       <div className="flex flex-col lg:flex-row">
-        <div className="flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] lg:max-w-[60%] lg:border-r">
+        <div className="flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] z-10 lg:max-w-[60%] lg:border-r">
           <div className="flex h-full flex-col justify-center space-y-4 border-b border-gray-500 px-8">
             <div className="flex w-full py-16 lg:justify-end">
               <div className="flex w-full flex-col justify-between lg:max-w-4xl xl:pl-10">
@@ -42,8 +42,8 @@ export function HeroSection(): JSX.Element {
             <CountUpArea />
           </div>
         </div>
-        <div className="0 relative flex h-96 flex-col items-center justify-center border-b border-gray-500 p-4 md:h-full lg:w-[45%] lg:flex-row lg:border-none lg:p-0">
-          <div className="-z-50 animate-fade-in-up">
+        <div className="relative flex h-96 flex-col items-center justify-center border-b border-gray-500 p-4 md:h-full lg:w-[45%] lg:flex-row lg:border-none lg:p-0">
+          <div>
             <Animation />
           </div>
 

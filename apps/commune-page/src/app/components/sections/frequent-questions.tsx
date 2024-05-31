@@ -17,7 +17,10 @@ export function FrequentQuestions(): JSX.Element {
                     <div className="flex w-full flex-col space-y-4 py-12 ">
                       <h2 className="w-[80%] text-3xl font-medium text-white lg:text-5xl">
                         Frequently asked
-                        <span className="text-green-500"> questions</span>
+                        <span className="text-green-500 font-thin">
+                          {" "}
+                          questions
+                        </span>
                       </h2>
                       <p className="font-medium text-gray-400">
                         A Knowledge Treasure Trove

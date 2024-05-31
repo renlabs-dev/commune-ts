@@ -227,7 +227,7 @@ export function CreateProposal(): JSX.Element {
                   </div>
                   {transactionStatus.status ? (
                     <p
-                      className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"}  ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
+                      className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"}  ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base items-center gap-2`}
                     >
                       {transactionStatus.status === "PENDING" ||
                         (transactionStatus.status === "STARTING" && (

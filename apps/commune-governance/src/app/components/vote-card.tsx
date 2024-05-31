@@ -55,10 +55,8 @@ export function VoteCard(props: {
 
   return (
     <Card.Root className="bg-transparent border-none">
-      <Card.Header>
-        <h3 className="text-base font-semibold">Cast your vote</h3>
-      </Card.Header>
       <Card.Body className="flex flex-col w-full p-6 space-y-4 border-b border-gray-500">
+        <h3 className="text-base font-semibold">Cast your vote</h3>
         {isConnected ? (
           <div className="flex w-full gap-4">
             <button

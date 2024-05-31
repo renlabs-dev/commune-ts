@@ -236,7 +236,6 @@ export function ExpandedView(props: ProposalContent): JSX.Element {
             {contentType === "proposal" && (
               <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
                 <span> Subnet {content.netuid} </span>
-                <span> Global </span>
               </span>
             )}
             <StatusLabel result={content.status} />{" "}

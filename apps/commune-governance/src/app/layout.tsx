@@ -8,6 +8,7 @@ import { Footer } from "@repo/ui/footer";
 import { Providers, WalletButtonWithHook } from "@repo/providers";
 import { links } from "@repo/ui/data";
 import { applicationsList } from "../utils/applications-list";
+import { FooterDivider } from "./components/footer-divider";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
+          <FooterDivider />
           <Footer applicationsList={applicationsList} />
         </Providers>
       </body>

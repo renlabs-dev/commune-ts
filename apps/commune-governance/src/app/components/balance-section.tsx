@@ -58,7 +58,7 @@ export function BalanceSection({
     <div
       className={`w-full justify-between border-b border-gray-500 text-2xl text-green-500 ${className ?? ""}`}
     >
-      <div className="mx-auto flex w-full flex-col divide-gray-500 lg:max-w-6xl lg:flex-row lg:divide-x lg:px-6">
+      <div className="mx-auto flex w-full flex-col divide-gray-500 lg:max-w-screen-2xl lg:flex-row lg:divide-x lg:px-6">
         <div className="flex flex-row items-center justify-between border-b border-gray-500 p-6 pr-6 lg:w-1/3 lg:border-b-0 lg:pr-10">
           <div>
             {!isInitialized ? (
