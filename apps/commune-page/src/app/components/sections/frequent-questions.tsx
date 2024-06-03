@@ -13,11 +13,11 @@ export function FrequentQuestions(): JSX.Element {
             <>
               <div className="space-y-4 border-b border-gray-500 bg-black/50 p-4 lg:px-20">
                 <div className="mx-auto max-w-screen-2xl">
-                  <Disclosure.Button className="flex w-full items-center justify-between text-left ">
-                    <div className="flex w-full flex-col space-y-4 py-12 ">
+                  <Disclosure.Button className="flex w-full items-center justify-between text-left">
+                    <div className="flex w-full flex-col space-y-4 py-12">
                       <h2 className="w-[80%] text-3xl font-medium text-white lg:text-5xl">
                         Frequently asked
-                        <span className="text-green-500 font-thin">
+                        <span className="font-thin text-green-500">
                           {" "}
                           questions
                         </span>
@@ -32,8 +32,8 @@ export function FrequentQuestions(): JSX.Element {
                         alt="read"
                         className={
                           open
-                            ? "h-5 rotate-0 transform animate-open-accordion"
-                            : "h-5 -rotate-90 transform animate-close-accordion"
+                            ? "animate-open-accordion h-5 rotate-0 transform"
+                            : "animate-close-accordion h-5 -rotate-90 transform"
                         }
                         height={50}
                         src="/arrow-down-icon.svg"
@@ -55,7 +55,7 @@ export function FrequentQuestions(): JSX.Element {
                         <dt className="mx-auto max-w-screen-2xl">
                           {faq.question}
                         </dt>
-                        <dd className="mx-auto mt-2 max-w-screen-2xl animate-fade-slide-down text-pretty pr-12">
+                        <dd className="animate-fade-slide-down mx-auto mt-2 max-w-screen-2xl text-pretty pr-12">
                           <p className="mr-2 text-base leading-7 text-gray-400">
                             {faq.answer}
                           </p>

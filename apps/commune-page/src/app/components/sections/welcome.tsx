@@ -8,7 +8,7 @@ export function WelcomeSection(): JSX.Element {
         <div className="flex w-full max-w-screen-sm flex-col justify-center space-y-3 py-12">
           <h3 className="text-3xl font-medium text-white lg:text-5xl">
             Welcome to
-            <span className="font-normal text-green-500"> Commune</span>
+            <span className="font-thin text-green-500"> Commune</span>
           </h3>
           <p>
             A place for permissionless and censorship resistant cooperation .

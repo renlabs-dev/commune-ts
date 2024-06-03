@@ -83,7 +83,7 @@ function createAnimation({ container, debug }) {
         positions[baseIndex1 + 2],
         positions[baseIndex2],
         positions[baseIndex2 + 1],
-        positions[baseIndex2 + 2]
+        positions[baseIndex2 + 2],
       );
 
       lineColors.push(
@@ -92,7 +92,7 @@ function createAnimation({ container, debug }) {
         colors[baseIndex1 + 2],
         colors[baseIndex2],
         colors[baseIndex2 + 1],
-        colors[baseIndex2 + 2]
+        colors[baseIndex2 + 2],
       );
       lineNormals.push(
         normals[baseIndex1],
@@ -100,7 +100,7 @@ function createAnimation({ container, debug }) {
         normals[baseIndex1 + 2],
         normals[baseIndex2],
         normals[baseIndex2 + 1],
-        normals[baseIndex2 + 2]
+        normals[baseIndex2 + 2],
       );
 
       const [oMin, oMax] = [0.01, 0.15];
@@ -142,22 +142,22 @@ function createAnimation({ container, debug }) {
 
     lineGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(linePositions), 3)
+      new THREE.BufferAttribute(new Float32Array(linePositions), 3),
     );
 
     lineGeometry.setAttribute(
       "color",
-      new THREE.BufferAttribute(new Float32Array(lineColors), 3)
+      new THREE.BufferAttribute(new Float32Array(lineColors), 3),
     );
 
     lineGeometry.setAttribute(
       "normal",
-      new THREE.BufferAttribute(new Float32Array(lineNormals), 3)
+      new THREE.BufferAttribute(new Float32Array(lineNormals), 3),
     );
 
     lineGeometry.setAttribute(
       "aOpacity",
-      new THREE.BufferAttribute(new Float32Array(lineOpacity), 1)
+      new THREE.BufferAttribute(new Float32Array(lineOpacity), 1),
     );
 
     const { torusRadius, tubeRadius } = debugObject;
@@ -190,7 +190,7 @@ function createAnimation({ container, debug }) {
       torusRadius,
       tubeRadius,
       radialSegments,
-      tabularSegments
+      tabularSegments,
     );
 
     torusGeometry.computeVertexNormals();
@@ -215,21 +215,21 @@ function createAnimation({ container, debug }) {
     }
     customGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(positions), 3)
+      new THREE.BufferAttribute(new Float32Array(positions), 3),
     );
 
     customGeometry.setAttribute(
       "color",
-      new THREE.BufferAttribute(new Float32Array(colors), 3)
+      new THREE.BufferAttribute(new Float32Array(colors), 3),
     );
 
     customGeometry.setAttribute(
       "normal",
-      new THREE.BufferAttribute(new Float32Array(normals), 3)
+      new THREE.BufferAttribute(new Float32Array(normals), 3),
     );
     customGeometry.setAttribute(
       "aScale",
-      new THREE.BufferAttribute(new Float32Array(scales), 1)
+      new THREE.BufferAttribute(new Float32Array(scales), 1),
     );
     const torusMaterial = new THREE.ShaderMaterial({
       vertexShader: pointsVertexShader,
@@ -278,7 +278,7 @@ function createAnimation({ container, debug }) {
       fov,
       sizes.width / sizes.height,
       0.1,
-      200
+      200,
     );
     camera.position.set(0, 0.5, 20); // Set initial position (zoomed out)
     camera.rotation.x = -Math.PI / 4; // Set initial rotation (tilted)

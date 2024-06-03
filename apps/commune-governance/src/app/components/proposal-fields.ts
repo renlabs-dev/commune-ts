@@ -33,7 +33,7 @@ function paramsToMarkdown(params: Record<string, unknown>): string {
 function handleCustomProposalData(
   proposalId: number,
   dataState: CustomProposalDataState | null,
-  netuid: number | "GLOBAL"
+  netuid: number | "GLOBAL",
 ): ProposalCardFields {
   if (dataState == null) {
     return {
@@ -64,7 +64,7 @@ function handleCustomProposalData(
 function handleProposalParams(
   proposalId: number,
   params: Record<string, unknown>,
-  netuid: number | "GLOBAL"
+  netuid: number | "GLOBAL",
 ): ProposalCardFields {
   const title = `Parameters proposal #${proposalId} for ${
     netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`
@@ -82,14 +82,14 @@ export const handleProposal = (proposal: ProposalState): ProposalCardFields =>
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
-        "GLOBAL"
+        "GLOBAL",
       );
     },
     subnetCustom({ netuid /*rawData*/ }): ProposalCardFields {
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
-        netuid
+        netuid,
       );
     },
     globalParams(params): ProposalCardFields {

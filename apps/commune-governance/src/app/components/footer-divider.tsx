@@ -9,7 +9,7 @@ export function FooterDivider(): JSX.Element {
             </p>
             <h2 className="text-3xl font-medium text-white lg:text-5xl">
               Create a new
-              <span className="text-green-500 font-thin"> proposal</span>
+              <span className="font-thin text-green-500"> proposal</span>
             </h2>
           </div>
         </div>

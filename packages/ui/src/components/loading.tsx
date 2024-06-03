@@ -1,6 +1,6 @@
 export function Loading(): JSX.Element {
   return (
-    <div className="ui-grid  n ui-place-content-center" role="status">
+    <div className="n ui-grid ui-place-content-center" role="status">
       <svg
         aria-hidden="true"
         className="ui-h-8 ui-w-8 ui-animate-spin ui-fill-blue-400 ui-text-gray-200"

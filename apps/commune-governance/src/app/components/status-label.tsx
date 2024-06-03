@@ -10,28 +10,28 @@ export function StatusLabel(props: StatusLabelProps): JSX.Element {
   const votingStatus = {
     Pending: (
       <Label
-        className={`border text-white text-center lg:text-left py-1.5 w-auto ${className}`}
+        className={`w-auto border py-1.5 text-center text-white lg:text-left ${className}`}
       >
         Active
       </Label>
     ),
     Accepted: (
       <Label
-        className={`border-green-500 border text-center text-green-500 lg:text-left py-1.5 w-auto ${className}`}
+        className={`w-auto border border-green-500 py-1.5 text-center text-green-500 lg:text-left ${className}`}
       >
         Accepted
       </Label>
     ),
     Refused: (
       <Label
-        className={`border-red-500 border text-center text-red-500 lg:text-left py-1.5 w-auto ${className}`}
+        className={`w-auto border border-red-500 py-1.5 text-center text-red-500 lg:text-left ${className}`}
       >
         Refused
       </Label>
     ),
     Expired: (
       <Label
-        className={`border-gray-500 border text-center text-gray-500 lg:text-left py-1.5 w-auto ${className}`}
+        className={`w-auto border border-gray-500 py-1.5 text-center text-gray-500 lg:text-left ${className}`}
       >
         Expired
       </Label>

@@ -11,10 +11,10 @@
     "deploy-commune-governance": "yarn run build && (cd apps/commune-governance/ && npx @cloudflare/next-on-pages@1)"
   },
   "devDependencies": {
+    "@repo/typescript-config": "*",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.11",
-    "@repo/typescript-config": "*",
+    "prettier-plugin-tailwindcss": "^0.6.1",
     "turbo": "latest"
   },
   "engines": {
