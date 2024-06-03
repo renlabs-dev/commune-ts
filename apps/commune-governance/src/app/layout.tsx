@@ -32,7 +32,7 @@ export default function RootLayout({
           <Header
             logoSrc="/logo.svg"
             navigationLinks={[
-              { name: "Home", href: links.landing_page, external: true },
+              { name: "Home Page", href: links.landing_page, external: true },
             ]}
             title="Community Governance"
             wallet={<WalletButtonWithHook />}

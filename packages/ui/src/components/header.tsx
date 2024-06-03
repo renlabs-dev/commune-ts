@@ -23,7 +23,7 @@ export function Header(props: HeaderProps): JSX.Element {
             width={100}
           />
           <h3
-            className={`${oxanium.className} md:flex hidden ui-mt-0.5 ui-text-2xl ui-font-light ui-text-white`}
+            className={`${oxanium.className} ui-mt-0.5 ui-hidden ui-text-2xl ui-font-light ui-text-white md:ui-flex`}
           >
             {props.title}
           </h3>
