@@ -39,7 +39,7 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
 
   return (
     <button
-      className={`ui-active:top-1 ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600 ${
+      className={`ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600 ${
         selectedAccount &&
         "ui-border-green-500 ui-bg-green-500/5 ui-text-green-500"
       }`}

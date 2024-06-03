@@ -43,7 +43,7 @@ export function HeroSection(): JSX.Element {
           </div>
         </div>
         <div className="relative flex h-96 flex-col items-center justify-center border-b border-gray-500 p-4 md:h-full lg:w-[45%] lg:flex-row lg:border-none lg:p-0">
-          <div>
+          <div className="animate-fade-in md:min-h-[600px]">
             <Animation />
           </div>
 
