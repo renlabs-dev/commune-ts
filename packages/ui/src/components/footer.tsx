@@ -15,7 +15,7 @@ interface FooterProps {
 export function Footer(props: FooterProps): JSX.Element {
   return (
     <footer className="ui-flex ui-flex-col">
-      <div className="ui-px-4 px-4 xl:ui-px-4">
+      <div className="px-4 lg:px-20">
         <div className="ui-mx-auto ui-max-w-screen-2xl ui-space-y-12">
           <div className="ui-flex ui-flex-col ui-gap-6 ui-pt-10 lg:ui-flex-row lg:ui-items-center lg:ui-gap-16 lg:ui-pt-20">
             <div className="ui-space-y-5">
@@ -52,7 +52,7 @@ export function Footer(props: FooterProps): JSX.Element {
         </div>
       </div>
 
-      <div className="ui-border-t ui-border-gray-500 ui-black/50 ui-px-4 lg:ui-px-20">
+      <div className="ui-black/50 ui-border-t ui-border-gray-500 ui-bg-black/50 ui-px-4 lg:ui-px-20">
         <div className="ui-mx-auto ui-flex ui-w-full ui-max-w-screen-2xl ui-flex-col ui-items-center ui-justify-between ui-gap-6 ui-p-6 lg:ui-flex-row lg:ui-gap-0">
           <p className="ui-hidden ui-text-left ui-text-sm ui-leading-5 ui-text-gray-400 lg:ui-block">
             Making decentralized AI for everyone
@@ -60,7 +60,7 @@ export function Footer(props: FooterProps): JSX.Element {
           <div className="ui-flex ui-space-x-5 ui-px-4">
             {socialList.map((item) => (
               <Link
-                className="ui-leading-6 ui-text-subtitle hover:ui-text-gray-800 hover:ui-underline"
+                className="ui-text-subtitle ui-leading-6 hover:ui-text-gray-800 hover:ui-underline"
                 href={item.href}
                 key={item.name}
               >

@@ -25,9 +25,9 @@ export function WalletModal({
       role="dialog"
     >
       {/* Modal */}
-      <div className="ui-fixed ui-top-16 ui-z-10 ui-right-0 ui-overflow-y-auto">
+      <div className="ui-fixed ui-right-0 ui-top-16 ui-z-10 ui-overflow-y-auto">
         <div className="ui-flex ui-min-h-full ui-items-center ui-justify-center ui-p-4 ui-text-center">
-          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/70 ui-backdrop-blur-sm ui-text-left ui-text-white">
+          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/70 ui-text-left ui-text-white ui-backdrop-blur-sm">
             {/* Modal Header */}
             <div className="ui-flex ui-flex-col ui-items-center ui-justify-between ui-gap-3 ui-border-b ui-p-6 md:ui-flex-row">
               <div className="ui-flex ui-flex-col ui-items-center md:ui-flex-row">
@@ -48,7 +48,7 @@ export function WalletModal({
                 }}
                 type="button"
               >
-                Close Icon
+                Close
               </button>
             </div>
 

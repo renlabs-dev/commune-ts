@@ -32,11 +32,11 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
       <div
         aria-hidden="true"
         aria-label="Global"
-        className={`fixed z-10 h-[calc(100svh-81px)] w-full animate-menu-fade backdrop-blur-sm lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
+        className={`animate-menu-fade fixed z-10 h-[calc(100svh-81px)] w-full backdrop-blur-sm lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
         onClick={toggleMobileMenu}
       >
         <div
-          className={`sm:min-w-2/6 relative h-full w-4/6 overflow-y-scroll border-r border-gray-900/[0.06] bg-[url('/bg-pattern.svg')] p-8  sm:w-3/6 md:w-2/6 lg:mx-auto lg:w-full`}
+          className={`sm:min-w-2/6 relative h-full w-4/6 overflow-y-scroll border-r border-gray-900/[0.06] bg-[url('/bg-pattern.svg')] p-8 sm:w-3/6 md:w-2/6 lg:mx-auto lg:w-full`}
         >
           <button
             className={`${commonButtonClass} absolute right-0 top-0 m-5 h-8 w-8 rounded-xl lg:hidden`}
@@ -46,7 +46,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
             <span className="sr-only">Close menu</span>
             <ChevronLeftIcon
               aria-hidden="true"
-              className="w-6 h-6 fill-white"
+              className="h-6 w-6 fill-white"
             />
           </button>
           {tutorials.map((tutorial) => {
@@ -59,13 +59,13 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
                   {tutorial.contents.map((content) => {
                     return (
                       <Link
-                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug.startsWith(tutorial.tutorialId) ? "text-white" : " text-gray-400 hover:text-gray-200"}`}
+                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug.startsWith(tutorial.tutorialId) ? "text-white" : "text-gray-400 hover:text-gray-200"}`}
                         href={`${prefix}/${tutorial.tutorialId}/${content.href}`}
                         key={content.name}
                       >
                         {params.slug[1] === content.href &&
                           params.slug[0].startsWith(tutorial.tutorialId) && (
-                            <div className="absolute w-2 h-2 bg-white rounded-full -left-1" />
+                            <div className="absolute -left-1 h-2 w-2 rounded-full bg-white" />
                           )}
                         <span>{content.name}</span>
                       </Link>

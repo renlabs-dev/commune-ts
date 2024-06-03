@@ -44,7 +44,7 @@ export function CreateDao(): JSX.Element {
       status: null,
       message: null,
       finalized: false,
-    }
+    },
   );
 
   function handleCallback(TransactionReturn: TransactionResult): void {
@@ -78,7 +78,7 @@ export function CreateDao(): JSX.Element {
         });
       } else {
         toast.error(
-          `Insufficient balance to create S0 Applicaiton. Required: ${daoApplicationCost} but got ${balance}`
+          `Insufficient balance to create S0 Applicaiton. Required: ${daoApplicationCost} but got ${balance}`,
         );
         setTransactionStatus({
           status: "ERROR",
@@ -133,7 +133,7 @@ export function CreateDao(): JSX.Element {
   return (
     <>
       <button
-        className="w-full px-4 py-2 text-gray-400 border border-gray-500 hover:border-green-600 hover:text-green-600 hover:bg-green-600/5 min-w-auto lg:w-auto"
+        className="min-w-auto w-full border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 lg:w-auto"
         onClick={toggleModalMenu}
         type="button"
       >
@@ -144,14 +144,14 @@ export function CreateDao(): JSX.Element {
         role="dialog"
       >
         {/* Backdrop */}
-        <div className="fixed inset-0 transition-opacity bg-black bg-opacity-60 backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity" />
 
         {/* Modal */}
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto animate-fade-in-down">
-          <div className="flex items-center justify-center min-h-full p-4 text-center">
+        <div className="animate-fade-in-down fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="relative w-[100%] max-w-5xl transform overflow-hidden border border-gray-500 bg-[url('/bg-pattern.svg')] text-left md:w-[80%]">
               {/* Modal Header */}
-              <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-center bg-no-repeat p-6 md:flex-row text-white">
+              <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-center bg-no-repeat p-6 text-white md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">
                   <h3
                     className="pl-2 text-xl font-bold leading-6 text-white"
@@ -166,7 +166,7 @@ export function CreateDao(): JSX.Element {
                   onClick={toggleModalMenu}
                   type="button"
                 >
-                  <XMarkIcon className="w-6 h-6 fill-white" />
+                  <XMarkIcon className="h-6 w-6 fill-white" />
                 </button>
               </div>
               {/* Modal Body */}
@@ -174,7 +174,7 @@ export function CreateDao(): JSX.Element {
                 <div className="flex flex-col gap-4 p-6">
                   <div className="flex gap-2">
                     <button
-                      className={`border px-4 py-1  ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+                      className={`border px-4 py-1 ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
                       onClick={toggleEditMode}
                       type="button"
                     >
@@ -192,7 +192,7 @@ export function CreateDao(): JSX.Element {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-black p-3 text-white"
                           onChange={(e) => {
                             setApplicationKey(e.target.value);
                           }}
@@ -201,7 +201,7 @@ export function CreateDao(): JSX.Element {
                           value={applicationKey}
                         />
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-black p-3 text-white"
                           onChange={(e) => {
                             setDiscordId(e.target.value);
                           }}
@@ -210,7 +210,7 @@ export function CreateDao(): JSX.Element {
                           value={discordId}
                         />
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-black p-3 text-white"
                           onChange={(e) => {
                             setTitle(e.target.value);
                           }}
@@ -219,7 +219,7 @@ export function CreateDao(): JSX.Element {
                           value={title}
                         />
                         <textarea
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-black p-3 text-white"
                           onChange={(e) => {
                             setBody(e.target.value);
                           }}
@@ -246,7 +246,7 @@ export function CreateDao(): JSX.Element {
                   </div>
                   <div className="flex flex-col gap-1">
                     <button
-                      className={` relative w-full border px-4 py-2 font-semibold ${isConnected ? "border-green-500 text-green-500 active:top-1 hover:bg-green-500/5" : "border-gray-500 text-gray-500"}`}
+                      className={`relative w-full border px-4 py-2 font-semibold ${isConnected ? "border-green-500 text-green-500 hover:bg-green-500/5 active:top-1" : "border-gray-500 text-gray-500"}`}
                       disabled={!isConnected}
                       type="submit"
                     >
@@ -255,7 +255,7 @@ export function CreateDao(): JSX.Element {
                   </div>
                   {transactionStatus.status ? (
                     <p
-                      className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"}  ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
+                      className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"} ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
                     >
                       {transactionStatus.status === "PENDING" ||
                         (transactionStatus.status === "STARTING" && (
@@ -265,7 +265,7 @@ export function CreateDao(): JSX.Element {
                     </p>
                   ) : null}
 
-                  <div className="flex items-start gap-1 mt-1 text-white">
+                  <div className="mt-1 flex items-start gap-1 text-white">
                     <InformationCircleIcon className="mt-0.5 h-4 w-4 fill-green-500 text-sm" />
                     <span className="text-sm">
                       Please make sure, that your application meets all of the

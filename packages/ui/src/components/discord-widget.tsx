@@ -18,7 +18,7 @@ export function handleDescription(description: string | null): JSX.Element {
   if (!presenceCount && !description) return <p>loading...</p>;
   if (!description) {
     return (
-      <div className="ui-flex ui-items-centerui-gap-1">
+      <div className="ui-items-centerui-gap-1 ui-flex">
         <span className="ui-h-2 ui-w-2 ui-rounded-2xl ui-bg-green-400" />
         <p>{presenceCount} Online (Discord)</p>
       </div>

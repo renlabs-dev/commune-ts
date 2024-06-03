@@ -68,7 +68,7 @@ export default function HomePage(): JSX.Element {
         proposalStakeInfo = computeVotes(
           stakeMap,
           proposal.votesFor,
-          proposal.votesAgainst
+          proposal.votesAgainst,
         );
       }
       return (
@@ -102,14 +102,14 @@ export default function HomePage(): JSX.Element {
   const content = viewMode === "proposals" ? renderProposals() : renderDaos();
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      <div className="w-full h-full bg-repeat">
+    <main className="flex w-full flex-col items-center justify-center">
+      <div className="h-full w-full bg-repeat">
         <Container>
           <BalanceSection className="hidden lg:flex" />
 
           <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
 
-          <div className="max-w-screen-2xl px-4 xl:px-0 py-8 mx-auto space-y-10">
+          <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8 xl:px-0">
             {!isLoading && content}
             {isLoading ? <CardSkeleton /> : null}
           </div>

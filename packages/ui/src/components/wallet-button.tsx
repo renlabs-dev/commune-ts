@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { smallAddress } from "@repo/providers/src/utils";
 import type { InjectedAccountWithMeta } from "../types";
 
 interface PolkadotHook {
@@ -18,8 +19,15 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
 
   if (!isInitialized) {
     return (
-      <div className="ui-flex ui-items-center ui-justify-center ui-px-4">
-        Close Icon
+      <div className="ui-active:top-1 ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600">
+        <Image
+          alt="Wallet Icon"
+          className="w-6"
+          height={40}
+          src="/wallet-icon.svg"
+          width={40}
+        />
+        <span>Loading Wallet Info...</span>
       </div>
     );
   }
@@ -31,9 +39,9 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
 
   return (
     <button
-      className={`ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-px-4 ui-py-2 ui-border ui-border-gray-500 ui-text-gray-400 ui-active:top-1 hover:ui-border-green-600 hover:ui-text-green-600 hover:ui-bg-green-600/5 ${
+      className={`ui-active:top-1 ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600 ${
         selectedAccount &&
-        "ui-text-green-500 ui-border-green-500 ui-bg-green-500/5"
+        "ui-border-green-500 ui-bg-green-500/5 ui-text-green-500"
       }`}
       disabled={!isInitialized}
       onClick={handleConnect}
@@ -41,7 +49,7 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
     >
       <span className="ui-flex ui-items-center ui-gap-3 ui-font-medium">
         <Image
-          alt="Dao Icon"
+          alt="Wallet Icon"
           className="w-6"
           height={40}
           src="/wallet-icon.svg"
@@ -49,12 +57,12 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
         />
         {selectedAccount?.meta.name ? (
           <div className="ui-flex ui-flex-col ui-items-start">
-            <span className="text-lg font-light">
-              {formatString(selectedAccount.meta.name || "")}
+            <span className="font-light">
+              {smallAddress(selectedAccount.address || "")}
             </span>
           </div>
         ) : (
-          <span className="ui-text-lg ui-text-white">Connect Wallet</span>
+          <span className="ui-text-white">Connect Wallet</span>
         )}
       </span>
     </button>

@@ -12,7 +12,7 @@ export function HeroSection(): JSX.Element {
       id="hero"
     >
       <div className="flex flex-col lg:flex-row">
-        <div className="flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] z-10 lg:max-w-[60%] lg:border-r">
+        <div className="z-10 flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] lg:max-w-[60%] lg:border-r">
           <div className="flex h-full flex-col justify-center space-y-4 border-b border-gray-500 px-8">
             <div className="flex w-full py-16 lg:justify-end">
               <div className="flex w-full flex-col justify-between lg:max-w-4xl xl:pl-10">
@@ -48,7 +48,7 @@ export function HeroSection(): JSX.Element {
           </div>
 
           <Link
-            className="absolute bottom-0 mb-4 hidden w-full items-center justify-center border border-gray-500 bg-black/50 px-5 py-3 hover:border-gray-500  hover:bg-black/70 hover:text-gray-200 md:flex lg:bottom-8 lg:left-8 lg:mb-0 lg:w-auto lg:justify-start"
+            className="absolute bottom-0 mb-4 hidden w-full items-center justify-center border border-gray-500 bg-black/50 px-5 py-3 hover:border-gray-500 hover:bg-black/70 hover:text-gray-200 md:flex lg:bottom-8 lg:left-8 lg:mb-0 lg:w-auto lg:justify-start"
             href="#welcome"
           >
             View More
@@ -75,7 +75,7 @@ export function HeroSection(): JSX.Element {
               >
                 {app.icon}
                 <div
-                  className="flex flex-row justify-between gap-6 mt-2 md:flex-col xl:flex-row"
+                  className="mt-2 flex flex-row justify-between gap-6 md:flex-col xl:flex-row"
                   id="welcome"
                 >
                   <div>
