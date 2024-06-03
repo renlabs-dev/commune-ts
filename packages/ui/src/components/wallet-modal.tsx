@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import type { InjectedAccountWithMeta } from "../types";
+import { XMarkIcon } from "@heroicons/react/16/solid";
 
 export function WalletModal({
   open,
@@ -21,15 +22,15 @@ export function WalletModal({
 
   return (
     <div
-      className={`ui-fixed ui-inset-0 ui-z-[100] ${open ? "ui-block" : "ui-hidden"}`}
+      className={`ui-fixed ui-inset-0 ui-z-[100] ui-w-fit ui-animate-fade-in ${open ? "ui-block" : "ui-hidden"}`}
       role="dialog"
     >
-      {/* Modal */}
+      {/* Modal */}∂
       <div className="ui-fixed ui-right-0 ui-top-16 ui-z-10 ui-overflow-y-auto">
         <div className="ui-flex ui-min-h-full ui-items-center ui-justify-center ui-p-4 ui-text-center">
-          <div className="ui-relative ui-w-[100%] ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/70 ui-text-left ui-text-white ui-backdrop-blur-sm">
+          <div className="ui-relative ui-w-full ui-max-w-3xl ui-transform ui-overflow-hidden ui-border ui-bg-black/70 ui-text-left ui-text-white ui-backdrop-blur-sm">
             {/* Modal Header */}
-            <div className="ui-flex ui-flex-col ui-items-center ui-justify-between ui-gap-3 ui-border-b ui-p-6 md:ui-flex-row">
+            <div className="ui-flex ui-flex-row ui-items-center ui-justify-between ui-gap-3 ui-border-b ui-p-6">
               <div className="ui-flex ui-flex-col ui-items-center md:ui-flex-row">
                 <Image
                   alt="Module Logo"
@@ -48,7 +49,7 @@ export function WalletModal({
                 }}
                 type="button"
               >
-                Close
+                <XMarkIcon className="ui-h-6 ui-w-6" />
               </button>
             </div>
 
@@ -65,7 +66,7 @@ export function WalletModal({
                 >
                   <div className="ui-flex ui-flex-col ui-items-start ui-gap-1">
                     <span className="font-semibold">{item.meta.name}</span>
-                    <span>{item.address}</span>
+                    <p>{item.address}</p>
                   </div>
                 </button>
               ))}
