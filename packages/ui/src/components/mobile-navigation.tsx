@@ -30,14 +30,14 @@ export function MobileNavigation(props: MobileNavigationProps) {
       icon: "/telegram-icon.svg",
       alt: "Commune's Telegram Link",
     },
-    { href: links.x, icon: "/twitter-icon.svg", alt: "Commune's Twitter Link" },
+    { href: links.x, icon: "/x-icon.svg", alt: "Commune's X Link" },
   ];
 
   return (
     <div>
       <button
         type="button"
-        className="border-gray-500 ui-flex ui-h-11 ui-w-11 ui-items-center ui-justify-center ui-border ui-p-2 ui-text-white hover:ui-bg-gray-400/[0.10] md:ui-hidden"
+        className="ui-ml-2 ui-flex ui-h-11 ui-w-11 ui-items-center ui-justify-center ui-border ui-border-gray-500 ui-p-2 ui-text-white hover:ui-bg-gray-400/[0.10] md:ui-hidden"
         onClick={toggleMobileMenu}
       >
         {mobileMenuOpen ? (
@@ -47,7 +47,7 @@ export function MobileNavigation(props: MobileNavigationProps) {
         )}
       </button>
       {mobileMenuOpen && (
-        <div className="ui-fixed ui-left-0 ui-top-16 ui-z-50 ui-h-full ui-w-full">
+        <div className="ui-fixed ui-left-0 ui-top-16 ui-z-50 ui-h-full ui-w-full ui-animate-fade-in">
           <div className="ui-relative ui-mx-auto ui-my-6 ui-w-11/12 ui-space-y-4 ui-divide-y ui-divide-gray-200/40 ui-border ui-border-gray-500 ui-bg-black ui-p-4">
             <div className="ml-2 mt-6 space-y-2">
               {props.navigationLinks.map(({ name, href, external }) => (

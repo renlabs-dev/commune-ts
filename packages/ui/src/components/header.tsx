@@ -28,8 +28,8 @@ export function Header(props: HeaderProps): JSX.Element {
             {props.title}
           </h3>
         </Link>
-        <div className="ui-flex ui-items-center ui-gap-3">
-          <div className="ui-hidden lg:ui-flex lg:ui-gap-6">
+        <div className="ui-flex ui-items-center">
+          <div className="ui-hidden ui-pr-6 lg:ui-flex lg:ui-gap-6">
             {props.navigationLinks.map(({ name, href, external }) => (
               <Link
                 className="ui-flex ui-flex-col ui-items-center ui-text-lg ui-font-normal ui-leading-6 ui-text-white ui-transition ui-duration-500 hover:ui-text-green-500"
