@@ -4,7 +4,6 @@ import "@repo/ui/styles.css";
 import type { Metadata } from "next";
 import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
-import { Footer } from "@repo/ui/footer";
 import { links } from "@repo/ui/data";
 import { Providers, WalletButtonWithHook } from "@repo/providers";
 

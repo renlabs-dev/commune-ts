@@ -1,5 +1,5 @@
-import { links } from "@repo/ui/data";
 import Image from "next/image";
+import { links } from "@repo/ui/data";
 
 export const applicationsList = [
   {
