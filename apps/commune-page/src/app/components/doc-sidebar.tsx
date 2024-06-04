@@ -59,6 +59,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
                   {tutorial.contents.map((content) => {
                     return (
                       <Link
+                        //eslint-disable-next-line
                         className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug[0] === tutorial.tutorialId ? 'text-white' : ' text-gray-400 hover:text-gray-200'}`}
                         href={`${prefix}/${tutorial.tutorialId}/${content.href}`}
                         key={content.name}

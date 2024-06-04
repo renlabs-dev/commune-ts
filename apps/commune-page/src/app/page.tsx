@@ -3,11 +3,11 @@ import { Suspense } from "react";
 import { Loading } from "@repo/ui/loading";
 import { Footer } from "@repo/ui/footer";
 import { sections } from "../utils/mocks/sections-mock";
+import { applicationsList } from "../utils/applications-list";
 import { HeroSection } from "./components/sections/hero-section";
 import { WelcomeSection } from "./components/sections/welcome";
 import { GenericSection } from "./components/sections/generic-section";
 import { FrequentQuestions } from "./components/sections/frequent-questions";
-import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
   robots: "all",
