@@ -7,7 +7,6 @@ import { Header } from "@repo/ui/header";
 import { Footer } from "@repo/ui/footer";
 import { links } from "@repo/ui/data";
 import { Providers, WalletButtonWithHook } from "@repo/providers";
-import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -39,7 +38,6 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
-          <Footer applicationsList={applicationsList} />
         </Providers>
       </body>
     </html>
