@@ -17,6 +17,8 @@ interface DocSidebarProps {
 }
 
 export function DocSidebar(props: DocSidebarProps): JSX.Element {
+  const { params, activeTutorial, activeContent, prefix } = props;
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function toggleMobileMenu(): void {
@@ -26,7 +28,6 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
   const commonButtonClass =
     "flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100/10 p-1.5 hover:bg-gray-100/[0.15]";
 
-  const { params, activeTutorial, activeContent, prefix } = props;
   return (
     <>
       <div
@@ -59,7 +60,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
                   {tutorial.contents.map((content) => {
                     return (
                       <Link
-                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug.startsWith(tutorial.tutorialId) ? "text-white" : "text-gray-400 hover:text-gray-200"}`}
+                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug[0] === tutorial.tutorialId ? 'text-white' : ' text-gray-400 hover:text-gray-200'}`}
                         href={`${prefix}/${tutorial.tutorialId}/${content.href}`}
                         key={content.name}
                       >

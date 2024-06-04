@@ -23,6 +23,6 @@ const config: Omit<Config, "content"> = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };
 export default config;
