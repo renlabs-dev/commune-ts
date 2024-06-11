@@ -79,29 +79,21 @@ export function PolkadotProvider({
   wsEndpoint,
 }: PolkadotProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
-
   const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
     web3Enable: null,
     web3Accounts: null,
     web3FromAddress: null,
   });
-
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-
   const [balance, setBalance] = useState("0");
-
   const [curatorApplications, setCuratorApplications] = useState<
     DaoApplications[] | null
   >(null);
   const [globalDaoTreasury, setGlobalDaoTreasury] = useState<string>("0");
-
   const [stakeData, setStakeData] = useState<StakeData | null>(null);
-
   const [proposals, setProposals] = useState<ProposalState[] | null>(null);
-
   const [openModal, setOpenModal] = useState(false);
-
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
@@ -135,7 +127,7 @@ export function PolkadotProvider({
   async function fetchWallets(favoriteWalletAddress: string): Promise<void> {
     const walletList = await getWallets();
     const accountExist = walletList?.find(
-      (wallet) => wallet.address === favoriteWalletAddress
+      (wallet) => wallet.address === favoriteWalletAddress,
     );
     if (accountExist) {
       setSelectedAccount(accountExist);
@@ -241,15 +233,13 @@ export function PolkadotProvider({
   async function sendTransaction(
     transactionType: string,
     transaction: SubmittableExtrinsic<"promise">,
-    callback?: (result: TransactionResult) => void
+    callback?: (result: TransactionResult) => void,
   ): Promise<void> {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-
     try {
       const injector = await polkadotApi.web3FromAddress(
-        selectedAccount.address
+        selectedAccount.address,
       );
-
       await transaction.signAndSend(
         selectedAccount.address,
         { signer: injector.signer },
@@ -261,7 +251,6 @@ export function PolkadotProvider({
               message: `${transactionType} in progress`,
             });
           }
-
           if (result.status.isFinalized) {
             const success = result.findRecord("system", "ExtrinsicSuccess");
             const failed = result.findRecord("system", "ExtrinsicFailed");
@@ -292,7 +281,7 @@ export function PolkadotProvider({
               callback?.({ finalized: true, status: "ERROR", message: msg });
             }
           }
-        }
+        },
       );
     } catch (err) {
       toast.error(err as string);
@@ -312,7 +301,7 @@ export function PolkadotProvider({
     const transaction = api.tx.subspaceModule.addStake(
       netUid,
       validator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Staking", transaction, callback);
   }
@@ -328,7 +317,7 @@ export function PolkadotProvider({
     const transaction = api.tx.subspaceModule.removeStake(
       netUid,
       validator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Unstaking", transaction, callback);
   }
@@ -353,7 +342,7 @@ export function PolkadotProvider({
       netUid,
       fromValidator,
       toValidator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Transfer Stake", transaction, callback);
   }
@@ -390,7 +379,7 @@ export function PolkadotProvider({
 
     const transaction = api.tx.subspaceModule.addDaoApplication(
       applicationKey,
-      IpfsHash
+      IpfsHash,
     );
     await sendTransaction("Create S0 Applicaiton", transaction, callback);
   }

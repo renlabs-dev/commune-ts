@@ -1,16 +1,14 @@
-import type { Codec } from "@polkadot/types/types";
 import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import {
-  DAO_SHEMA,
-  PROPOSAL_SHEMA,
   URL_SCHEMA,
-  CUSTOM_PROPOSAL_METADATA_SCHEMA,
   type Proposal,
-  type DaoApplications,
   type ProposalState,
-  type CustomProposalDataState,
   type ProposalStakeInfo,
+  ProposalCardFields,
+  paramNameToDisplayName,
+  DAOCardFields,
+  CustomMetadataState,
 } from "../types";
 
 export function calculateAmount(amount: string): number {
@@ -62,111 +60,7 @@ export function formatToken(nano: number | bigint): string {
   return amount.toFixed(2);
 }
 
-// == Governance ==
-
-export function parseDaos(valueRaw: Codec): DaoApplications | null {
-  const value = valueRaw.toPrimitive();
-  const validated = DAO_SHEMA.safeParse(value);
-  if (!validated.success) {
-    return null;
-  }
-  return validated.data as unknown as DaoApplications;
-}
-
-export function parseProposal(valueRaw: Codec): Proposal | null {
-  const value = valueRaw.toPrimitive();
-  const validated = PROPOSAL_SHEMA.safeParse(value);
-  if (!validated.success) {
-    return null;
-  }
-  return validated.data;
-}
-
-export async function handleCustomProposalData(
-  proposal: Proposal,
-  data: string
-): Promise<CustomProposalDataState> {
-  const cid = parseIpfsUri(data);
-  if (cid === null) {
-    const message = `Invalid IPFS URI '${data}' for proposal ${proposal.id}`;
-    return { Err: { message } };
-  }
-
-  const url = buildIpfsGatewayUrl(cid);
-  const response = await fetch(url);
-  const obj: unknown = await response.json();
-
-  const validated = CUSTOM_PROPOSAL_METADATA_SCHEMA.safeParse(obj);
-  if (!validated.success) {
-    const message = `Invalid proposal data for proposal ${proposal.id} at ${url}`;
-    return { Err: { message } };
-  }
-
-  return { Ok: validated.data };
-}
-
-export function handleCustomProposals(
-  proposals: Proposal[],
-  handler?: (id: number, proposalState: ProposalState) => void
-): Promise<({ id: number; customData: CustomProposalDataState } | null)[]> {
-  const promises = [];
-  for (const proposal of proposals) {
-    const prom = match(proposal.data)({
-      async custom(data: string) {
-        const metadata = await handleCustomProposalData(proposal, data);
-
-        const proposalState: ProposalState = {
-          ...proposal,
-          customData: metadata,
-        };
-        if (handler != null) handler(proposal.id, proposalState);
-
-        return { id: proposal.id, customData: metadata };
-      },
-      async subnetCustom({ data }) {
-        const metadata = await handleCustomProposalData(proposal, data);
-
-        const proposalState: ProposalState = {
-          ...proposal,
-          customData: metadata,
-        };
-        if (handler != null) handler(proposal.id, proposalState);
-        return { id: proposal.id, customData: metadata };
-      },
-      globalParams() {
-        return null;
-      },
-      subnetParams() {
-        return null;
-      },
-      expired() {
-        return null;
-      },
-    });
-    promises.push(prom);
-  }
-  return Promise.all(promises);
-}
-
-export function getProposalNetuid(proposal: Proposal): number | null {
-  return match(proposal.data)({
-    custom(/*v: string*/): null {
-      return null;
-    },
-    globalParams(/*v: unknown*/): null {
-      return null;
-    },
-    subnetParams({ netuid }): number {
-      return netuid;
-    },
-    subnetCustom({ netuid }): number {
-      return netuid;
-    },
-    expired(): null {
-      return null;
-    },
-  });
-}
+// == Proposal ==
 
 function sum(arr: Iterable<bigint>): bigint {
   return Array.from(arr).reduce((a, b) => a + b, 0n);
@@ -176,7 +70,7 @@ export function computeVotes(
   stakeMap: Map<string, bigint>,
   votesFor: string[],
   votesAgainst: string[],
-  stakeTotal?: bigint
+  stakeTotal?: bigint,
 ): ProposalStakeInfo {
   let stakeFor = 0n;
   let stakeAgainst = 0n;
@@ -206,4 +100,147 @@ export function computeVotes(
   }
 
   return { stakeFor, stakeAgainst, stakeVoted, stakeTotal };
+}
+
+// == Proposals ==
+
+const paramsToMarkdown = (params: Record<string, unknown>): string => {
+  const items = [];
+  for (const [key, value] of Object.entries(params)) {
+    const label = `**${paramNameToDisplayName(key)}**`;
+    const formattedValue =
+      typeof value === "string" || typeof value === "number"
+        ? `\`${value}\``
+        : "`???`";
+
+    items.push(`${label}: ${formattedValue}`);
+  }
+  return items.join(" |  ") + "\n";
+};
+function handleCustomProposalData(
+  proposalId: number,
+  dataState: CustomMetadataState | null,
+  netuid: number | "GLOBAL",
+): ProposalCardFields {
+  if (dataState == null) {
+    return {
+      title: null,
+      body: null,
+      netuid: netuid,
+    };
+  }
+  return match(dataState)({
+    Err: function ({ message }): ProposalCardFields {
+      return {
+        title: `⚠️😠 Failed fetching proposal data for proposal #${proposalId}`,
+        body: `⚠️😠 Error fetching proposal data for proposal #${proposalId}:  \n${message}`,
+        netuid: netuid,
+        invalid: true,
+      };
+    },
+    Ok: function (data): ProposalCardFields {
+      return {
+        title: data.title ?? null,
+        body: data.body ?? null,
+        netuid: netuid,
+      };
+    },
+  });
+}
+
+function handleProposalParams(
+  proposalId: number,
+  params: Record<string, unknown>,
+  netuid: number | "GLOBAL",
+): ProposalCardFields {
+  const title =
+    `Parameters proposal #${proposalId} for ` +
+    (netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`);
+  return {
+    title,
+    body: paramsToMarkdown(params),
+    netuid,
+  };
+}
+
+export const handleCustomProposal = (
+  proposal: ProposalState,
+): ProposalCardFields =>
+  match(proposal.data)({
+    globalCustom: function (): ProposalCardFields {
+      return handleCustomProposalData(
+        proposal.id,
+        proposal.customData ?? null,
+        "GLOBAL",
+      );
+    },
+    subnetCustom: function ({ subnetId }): ProposalCardFields {
+      return handleCustomProposalData(
+        proposal.id,
+        proposal.customData ?? null,
+        subnetId,
+      );
+    },
+    globalParams: function (params): ProposalCardFields {
+      return handleProposalParams(proposal.id, params, "GLOBAL");
+    },
+    subnetParams: function ({ subnetId, params }): ProposalCardFields {
+      return handleProposalParams(proposal.id, params, subnetId);
+    },
+    transferDaoTreasury: function (): ProposalCardFields {
+      return {
+        title: `Transfer proposal #${proposal.id}`,
+        body: `Transfer proposal #${proposal.id} to treasury`,
+        netuid: "GLOBAL",
+        invalid: true,
+      };
+    },
+  });
+
+export function getProposalNetuid(proposal: Proposal): number | null {
+  return match(proposal.data)({
+    globalCustom: function (/*v: string*/): null {
+      return null;
+    },
+    globalParams: function (/*v: unknown*/): null {
+      return null;
+    },
+    subnetCustom: function ({ subnetId }): number {
+      return subnetId;
+    },
+    subnetParams: function ({ subnetId }): number {
+      return subnetId;
+    },
+    transferDaoTreasury: function (/*{ account, amount }*/): null {
+      return null;
+    },
+  });
+}
+
+// == DAO Applications ==
+
+export function handleDaoApplications(
+  daoId: number | null,
+  dataState: CustomMetadataState | null,
+): DAOCardFields {
+  if (dataState == null) {
+    return {
+      title: null,
+      body: null,
+    };
+  }
+  return match(dataState)({
+    Err: function ({ message }): DAOCardFields {
+      return {
+        title: `⚠️😠 Failed fetching proposal data for proposal #${daoId}`,
+        body: `⚠️😠 Error fetching proposal data for proposal #${daoId}:  \n${message}`,
+      };
+    },
+    Ok: function (data): DAOCardFields {
+      return {
+        title: data.title ?? null,
+        body: data.body ?? null,
+      };
+    },
+  });
 }
