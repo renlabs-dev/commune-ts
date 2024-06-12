@@ -2,8 +2,8 @@ import type { Codec } from "@polkadot/types/types";
 import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import {
-  DAO_SHEMA,
-  PROPOSAL_SHEMA,
+  DAO_SCHEMA,
+  PROPOSAL_SCHEMA,
   URL_SCHEMA,
   CUSTOM_PROPOSAL_METADATA_SCHEMA,
   type Proposal,
@@ -66,7 +66,7 @@ export function formatToken(nano: number | bigint): string {
 
 export function parseDaos(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
-  const validated = DAO_SHEMA.safeParse(value);
+  const validated = DAO_SCHEMA.safeParse(value);
   if (!validated.success) {
     return null;
   }
@@ -75,7 +75,7 @@ export function parseDaos(valueRaw: Codec): DaoApplications | null {
 
 export function parseProposal(valueRaw: Codec): Proposal | null {
   const value = valueRaw.toPrimitive();
-  const validated = PROPOSAL_SHEMA.safeParse(value);
+  const validated = PROPOSAL_SCHEMA.safeParse(value);
   if (!validated.success) {
     return null;
   }

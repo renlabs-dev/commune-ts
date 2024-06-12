@@ -78,18 +78,18 @@ export function CreateDao(): JSX.Element {
         });
       } else {
         toast.error(
-          `Insufficient balance to create S0 Applicaiton. Required: ${daoApplicationCost} but got ${balance}`,
+          `Insufficient balance to create S0 Application. Required: ${daoApplicationCost} but got ${balance}`,
         );
         setTransactionStatus({
           status: "ERROR",
           finalized: true,
-          message: "Insufficient balance to create S0 Applicaiton",
+          message: "Insufficient balance to create S0 Application",
         });
       }
       router.refresh();
     } catch (e) {
       setUploading(false);
-      toast.error("Error uploading S0 Applicaiton");
+      toast.error("Error uploading S0 Application");
     }
   }
 
@@ -98,7 +98,7 @@ export function CreateDao(): JSX.Element {
     setTransactionStatus({
       status: "STARTING",
       finalized: false,
-      message: "Starting S0 Applicaiton creation...",
+      message: "Starting S0 Application creation...",
     });
 
     const result = daoSchema.safeParse({
@@ -113,7 +113,7 @@ export function CreateDao(): JSX.Element {
       setTransactionStatus({
         status: "ERROR",
         finalized: true,
-        message: "Error creating S0 Applicaiton",
+        message: "Error creating S0 Application",
       });
       return;
     }

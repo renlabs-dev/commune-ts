@@ -11,7 +11,7 @@ export function WelcomeSection(): JSX.Element {
             <span className="font-thin text-green-500"> Commune</span>
           </h3>
           <p>
-            A place for permissionless and censorship resistant cooperation .
+            A place for permission-less and censorship resistant cooperation.
           </p>
         </div>
       </div>
