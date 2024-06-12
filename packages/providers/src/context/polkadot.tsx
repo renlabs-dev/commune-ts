@@ -392,7 +392,7 @@ export function PolkadotProvider({
       applicationKey,
       IpfsHash
     );
-    await sendTransaction("Create S0 Applicaiton", transaction, callback);
+    await sendTransaction("Create S0 Application", transaction, callback);
   }
 
   return (

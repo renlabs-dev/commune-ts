@@ -240,7 +240,7 @@ export function CreateProposal(): JSX.Element {
                   <div className="flex flex-wrap items-center gap-1 pt-2 text-sm text-white">
                     <div className="flex items-center gap-1">
                       <InformationCircleIcon className="h-4 w-4 fill-green-500" />
-                      <span>Want a diferent aproach?</span>
+                      <span>Want a different approach?</span>
                     </div>
                     <span>
                       <Link

@@ -156,7 +156,7 @@ export const ADDRESS_SCHEMA = z
   .string()
   .transform((value) => value as SS58Address);
 
-export const DAO_SHEMA = z.object({
+export const DAO_SCHEMA = z.object({
   id: z.number(),
   userId: ADDRESS_SCHEMA,
   payingFor: ADDRESS_SCHEMA,
@@ -201,7 +201,7 @@ export const PROPOSAL_DATA_SCHEMA = z.union([
 
 assert<Extends<z.infer<typeof PROPOSAL_DATA_SCHEMA>, ProposalData>>();
 
-export const PROPOSAL_SHEMA = z
+export const PROPOSAL_SCHEMA = z
   .object({
     id: z.number(),
     proposer: ADDRESS_SCHEMA,
