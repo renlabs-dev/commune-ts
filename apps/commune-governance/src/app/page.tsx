@@ -103,7 +103,7 @@ export default function HomePage(): JSX.Element {
 
           <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
 
-          <div className="mx-auto max-w-6xl space-y-10 px-4 py-8">
+          <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8">
             {isLoading ? <CardSkeleton /> : content}
           </div>
         </Container>

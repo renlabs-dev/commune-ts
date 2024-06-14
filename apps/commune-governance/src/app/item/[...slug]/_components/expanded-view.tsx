@@ -251,12 +251,14 @@ export function ExpandedView(props: CustomContent): JSX.Element {
         {contentType == "proposal" && (
           <>
             <VoteCard proposalId={content.id} voted="UNVOTED" />
+            <div className="border-b border-gray-500 p-6">
+              <VotingPowerButton />
+            </div>
             <div className="w-full border-gray-500 p-6 lg:border-b">
               {renderVoteData(
                 calcProposalFavorablePercent(content.status as ProposalStatus),
               )}
             </div>
-            <VotingPowerButton />
           </>
         )}
       </div>

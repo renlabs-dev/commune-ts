@@ -17,7 +17,7 @@ export default function CardView({
   const id = Number(params.slug[1]);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col px-4">
+    <div className="mx-auto flex max-w-screen-2xl flex-col px-4">
       <Link
         className="my-6 flex w-fit items-center justify-center gap-2 border border-gray-500 px-5 py-3 text-gray-400 hover:border-green-500 hover:text-green-500"
         href="/"
