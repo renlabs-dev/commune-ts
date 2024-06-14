@@ -228,8 +228,12 @@ export function useLastBlock(api: ApiPromise | null) {
 }
 
 export async function getAllStakeOut(
-  lastBlock: LastBlock,
+  lastBlock: LastBlock | Nullish,
 ): Promise<StakeOutData> {
+  if (lastBlock == null) {
+    throw new Error("lastBlock is null");
+  }
+
   const api = lastBlock.apiAtBlock;
 
   const stakeToQuery = await api.query.subspaceModule.stakeTo.entries();
@@ -271,6 +275,6 @@ export async function getAllStakeOut(
 
 export function useAllStakeOut(lastBlock: LastBlock | Nullish) {
   return useGenericQuery(lastBlock, "stake_out", async () => {
-    return getAllStakeOut(lastBlock!);
+    return getAllStakeOut(lastBlock);
   });
 }

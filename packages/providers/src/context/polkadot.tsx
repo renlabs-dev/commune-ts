@@ -334,9 +334,9 @@ export function PolkadotProvider({
     vote,
     callback,
   }: Vote): Promise<void> {
-    if (!api?.tx.subspaceModule.voteProposal) return;
+    if (!api?.tx.governanceModule.voteProposal) return;
 
-    const transaction = api.tx.subspaceModule.voteProposal(proposalId, vote);
+    const transaction = api.tx.governanceModule.voteProposal(proposalId, vote);
     await sendTransaction("Vote", transaction, callback);
   }
 
@@ -344,9 +344,9 @@ export function PolkadotProvider({
     IpfsHash,
     callback,
   }: AddCustomProposal): Promise<void> {
-    if (!api?.tx.subspaceModule.addCustomProposal) return;
+    if (!api?.tx.governanceModule.addCustomProposal) return;
 
-    const transaction = api.tx.subspaceModule.addCustomProposal(IpfsHash);
+    const transaction = api.tx.governanceModule.addCustomProposal(IpfsHash);
     await sendTransaction("Create Custom Proposal", transaction, callback);
   }
 
@@ -355,9 +355,9 @@ export function PolkadotProvider({
     applicationKey,
     callback,
   }: AddDaoApplication): Promise<void> {
-    if (!api?.tx.subspaceModule.addDaoApplication) return;
+    if (!api?.tx.governanceModule.addDaoApplication) return;
 
-    const transaction = api.tx.subspaceModule.addDaoApplication(
+    const transaction = api.tx.governanceModule.addDaoApplication(
       applicationKey,
       IpfsHash,
     );
@@ -368,7 +368,7 @@ export function PolkadotProvider({
     isDelegating,
     callback,
   }: UpdateDelegatingVotingPower): Promise<void> {
-    if (!api?.tx.subspaceModule.addCustomProposal) return;
+    if (!api?.tx.governanceModule.addCustomProposal) return;
 
     const transaction = isDelegating
       ? api.tx.governanceModule.enableVotePowerDelegation()
