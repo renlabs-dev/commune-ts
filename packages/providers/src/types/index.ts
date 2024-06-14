@@ -1,27 +1,118 @@
 import { z } from "zod";
 import type { Enum, Tagged } from "rustie";
 import { assert, type Extends } from "tsafe";
+import { decodeAddress } from "@polkadot/util-crypto";
 import type { Header } from "@polkadot/types/interfaces";
-import type { IU8a } from "@polkadot/types/types";
+import type { Codec, IU8a } from "@polkadot/types/types";
 import type { ApiDecoration } from "@polkadot/api/types";
 
 export type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 
-// == Stake ==
+// == Misc ==
 
-export interface StakeData {
-  blockNumber: number;
-  blockHashHex: string;
-  stakeOut: {
-    total: bigint;
-    perAddr: Map<string, bigint>;
-    perNet: Map<number, bigint>;
-    perAddrPerNet: Map<number, Map<string, bigint>>;
-  };
+export type Entry<T> = [unknown, T];
+export type RawEntry = Entry<Codec>[] | undefined;
+export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
+
+export type Nullish = null | undefined;
+export type PolkaApi = ApiDecoration<"promise">;
+
+export interface CustomMetadata {
+  title?: string;
+  body?: string;
 }
 
-// == Transactions ==
+export interface BaseProposal {
+  id: number;
+  metadata: string;
+}
 
+export interface BaseDao {
+  id: number;
+  data: string;
+}
+
+export const CUSTOM_METADATA_SCHEMA = z.object({
+  title: z.string().optional(),
+  body: z.string().optional(),
+});
+
+assert<Extends<z.infer<typeof CUSTOM_METADATA_SCHEMA>, CustomMetadata>>();
+
+export interface CustomDataError {
+  message: string;
+}
+
+export type CustomMetadataState = Result<CustomMetadata, CustomDataError>;
+export type WithMetadataState<T> = T & { customData?: CustomMetadataState };
+
+export const URL_SCHEMA = z.string().trim().url();
+
+export const isNotNull = <T>(item: T | null): item is T => item !== null;
+
+// == Subspace refresh times ==
+// TODO: these values should be passed as parameters in the functions passed by the apps (env).
+
+// Time to consider last block query un-fresh. Half block time is the expected
+// time for a new block at a random point in time, so:
+// block_time / 2  ==  8 seconds / 2  ==  4 seconds
+export const LAST_BLOCK_STALE_TIME = (1000 * 8) / 2;
+
+// Time to consider proposals query state un-fresh. They don't change a lot,
+// only when a new proposal is created and people should be able to see new
+// proposals fast enough.
+// 1 minute (arbitrary).
+export const PROPOSALS_STALE_TIME = 1000 * 60;
+
+// Time to consider stake query state un-fresh. They also don't change a lot,
+// only when people move their stake / delegation. That changes the way votes
+// are computed, but only very marginally for a given typical stake change, with
+// a small chance of a relevant difference in displayed state.
+// 5 minutes (arbitrary).
+export const STAKE_STALE_TIME = 1000 * 60 * 5; // 5 minutes (arbitrary)
+
+// == Stake ==
+
+export interface StakeOutData {
+  total: bigint;
+  perAddr: Map<string, bigint>;
+  perNet: Map<number, bigint>;
+  perAddrPerNet: Map<number, Map<string, bigint>>;
+}
+
+export interface LastBlock {
+  blockHeader: Header;
+  blockNumber: number;
+  blockHash: IU8a;
+  blockHashHex: `0x${string}`;
+  apiAtBlock: ApiDecoration<"promise">;
+}
+
+export interface ProposalStakeInfo {
+  stakeFor: bigint;
+  stakeAgainst: bigint;
+  stakeVoted: bigint;
+  stakeTotal: bigint;
+}
+
+// == SS58 ==
+
+export type SS58Address = Tagged<string, "SS58Address">;
+
+function isSS58(value: string): value is SS58Address {
+  let decoded = null;
+  try {
+    decoded = decodeAddress(value);
+  } catch (e) {
+    return false;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return decoded != null;
+}
+
+export const ADDRESS_SCHEMA = z.string().refine(isSS58, "Invalid SS58 address");
+
+// == Transactions ==
 export interface TransactionResult {
   finalized: boolean;
   message: string | null;
@@ -50,6 +141,7 @@ export interface TransferStake {
 }
 
 // == Governance ==
+
 export interface Vote {
   proposalId: number;
   vote: string; // TODO i think this should be a boolean
@@ -67,175 +159,180 @@ export interface AddDaoApplication {
   callback?: (status: TransactionResult) => void;
 }
 
-export type SS58Address = Tagged<string, "SS58Address">;
+export interface UpdateDelegatingVotingPower {
+  isDelegating: boolean;
+  callback?: (status: TransactionResult) => void;
+}
 
-// == S0 Applications ==
+export const TOKEN_AMOUNT_SCHEMA = z
+  .string()
+  .or(z.number())
+  .transform((value) => BigInt(value));
+
+// == DAO Applications ==
 
 export type DaoStatus = "Pending" | "Accepted" | "Refused";
-
-export interface CustomDaoData {
-  discordId?: string;
-  title?: string;
-  body?: string;
-}
 
 export interface DaoApplications {
   id: number;
   userId: SS58Address;
   payingFor: SS58Address;
   data: string;
-  body?: CustomDaoData;
+  body?: CustomMetadata;
   status: DaoStatus;
-  applicationCost: number;
+  applicationCost: bigint;
 }
 
-// == Proposals ==
-
-export type ProposalStatus = "Pending" | "Accepted" | "Refused" | "Expired";
-
-export type ProposalData = Enum<{
-  custom: string;
-  globalParams: Record<string, unknown>;
-  subnetParams: { netuid: number; params: Record<string, unknown> };
-  subnetCustom: { netuid: number; data: string };
-  expired: null;
-}>;
-
-export interface Proposal {
-  id: number;
-  proposer: SS58Address;
-  status: ProposalStatus;
-  expirationBlock: number;
-  votesFor: SS58Address[];
-  votesAgainst: SS58Address[];
-  finalizationBlock: number | null;
-  data: ProposalData;
-}
-
-export interface CustomProposalData {
-  title?: string;
-  body?: string;
-}
-
-export interface CustomDataError {
-  message: string;
-}
-
-export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
-
-export const isNotNull = <T>(item: T | null): item is T => item !== null;
-
-export type CustomProposalDataState = Result<
-  CustomProposalData,
-  CustomDataError
->;
-export interface ProposalState extends Proposal {
-  customData?: CustomProposalDataState;
-}
-
-export interface ProposalStakeInfo {
-  stakeFor: bigint;
-  stakeAgainst: bigint;
-  stakeVoted: bigint;
-  stakeTotal: bigint;
-}
-
-export interface LastBlock {
-  blockHeader: Header;
-  blockNumber: number;
-  blockHash: IU8a;
-  blockHashHex: `0x${string}`;
-  apiAtBlock: ApiDecoration<"promise">;
-}
-
-// == Schemas ==
-
-export const URL_SCHEMA = z.string().trim().url();
-
-export const ADDRESS_SCHEMA = z
-  .string()
-  .transform((value) => value as SS58Address);
-
-export const DAO_SCHEMA = z.object({
+export const DAO_APPLICATIONS_SCHEMA = z.object({
   id: z.number(),
-  userId: ADDRESS_SCHEMA,
-  payingFor: ADDRESS_SCHEMA,
+  userId: ADDRESS_SCHEMA, // TODO: validate SS58 address
+  payingFor: ADDRESS_SCHEMA, // TODO: validate SS58 address
   data: z.string(),
   status: z
     .string()
     .refine(
       (value) => ["Pending", "Accepted", "Refused"].includes(value),
-      "Invalid proposal status"
+      "Invalid proposal status",
     )
     .transform((value) => value as DaoStatus),
-  applicationCost: z.number(),
+  applicationCost: TOKEN_AMOUNT_SCHEMA,
 });
 
+assert<Extends<z.infer<typeof DAO_APPLICATIONS_SCHEMA>, DaoApplications>>();
+
+export function parseDaos(valueRaw: Codec): DaoApplications | null {
+  const value = valueRaw.toPrimitive();
+  const validated = DAO_APPLICATIONS_SCHEMA.safeParse(value);
+  if (!validated.success) {
+    return null;
+  }
+  return validated.data as unknown as DaoApplications;
+}
+
+export interface DAOCardFields {
+  title: string | null;
+  body: string | null;
+}
+
+export type DaoState = WithMetadataState<DaoApplications>;
+
+// == Proposals ==
+
+export type ProposalStatus = Enum<{
+  open: {
+    votesFor: SS58Address[];
+    votesAgainst: SS58Address[];
+    stakeFor: bigint;
+    stakeAgainst: bigint;
+  };
+  accepted: { block: number; stakeFor: bigint; stakeAgainst: bigint };
+  refused: { block: number; stakeFor: bigint; stakeAgainst: bigint };
+  expired: null;
+}>;
+
+const PROPOSAL_STATUS_SCHEMA = z.union([
+  z.object({
+    open: z.object({
+      votesFor: z.array(ADDRESS_SCHEMA),
+      votesAgainst: z.array(ADDRESS_SCHEMA),
+      stakeFor: TOKEN_AMOUNT_SCHEMA,
+      stakeAgainst: TOKEN_AMOUNT_SCHEMA,
+    }),
+  }),
+  z.object({
+    accepted: z.object({
+      block: z.number(),
+      stakeFor: TOKEN_AMOUNT_SCHEMA,
+      stakeAgainst: TOKEN_AMOUNT_SCHEMA,
+    }),
+  }),
+  z.object({
+    refused: z.object({
+      block: z.number(),
+      stakeFor: TOKEN_AMOUNT_SCHEMA,
+      stakeAgainst: TOKEN_AMOUNT_SCHEMA,
+    }),
+  }),
+  z.object({
+    expired: z.null(),
+  }),
+]);
+
+assert<Extends<z.infer<typeof PROPOSAL_STATUS_SCHEMA>, ProposalStatus>>();
+
+export type ProposalData = Enum<{
+  globalCustom: null;
+  globalParams: Record<string, unknown>;
+  subnetCustom: { subnetId: number };
+  subnetParams: { subnetId: number; params: Record<string, unknown> };
+  transferDaoTreasury: { account: SS58Address; amount: bigint };
+}>;
+
 export const PROPOSAL_DATA_SCHEMA = z.union([
-  z.object({
-    custom: z.string(),
-  }),
-  z.object({
-    globalParams: z
-      .object({})
-      .passthrough()
-      .transform((value) => value as Record<string, unknown>),
-  }),
+  z.object({ globalCustom: z.null() }),
+  z.object({ globalParams: z.record(z.unknown()) }),
+  z.object({ subnetCustom: z.object({ subnetId: z.number() }) }),
   z.object({
     subnetParams: z.object({
-      netuid: z.number(),
-      params: z
-        .object({})
-        .passthrough()
-        .transform((value) => value as Record<string, unknown>),
+      subnetId: z.number(),
+      params: z.record(z.unknown()),
     }),
   }),
   z.object({
-    subnetCustom: z.object({
-      netuid: z.number(),
-      data: z.string(),
+    transferDaoTreasury: z.object({
+      account: ADDRESS_SCHEMA,
+      amount: TOKEN_AMOUNT_SCHEMA,
     }),
   }),
-  z.object({ expired: z.null() }),
 ]);
+
+export function parseProposal(valueRaw: Codec): Proposal | null {
+  const value = valueRaw.toPrimitive();
+  const validated = PROPOSAL_SCHEMA.safeParse(value);
+  if (!validated.success) {
+    return null;
+  }
+  return validated.data;
+}
 
 assert<Extends<z.infer<typeof PROPOSAL_DATA_SCHEMA>, ProposalData>>();
 
-export const PROPOSAL_SCHEMA = z
-  .object({
-    id: z.number(),
-    proposer: ADDRESS_SCHEMA,
-    expirationBlock: z.number(),
-    data: PROPOSAL_DATA_SCHEMA,
-    status: z
-      .string()
-      .refine(
-        (value) =>
-          ["Pending", "Accepted", "Refused", "Expired"].includes(value),
-        "Invalid proposal status"
-      )
-      .transform((value) => value as ProposalStatus),
-    votesFor: z.array(ADDRESS_SCHEMA),
-    votesAgainst: z.array(ADDRESS_SCHEMA),
-    proposalCost: z.number(),
-    finalizationBlock: z.number().nullable(),
-  })
-  .superRefine((value, ctx) => {
-    if (value.status === "Accepted" && value.finalizationBlock === null) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "Proposal status is 'Accepted', but no finalization block was found",
-      });
-    }
-  });
+export interface Proposal {
+  id: number;
+  proposer: SS58Address;
+  expirationBlock: number;
+  data: ProposalData;
+  status: ProposalStatus;
+  metadata: string;
+  proposalCost: bigint;
+  creationBlock: number;
+}
 
-export const CUSTOM_PROPOSAL_METADATA_SCHEMA = z.object({
-  title: z.string().optional(),
-  body: z.string().optional(),
+export const PROPOSAL_SCHEMA = z.object({
+  id: z.number(),
+  proposer: ADDRESS_SCHEMA,
+  expirationBlock: z.number(),
+  data: PROPOSAL_DATA_SCHEMA,
+  status: PROPOSAL_STATUS_SCHEMA,
+  metadata: z.string(),
+  proposalCost: TOKEN_AMOUNT_SCHEMA,
+  creationBlock: z.number(),
 });
 
-export const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
+assert<Extends<z.infer<typeof PROPOSAL_SCHEMA>, Proposal>>();
+
+export type ProposalState = WithMetadataState<Proposal>;
+
+export interface ProposalCardFields {
+  title: string | null;
+  body: string | null;
+  netuid: number | "GLOBAL";
+  invalid?: boolean;
+}
+
+// == Field Params ==
+
+const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
   // # Global
   maxNameLength: "Max Name Length",
   maxAllowedSubnets: "Max Allowed Subnets",
@@ -270,4 +367,8 @@ export const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
   tempo: "Tempo",
   trustRatio: "Trust Ratio",
   voteMode: "Vote Mode",
+};
+
+export const paramNameToDisplayName = (paramName: string): string => {
+  return PARAM_FIELD_DISPLAY_NAMES[paramName] ?? paramName;
 };

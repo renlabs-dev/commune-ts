@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { WalletButtonWithHook } from "@repo/providers";
 import type { Vote } from "./vote-label";
 import { Card } from "./card";
@@ -13,7 +13,7 @@ export function VoteCard(props: {
   voted: Vote;
 }): JSX.Element {
   const { proposalId, voted = "UNVOTED" } = props;
-  const { isConnected, voteProposal } = usePolkadot();
+  const { isConnected, voteProposal } = useCommune();
 
   const [vote, setVote] = useState("UNVOTED");
   const [votingStatus, setVotingStatus] = useState<TransactionResult>({

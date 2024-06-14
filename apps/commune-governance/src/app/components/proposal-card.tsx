@@ -2,35 +2,35 @@
 
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import Image from "next/image";
-import { assert } from "tsafe";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import type {
-  ProposalStakeInfo,
-  ProposalState,
-  ProposalStatus,
-} from "@repo/providers/src/types";
+import type { ProposalState } from "@repo/providers/src/types";
 import {
-  bigintDivision,
-  formatToken,
+  calcProposalFavorablePercent,
+  handleCustomProposal,
+  handleProposalQuorumPercent,
+  handleProposalStakeVoted,
   smallAddress,
 } from "@repo/providers/src/utils";
 import { cairo } from "@repo/ui/fonts";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";
 import { StatusLabel } from "./status-label";
 import type { Vote } from "./vote-label";
 import { VoteLabel } from "./vote-label";
-import { handleProposal } from "./proposal-fields";
 
 export interface ProposalCardProps {
-  proposal: ProposalState;
-  stakeInfo: ProposalStakeInfo | null;
+  proposalState: ProposalState;
   voted: Vote;
 }
 
-function handleFavorablePercent(favorablePercent: number): JSX.Element {
+function handlePercentages(
+  favorablePercent: number | null,
+): JSX.Element | null {
+  if (favorablePercent === null) return null;
+
   const againstPercent = 100 - favorablePercent;
   if (Number.isNaN(favorablePercent)) {
     return (
@@ -60,36 +60,15 @@ function handleFavorablePercent(favorablePercent: number): JSX.Element {
   );
 }
 
-function renderFavorablePercent(stakeInfo: ProposalStakeInfo): JSX.Element {
-  const { stakeFor, stakeAgainst, stakeVoted } = stakeInfo;
-  assert(
-    stakeFor + stakeAgainst == stakeVoted,
-    "stakeFor + stakeAgainst != stakeVoted",
-  );
-  const favorablePercent = bigintDivision(stakeFor, stakeVoted) * 100;
-  return handleFavorablePercent(favorablePercent);
-}
-
-function renderQuorumPercent(stakeInfo: ProposalStakeInfo): JSX.Element {
-  const { stakeVoted, stakeTotal } = stakeInfo;
-  const quorumPercent = bigintDivision(stakeVoted, stakeTotal) * 100;
-  return (
-    <span className="text-yellow-600">
-      {" ("}
-      {quorumPercent.toFixed(2)} %)
-    </span>
-  );
-}
-
 export function ProposalCard(props: ProposalCardProps): JSX.Element {
-  const { proposal, stakeInfo, voted } = props;
-
-  const { title, body, netuid, invalid } = handleProposal(proposal);
+  const { proposalState, voted } = props;
+  const { stakeOut } = useCommune();
+  const { title, body, netuid, invalid } = handleCustomProposal(proposalState);
 
   return (
     <Card.Root
       className={`${invalid ? "opacity-50" : ""} ${invalid ? "hidden" : ""}`}
-      key={proposal.id}
+      key={proposalState.id}
     >
       <Card.Header className="z-10 flex-col">
         {title ? (
@@ -106,7 +85,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
               {netuid !== "GLOBAL" ? `Subnet ${netuid}` : "Global"}
             </span>
           </div>
-          <StatusLabel result={proposal.status as ProposalStatus} />
+          <StatusLabel result={proposalState.status} />
         </div>
       </Card.Header>
 
@@ -127,7 +106,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
             <div className="mr-3 w-full py-2 lg:w-auto lg:min-w-fit lg:py-0">
               <Link
                 className="min-w-auto flex w-full items-center border border-green-500 px-2 py-2 text-sm text-green-500 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 lg:w-auto lg:px-4"
-                href={`proposal/${proposal.id}`}
+                href={`/item/proposal/${proposalState.id}`}
               >
                 View full proposal
                 <ArrowRightIcon className="ml-auto w-5 lg:ml-2" />
@@ -136,41 +115,34 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
             <span className="line-clamp-1 block w-full truncate text-base text-green-500">
               Posted by{" "}
               <span className="text-white">
-                {smallAddress(proposal.proposer)}
+                {smallAddress(proposalState.proposer)}
               </span>
             </span>
           </div>
 
           <div className="mx-auto flex w-full flex-col-reverse items-center gap-2 lg:flex-row lg:justify-end">
-            {!stakeInfo && (
-              <div className="flex w-full items-center space-x-2 lg:justify-end">
-                <span className="flex w-full animate-pulse bg-gray-700 py-3.5 lg:w-3/12" />
-              </div>
-            )}
-            {stakeInfo ? (
-              <div className="flex w-full lg:w-auto">
-                {renderFavorablePercent(stakeInfo)}
-              </div>
-            ) : null}
+            <div className="flex w-full lg:w-auto">
+              {handlePercentages(
+                calcProposalFavorablePercent(proposalState.status),
+              )}
+            </div>
 
-            {!stakeInfo && (
-              <div className="w-full text-center lg:w-4/5">
-                <span className="flex w-full animate-pulse bg-gray-700 py-3.5" />
-              </div>
-            )}
-
-            {stakeInfo ? (
+            {stakeOut?.total ? (
               <Label className="flex w-full justify-center border border-gray-500 px-2 py-2.5 text-center font-medium text-gray-300 lg:w-auto lg:px-4">
-                Total staked:
+                Stake Voted:
                 <span className="font-bold text-green-500">
-                  {formatToken(stakeInfo.stakeVoted)}
+                  {handleProposalStakeVoted(proposalState.status)}
                 </span>
-                <span className="text-xs font-extralight text-gray-300">
-                  COMAI
-                </span>
-                {renderQuorumPercent(stakeInfo)}
+                {handleProposalQuorumPercent(
+                  proposalState.status,
+                  stakeOut.total,
+                )}
               </Label>
-            ) : null}
+            ) : (
+              <div className="h-fit w-full text-center lg:w-4/5">
+                <span className="flex h-fit w-full animate-pulse bg-gray-700 py-3.5" />
+              </div>
+            )}
           </div>
         </div>
       </Card.Body>

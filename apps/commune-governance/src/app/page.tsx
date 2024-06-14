@@ -1,9 +1,8 @@
 "use client";
 
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
-import type { SS58Address } from "@repo/providers/src/types";
+import { useCommune } from "@repo/providers/src/context/polkadot";
+import type { ProposalStatus, SS58Address } from "@repo/providers/src/types";
 import { useState } from "react";
-import { computeVotes, getProposalNetuid } from "@repo/providers/src/utils";
 import type { Vote } from "./components/vote-label";
 import { ProposalCard } from "./components/proposal-card";
 import { DaoCard } from "./components/dao-card";
@@ -13,19 +12,22 @@ import { ProposalListHeader } from "./components/proposal-list-header";
 import { CardSkeleton } from "./components/card-skeleton";
 
 export default function HomePage(): JSX.Element {
-  const { proposals, curatorApplications, stakeData, selectedAccount } =
-    usePolkadot();
+  const {
+    proposalsWithMeta,
+    isProposalsLoading,
+    daosWithMeta,
+    isDaosLoading,
+    selectedAccount,
+  } = useCommune();
 
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
 
   function handleIsLoading(type: "proposals" | "daos"): boolean {
     switch (type) {
       case "daos":
-        return curatorApplications == null;
-
+        return isDaosLoading;
       case "proposals":
-        return proposals == null;
-
+        return isProposalsLoading;
       default:
         return false;
     }
@@ -34,49 +36,43 @@ export default function HomePage(): JSX.Element {
   const isLoading = handleIsLoading(viewMode);
 
   const handleUserVotes = ({
-    votesAgainst,
-    votesFor,
+    proposalStatus,
     selectedAccountAddress,
   }: {
-    votesAgainst: string[];
-    votesFor: string[];
+    proposalStatus: ProposalStatus;
     selectedAccountAddress: SS58Address;
   }): Vote => {
-    if (votesAgainst.includes(selectedAccountAddress)) return "AGAINST";
-    if (votesFor.includes(selectedAccountAddress)) return "FAVORABLE";
+    if (!Object.prototype.hasOwnProperty.call(proposalStatus, "open"))
+      return "UNVOTED";
+
+    if (
+      "open" in proposalStatus &&
+      proposalStatus.open.votesFor.includes(selectedAccountAddress)
+    ) {
+      return "FAVORABLE";
+    }
+    if (
+      "open" in proposalStatus &&
+      proposalStatus.open.votesAgainst.includes(selectedAccountAddress)
+    ) {
+      return "AGAINST";
+    }
+
     return "UNVOTED";
   };
 
-  // TODO check this fucker
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function renderProposals() {
-    const proposalsContent = proposals?.map((proposal) => {
+  function renderProposals(): JSX.Element[] {
+    const proposalsContent = proposalsWithMeta.map((proposal) => {
       const voted = handleUserVotes({
-        votesAgainst: proposal.votesAgainst,
-        votesFor: proposal.votesFor,
+        proposalStatus: proposal.status,
         selectedAccountAddress: selectedAccount?.address as SS58Address,
       });
 
-      const netuid = getProposalNetuid(proposal);
-      let proposalStakeInfo = null;
-      if (stakeData != null) {
-        const stakeMap =
-          netuid != null
-            ? stakeData.stakeOut.perAddrPerNet.get(netuid) ??
-              new Map<string, bigint>()
-            : stakeData.stakeOut.perAddr;
-        proposalStakeInfo = computeVotes(
-          stakeMap,
-          proposal.votesFor,
-          proposal.votesAgainst,
-        );
-      }
       return (
         <div className="animate-fade-in-down" key={proposal.id}>
           <ProposalCard
             key={proposal.id}
-            proposal={proposal}
-            stakeInfo={proposalStakeInfo}
+            proposalState={proposal}
             voted={voted}
           />
         </div>
@@ -85,13 +81,11 @@ export default function HomePage(): JSX.Element {
     return proposalsContent;
   }
 
-  // TODO check this fucker
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function renderDaos() {
-    const daosContent = curatorApplications?.map((daos) => {
+  function renderDaos(): JSX.Element[] {
+    const daosContent = daosWithMeta.map((dao) => {
       return (
-        <div key={daos.id}>
-          <DaoCard dao={daos} key={daos.id} />
+        <div key={dao.id}>
+          <DaoCard daoState={dao} key={dao.id} />
         </div>
       );
     });
@@ -109,9 +103,8 @@ export default function HomePage(): JSX.Element {
 
           <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
 
-          <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8 xl:px-0">
-            {!isLoading && content}
-            {isLoading ? <CardSkeleton /> : null}
+          <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8">
+            {isLoading ? <CardSkeleton /> : content}
           </div>
         </Container>
       </div>

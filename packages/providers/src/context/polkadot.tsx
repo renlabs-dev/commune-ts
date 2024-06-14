@@ -11,35 +11,44 @@ import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "@repo/ui/wallet-modal";
-import { calculateAmount, handleCustomProposals } from "../utils";
-import {
-  isNotNull,
-  type AddCustomProposal,
-  type AddDaoApplication,
-  type DaoApplications,
-  type ProposalState,
-  type Stake,
-  type StakeData,
-  type TransactionResult,
-  type Transfer,
-  type TransferStake,
-  type Vote,
+import type { Codec } from "@polkadot/types/types";
+import { calculateAmount } from "../utils";
+import type {
+  LastBlock,
+  AddCustomProposal,
+  AddDaoApplication,
+  Stake,
+  TransactionResult,
+  Transfer,
+  TransferStake,
+  Vote,
+  BaseProposal,
+  BaseDao,
+  DaoState,
+  ProposalState,
+  StakeOutData,
+  UpdateDelegatingVotingPower,
 } from "../types";
 import {
-  getAllStakeOut,
   getBalance,
-  getDaoApplications,
-  getGlobalDaoTreasury,
-  getProposals,
+  handleDaos,
+  handleProposals,
+  useAllStakeOut,
+  useCustomMetadata,
+  useDaoTreasury,
+  useDaos,
+  useLastBlock,
+  useNotDelegatingVoting,
+  useProposals,
 } from "../querys";
 
-interface PolkadotApiState {
+interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
   web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null;
   web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null;
 }
 
-interface PolkadotContextType {
+interface CommuneContextType {
   api: ApiPromise | null;
   isConnected: boolean;
   isInitialized: boolean;
@@ -59,60 +68,61 @@ interface PolkadotContextType {
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
 
-  curatorApplications: DaoApplications[] | null;
-  globalDaoTreasury: string;
+  updateDelegatingVotingPower: (
+    updateDelegating: UpdateDelegatingVotingPower,
+  ) => Promise<void>;
 
-  proposals: ProposalState[] | null;
+  lastBlock: LastBlock | undefined;
+  isLastBlockLoading: boolean;
 
-  stakeData: StakeData | null;
+  daoTreasury: Codec | undefined;
+  isDaoTreasuryLoading: boolean;
+
+  notDelegatingVoting: Codec | undefined;
+  isNotDelegatingVotingLoading: boolean;
+
+  stakeOut: StakeOutData | undefined;
+  isStakeOutLoading: boolean;
+
+  proposalsWithMeta: ProposalState[];
+  isProposalsLoading: boolean;
+
+  daosWithMeta: DaoState[];
+  isDaosLoading: boolean;
 }
 
-const PolkadotContext = createContext<PolkadotContextType | null>(null);
+const CommuneContext = createContext<CommuneContextType | null>(null);
 
-interface PolkadotProviderProps {
+interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
 }
 
-export function PolkadotProvider({
+export function CommuneProvider({
   children,
   wsEndpoint,
-}: PolkadotProviderProps): JSX.Element {
+}: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
-
-  const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
+  const [communeApi, setCommuneApi] = useState<CommuneApiState>({
     web3Enable: null,
     web3Accounts: null,
     web3FromAddress: null,
   });
-
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-
   const [balance, setBalance] = useState("0");
-
-  const [curatorApplications, setCuratorApplications] = useState<
-    DaoApplications[] | null
-  >(null);
-  const [globalDaoTreasury, setGlobalDaoTreasury] = useState<string>("0");
-
-  const [stakeData, setStakeData] = useState<StakeData | null>(null);
-
-  const [proposals, setProposals] = useState<ProposalState[] | null>(null);
-
   const [openModal, setOpenModal] = useState(false);
-
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
 
   // == Initialize Polkadot ==
 
-  async function loadPolkadotApi(): Promise<void> {
+  async function loadCommuneApi(): Promise<void> {
     const { web3Accounts, web3Enable, web3FromAddress } = await import(
       "@polkadot/extension-dapp"
     );
-    setPolkadotApi({
+    setCommuneApi({
       web3Enable,
       web3Accounts,
       web3FromAddress,
@@ -124,7 +134,7 @@ export function PolkadotProvider({
   }
 
   useEffect(() => {
-    void loadPolkadotApi();
+    void loadCommuneApi();
 
     return () => {
       void api?.disconnect();
@@ -135,7 +145,7 @@ export function PolkadotProvider({
   async function fetchWallets(favoriteWalletAddress: string): Promise<void> {
     const walletList = await getWallets();
     const accountExist = walletList?.find(
-      (wallet) => wallet.address === favoriteWalletAddress
+      (wallet) => wallet.address === favoriteWalletAddress,
     );
     if (accountExist) {
       setSelectedAccount(accountExist);
@@ -152,10 +162,10 @@ export function PolkadotProvider({
   }, [isInitialized]);
 
   async function getWallets(): Promise<InjectedAccountWithMeta[] | undefined> {
-    if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-    await polkadotApi.web3Enable("Commune AI");
+    if (!communeApi.web3Enable || !communeApi.web3Accounts) return;
+    await communeApi.web3Enable("Commune AI");
     try {
-      const response = await polkadotApi.web3Accounts();
+      const response = await communeApi.web3Accounts();
       return response;
     } catch (error) {
       return undefined;
@@ -198,58 +208,18 @@ export function PolkadotProvider({
     });
   }, [api, selectedAccount]);
 
-  useEffect(() => {
-    if (!api) return;
-
-    void getAllStakeOut(api).then((stake) => {
-      setStakeData(stake);
-    });
-
-    void getDaoApplications(api).then((daos) => {
-      setCuratorApplications(daos);
-    });
-
-    void getGlobalDaoTreasury(api).then((treasury) => {
-      setGlobalDaoTreasury(treasury);
-    });
-  }, [api]);
-
-  useEffect(() => {
-    if (!api) return;
-
-    void getProposals(api).then(async (proposal) => {
-      setProposals(proposal);
-
-      await handleCustomProposals(proposal).then((results) => {
-        const newProposalList: ProposalState[] = [...proposal];
-
-        results.filter(isNotNull).forEach((result) => {
-          const { id, customData } = result;
-          const parsedProposal = newProposalList.find((p) => p.id === id);
-          if (!parsedProposal) {
-            return;
-          }
-          parsedProposal.customData = customData;
-        });
-        setProposals(newProposalList);
-      });
-    });
-  }, [api]);
-
   // == Transaction Handler ==
 
   async function sendTransaction(
     transactionType: string,
     transaction: SubmittableExtrinsic<"promise">,
-    callback?: (result: TransactionResult) => void
+    callback?: (result: TransactionResult) => void,
   ): Promise<void> {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-
+    if (!api || !selectedAccount || !communeApi.web3FromAddress) return;
     try {
-      const injector = await polkadotApi.web3FromAddress(
-        selectedAccount.address
+      const injector = await communeApi.web3FromAddress(
+        selectedAccount.address,
       );
-
       await transaction.signAndSend(
         selectedAccount.address,
         { signer: injector.signer },
@@ -261,7 +231,6 @@ export function PolkadotProvider({
               message: `${transactionType} in progress`,
             });
           }
-
           if (result.status.isFinalized) {
             const success = result.findRecord("system", "ExtrinsicSuccess");
             const failed = result.findRecord("system", "ExtrinsicFailed");
@@ -292,7 +261,7 @@ export function PolkadotProvider({
               callback?.({ finalized: true, status: "ERROR", message: msg });
             }
           }
-        }
+        },
       );
     } catch (err) {
       toast.error(err as string);
@@ -312,7 +281,7 @@ export function PolkadotProvider({
     const transaction = api.tx.subspaceModule.addStake(
       netUid,
       validator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Staking", transaction, callback);
   }
@@ -328,7 +297,7 @@ export function PolkadotProvider({
     const transaction = api.tx.subspaceModule.removeStake(
       netUid,
       validator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Unstaking", transaction, callback);
   }
@@ -353,7 +322,7 @@ export function PolkadotProvider({
       netUid,
       fromValidator,
       toValidator,
-      calculateAmount(amount)
+      calculateAmount(amount),
     );
     await sendTransaction("Transfer Stake", transaction, callback);
   }
@@ -365,9 +334,9 @@ export function PolkadotProvider({
     vote,
     callback,
   }: Vote): Promise<void> {
-    if (!api?.tx.subspaceModule.voteProposal) return;
+    if (!api?.tx.governanceModule.voteProposal) return;
 
-    const transaction = api.tx.subspaceModule.voteProposal(proposalId, vote);
+    const transaction = api.tx.governanceModule.voteProposal(proposalId, vote);
     await sendTransaction("Vote", transaction, callback);
   }
 
@@ -375,9 +344,10 @@ export function PolkadotProvider({
     IpfsHash,
     callback,
   }: AddCustomProposal): Promise<void> {
-    if (!api?.tx.subspaceModule.addCustomProposal) return;
+    if (!api?.tx.governanceModule.addGlobalCustomProposal) return;
 
-    const transaction = api.tx.subspaceModule.addCustomProposal(IpfsHash);
+    const transaction =
+      api.tx.governanceModule.addGlobalCustomProposal(IpfsHash);
     await sendTransaction("Create Custom Proposal", transaction, callback);
   }
 
@@ -386,17 +356,115 @@ export function PolkadotProvider({
     applicationKey,
     callback,
   }: AddDaoApplication): Promise<void> {
-    if (!api?.tx.subspaceModule.addDaoApplication) return;
+    if (!api?.tx.governanceModule.addDaoApplication) return;
 
-    const transaction = api.tx.subspaceModule.addDaoApplication(
+    const transaction = api.tx.governanceModule.addDaoApplication(
       applicationKey,
-      IpfsHash
+      IpfsHash,
     );
     await sendTransaction("Create S0 Application", transaction, callback);
   }
 
+  async function updateDelegatingVotingPower({
+    isDelegating,
+    callback,
+  }: UpdateDelegatingVotingPower): Promise<void> {
+    if (!api?.tx.governanceModule.addCustomProposal) return;
+
+    const transaction = isDelegating
+      ? api.tx.governanceModule.enableVotePowerDelegation()
+      : api.tx.governanceModule.disableVotePowerDelegation();
+
+    await sendTransaction("Create Custom Proposal", transaction, callback);
+  }
+
+  // Hooks
+
+  // Last block with API
+  const { data: lastBlock, isLoading: isLastBlockLoading } = useLastBlock(api);
+
+  // Dao Treasury
+  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } =
+    useDaoTreasury(lastBlock);
+
+  // Not Delegating Voting Power Set
+  const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
+    useNotDelegatingVoting(lastBlock);
+
+  // Stake Out
+  const { data: stakeOut, isLoading: isStakeOutLoading } =
+    useAllStakeOut(lastBlock);
+
+  // Proposals
+  const { data: proposalQuery, isLoading: isProposalsLoading } =
+    useProposals(lastBlock);
+
+  // Custom Metadata for Proposals
+  const [proposals, proposalsErrs] = handleProposals(proposalQuery);
+  for (const err of proposalsErrs) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+  const customProposalMetadataQueryMap = useCustomMetadata<BaseProposal>(
+    "proposal",
+    lastBlock,
+    proposals,
+  );
+  for (const entry of customProposalMetadataQueryMap.entries()) {
+    const [id, query] = entry;
+    const { data } = query;
+    if (data == null) {
+      // eslint-disable-next-line no-console
+      console.info(`Missing custom proposal metadata for proposal ${id}`);
+    }
+  }
+
+  const proposalsWithMeta = proposals.map((proposal) => {
+    const id = proposal.id;
+    const metadataQuery = customProposalMetadataQueryMap.get(id);
+    const data = metadataQuery?.data;
+    if (data == null) {
+      return proposal;
+    }
+    const [, customData] = data;
+    return { ...proposal, customData };
+  });
+
+  // Daos
+
+  const { data: daoQuery, isLoading: isDaosLoading } = useDaos(lastBlock);
+  const [daos, daosErrs] = handleDaos(daoQuery);
+  for (const err of daosErrs) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+  const customDaoMetadataQueryMap = useCustomMetadata<BaseDao>(
+    "dao",
+    lastBlock,
+    daos,
+  );
+  for (const entry of customDaoMetadataQueryMap.entries()) {
+    const [id, query] = entry;
+    const { data } = query;
+    if (data == null) {
+      // eslint-disable-next-line no-console
+      console.info(`Missing custom dao metadata for dao ${id}`);
+    }
+  }
+
+  const daosWithMeta = daos.map((dao) => {
+    const id = dao.id;
+    const metadataQuery = customDaoMetadataQueryMap.get(id);
+    const data = metadataQuery?.data;
+    if (data == null) {
+      return dao;
+    }
+    const [, customData] = data;
+    return { ...dao, customData };
+  });
+
   return (
-    <PolkadotContext.Provider
+    <CommuneContext.Provider
       value={{
         api,
         isConnected,
@@ -413,16 +481,29 @@ export function PolkadotProvider({
         transfer,
         transferStake,
 
-        curatorApplications,
-        globalDaoTreasury,
-
-        proposals,
-
         voteProposal,
         addCustomProposal,
         addDaoApplication,
 
-        stakeData,
+        updateDelegatingVotingPower,
+
+        lastBlock,
+        isLastBlockLoading,
+
+        daoTreasury,
+        isDaoTreasuryLoading,
+
+        notDelegatingVoting,
+        isNotDelegatingVotingLoading,
+
+        stakeOut,
+        isStakeOutLoading,
+
+        proposalsWithMeta,
+        isProposalsLoading,
+
+        daosWithMeta,
+        isDaosLoading,
       }}
     >
       <WalletModal
@@ -432,14 +513,14 @@ export function PolkadotProvider({
         wallets={accounts}
       />
       {children}
-    </PolkadotContext.Provider>
+    </CommuneContext.Provider>
   );
 }
 
-export const usePolkadot = (): PolkadotContextType => {
-  const context = useContext(PolkadotContext);
+export const useCommune = (): CommuneContextType => {
+  const context = useContext(CommuneContext);
   if (context === null) {
-    throw new Error("usePolkadot must be used within a PolkadotProvider");
+    throw new Error("useCommune must be used within a CommuneProvider");
   }
   return context;
 };
