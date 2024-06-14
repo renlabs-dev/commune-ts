@@ -18,6 +18,7 @@ function ToastProvider({
         pauseOnHover
         position="top-right"
         rtl={false}
+        theme="dark"
       />
 
       {children}

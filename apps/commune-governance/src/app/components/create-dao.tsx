@@ -7,7 +7,7 @@ import { z } from "zod";
 import { cairo } from "@repo/ui/fonts";
 import { Loading } from "@repo/ui/loading";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { toast } from "@repo/providers/src/context/toast";
 
 const daoSchema = z.object({
@@ -19,7 +19,7 @@ const daoSchema = z.object({
 
 export function CreateDao(): JSX.Element {
   const router = useRouter();
-  const { isConnected, addDaoApplication, balance } = usePolkadot();
+  const { isConnected, addDaoApplication, balance } = useCommune();
 
   const [applicationKey, setApplicationKey] = useState("");
 

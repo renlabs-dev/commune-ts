@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { formatToken, smallAddress } from "@repo/providers/src/utils";
 import { useEffect, useState } from "react";
 import { getBalance } from "@repo/providers/src/querys";
@@ -23,7 +23,7 @@ export function BalanceSection({
     selectedAccount,
     stakeOut,
     api,
-  } = usePolkadot();
+  } = useCommune();
 
   const [daosTreasuries, setDaosTreasuries] = useState<string | null>(null);
 

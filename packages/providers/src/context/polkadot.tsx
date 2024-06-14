@@ -42,13 +42,13 @@ import {
   useProposals,
 } from "../querys";
 
-interface PolkadotApiState {
+interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
   web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null;
   web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null;
 }
 
-interface PolkadotContextType {
+interface CommuneContextType {
   api: ApiPromise | null;
   isConnected: boolean;
   isInitialized: boolean;
@@ -91,19 +91,19 @@ interface PolkadotContextType {
   isDaosLoading: boolean;
 }
 
-const PolkadotContext = createContext<PolkadotContextType | null>(null);
+const CommuneContext = createContext<CommuneContextType | null>(null);
 
-interface PolkadotProviderProps {
+interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
 }
 
-export function PolkadotProvider({
+export function CommuneProvider({
   children,
   wsEndpoint,
-}: PolkadotProviderProps): JSX.Element {
+}: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
-  const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
+  const [communeApi, setCommuneApi] = useState<CommuneApiState>({
     web3Enable: null,
     web3Accounts: null,
     web3FromAddress: null,
@@ -118,11 +118,11 @@ export function PolkadotProvider({
 
   // == Initialize Polkadot ==
 
-  async function loadPolkadotApi(): Promise<void> {
+  async function loadCommuneApi(): Promise<void> {
     const { web3Accounts, web3Enable, web3FromAddress } = await import(
       "@polkadot/extension-dapp"
     );
-    setPolkadotApi({
+    setCommuneApi({
       web3Enable,
       web3Accounts,
       web3FromAddress,
@@ -134,7 +134,7 @@ export function PolkadotProvider({
   }
 
   useEffect(() => {
-    void loadPolkadotApi();
+    void loadCommuneApi();
 
     return () => {
       void api?.disconnect();
@@ -162,10 +162,10 @@ export function PolkadotProvider({
   }, [isInitialized]);
 
   async function getWallets(): Promise<InjectedAccountWithMeta[] | undefined> {
-    if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-    await polkadotApi.web3Enable("Commune AI");
+    if (!communeApi.web3Enable || !communeApi.web3Accounts) return;
+    await communeApi.web3Enable("Commune AI");
     try {
-      const response = await polkadotApi.web3Accounts();
+      const response = await communeApi.web3Accounts();
       return response;
     } catch (error) {
       return undefined;
@@ -215,9 +215,9 @@ export function PolkadotProvider({
     transaction: SubmittableExtrinsic<"promise">,
     callback?: (result: TransactionResult) => void,
   ): Promise<void> {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
+    if (!api || !selectedAccount || !communeApi.web3FromAddress) return;
     try {
-      const injector = await polkadotApi.web3FromAddress(
+      const injector = await communeApi.web3FromAddress(
         selectedAccount.address,
       );
       await transaction.signAndSend(
@@ -344,9 +344,10 @@ export function PolkadotProvider({
     IpfsHash,
     callback,
   }: AddCustomProposal): Promise<void> {
-    if (!api?.tx.governanceModule.addCustomProposal) return;
+    if (!api?.tx.governanceModule.addGlobalCustomProposal) return;
 
-    const transaction = api.tx.governanceModule.addCustomProposal(IpfsHash);
+    const transaction =
+      api.tx.governanceModule.addGlobalCustomProposal(IpfsHash);
     await sendTransaction("Create Custom Proposal", transaction, callback);
   }
 
@@ -463,7 +464,7 @@ export function PolkadotProvider({
   });
 
   return (
-    <PolkadotContext.Provider
+    <CommuneContext.Provider
       value={{
         api,
         isConnected,
@@ -512,14 +513,14 @@ export function PolkadotProvider({
         wallets={accounts}
       />
       {children}
-    </PolkadotContext.Provider>
+    </CommuneContext.Provider>
   );
 }
 
-export const usePolkadot = (): PolkadotContextType => {
-  const context = useContext(PolkadotContext);
+export const useCommune = (): CommuneContextType => {
+  const context = useContext(CommuneContext);
   if (context === null) {
-    throw new Error("usePolkadot must be used within a PolkadotProvider");
+    throw new Error("useCommune must be used within a CommuneProvider");
   }
   return context;
 };
