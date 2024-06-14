@@ -7,7 +7,7 @@ import { z } from "zod";
 import { cairo } from "@repo/ui/fonts";
 import { Loading } from "@repo/ui/loading";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { toast } from "@repo/providers/src/context/toast";
 
 const daoSchema = z.object({
@@ -19,7 +19,7 @@ const daoSchema = z.object({
 
 export function CreateDao(): JSX.Element {
   const router = useRouter();
-  const { isConnected, addDaoApplication, balance } = usePolkadot();
+  const { isConnected, addDaoApplication, balance } = useCommune();
 
   const [applicationKey, setApplicationKey] = useState("");
 
@@ -149,7 +149,7 @@ export function CreateDao(): JSX.Element {
         {/* Modal */}
         <div className="animate-fade-in-down fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="relative w-[100%] max-w-5xl transform overflow-hidden border border-gray-500 bg-[url('/bg-pattern.svg')] text-left md:w-[80%]">
+            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-gray-500 bg-[url('/bg-pattern.svg')] text-left md:w-[80%]">
               {/* Modal Header */}
               <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-center bg-no-repeat p-6 text-white md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">

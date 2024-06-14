@@ -5,7 +5,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { z } from "zod";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { Loading } from "@repo/ui/loading";
 import { cairo } from "@repo/ui/fonts";
 import { toast } from "@repo/providers/src/context/toast";
@@ -17,7 +17,7 @@ const proposalSchema = z.object({
 
 export function CreateProposal(): JSX.Element {
   const router = useRouter();
-  const { isConnected, addCustomProposal, balance } = usePolkadot();
+  const { isConnected, addCustomProposal, balance } = useCommune();
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -139,7 +139,7 @@ export function CreateProposal(): JSX.Element {
         {/* Modal */}
         <div className="animate-fade-in-down fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="relative w-[100%] max-w-5xl transform overflow-hidden border border-gray-500 bg-white bg-[url('/bg-pattern.svg')] text-left text-white md:w-[80%]">
+            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-gray-500 bg-white bg-[url('/bg-pattern.svg')] text-left text-white md:w-[80%]">
               {/* Modal Header */}
               <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-cover bg-center bg-no-repeat p-6 md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">
