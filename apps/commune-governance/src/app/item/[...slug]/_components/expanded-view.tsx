@@ -13,7 +13,7 @@ import type {
   ProposalStatus,
   SS58Address,
 } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { MarkdownView } from "../../../components/markdown-view";
 import { VoteLabel, type Vote } from "../../../components/vote-label";
 import { StatusLabel } from "../../../components/status-label";
@@ -105,7 +105,7 @@ export function ExpandedView(props: CustomContent): JSX.Element {
     isDaosLoading,
     proposalsWithMeta,
     isProposalsLoading,
-  } = usePolkadot();
+  } = useCommune();
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleProposalsContent() {

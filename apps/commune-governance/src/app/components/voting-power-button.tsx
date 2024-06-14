@@ -5,12 +5,12 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import type { TransactionResult } from "@repo/providers/src/types";
 
 export function VotingPowerButton(): JSX.Element | null {
   const { selectedAccount, updateDelegatingVotingPower, notDelegatingVoting } =
-    usePolkadot();
+    useCommune();
 
   const [votingStatus, setVotingStatus] = useState<TransactionResult>({
     status: null,

@@ -5,7 +5,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { z } from "zod";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { Loading } from "@repo/ui/loading";
 import { cairo } from "@repo/ui/fonts";
 import { toast } from "@repo/providers/src/context/toast";
@@ -17,7 +17,7 @@ const proposalSchema = z.object({
 
 export function CreateProposal(): JSX.Element {
   const router = useRouter();
-  const { isConnected, addCustomProposal, balance } = usePolkadot();
+  const { isConnected, addCustomProposal, balance } = useCommune();
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -240,7 +240,7 @@ export function CreateProposal(): JSX.Element {
                   <div className="flex flex-wrap items-center gap-1 pt-2 text-sm text-white">
                     <div className="flex items-center gap-1">
                       <InformationCircleIcon className="h-4 w-4 fill-green-500" />
-                      <span>Want a diferent aproach?</span>
+                      <span>Want a different approach?</span>
                     </div>
                     <span>
                       <Link

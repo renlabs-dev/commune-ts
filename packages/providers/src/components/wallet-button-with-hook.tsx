@@ -1,9 +1,9 @@
 "use client";
 
 import { WalletButton } from "@repo/ui/wallet-button";
-import { usePolkadot } from "../context/polkadot";
+import { useCommune } from "../context/polkadot";
 
 export function WalletButtonWithHook(): JSX.Element {
-  const context = usePolkadot();
+  const context = useCommune();
   return <WalletButton hook={context} />;
 }

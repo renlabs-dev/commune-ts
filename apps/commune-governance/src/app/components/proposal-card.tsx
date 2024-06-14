@@ -13,7 +13,7 @@ import {
   smallAddress,
 } from "@repo/providers/src/utils";
 import { cairo } from "@repo/ui/fonts";
-import { usePolkadot } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/polkadot";
 import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";
@@ -62,7 +62,7 @@ function handlePercentages(
 
 export function ProposalCard(props: ProposalCardProps): JSX.Element {
   const { proposalState, voted } = props;
-  const { stakeOut } = usePolkadot();
+  const { stakeOut } = useCommune();
   const { title, body, netuid, invalid } = handleCustomProposal(proposalState);
 
   return (
