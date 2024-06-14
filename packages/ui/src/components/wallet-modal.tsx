@@ -79,7 +79,7 @@ export function WalletModal({
                     </p>
                   </div>
                   <p>
-                    If you don&apos;t have a wallet, we recomend one of these:
+                    If you don&apos;t have a wallet, we recommend one of these:
                   </p>
                   <div className="ui-flex ui-gap-3">
                     <Link
