@@ -38,6 +38,7 @@ function useGenericQuery<T>(
     enabled: api != null,
     queryFn: () => queryFn(),
     staleTime: PROPOSALS_STALE_TIME,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -113,7 +114,7 @@ export function useCustomMetadata<T extends BaseProposal | BaseDao>(
           const data = await fetchCustomMetadata(kind, id, metadataField);
           return [id, data];
         },
-        staleTime: Infinity,
+        refetchOnWindowFocus: false,
       };
     }),
     combine: (results) => {
@@ -224,6 +225,7 @@ export function useLastBlock(api: ApiPromise | null) {
     enabled: api != null,
     queryFn: () => getLastBlock(api!),
     staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
   });
 }
 
