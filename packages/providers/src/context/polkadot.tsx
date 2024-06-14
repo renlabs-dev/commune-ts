@@ -11,26 +11,35 @@ import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "@repo/ui/wallet-modal";
-import { calculateAmount, handleCustomProposals } from "../utils";
-import {
-  isNotNull,
-  type AddCustomProposal,
-  type AddDaoApplication,
-  type DaoApplications,
-  type ProposalState,
-  type Stake,
-  type StakeData,
-  type TransactionResult,
-  type Transfer,
-  type TransferStake,
-  type Vote,
+import type { Codec } from "@polkadot/types/types";
+import { calculateAmount } from "../utils";
+import type {
+  LastBlock,
+  AddCustomProposal,
+  AddDaoApplication,
+  Stake,
+  TransactionResult,
+  Transfer,
+  TransferStake,
+  Vote,
+  BaseProposal,
+  BaseDao,
+  DaoState,
+  ProposalState,
+  StakeOutData,
+  UpdateDelegatingVotingPower,
 } from "../types";
 import {
-  getAllStakeOut,
   getBalance,
-  getDaoApplications,
-  getGlobalDaoTreasury,
-  getProposals,
+  handleDaos,
+  handleProposals,
+  useAllStakeOut,
+  useCustomMetadata,
+  useDaoTreasury,
+  useDaos,
+  useLastBlock,
+  useNotDelegatingVoting,
+  useProposals,
 } from "../querys";
 
 interface PolkadotApiState {
@@ -59,12 +68,27 @@ interface PolkadotContextType {
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
 
-  curatorApplications: DaoApplications[] | null;
-  globalDaoTreasury: string;
+  updateDelegatingVotingPower: (
+    updateDelegating: UpdateDelegatingVotingPower,
+  ) => Promise<void>;
 
-  proposals: ProposalState[] | null;
+  lastBlock: LastBlock | undefined;
+  isLastBlockLoading: boolean;
 
-  stakeData: StakeData | null;
+  daoTreasury: Codec | undefined;
+  isDaoTreasuryLoading: boolean;
+
+  notDelegatingVoting: Codec | undefined;
+  isNotDelegatingVotingLoading: boolean;
+
+  stakeOut: StakeOutData | undefined;
+  isStakeOutLoading: boolean;
+
+  proposalsWithMeta: ProposalState[];
+  isProposalsLoading: boolean;
+
+  daosWithMeta: DaoState[];
+  isDaosLoading: boolean;
 }
 
 const PolkadotContext = createContext<PolkadotContextType | null>(null);
@@ -87,12 +111,6 @@ export function PolkadotProvider({
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
   const [balance, setBalance] = useState("0");
-  const [curatorApplications, setCuratorApplications] = useState<
-    DaoApplications[] | null
-  >(null);
-  const [globalDaoTreasury, setGlobalDaoTreasury] = useState<string>("0");
-  const [stakeData, setStakeData] = useState<StakeData | null>(null);
-  const [proposals, setProposals] = useState<ProposalState[] | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
@@ -189,44 +207,6 @@ export function PolkadotProvider({
       setBalance(parsedBalance);
     });
   }, [api, selectedAccount]);
-
-  useEffect(() => {
-    if (!api) return;
-
-    void getAllStakeOut(api).then((stake) => {
-      setStakeData(stake);
-    });
-
-    void getDaoApplications(api).then((daos) => {
-      setCuratorApplications(daos);
-    });
-
-    void getGlobalDaoTreasury(api).then((treasury) => {
-      setGlobalDaoTreasury(treasury);
-    });
-  }, [api]);
-
-  useEffect(() => {
-    if (!api) return;
-
-    void getProposals(api).then(async (proposal) => {
-      setProposals(proposal);
-
-      await handleCustomProposals(proposal).then((results) => {
-        const newProposalList: ProposalState[] = [...proposal];
-
-        results.filter(isNotNull).forEach((result) => {
-          const { id, customData } = result;
-          const parsedProposal = newProposalList.find((p) => p.id === id);
-          if (!parsedProposal) {
-            return;
-          }
-          parsedProposal.customData = customData;
-        });
-        setProposals(newProposalList);
-      });
-    });
-  }, [api]);
 
   // == Transaction Handler ==
 
@@ -381,8 +361,106 @@ export function PolkadotProvider({
       applicationKey,
       IpfsHash,
     );
-    await sendTransaction("Create S0 Applicaiton", transaction, callback);
+    await sendTransaction("Create S0 Application", transaction, callback);
   }
+
+  async function updateDelegatingVotingPower({
+    isDelegating,
+    callback,
+  }: UpdateDelegatingVotingPower): Promise<void> {
+    if (!api?.tx.subspaceModule.addCustomProposal) return;
+
+    const transaction = isDelegating
+      ? api.tx.governanceModule.enableVotePowerDelegation()
+      : api.tx.governanceModule.disableVotePowerDelegation();
+
+    await sendTransaction("Create Custom Proposal", transaction, callback);
+  }
+
+  // Hooks
+
+  // Last block with API
+  const { data: lastBlock, isLoading: isLastBlockLoading } = useLastBlock(api);
+
+  // Dao Treasury
+  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } =
+    useDaoTreasury(lastBlock);
+
+  // Not Delegating Voting Power Set
+  const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
+    useNotDelegatingVoting(lastBlock);
+
+  // Stake Out
+  const { data: stakeOut, isLoading: isStakeOutLoading } =
+    useAllStakeOut(lastBlock);
+
+  // Proposals
+  const { data: proposalQuery, isLoading: isProposalsLoading } =
+    useProposals(lastBlock);
+
+  // Custom Metadata for Proposals
+  const [proposals, proposalsErrs] = handleProposals(proposalQuery);
+  for (const err of proposalsErrs) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+  const customProposalMetadataQueryMap = useCustomMetadata<BaseProposal>(
+    "proposal",
+    lastBlock,
+    proposals,
+  );
+  for (const entry of customProposalMetadataQueryMap.entries()) {
+    const [id, query] = entry;
+    const { data } = query;
+    if (data == null) {
+      // eslint-disable-next-line no-console
+      console.info(`Missing custom proposal metadata for proposal ${id}`);
+    }
+  }
+
+  const proposalsWithMeta = proposals.map((proposal) => {
+    const id = proposal.id;
+    const metadataQuery = customProposalMetadataQueryMap.get(id);
+    const data = metadataQuery?.data;
+    if (data == null) {
+      return proposal;
+    }
+    const [, customData] = data;
+    return { ...proposal, customData };
+  });
+
+  // Daos
+
+  const { data: daoQuery, isLoading: isDaosLoading } = useDaos(lastBlock);
+  const [daos, daosErrs] = handleDaos(daoQuery);
+  for (const err of daosErrs) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+  const customDaoMetadataQueryMap = useCustomMetadata<BaseDao>(
+    "dao",
+    lastBlock,
+    daos,
+  );
+  for (const entry of customDaoMetadataQueryMap.entries()) {
+    const [id, query] = entry;
+    const { data } = query;
+    if (data == null) {
+      // eslint-disable-next-line no-console
+      console.info(`Missing custom dao metadata for dao ${id}`);
+    }
+  }
+
+  const daosWithMeta = daos.map((dao) => {
+    const id = dao.id;
+    const metadataQuery = customDaoMetadataQueryMap.get(id);
+    const data = metadataQuery?.data;
+    if (data == null) {
+      return dao;
+    }
+    const [, customData] = data;
+    return { ...dao, customData };
+  });
 
   return (
     <PolkadotContext.Provider
@@ -402,16 +480,29 @@ export function PolkadotProvider({
         transfer,
         transferStake,
 
-        curatorApplications,
-        globalDaoTreasury,
-
-        proposals,
-
         voteProposal,
         addCustomProposal,
         addDaoApplication,
 
-        stakeData,
+        updateDelegatingVotingPower,
+
+        lastBlock,
+        isLastBlockLoading,
+
+        daoTreasury,
+        isDaoTreasuryLoading,
+
+        notDelegatingVoting,
+        isNotDelegatingVotingLoading,
+
+        stakeOut,
+        isStakeOutLoading,
+
+        proposalsWithMeta,
+        isProposalsLoading,
+
+        daosWithMeta,
+        isDaosLoading,
       }}
     >
       <WalletModal
