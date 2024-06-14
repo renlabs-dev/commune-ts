@@ -42,7 +42,7 @@ export function DaoCard(props: DaoCardProps): JSX.Element {
                 className="min-w-auto flex w-full items-center border border-green-500 px-2 py-2 text-sm text-green-500 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 lg:w-auto lg:px-4"
                 href={`/item/dao/${daoState.id}`}
               >
-                Click to view S0 Application
+                View full S0 Application
                 <ArrowRightIcon className="ml-auto w-5 lg:ml-2" />
               </Link>
             </div>
