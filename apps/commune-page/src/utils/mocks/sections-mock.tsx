@@ -31,7 +31,7 @@ export const sections = [
   {
     sectionName: "scalability",
     title: "Scalability",
-    subtitle: "Parallelize Usecases ",
+    subtitle: "Parallelize Use cases ",
     iconSrc: "/scalability-icon.svg",
     features: [
       {
@@ -40,7 +40,7 @@ export const sections = [
         icon: ServerStackIcon,
       },
       {
-        description: `The low entry cost and the protocol's landscape ensure that useful miners are incentivized to participate, helping the network to grow.`,
+        description: `The low entry cost and the protocol's landscape ensure that useful miners have incentive to participate, helping the network to grow.`,
         icon: GlobeAltIcon,
       },
     ],
@@ -48,12 +48,12 @@ export const sections = [
   {
     sectionName: "tokenomics",
     title: "Tokenomics",
-    subtitle: "No Premine, Meritocratic Distribution",
+    subtitle: "No Pre mine, Meritocratic Distribution",
     iconSrc: "/tokenomics-icon.svg",
     features: [
       {
         description:
-          "Rewards are split 50% to miners (specialized APIs with off-chain architechtures) and 50% to validators, validating the legitimacy of the miners.",
+          "Rewards are split 50% to miners (specialized APIs with off-chain architectures) and 50% to validators, validating the legitimacy of the miners.",
         icon: CircleStackIcon,
       },
       {

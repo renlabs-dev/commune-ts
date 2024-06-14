@@ -59,11 +59,11 @@ function createAnimation({ container, debug }) {
     scene.add(objectsGroup);
   }
 
-  function createLines(pointsGeomtry) {
-    // Access pointsGeomtry attributes
-    const positions = pointsGeomtry.attributes.position.array;
-    const colors = pointsGeomtry.attributes.color.array;
-    const normals = pointsGeomtry.attributes.normal.array;
+  function createLines(pointsGeometry) {
+    // Access pointsGeometry attributes
+    const positions = pointsGeometry.attributes.position.array;
+    const colors = pointsGeometry.attributes.color.array;
+    const normals = pointsGeometry.attributes.normal.array;
 
     const linePositions = [];
     const lineColors = [];

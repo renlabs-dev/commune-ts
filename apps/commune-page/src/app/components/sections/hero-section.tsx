@@ -18,7 +18,7 @@ export function HeroSection(): JSX.Element {
               <div className="flex w-full flex-col justify-between lg:max-w-4xl xl:pl-10">
                 <p className="text-xl font-medium">
                   <span className="text-green-400">Peer-to-peer </span>
-                  incentivized coordination network.
+                  Incentivized coordination network.
                 </p>
                 <Image
                   alt="Commune ai logo"
@@ -32,7 +32,7 @@ export function HeroSection(): JSX.Element {
                   of Decentralized AI.
                 </p>
                 <p className="text-lg">
-                  Fully community driven, no bureaucracy, no team, no premine.
+                  Fully community driven, no bureaucracy, no team, no pre-mine.
                   Only code and contributors.
                 </p>
               </div>
