@@ -1,21 +1,43 @@
 import { z } from "zod";
 import type { Enum, Tagged } from "rustie";
 import { assert, type Extends } from "tsafe";
+import { decodeAddress } from "@polkadot/util-crypto";
 import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { ApiDecoration } from "@polkadot/api/types";
-import { decodeAddress } from "@polkadot/util-crypto";
+
 export type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 
 // == Misc ==
-export type Entry<T> = [unknown, T];
 
+export type Entry<T> = [unknown, T];
+export type RawEntry = Entry<Codec>[] | undefined;
 export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
+
+export type Nullish = null | undefined;
+export type PolkaApi = ApiDecoration<"promise">;
 
 export interface CustomMetadata {
   title?: string;
   body?: string;
 }
+
+export interface BaseProposal {
+  id: number;
+  metadata: string;
+}
+
+export interface BaseDao {
+  id: number;
+  data: string;
+}
+
+export const CUSTOM_METADATA_SCHEMA = z.object({
+  title: z.string().optional(),
+  body: z.string().optional(),
+});
+
+assert<Extends<z.infer<typeof CUSTOM_METADATA_SCHEMA>, CustomMetadata>>();
 
 export interface CustomDataError {
   message: string;
@@ -28,17 +50,34 @@ export const URL_SCHEMA = z.string().trim().url();
 
 export const isNotNull = <T>(item: T | null): item is T => item !== null;
 
+// == Subspace refresh times ==
+// TODO: these values should be passed as parameters in the functions passed by the apps (env).
+
+// Time to consider last block query un-fresh. Half block time is the expected
+// time for a new block at a random point in time, so:
+// block_time / 2  ==  8 seconds / 2  ==  4 seconds
+export const LAST_BLOCK_STALE_TIME = (1000 * 8) / 2;
+
+// Time to consider proposals query state un-fresh. They don't change a lot,
+// only when a new proposal is created and people should be able to see new
+// proposals fast enough.
+// 1 minute (arbitrary).
+export const PROPOSALS_STALE_TIME = 1000 * 60;
+
+// Time to consider stake query state un-fresh. They also don't change a lot,
+// only when people move their stake / delegation. That changes the way votes
+// are computed, but only very marginally for a given typical stake change, with
+// a small chance of a relevant difference in displayed state.
+// 5 minutes (arbitrary).
+export const STAKE_STALE_TIME = 1000 * 60 * 5; // 5 minutes (arbitrary)
+
 // == Stake ==
 
-export interface StakeData {
-  blockNumber: number;
-  blockHashHex: string;
-  stakeOut: {
-    total: bigint;
-    perAddr: Map<string, bigint>;
-    perNet: Map<number, bigint>;
-    perAddrPerNet: Map<number, Map<string, bigint>>;
-  };
+export interface StakeOutData {
+  total: bigint;
+  perAddr: Map<string, bigint>;
+  perNet: Map<number, bigint>;
+  perAddrPerNet: Map<number, Map<string, bigint>>;
 }
 
 export interface LastBlock {
@@ -61,12 +100,13 @@ export interface ProposalStakeInfo {
 export type SS58Address = Tagged<string, "SS58Address">;
 
 function isSS58(value: string): value is SS58Address {
+  let decoded = null;
   try {
-    var decoded = decodeAddress(value);
+    decoded = decodeAddress(value);
   } catch (e) {
-    console.error(e);
     return false;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return decoded != null;
 }
 
@@ -119,6 +159,11 @@ export interface AddDaoApplication {
   callback?: (status: TransactionResult) => void;
 }
 
+export interface UpdateDelegatingVotingPower {
+  isDelegating: boolean;
+  callback?: (status: TransactionResult) => void;
+}
+
 export const TOKEN_AMOUNT_SCHEMA = z
   .string()
   .or(z.number())
@@ -138,7 +183,7 @@ export interface DaoApplications {
   applicationCost: bigint;
 }
 
-export const DAO_APPLICATIONS_SHEMA = z.object({
+export const DAO_APPLICATIONS_SCHEMA = z.object({
   id: z.number(),
   userId: ADDRESS_SCHEMA, // TODO: validate SS58 address
   payingFor: ADDRESS_SCHEMA, // TODO: validate SS58 address
@@ -153,21 +198,21 @@ export const DAO_APPLICATIONS_SHEMA = z.object({
   applicationCost: TOKEN_AMOUNT_SCHEMA,
 });
 
-assert<Extends<z.infer<typeof DAO_APPLICATIONS_SHEMA>, DaoApplications>>();
+assert<Extends<z.infer<typeof DAO_APPLICATIONS_SCHEMA>, DaoApplications>>();
 
 export function parseDaos(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
-  const validated = DAO_APPLICATIONS_SHEMA.safeParse(value);
+  const validated = DAO_APPLICATIONS_SCHEMA.safeParse(value);
   if (!validated.success) {
     return null;
   }
   return validated.data as unknown as DaoApplications;
 }
 
-export type DAOCardFields = {
+export interface DAOCardFields {
   title: string | null;
   body: string | null;
-};
+}
 
 export type DaoState = WithMetadataState<DaoApplications>;
 
@@ -278,12 +323,12 @@ assert<Extends<z.infer<typeof PROPOSAL_SCHEMA>, Proposal>>();
 
 export type ProposalState = WithMetadataState<Proposal>;
 
-export type ProposalCardFields = {
+export interface ProposalCardFields {
   title: string | null;
   body: string | null;
   netuid: number | "GLOBAL";
   invalid?: boolean;
-};
+}
 
 // == Field Params ==
 
@@ -324,6 +369,6 @@ const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
   voteMode: "Vote Mode",
 };
 
-export const paramNameToDisplayName = (param_name: string): string => {
-  return PARAM_FIELD_DISPLAY_NAMES[param_name] ?? param_name;
+export const paramNameToDisplayName = (paramName: string): string => {
+  return PARAM_FIELD_DISPLAY_NAMES[paramName] ?? paramName;
 };

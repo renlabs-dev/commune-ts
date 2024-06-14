@@ -2,13 +2,14 @@ import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import {
   URL_SCHEMA,
+  paramNameToDisplayName,
+  type ProposalCardFields,
+  type DAOCardFields,
+  type CustomMetadataState,
   type Proposal,
   type ProposalState,
   type ProposalStakeInfo,
-  ProposalCardFields,
-  paramNameToDisplayName,
-  DAOCardFields,
-  CustomMetadataState,
+  type ProposalStatus,
 } from "../types";
 
 export function calculateAmount(amount: string): number {
@@ -60,7 +61,7 @@ export function formatToken(nano: number | bigint): string {
   return amount.toFixed(2);
 }
 
-// == Proposal ==
+// == Governance ==
 
 function sum(arr: Iterable<bigint>): bigint {
   return Array.from(arr).reduce((a, b) => a + b, 0n);
@@ -115,8 +116,9 @@ const paramsToMarkdown = (params: Record<string, unknown>): string => {
 
     items.push(`${label}: ${formattedValue}`);
   }
-  return items.join(" |  ") + "\n";
+  return `${items.join(" |  ")}\n`;
 };
+
 function handleCustomProposalData(
   proposalId: number,
   dataState: CustomMetadataState | null,
@@ -126,23 +128,23 @@ function handleCustomProposalData(
     return {
       title: null,
       body: null,
-      netuid: netuid,
+      netuid,
     };
   }
   return match(dataState)({
-    Err: function ({ message }): ProposalCardFields {
+    Err(): ProposalCardFields {
       return {
-        title: `⚠️😠 Failed fetching proposal data for proposal #${proposalId}`,
-        body: `⚠️😠 Error fetching proposal data for proposal #${proposalId}:  \n${message}`,
-        netuid: netuid,
+        title: `ID: ${proposalId} | This proposal has no custom metadata`,
+        body: null,
+        netuid,
         invalid: true,
       };
     },
-    Ok: function (data): ProposalCardFields {
+    Ok(data): ProposalCardFields {
       return {
         title: data.title ?? null,
         body: data.body ?? null,
-        netuid: netuid,
+        netuid,
       };
     },
   });
@@ -153,9 +155,9 @@ function handleProposalParams(
   params: Record<string, unknown>,
   netuid: number | "GLOBAL",
 ): ProposalCardFields {
-  const title =
-    `Parameters proposal #${proposalId} for ` +
-    (netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`);
+  const title = `Parameters proposal #${proposalId} for ${
+    netuid == "GLOBAL" ? "global network" : `subnet ${netuid}`
+  }`;
   return {
     title,
     body: paramsToMarkdown(params),
@@ -167,27 +169,27 @@ export const handleCustomProposal = (
   proposal: ProposalState,
 ): ProposalCardFields =>
   match(proposal.data)({
-    globalCustom: function (): ProposalCardFields {
+    globalCustom(): ProposalCardFields {
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
         "GLOBAL",
       );
     },
-    subnetCustom: function ({ subnetId }): ProposalCardFields {
+    subnetCustom({ subnetId }): ProposalCardFields {
       return handleCustomProposalData(
         proposal.id,
         proposal.customData ?? null,
         subnetId,
       );
     },
-    globalParams: function (params): ProposalCardFields {
+    globalParams(params): ProposalCardFields {
       return handleProposalParams(proposal.id, params, "GLOBAL");
     },
-    subnetParams: function ({ subnetId, params }): ProposalCardFields {
+    subnetParams({ subnetId, params }): ProposalCardFields {
       return handleProposalParams(proposal.id, params, subnetId);
     },
-    transferDaoTreasury: function (): ProposalCardFields {
+    transferDaoTreasury(): ProposalCardFields {
       return {
         title: `Transfer proposal #${proposal.id}`,
         body: `Transfer proposal #${proposal.id} to treasury`,
@@ -199,20 +201,85 @@ export const handleCustomProposal = (
 
 export function getProposalNetuid(proposal: Proposal): number | null {
   return match(proposal.data)({
-    globalCustom: function (/*v: string*/): null {
+    globalCustom(/*v: string*/): null {
       return null;
     },
-    globalParams: function (/*v: unknown*/): null {
+    globalParams(/*v: unknown*/): null {
       return null;
     },
-    subnetCustom: function ({ subnetId }): number {
+    subnetCustom({ subnetId }): number {
       return subnetId;
     },
-    subnetParams: function ({ subnetId }): number {
+    subnetParams({ subnetId }): number {
       return subnetId;
     },
-    transferDaoTreasury: function (/*{ account, amount }*/): null {
+    transferDaoTreasury(/*{ account, amount }*/): null {
       return null;
+    },
+  });
+}
+
+export function calcProposalFavorablePercent(
+  proposalStatus: ProposalStatus,
+): number | null {
+  function calcStakePercent(
+    stakeFor: bigint,
+    stakeAgainst: bigint,
+  ): number | null {
+    const totalStake = stakeFor + stakeAgainst;
+    if (totalStake === 0n) {
+      return null;
+    }
+    const ratio = bigintDivision(stakeFor, totalStake);
+    const percentage = ratio * 100;
+    return percentage;
+  }
+  return match(proposalStatus)({
+    open: ({ stakeFor, stakeAgainst }) =>
+      calcStakePercent(stakeFor, stakeAgainst),
+    accepted: ({ stakeFor, stakeAgainst }) =>
+      calcStakePercent(stakeFor, stakeAgainst),
+    refused: ({ stakeFor, stakeAgainst }) =>
+      calcStakePercent(stakeFor, stakeAgainst),
+    expired: () => null,
+  });
+}
+
+export function handleProposalStakeVoted(
+  proposalStatus: ProposalStatus,
+): string {
+  // TODO: extend rustie `if_let` to provide other variants on else arm
+  // const txt = if_let(proposalStatus)("expired")(() => "—")(({ stakeFor }) => formatToken(Number(stakeFor)));
+
+  return match(proposalStatus)({
+    open: ({ stakeFor, stakeAgainst }) =>
+      formatToken(Number(stakeFor + stakeAgainst)),
+    accepted: ({ stakeFor, stakeAgainst }) =>
+      formatToken(Number(stakeFor + stakeAgainst)),
+    refused: ({ stakeFor, stakeAgainst }) =>
+      formatToken(Number(stakeFor + stakeAgainst)),
+    expired: () => "—",
+  });
+}
+
+export function handleProposalQuorumPercent(
+  proposalStatus: ProposalStatus,
+  totalStake: bigint,
+): JSX.Element {
+  function quorumPercent(stakeFor: bigint, stakeAgainst: bigint): JSX.Element {
+    const percentage =
+      bigintDivision(stakeFor + stakeAgainst, totalStake) * 100;
+    const percentDisplay = `${Number.isNaN(percentage) ? "—" : percentage.toFixed(1)}%`;
+    return <span className="text-yellow-600">{`(${percentDisplay})`}</span>;
+  }
+  return match(proposalStatus)({
+    open: ({ stakeFor, stakeAgainst }) => quorumPercent(stakeFor, stakeAgainst),
+    accepted: ({ stakeFor, stakeAgainst }) =>
+      quorumPercent(stakeFor, stakeAgainst),
+    refused: ({ stakeFor, stakeAgainst }) =>
+      quorumPercent(stakeFor, stakeAgainst),
+    expired: () => {
+      return <span className="text-yellow-600">{` (Expired)`}</span>;
     },
   });
 }
@@ -230,13 +297,41 @@ export function handleDaoApplications(
     };
   }
   return match(dataState)({
-    Err: function ({ message }): DAOCardFields {
+    Err(): DAOCardFields {
       return {
-        title: `⚠️😠 Failed fetching proposal data for proposal #${daoId}`,
-        body: `⚠️😠 Error fetching proposal data for proposal #${daoId}:  \n${message}`,
+        title: `ID: ${daoId} | This DAO has no custom metadata`,
+        body: null,
       };
     },
-    Ok: function (data): DAOCardFields {
+    Ok(data): DAOCardFields {
+      return {
+        title: data.title ?? null,
+        body: data.body ?? null,
+      };
+    },
+  });
+}
+
+// == DAOs ==
+
+export function handleCustomDaos(
+  daoId: number | null,
+  dataState: CustomMetadataState | null,
+): DAOCardFields {
+  if (dataState == null) {
+    return {
+      title: null,
+      body: null,
+    };
+  }
+  return match(dataState)({
+    Err(): DAOCardFields {
+      return {
+        title: `ID: ${daoId} | This DAO has no custom metadata`,
+        body: null,
+      };
+    },
+    Ok(data): DAOCardFields {
       return {
         title: data.title ?? null,
         body: data.body ?? null,
