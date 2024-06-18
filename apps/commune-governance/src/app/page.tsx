@@ -1,6 +1,6 @@
 "use client";
 
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import type { ProposalStatus, SS58Address } from "@repo/providers/src/types";
 import { useState } from "react";
 import type { Vote } from "./components/vote-label";
