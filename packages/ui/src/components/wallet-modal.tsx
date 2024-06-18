@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import type { InjectedAccountWithMeta } from "../types";
+import type { InjectedAccountWithMeta } from "@repo/communext/types";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 
 export function WalletModal({

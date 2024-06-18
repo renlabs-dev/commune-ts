@@ -2,13 +2,13 @@
 "use client";
 
 import Image from "next/image";
-import { useCommune } from "@repo/providers/src/context/polkadot";
-import { formatToken, smallAddress } from "@repo/providers/src/utils";
+import { useCommune } from "@repo/providers/src/context/commune";
 import { useEffect, useState } from "react";
-import { getBalance } from "@repo/providers/src/querys";
 import { toast } from "@repo/providers/src/context/toast";
 import { LinkIcon } from "@heroicons/react/20/solid";
+import { queryBalance } from "@repo/communext/queries";
 import { Skeleton } from "./skeleton";
+import { formatToken, smallAddress } from "@repo/communext/utils";
 
 export function BalanceSection({
   className,
@@ -29,10 +29,7 @@ export function BalanceSection({
 
   useEffect(() => {
     if (isInitialized && api && daoTreasury) {
-      void getBalance({
-        api,
-        address: daoTreasury.toHuman() as string,
-      }).then((daoBalance) => {
+      void queryBalance(api, daoTreasury).then((daoBalance) => {
         setDaosTreasuries(daoBalance);
       });
     }
@@ -45,10 +42,8 @@ export function BalanceSection({
   }
 
   function handleCopyClick(): void {
-    const treasuryData = daoTreasury?.toHuman() as string;
-
     navigator.clipboard
-      .writeText(treasuryData)
+      .writeText(daoTreasury as string)
       .then(() => {
         toast.success("Treasury address copied to clipboard");
       })
@@ -82,8 +77,7 @@ export function BalanceSection({
             >
               {daoTreasury ? (
                 <>
-                  <LinkIcon className="h-4 w-4" />{" "}
-                  {smallAddress(daoTreasury.toHuman() as string)}
+                  <LinkIcon className="h-4 w-4" /> {smallAddress(daoTreasury)}
                 </>
               ) : null}
             </button>

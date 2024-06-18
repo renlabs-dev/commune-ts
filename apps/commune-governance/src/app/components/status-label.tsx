@@ -14,7 +14,7 @@ export function StatusLabel(props: StatusLabelProps): JSX.Element {
     open() {
       return (
         <Label
-          className={`w-auto border py-1.5 text-center text-white lg:text-left ${className}`}
+          className={`w-auto border border-yellow-500 py-1.5 text-center text-yellow-500 lg:text-left ${className}`}
         >
           Active
         </Label>

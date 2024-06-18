@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import type { DaoState } from "@repo/providers/src/types";
-import { handleCustomDaos, smallAddress } from "@repo/providers/src/utils";
+import { handleCustomDaos, smallAddress } from "@repo/communext/types";
 import { Card } from "./card";
 import { Skeleton } from "./skeleton";
 import { MarkdownView } from "./markdown-view";

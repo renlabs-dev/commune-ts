@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -5,14 +6,10 @@ import {
   type InjectedAccountWithMeta,
   type InjectedExtension,
 } from "@polkadot/extension-inject/types";
-import type { SubmittableResult } from "@polkadot/api";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import type { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ApiPromise, type SubmittableResult, WsProvider } from "@polkadot/api";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "@repo/ui/wallet-modal";
-import type { Codec } from "@polkadot/types/types";
-import { calculateAmount } from "../utils";
 import type {
   LastBlock,
   AddCustomProposal,
@@ -28,19 +25,20 @@ import type {
   ProposalState,
   StakeOutData,
   UpdateDelegatingVotingPower,
-} from "../types";
+  SS58Address,
+} from "@repo/communext/types";
+import { calculateAmount } from "@repo/communext/utils";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import {
-  getBalance,
-  handleDaos,
-  handleProposals,
   useAllStakeOut,
+  useBalance,
   useCustomMetadata,
   useDaoTreasury,
   useDaos,
   useLastBlock,
   useNotDelegatingVoting,
   useProposals,
-} from "../querys";
+} from "../hooks";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -75,19 +73,19 @@ interface CommuneContextType {
   lastBlock: LastBlock | undefined;
   isLastBlockLoading: boolean;
 
-  daoTreasury: Codec | undefined;
+  daoTreasury: SS58Address | undefined;
   isDaoTreasuryLoading: boolean;
 
-  notDelegatingVoting: Codec | undefined;
+  notDelegatingVoting: string[] | undefined;
   isNotDelegatingVotingLoading: boolean;
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
 
-  proposalsWithMeta: ProposalState[];
+  proposalsWithMeta: ProposalState[] | undefined;
   isProposalsLoading: boolean;
 
-  daosWithMeta: DaoState[];
+  daosWithMeta: DaoState[] | undefined;
   isDaosLoading: boolean;
 }
 
@@ -110,7 +108,6 @@ export function CommuneProvider({
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [balance, setBalance] = useState("0");
   const [openModal, setOpenModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
@@ -194,19 +191,6 @@ export function CommuneProvider({
     setIsConnected(true);
     setOpenModal(false);
   }
-
-  // == Set State ==
-
-  useEffect(() => {
-    if (!api || !selectedAccount) return;
-
-    void getBalance({
-      api,
-      address: selectedAccount.address,
-    }).then((parsedBalance) => {
-      setBalance(parsedBalance);
-    });
-  }, [api, selectedAccount]);
 
   // == Transaction Handler ==
 
@@ -383,32 +367,37 @@ export function CommuneProvider({
   // Last block with API
   const { data: lastBlock, isLoading: isLastBlockLoading } = useLastBlock(api);
 
+  console.log("a");
+  console.log(lastBlock?.apiAtBlock);
+
+  const { data: balance, isLoading: isBalanceLoading } = useBalance(
+    api!,
+    selectedAccount?.address!,
+  );
+
   // Dao Treasury
-  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } =
-    useDaoTreasury(lastBlock);
+  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } = useDaoTreasury(
+    lastBlock!.apiAtBlock,
+  );
 
   // Not Delegating Voting Power Set
   const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
-    useNotDelegatingVoting(lastBlock);
+    useNotDelegatingVoting(lastBlock!.apiAtBlock);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } =
-    useAllStakeOut(lastBlock);
+  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
+    lastBlock!.apiAtBlock,
+  );
 
   // Proposals
-  const { data: proposalQuery, isLoading: isProposalsLoading } =
-    useProposals(lastBlock);
+  const { data: proposalQuery, isLoading: isProposalsLoading } = useProposals(
+    lastBlock!.apiAtBlock,
+  );
 
-  // Custom Metadata for Proposals
-  const [proposals, proposalsErrs] = handleProposals(proposalQuery);
-  for (const err of proposalsErrs) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  }
   const customProposalMetadataQueryMap = useCustomMetadata<BaseProposal>(
     "proposal",
     lastBlock,
-    proposals,
+    proposalQuery!,
   );
   for (const entry of customProposalMetadataQueryMap.entries()) {
     const [id, query] = entry;
@@ -418,8 +407,7 @@ export function CommuneProvider({
       console.info(`Missing custom proposal metadata for proposal ${id}`);
     }
   }
-
-  const proposalsWithMeta = proposals.map((proposal) => {
+  const proposalsWithMeta = proposalQuery!.map((proposal) => {
     const id = proposal.id;
     const metadataQuery = customProposalMetadataQueryMap.get(id);
     const data = metadataQuery?.data;
@@ -432,16 +420,13 @@ export function CommuneProvider({
 
   // Daos
 
-  const { data: daoQuery, isLoading: isDaosLoading } = useDaos(lastBlock);
-  const [daos, daosErrs] = handleDaos(daoQuery);
-  for (const err of daosErrs) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  }
+  const { data: daosQuery, isLoading: isDaosLoading } = useDaos(
+    lastBlock!.apiAtBlock,
+  );
   const customDaoMetadataQueryMap = useCustomMetadata<BaseDao>(
     "dao",
     lastBlock,
-    daos,
+    daosQuery!,
   );
   for (const entry of customDaoMetadataQueryMap.entries()) {
     const [id, query] = entry;
@@ -451,8 +436,7 @@ export function CommuneProvider({
       console.info(`Missing custom dao metadata for dao ${id}`);
     }
   }
-
-  const daosWithMeta = daos.map((dao) => {
+  const daosWithMeta = daosQuery?.map((dao) => {
     const id = dao.id;
     const metadataQuery = customDaoMetadataQueryMap.get(id);
     const data = metadataQuery?.data;
@@ -475,6 +459,7 @@ export function CommuneProvider({
         handleConnect: handleConnectWrapper,
 
         balance,
+        isBalanceLoading,
 
         addStake,
         removeStake,

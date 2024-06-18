@@ -11,9 +11,9 @@ import {
   handleProposalQuorumPercent,
   handleProposalStakeVoted,
   smallAddress,
-} from "@repo/providers/src/utils";
+} from "@repo/communext/types";
 import { cairo } from "@repo/ui/fonts";
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";
@@ -139,9 +139,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
                 )}
               </Label>
             ) : (
-              <div className="h-fit w-full text-center lg:w-4/5">
-                <span className="flex h-fit w-full animate-pulse bg-gray-700 py-3.5" />
-              </div>
+              <div className="flex animate-pulse bg-gray-700 px-20 py-5" />
             )}
           </div>
         </div>

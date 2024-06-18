@@ -1,0 +1,29 @@
+{
+  "name": "@repo/communext",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./index.ts",
+    "./utils": "./utils/index.ts",
+    "./types": "./types/index.ts",
+    "./queries": "./queries/index.ts"
+  },
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "esModuleInterop": true
+  },
+  "devDependencies": {
+    "tsx": "^4.15.6",
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*"
+  },
+  "dependencies": {
+    "@polkadot/api": "^11.1.1",
+    "multiformats": "^13.1.0",
+    "rustie": "^0.2.0",
+    "add": "^2.0.6",
+    "yarn": "^1.22.22"
+  }
+}

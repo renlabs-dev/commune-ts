@@ -1,6 +1,6 @@
 "use client";
 
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import type { ProposalStatus, SS58Address } from "@repo/providers/src/types";
 import { useState } from "react";
 import type { Vote } from "./components/vote-label";
@@ -18,6 +18,7 @@ export default function HomePage(): JSX.Element {
     daosWithMeta,
     isDaosLoading,
     selectedAccount,
+    isInitialized,
   } = useCommune();
 
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
@@ -104,7 +105,15 @@ export default function HomePage(): JSX.Element {
           <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
 
           <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8">
-            {isLoading ? <CardSkeleton /> : content}
+            {isLoading || !isInitialized ? (
+              <div className="flex flex-col gap-8">
+                {[1, 2, 3].map((index) => (
+                  <CardSkeleton key={index} />
+                ))}
+              </div>
+            ) : (
+              content
+            )}
           </div>
         </Container>
       </div>

@@ -5,8 +5,10 @@ import { decodeAddress } from "@polkadot/util-crypto";
 import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { ApiDecoration } from "@polkadot/api/types";
+import { ApiPromise } from "@polkadot/api";
 
 export type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+export type { Codec } from "@polkadot/types/types";
 
 // == Misc ==
 
@@ -15,7 +17,7 @@ export type RawEntry = Entry<Codec>[] | undefined;
 export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
 
 export type Nullish = null | undefined;
-export type PolkaApi = ApiDecoration<"promise">;
+export type Api = ApiDecoration<"promise"> | ApiPromise;
 
 export interface CustomMetadata {
   title?: string;
@@ -99,7 +101,7 @@ export interface ProposalStakeInfo {
 
 export type SS58Address = Tagged<string, "SS58Address">;
 
-function isSS58(value: string): value is SS58Address {
+export function isSS58(value: string): value is SS58Address {
   let decoded = null;
   try {
     decoded = decodeAddress(value);
@@ -111,6 +113,21 @@ function isSS58(value: string): value is SS58Address {
 }
 
 export const ADDRESS_SCHEMA = z.string().refine(isSS58, "Invalid SS58 address");
+
+export function parseAddress(valueRaw: Codec): DaoApplications | null {
+  const value = valueRaw.toPrimitive();
+  const validated = DAO_APPLICATIONS_SCHEMA.safeParse(value);
+  if (!validated.success) {
+    return null;
+  }
+  return validated.data as unknown as DaoApplications;
+}
+
+// == Query params validation ==
+export const QUERY_PARAMS_SCHEMA = z.object({
+  netuid: z.number(),
+  address: ADDRESS_SCHEMA,
+});
 
 // == Transactions ==
 export interface TransactionResult {

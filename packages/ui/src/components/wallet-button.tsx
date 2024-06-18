@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { smallAddress } from "@repo/providers/src/utils";
-import type { InjectedAccountWithMeta } from "../types";
+import { smallAddress } from "@repo/communext/types";
+import type { InjectedAccountWithMeta } from "@repo/communext/types";
 
 interface PolkadotHook {
   handleConnect: () => void;

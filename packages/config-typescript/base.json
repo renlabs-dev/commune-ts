@@ -11,7 +11,7 @@
     "noEmit": true,
     "inlineSources": false,
     "isolatedModules": true,
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "Bundler",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -20,5 +20,7 @@
     "strict": true,
     "strictNullChecks": true
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
