@@ -13,7 +13,7 @@ import {
   smallAddress,
 } from "@repo/providers/src/utils";
 import { cairo } from "@repo/ui/fonts";
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";

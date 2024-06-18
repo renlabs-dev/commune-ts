@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import { formatToken, smallAddress } from "@repo/providers/src/utils";
 import { useEffect, useState } from "react";
 import { getBalance } from "@repo/providers/src/querys";
