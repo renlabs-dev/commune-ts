@@ -5,7 +5,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { z } from "zod";
 import type { TransactionResult } from "@repo/providers/src/types";
-import { useCommune } from "@repo/providers/src/context/polkadot";
+import { useCommune } from "@repo/providers/src/context/commune";
 import { Loading } from "@repo/ui/loading";
 import { cairo } from "@repo/ui/fonts";
 import { toast } from "@repo/providers/src/context/toast";
