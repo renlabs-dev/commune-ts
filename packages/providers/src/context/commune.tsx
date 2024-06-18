@@ -6,7 +6,9 @@ import {
   type InjectedAccountWithMeta,
   type InjectedExtension,
 } from "@polkadot/extension-inject/types";
-import { ApiPromise, type SubmittableResult, WsProvider } from "@polkadot/api";
+import type { SubmittableResult } from "@polkadot/api";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "@repo/ui/wallet-modal";
@@ -28,10 +30,9 @@ import type {
   SS58Address,
 } from "@repo/communext/types";
 import { calculateAmount } from "@repo/communext/utils";
-import type { SubmittableExtrinsic } from "@polkadot/api/types";
+import { queryBalance } from "@repo/communext/queries";
 import {
   useAllStakeOut,
-  useBalance,
   useCustomMetadata,
   useDaoTreasury,
   useDaos,
@@ -55,7 +56,7 @@ interface CommuneContextType {
   accounts: InjectedAccountWithMeta[];
   selectedAccount: InjectedAccountWithMeta | null;
 
-  balance: string;
+  balance: string | undefined;
 
   addStake: (stake: Stake) => Promise<void>;
   removeStake: (stake: Stake) => Promise<void>;
@@ -82,10 +83,10 @@ interface CommuneContextType {
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
 
-  proposalsWithMeta: ProposalState[] | undefined;
+  proposalsWithMeta: ProposalState[];
   isProposalsLoading: boolean;
 
-  daosWithMeta: DaoState[] | undefined;
+  daosWithMeta: DaoState[];
   isDaosLoading: boolean;
 }
 
@@ -113,6 +114,7 @@ export function CommuneProvider({
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
 
+  const [balance, setBalance] = useState<string | undefined>(undefined);
   // == Initialize Polkadot ==
 
   async function loadCommuneApi(): Promise<void> {
@@ -124,8 +126,10 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
+
     const provider = new WsProvider(wsEndpoint);
     const newApi = await ApiPromise.create({ provider });
+
     setApi(newApi);
     setIsInitialized(true);
   }
@@ -191,6 +195,16 @@ export function CommuneProvider({
     setIsConnected(true);
     setOpenModal(false);
   }
+
+  // == Set State ==
+
+  useEffect(() => {
+    if (isInitialized && api && selectedAccount) {
+      void queryBalance(api, selectedAccount.address).then((userBalance) => {
+        setBalance(userBalance);
+      });
+    }
+  }, [isInitialized, api, selectedAccount]);
 
   // == Transaction Handler ==
 
@@ -367,32 +381,20 @@ export function CommuneProvider({
   // Last block with API
   const { data: lastBlock, isLoading: isLastBlockLoading } = useLastBlock(api);
 
-  console.log("a");
-  console.log(lastBlock?.apiAtBlock);
-
-  const { data: balance, isLoading: isBalanceLoading } = useBalance(
-    api!,
-    selectedAccount?.address!,
-  );
-
   // Dao Treasury
-  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } = useDaoTreasury(
-    lastBlock!.apiAtBlock,
-  );
+  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } =
+    useDaoTreasury(api);
 
   // Not Delegating Voting Power Set
   const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
-    useNotDelegatingVoting(lastBlock!.apiAtBlock);
+    useNotDelegatingVoting(api);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
-    lastBlock!.apiAtBlock,
-  );
+  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(api);
 
   // Proposals
-  const { data: proposalQuery, isLoading: isProposalsLoading } = useProposals(
-    lastBlock!.apiAtBlock,
-  );
+  const { data: proposalQuery, isLoading: isProposalsLoading } =
+    useProposals(api);
 
   const customProposalMetadataQueryMap = useCustomMetadata<BaseProposal>(
     "proposal",
@@ -419,10 +421,7 @@ export function CommuneProvider({
   });
 
   // Daos
-
-  const { data: daosQuery, isLoading: isDaosLoading } = useDaos(
-    lastBlock!.apiAtBlock,
-  );
+  const { data: daosQuery, isLoading: isDaosLoading } = useDaos(api);
   const customDaoMetadataQueryMap = useCustomMetadata<BaseDao>(
     "dao",
     lastBlock,
@@ -436,7 +435,7 @@ export function CommuneProvider({
       console.info(`Missing custom dao metadata for dao ${id}`);
     }
   }
-  const daosWithMeta = daosQuery?.map((dao) => {
+  const daosWithMeta = daosQuery!.map((dao) => {
     const id = dao.id;
     const metadataQuery = customDaoMetadataQueryMap.get(id);
     const data = metadataQuery?.data;
@@ -459,7 +458,6 @@ export function CommuneProvider({
         handleConnect: handleConnectWrapper,
 
         balance,
-        isBalanceLoading,
 
         addStake,
         removeStake,

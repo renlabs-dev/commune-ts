@@ -6,8 +6,6 @@ import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { ApiDecoration } from "@polkadot/api/types";
 import { ApiPromise } from "@polkadot/api";
-
-export type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 export type { Codec } from "@polkadot/types/types";
 
 // == Misc ==

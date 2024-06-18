@@ -6,9 +6,9 @@ import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { z } from "zod";
 import { cairo } from "@repo/ui/fonts";
 import { Loading } from "@repo/ui/loading";
-import type { TransactionResult } from "@repo/providers/src/types";
 import { useCommune } from "@repo/providers/src/context/commune";
 import { toast } from "@repo/providers/src/context/toast";
+import type { TransactionResult } from "@repo/communext/types";
 
 const daoSchema = z.object({
   applicationKey: z.string().min(1, "Application Key is required"),

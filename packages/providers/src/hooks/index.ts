@@ -41,10 +41,11 @@ export function useLastBlock(api: ApiPromise | null) {
 
 // == system ==
 
-export function useBalance(api: Api, address: SS58Address | string) {
+export function useBalance(api: Api | null, address: SS58Address | string) {
   return useQuery({
     queryKey: ["balance", address],
-    queryFn: () => queryBalance(api, address),
+    enabled: api != null,
+    queryFn: () => queryBalance(api!, address),
     staleTime: LAST_BLOCK_STALE_TIME,
     refetchOnWindowFocus: false,
   });
@@ -52,37 +53,41 @@ export function useBalance(api: Api, address: SS58Address | string) {
 
 // == governanceModule ==
 
-export function useProposals(api: Api) {
+export function useProposals(api: Api | null) {
   return useQuery({
     queryKey: ["proposals"],
-    queryFn: () => queryProposalsEntries(api),
+    enabled: api != null,
+    queryFn: () => queryProposalsEntries(api!),
     staleTime: PROPOSALS_STALE_TIME,
     refetchOnWindowFocus: false,
   });
 }
 
-export function useDaos(api: Api) {
+export function useDaos(api: Api | null) {
   return useQuery({
     queryKey: ["daos"],
-    queryFn: () => queryDaosEntries(api),
+    enabled: api != null,
+    queryFn: () => queryDaosEntries(api!),
     staleTime: PROPOSALS_STALE_TIME,
     refetchOnWindowFocus: false,
   });
 }
 
-export function useDaoTreasury(api: Api) {
+export function useDaoTreasury(api: Api | null) {
   return useQuery({
     queryKey: ["dao_treasury"],
-    queryFn: () => queryDaoTreasuryAddress(api),
+    enabled: api != null,
+    queryFn: () => queryDaoTreasuryAddress(api!),
     staleTime: PROPOSALS_STALE_TIME,
     refetchOnWindowFocus: false,
   });
 }
 
-export function useNotDelegatingVoting(api: Api) {
+export function useNotDelegatingVoting(api: Api | null) {
   return useQuery({
     queryKey: ["not_delegating_voting_power"],
-    queryFn: () => queryNotDelegatingVotingPower(api),
+    enabled: api != null,
+    queryFn: () => queryNotDelegatingVotingPower(api!),
     staleTime: LAST_BLOCK_STALE_TIME,
     refetchOnWindowFocus: false,
   });
@@ -90,10 +95,11 @@ export function useNotDelegatingVoting(api: Api) {
 
 // == subspaceModule ==
 
-export function useAllStakeOut(api: Api) {
+export function useAllStakeOut(api: Api | null) {
   return useQuery({
     queryKey: ["stake_out"],
-    queryFn: () => queryStakeOut(api),
+    enabled: api != null,
+    queryFn: () => queryStakeOut(api!),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });

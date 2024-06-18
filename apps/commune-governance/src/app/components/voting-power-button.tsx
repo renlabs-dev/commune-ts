@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 import { useCommune } from "@repo/providers/src/context/commune";
-import type { TransactionResult } from "@repo/providers/src/types";
+import type { TransactionResult } from "@repo/communext/types";
 
 export function VotingPowerButton(): JSX.Element | null {
   const { selectedAccount, updateDelegatingVotingPower, notDelegatingVoting } =
@@ -21,14 +21,12 @@ export function VotingPowerButton(): JSX.Element | null {
   const [isPowerUser, setIsPowerUser] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const notDelegatingList = notDelegatingVoting?.toHuman() as string[];
-
   useEffect(() => {
-    if (selectedAccount?.address) {
-      const isUserPower = notDelegatingList.includes(selectedAccount.address);
+    if (selectedAccount?.address && notDelegatingVoting) {
+      const isUserPower = notDelegatingVoting.includes(selectedAccount.address);
       setIsPowerUser(isUserPower);
     }
-  }, [selectedAccount, notDelegatingVoting, notDelegatingList]);
+  }, [selectedAccount, notDelegatingVoting]);
 
   function handleCallback(callbackReturn: TransactionResult): void {
     setVotingStatus(callbackReturn);

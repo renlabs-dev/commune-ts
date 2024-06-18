@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { smallAddress } from "@repo/communext/types";
-import type { InjectedAccountWithMeta } from "@repo/communext/types";
+import type { InjectedAccountWithMeta } from "../types";
 
 interface PolkadotHook {
   handleConnect: () => void;
@@ -58,7 +57,7 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
         {selectedAccount?.meta.name ? (
           <div className="ui-flex ui-flex-col ui-items-start">
             <span className="font-light">
-              {smallAddress(selectedAccount.address || "")}
+              {formatString(selectedAccount.address || "")}
             </span>
           </div>
         ) : (

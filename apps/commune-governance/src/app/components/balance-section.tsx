@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { toast } from "@repo/providers/src/context/toast";
 import { LinkIcon } from "@heroicons/react/20/solid";
 import { queryBalance } from "@repo/communext/queries";
-import { Skeleton } from "./skeleton";
 import { formatToken, smallAddress } from "@repo/communext/utils";
+import { Skeleton } from "./skeleton";
 
 export function BalanceSection({
   className,
@@ -19,10 +19,10 @@ export function BalanceSection({
     isInitialized,
     handleConnect,
     daoTreasury,
-    balance,
     selectedAccount,
     stakeOut,
     api,
+    balance,
   } = useCommune();
 
   const [daosTreasuries, setDaosTreasuries] = useState<string | null>(null);
