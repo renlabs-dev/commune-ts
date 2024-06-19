@@ -61,8 +61,8 @@ export default function HomePage(): JSX.Element {
     return "UNVOTED";
   };
 
-  function renderProposals(): JSX.Element[] {
-    const proposalsContent = proposalsWithMeta.map((proposal) => {
+  function renderProposals(): JSX.Element[] | undefined {
+    const proposalsContent = proposalsWithMeta?.map((proposal) => {
       const voted = handleUserVotes({
         proposalStatus: proposal.status,
         selectedAccountAddress: selectedAccount?.address as SS58Address,
@@ -81,8 +81,8 @@ export default function HomePage(): JSX.Element {
     return proposalsContent;
   }
 
-  function renderDaos(): JSX.Element[] {
-    const daosContent = daosWithMeta.map((dao) => {
+  function renderDaos(): JSX.Element[] | undefined {
+    const daosContent = daosWithMeta?.map((dao) => {
       return (
         <div key={dao.id}>
           <DaoCard daoState={dao} key={dao.id} />

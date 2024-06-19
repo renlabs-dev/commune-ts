@@ -108,7 +108,7 @@ export function ExpandedView(props: CustomContent): JSX.Element {
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleProposalsContent() {
-    const proposal = proposalsWithMeta.find((p) => p.id === paramId);
+    const proposal = proposalsWithMeta?.find((p) => p.id === paramId);
     if (!proposal) return null;
 
     const { body, netuid, title, invalid } = handleCustomProposal(proposal);
@@ -134,7 +134,7 @@ export function ExpandedView(props: CustomContent): JSX.Element {
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleDaosContent() {
-    const dao = daosWithMeta.find((d) => d.id === paramId);
+    const dao = daosWithMeta?.find((d) => d.id === paramId);
     if (!dao) return null;
 
     const { body, title } = handleCustomDaos(dao.id, dao.customData ?? null);
