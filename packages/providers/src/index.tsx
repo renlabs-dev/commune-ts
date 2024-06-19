@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import * as types from "./types";
 import { ToastProvider } from "./context/toast";
 import { CommuneProvider } from "./context/commune";
-import { WalletButtonWithHook } from "./components/wallet-button-with-hook";
 import { ReactQueryProvider } from "./context/react-query";
 
 function Providers({ children }: { children: ReactNode }): JSX.Element {
@@ -18,5 +16,4 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
     </ReactQueryProvider>
   );
 }
-
-export { Providers, WalletButtonWithHook, types };
+export { Providers };

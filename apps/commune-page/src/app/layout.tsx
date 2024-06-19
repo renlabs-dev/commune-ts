@@ -5,7 +5,8 @@ import type { Metadata } from "next";
 import { cairo } from "@repo/ui/fonts";
 import { Header } from "@repo/ui/header";
 import { links } from "@repo/ui/data";
-import { Providers, WalletButtonWithHook } from "@repo/providers";
+import { Providers } from "@repo/providers/context";
+import { WalletButtonWithHook } from "@repo/providers/wallet-button-with-hook";
 
 export const metadata: Metadata = {
   robots: "all",
