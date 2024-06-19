@@ -1,25 +1,24 @@
 "use client";
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
-import {
-  calcProposalFavorablePercent,
-  formatToken,
-  handleCustomDaos,
-  handleCustomProposal,
-  smallAddress,
-} from "@repo/providers/src/utils";
+import { formatToken, smallAddress } from "@repo/providers/utils";
 import type {
   DaoStatus,
   ProposalStatus,
   SS58Address,
-} from "@repo/providers/src/types";
-import { useCommune } from "@repo/providers/src/context/commune";
+} from "@repo/providers/types";
+import { useCommune } from "@repo/providers/use-commune";
 import { MarkdownView } from "../../../components/markdown-view";
 import { VoteLabel, type Vote } from "../../../components/vote-label";
 import { StatusLabel } from "../../../components/status-label";
 import { DaoStatusLabel } from "../../../components/dao-status-label";
 import { VoteCard } from "../../../components/vote-card";
 import { VotingPowerButton } from "../../../components/voting-power-button";
+import {
+  calcProposalFavorablePercent,
+  handleCustomDaos,
+  handleCustomProposal,
+} from "../../../../utils";
 
 interface CustomContent {
   paramId: number;

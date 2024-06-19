@@ -1,7 +1,15 @@
 {
   "name": "@repo/providers",
   "version": "0.0.0",
-  "main": "src/index.tsx",
+  "exports": {
+    "./use-commune": "./src/context/commune.tsx",
+    "./use-toast": "./src/context/toast.tsx",
+    "./context": "./src/index.tsx",
+    "./utils": "./src/utils/index.ts",
+    "./types": "./src/types/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./wallet-button-with-hook": "./src/components/wallet-button-with-hook.tsx"
+  },
   "license": "MIT",
   "dependencies": {
     "@polkadot/api": "^11.1.1",
@@ -11,6 +19,7 @@
     "@polkadot/types": "^11.1.1",
     "@polkadot/util-crypto": "^12.6.2",
     "@repo/ui": "*",
+    "@repo/commune-ts": "*",
     "@tanstack/react-query": "^5.45.0",
     "multiformats": "^13.1.0",
     "next": "^14.2.3",

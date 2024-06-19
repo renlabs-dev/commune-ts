@@ -5,8 +5,8 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
-import { useCommune } from "@repo/providers/src/context/commune";
-import type { TransactionResult } from "@repo/providers/src/types";
+import { useCommune } from "@repo/providers/use-commune";
+import type { TransactionResult } from "@repo/providers/types";
 
 export function VotingPowerButton(): JSX.Element | null {
   const { selectedAccount, updateDelegatingVotingPower, notDelegatingVoting } =
