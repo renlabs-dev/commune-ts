@@ -4,16 +4,16 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import type { ProposalState } from "@repo/providers/src/types";
+import type { ProposalState } from "@repo/providers/types";
+import { smallAddress } from "@repo/providers/utils";
+import { cairo } from "@repo/ui/fonts";
+import { useCommune } from "@repo/providers/use-commune";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
   handleProposalQuorumPercent,
   handleProposalStakeVoted,
-  smallAddress,
-} from "@repo/providers/src/utils";
-import { cairo } from "@repo/ui/fonts";
-import { useCommune } from "@repo/providers/src/context/commune";
+} from "../../utils";
 import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";

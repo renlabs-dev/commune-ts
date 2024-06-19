@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Loading } from "@repo/ui/loading";
 import { Footer } from "@repo/ui/footer";
