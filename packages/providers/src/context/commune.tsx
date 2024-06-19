@@ -40,7 +40,7 @@ import {
   useLastBlock,
   useNotDelegatingVoting,
   useProposals,
-} from "../querys";
+} from "../hooks";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;

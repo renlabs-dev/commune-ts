@@ -1,8 +1,8 @@
 "use client";
 
-import { useCommune } from "@repo/providers/src/context/commune";
-import type { ProposalStatus, SS58Address } from "@repo/providers/src/types";
+import type { ProposalStatus, SS58Address } from "@repo/providers/types";
 import { useState } from "react";
+import { useCommune } from "@repo/providers/use-commune";
 import type { Vote } from "./components/vote-label";
 import { ProposalCard } from "./components/proposal-card";
 import { DaoCard } from "./components/dao-card";

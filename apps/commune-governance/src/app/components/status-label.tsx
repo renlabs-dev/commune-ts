@@ -1,5 +1,5 @@
 import { match } from "rustie";
-import type { ProposalStatus } from "@repo/providers/src/types";
+import type { ProposalStatus } from "@repo/providers/types";
 import { Label } from "./label";
 
 interface StatusLabelProps {

@@ -2,11 +2,11 @@
 "use client";
 
 import Image from "next/image";
-import { useCommune } from "@repo/providers/src/context/commune";
-import { formatToken, smallAddress } from "@repo/providers/src/utils";
+import { useCommune } from "@repo/providers/use-commune";
+import { formatToken, smallAddress } from "@repo/providers/utils";
 import { useEffect, useState } from "react";
-import { getBalance } from "@repo/providers/src/querys";
-import { toast } from "@repo/providers/src/context/toast";
+import { getBalance } from "@repo/providers/hooks";
+import { toast } from "@repo/providers/use-toast";
 import { LinkIcon } from "@heroicons/react/20/solid";
 import { Skeleton } from "./skeleton";
 
