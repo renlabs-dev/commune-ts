@@ -11,7 +11,6 @@ import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { WalletModal } from "@repo/ui/wallet-modal";
-import type { Codec } from "@polkadot/types/types";
 import { calculateAmount } from "../utils";
 import type {
   LastBlock,
@@ -22,18 +21,17 @@ import type {
   Transfer,
   TransferStake,
   Vote,
-  BaseProposal,
-  BaseDao,
-  DaoState,
-  ProposalState,
   StakeOutData,
   UpdateDelegatingVotingPower,
+  SS58Address,
+  BaseProposal,
+  BaseDao,
+  ProposalState,
+  DaoState,
 } from "../types";
 import {
-  getBalance,
-  handleDaos,
-  handleProposals,
   useAllStakeOut,
+  useBalance,
   useCustomMetadata,
   useDaoTreasury,
   useDaos,
@@ -57,8 +55,6 @@ interface CommuneContextType {
   accounts: InjectedAccountWithMeta[];
   selectedAccount: InjectedAccountWithMeta | null;
 
-  balance: string;
-
   addStake: (stake: Stake) => Promise<void>;
   removeStake: (stake: Stake) => Promise<void>;
   transfer: (transfer: Transfer) => Promise<void>;
@@ -75,19 +71,22 @@ interface CommuneContextType {
   lastBlock: LastBlock | undefined;
   isLastBlockLoading: boolean;
 
-  daoTreasury: Codec | undefined;
+  balance: bigint | undefined;
+  isBalanceLoading: boolean;
+
+  daoTreasury: SS58Address | undefined;
   isDaoTreasuryLoading: boolean;
 
-  notDelegatingVoting: Codec | undefined;
+  notDelegatingVoting: string[] | undefined;
   isNotDelegatingVotingLoading: boolean;
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
 
-  proposalsWithMeta: ProposalState[];
+  proposalsWithMeta: ProposalState[] | undefined;
   isProposalsLoading: boolean;
 
-  daosWithMeta: DaoState[];
+  daosWithMeta: DaoState[] | undefined;
   isDaosLoading: boolean;
 }
 
@@ -110,7 +109,6 @@ export function CommuneProvider({
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [balance, setBalance] = useState("0");
   const [openModal, setOpenModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
@@ -194,19 +192,6 @@ export function CommuneProvider({
     setIsConnected(true);
     setOpenModal(false);
   }
-
-  // == Set State ==
-
-  useEffect(() => {
-    if (!api || !selectedAccount) return;
-
-    void getBalance({
-      api,
-      address: selectedAccount.address,
-    }).then((parsedBalance) => {
-      setBalance(parsedBalance);
-    });
-  }, [api, selectedAccount]);
 
   // == Transaction Handler ==
 
@@ -383,32 +368,37 @@ export function CommuneProvider({
   // Last block with API
   const { data: lastBlock, isLoading: isLastBlockLoading } = useLastBlock(api);
 
+  // Balance
+
+  const { data: balance, isLoading: isBalanceLoading } = useBalance(
+    lastBlock?.apiAtBlock,
+    selectedAccount?.address,
+  );
+
   // Dao Treasury
-  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } =
-    useDaoTreasury(lastBlock);
+  const { data: daoTreasury, isLoading: isDaoTreasuryLoading } = useDaoTreasury(
+    lastBlock?.apiAtBlock,
+  );
 
   // Not Delegating Voting Power Set
   const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
-    useNotDelegatingVoting(lastBlock);
+    useNotDelegatingVoting(lastBlock?.apiAtBlock);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } =
-    useAllStakeOut(lastBlock);
+  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
+    lastBlock?.apiAtBlock,
+  );
 
   // Proposals
-  const { data: proposalQuery, isLoading: isProposalsLoading } =
-    useProposals(lastBlock);
+  const { data: proposalQuery, isLoading: isProposalsLoading } = useProposals(
+    lastBlock?.apiAtBlock,
+  );
 
   // Custom Metadata for Proposals
-  const [proposals, proposalsErrs] = handleProposals(proposalQuery);
-  for (const err of proposalsErrs) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  }
   const customProposalMetadataQueryMap = useCustomMetadata<BaseProposal>(
     "proposal",
     lastBlock,
-    proposals,
+    proposalQuery,
   );
   for (const entry of customProposalMetadataQueryMap.entries()) {
     const [id, query] = entry;
@@ -419,7 +409,7 @@ export function CommuneProvider({
     }
   }
 
-  const proposalsWithMeta = proposals.map((proposal) => {
+  const proposalsWithMeta = proposalQuery?.map((proposal) => {
     const id = proposal.id;
     const metadataQuery = customProposalMetadataQueryMap.get(id);
     const data = metadataQuery?.data;
@@ -432,16 +422,13 @@ export function CommuneProvider({
 
   // Daos
 
-  const { data: daoQuery, isLoading: isDaosLoading } = useDaos(lastBlock);
-  const [daos, daosErrs] = handleDaos(daoQuery);
-  for (const err of daosErrs) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  }
+  const { data: daosQuery, isLoading: isDaosLoading } = useDaos(
+    lastBlock?.apiAtBlock,
+  );
   const customDaoMetadataQueryMap = useCustomMetadata<BaseDao>(
     "dao",
     lastBlock,
-    daos,
+    daosQuery,
   );
   for (const entry of customDaoMetadataQueryMap.entries()) {
     const [id, query] = entry;
@@ -452,7 +439,7 @@ export function CommuneProvider({
     }
   }
 
-  const daosWithMeta = daos.map((dao) => {
+  const daosWithMeta = daosQuery?.map((dao) => {
     const id = dao.id;
     const metadataQuery = customDaoMetadataQueryMap.get(id);
     const data = metadataQuery?.data;
@@ -475,6 +462,7 @@ export function CommuneProvider({
         handleConnect: handleConnectWrapper,
 
         balance,
+        isBalanceLoading,
 
         addStake,
         removeStake,

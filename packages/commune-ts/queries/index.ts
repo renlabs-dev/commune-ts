@@ -22,15 +22,14 @@ export async function queryLastBlock(api: ApiPromise): Promise<LastBlock> {
 
 // == system ==
 
-export async function queryBalance(
-  api: Api,
-  address: SS58Address | string,
-): Promise<string> {
+export async function queryBalance(api: Api, address: SS58Address | string) {
   if (!isSS58(address)) {
     throw new Error("Invalid address format, expected SS58");
   }
-  const balance = await api.query.system.account(address);
-  return balance.data.free.toHuman();
+  const {
+    data: { free: freeBalance },
+  } = await api.query.system.account(address);
+  return BigInt(freeBalance.toString());
 }
 
 // == governanceModule ==

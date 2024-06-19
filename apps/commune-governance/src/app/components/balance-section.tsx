@@ -4,8 +4,7 @@
 import Image from "next/image";
 import { useCommune } from "@repo/providers/use-commune";
 import { formatToken, smallAddress } from "@repo/providers/utils";
-import { useEffect, useState } from "react";
-import { getBalance } from "@repo/providers/hooks";
+import { useBalance } from "@repo/providers/hooks";
 import { toast } from "@repo/providers/use-toast";
 import { LinkIcon } from "@heroicons/react/20/solid";
 import { Skeleton } from "./skeleton";
@@ -25,18 +24,7 @@ export function BalanceSection({
     api,
   } = useCommune();
 
-  const [daosTreasuries, setDaosTreasuries] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isInitialized && api && daoTreasury) {
-      void getBalance({
-        api,
-        address: daoTreasury.toHuman() as string,
-      }).then((daoBalance) => {
-        setDaosTreasuries(daoBalance);
-      });
-    }
-  }, [isInitialized, api, daoTreasury]);
+  const { data: daosTreasuries } = useBalance(api, daoTreasury);
 
   let userStakeWeight: bigint | null = null;
   if (stakeOut != null && selectedAccount != null) {
@@ -45,10 +33,8 @@ export function BalanceSection({
   }
 
   function handleCopyClick(): void {
-    const treasuryData = daoTreasury?.toHuman() as string;
-
     navigator.clipboard
-      .writeText(treasuryData)
+      .writeText(daoTreasury as string)
       .then(() => {
         toast.success("Treasury address copied to clipboard");
       })
@@ -64,11 +50,11 @@ export function BalanceSection({
       <div className="mx-auto flex w-full flex-col divide-gray-500 lg:max-w-screen-2xl lg:flex-row lg:divide-x lg:px-6">
         <div className="flex flex-row items-center justify-between border-b border-gray-500 p-6 pr-6 lg:w-1/3 lg:border-b-0 lg:pr-10">
           <div className="flex flex-col gap-1">
-            {!daosTreasuries && !isInitialized ? (
+            {!daoTreasury && !isInitialized ? (
               <Skeleton className="w-1/5 py-3 md:mt-1 lg:w-2/5" />
             ) : (
               <p>
-                {daosTreasuries}
+                {formatToken(daosTreasuries ?? 0n)}
                 <span className="text-lg text-white"> COMAI</span>
               </p>
             )}
@@ -82,8 +68,7 @@ export function BalanceSection({
             >
               {daoTreasury ? (
                 <>
-                  <LinkIcon className="h-4 w-4" />{" "}
-                  {smallAddress(daoTreasury.toHuman() as string)}
+                  <LinkIcon className="h-4 w-4" /> {smallAddress(daoTreasury)}
                 </>
               ) : null}
             </button>
@@ -106,7 +91,7 @@ export function BalanceSection({
               </button>
             ) : (
               <p>
-                {balance}
+                {formatToken(balance)}
                 <span className="text-lg text-white"> COMAI</span>
               </p>
             )}

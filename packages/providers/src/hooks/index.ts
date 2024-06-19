@@ -3,63 +3,112 @@
 import "@polkadot/api-augment";
 import type { ApiPromise } from "@polkadot/api";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import type { Codec } from "@polkadot/types/types";
-import { buildIpfsGatewayUrl, formatToken, parseIpfsUri } from "../utils";
 import {
-  type StakeOutData,
+  queryBalance,
+  queryDaoTreasuryAddress,
+  queryDaosEntries,
+  queryLastBlock,
+  queryNotDelegatingVotingPower,
+  queryProposalsEntries,
+  queryStakeOut,
+} from "@repo/commune-ts/queries";
+import { buildIpfsGatewayUrl, parseIpfsUri } from "../utils";
+import {
+  type Api,
   type Nullish,
   type LastBlock,
-  type RawEntry,
-  type Proposal,
-  type Entry,
   type Result,
-  type DaoApplications,
+  type SS58Address,
   type CustomMetadata,
   type CustomDataError,
-  parseProposal,
-  parseDaos,
   PROPOSALS_STALE_TIME,
   LAST_BLOCK_STALE_TIME,
   CUSTOM_METADATA_SCHEMA,
+  STAKE_STALE_TIME,
 } from "../types";
 
-// == Handlers ==
+// == chain ==
 
-function useGenericQuery<T>(
-  lastBlock: LastBlock | Nullish,
-  queryKey: string,
-  queryFn: () => Promise<T>,
-) {
-  const api = lastBlock?.apiAtBlock;
-  const blockNumber = lastBlock?.blockNumber;
-
+export function useLastBlock(api: ApiPromise | Nullish) {
   return useQuery({
-    queryKey: [{ blockNumber }, queryKey],
+    queryKey: ["last_block"],
     enabled: api != null,
-    queryFn: () => queryFn(),
+    queryFn: () => queryLastBlock(api!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+// == system ==
+
+export function useBalance(
+  api: Api | Nullish,
+  address: SS58Address | string | Nullish,
+) {
+  return useQuery({
+    queryKey: ["balance", address],
+    enabled: api != null && address !== null,
+    queryFn: () => queryBalance(api!, address!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+// == governanceModule ==
+
+export function useProposals(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["proposals"],
+    enabled: api != null,
+    queryFn: () => queryProposalsEntries(api!),
     staleTime: PROPOSALS_STALE_TIME,
     refetchOnWindowFocus: false,
   });
 }
 
-export function handleEntries<T>(
-  rawEntries: RawEntry,
-  parser: (value: Codec) => T | null,
-): [T[], Error[]] {
-  const entries: T[] = [];
-  const errors: Error[] = [];
-  for (const entry of rawEntries ?? []) {
-    const [, valueRaw] = entry;
-    const parsedEntry = parser(valueRaw);
-    if (parsedEntry == null) {
-      errors.push(new Error(`Invalid entry: ${entry.toString()}`));
-      continue;
-    }
-    entries.push(parsedEntry);
-  }
-  entries.reverse();
-  return [entries, errors];
+export function useDaos(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["daos"],
+    enabled: api != null,
+    queryFn: () => queryDaosEntries(api!),
+    staleTime: PROPOSALS_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
 }
+
+export function useDaoTreasury(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["dao_treasury"],
+    enabled: api != null,
+    queryFn: () => queryDaoTreasuryAddress(api!),
+    staleTime: PROPOSALS_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useNotDelegatingVoting(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["not_delegating_voting_power"],
+    enabled: api != null,
+    queryFn: () => queryNotDelegatingVotingPower(api!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+// == subspaceModule ==
+
+export function useAllStakeOut(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["stake_out"],
+    enabled: api != null,
+    queryFn: () => queryStakeOut(api!),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+// == Custom metadata ==
 
 interface BaseProposal {
   id: number;
@@ -100,23 +149,26 @@ export async function fetchCustomMetadata(
 export function useCustomMetadata<T extends BaseProposal | BaseDao>(
   kind: "proposal" | "dao",
   lastBlock: LastBlock | Nullish,
-  items: T[],
+  items: T[] | undefined,
 ) {
   type Output = Awaited<ReturnType<typeof fetchCustomMetadata>>;
   const blockNumber = lastBlock?.blockNumber;
+
+  const queries = (items ?? []).map((item) => {
+    const id = item.id;
+    const metadataField = "metadata" in item ? item.metadata : item.data;
+    return {
+      queryKey: [{ blockNumber }, "metadata", { kind, id }],
+      queryFn: async (): Promise<[number, Output]> => {
+        const data = await fetchCustomMetadata(kind, id, metadataField);
+        return [id, data];
+      },
+      refetchOnWindowFocus: false,
+    };
+  });
+
   return useQueries({
-    queries: items.map((item) => {
-      const id = item.id;
-      const metadataField = "metadata" in item ? item.metadata : item.data;
-      return {
-        queryKey: [{ blockNumber }, "metadata", { kind, id }],
-        queryFn: async (): Promise<[number, Output]> => {
-          const data = await fetchCustomMetadata(kind, id, metadataField);
-          return [id, data];
-        },
-        refetchOnWindowFocus: false,
-      };
-    }),
+    queries,
     combine: (results) => {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       type ListItem<L> = L extends (infer T)[] ? T : never;
@@ -133,150 +185,5 @@ export function useCustomMetadata<T extends BaseProposal | BaseDao>(
       });
       return outputs;
     },
-  });
-}
-
-// == Balance ==
-
-export async function getBalance({
-  api,
-  address,
-}: {
-  api: ApiPromise;
-  address: string;
-}): Promise<string> {
-  const {
-    data: {
-      free,
-      // reserved
-    },
-  } = await api.query.system.account(address);
-
-  const balanceNum = Number(free);
-  return formatToken(balanceNum);
-}
-
-// == Proposals ==
-
-export function useProposals(lastBlock: LastBlock | Nullish) {
-  return useGenericQuery(lastBlock, "proposals", async () => {
-    const api = lastBlock?.apiAtBlock;
-    return api?.query.governanceModule.proposals.entries();
-  });
-}
-
-export function handleProposals(
-  rawProposals: Entry<Codec>[] | undefined,
-): [Proposal[], Error[]] {
-  return handleEntries(rawProposals, parseProposal);
-}
-
-// == S0 Applications ==
-
-export function useDaos(lastBlock: LastBlock | Nullish) {
-  return useGenericQuery(lastBlock, "daos", async () => {
-    const api = lastBlock?.apiAtBlock;
-    return api?.query.governanceModule.curatorApplications.entries();
-  });
-}
-
-export function handleDaos(
-  rawDaos: Entry<Codec>[] | undefined,
-): [DaoApplications[], Error[]] {
-  return handleEntries(rawDaos, parseDaos);
-}
-
-export function useDaoTreasury(lastBlock: LastBlock | Nullish) {
-  return useGenericQuery(lastBlock, "dao_treasury", async () => {
-    const api = lastBlock?.apiAtBlock;
-    return api?.query.governanceModule?.daoTreasuryAddress?.();
-  });
-}
-
-// == General Queries ==
-
-export function useNotDelegatingVoting(lastBlock: LastBlock | Nullish) {
-  return useGenericQuery(lastBlock, "not_delegating_voting", async () => {
-    const api = lastBlock?.apiAtBlock;
-    return api?.query.governanceModule?.daoTreasuryAddress?.();
-  });
-}
-
-// == RPC ==
-
-export async function getLastBlock(api: ApiPromise): Promise<LastBlock> {
-  const blockHeader = await api.rpc.chain.getHeader();
-  const blockNumber = blockHeader.number.toNumber();
-  const blockHash = blockHeader.hash;
-  const blockHashHex = blockHash.toHex();
-  const apiAtBlock = await api.at(blockHeader.hash);
-  return {
-    blockHeader,
-    blockNumber,
-    blockHash,
-    blockHashHex,
-    apiAtBlock,
-  };
-}
-
-export function useLastBlock(api: ApiPromise | null) {
-  return useQuery({
-    queryKey: ["last_block"],
-    enabled: api != null,
-    queryFn: () => getLastBlock(api!),
-    staleTime: LAST_BLOCK_STALE_TIME,
-    refetchOnWindowFocus: false,
-  });
-}
-
-export async function getAllStakeOut(
-  lastBlock: LastBlock | Nullish,
-): Promise<StakeOutData> {
-  if (lastBlock == null) {
-    throw new Error("lastBlock is null");
-  }
-
-  const api = lastBlock.apiAtBlock;
-
-  const stakeToQuery = await api.query.subspaceModule.stakeTo.entries();
-
-  let total = 0n;
-  const perAddr = new Map<string, bigint>();
-  const perNet = new Map<number, bigint>();
-  const perAddrPerNet = new Map<number, Map<string, bigint>>();
-
-  for (const [keyRaw, valueRaw] of stakeToQuery) {
-    const [netuidRaw, fromAddrRaw] = keyRaw.args;
-    const netuid = netuidRaw.toPrimitive() as number;
-    const fromAddr = fromAddrRaw.toString();
-    const stakeToMapForKey = valueRaw.toJSON() as Record<
-      string,
-      string | number
-    >;
-
-    for (const moduleKey in stakeToMapForKey) {
-      const staked = BigInt(stakeToMapForKey[moduleKey]);
-
-      total += staked;
-      perAddr.set(fromAddr, (perAddr.get(fromAddr) ?? 0n) + staked);
-      perNet.set(netuid, (perNet.get(netuid) ?? 0n) + staked);
-
-      const mapNet = perAddrPerNet.get(netuid) ?? new Map<string, bigint>();
-      mapNet.set(fromAddr, (mapNet.get(fromAddr) ?? 0n) + staked);
-      perAddrPerNet.set(netuid, mapNet);
-    }
-  }
-
-  return {
-    total,
-    perAddr,
-    perNet,
-    perAddrPerNet,
-  };
-}
-
-export function useAllStakeOut(lastBlock: LastBlock | Nullish) {
-  return useGenericQuery(lastBlock, "stake_out", async () => {
-    return getAllStakeOut(lastBlock);
   });
 }
