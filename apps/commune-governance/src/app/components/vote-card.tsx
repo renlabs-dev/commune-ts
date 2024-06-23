@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
-import type { TransactionResult } from "@repo/providers/types";
-import { useCommune } from "@repo/providers/use-commune";
-import { WalletButtonWithHook } from "@repo/providers/wallet-button-with-hook";
+
+import type { TransactionResult } from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
+
 import type { Vote } from "./vote-label";
 import { Card } from "./card";
 

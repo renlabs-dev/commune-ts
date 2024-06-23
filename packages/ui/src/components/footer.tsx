@@ -1,5 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+
 import { links } from "../data";
 import { handleDescription } from "./discord-widget";
 
@@ -14,31 +15,31 @@ interface FooterProps {
 
 export function Footer(props: FooterProps): JSX.Element {
   return (
-    <footer className="ui-flex ui-flex-col">
+    <footer className="flex flex-col">
       <div className="px-4 lg:px-20">
-        <div className="ui-mx-auto ui-max-w-screen-2xl ui-space-y-12">
-          <div className="ui-flex ui-flex-col ui-gap-6 ui-pt-10 lg:ui-flex-row lg:ui-items-center lg:ui-gap-16 lg:ui-pt-20">
-            <div className="ui-space-y-5">
-              <h3 className="ui-text-3xl ui-text-white lg:ui-text-5xl">
+        <div className="mx-auto max-w-screen-2xl space-y-12">
+          <div className="flex flex-col gap-6 pt-10 lg:flex-row lg:items-center lg:gap-16 lg:pt-20">
+            <div className="space-y-5">
+              <h3 className="text-3xl text-white lg:text-5xl">
                 Join the revolution of Incentive-driven Decentralized AI
               </h3>
             </div>
           </div>
-          <div className="ui-flex ui-flex-col ui-justify-between ui-space-y-4 ui-pb-10 lg:ui-flex-row lg:ui-space-x-4 lg:ui-space-y-0 lg:ui-pb-20">
+          <div className="flex flex-col justify-between space-y-4 pb-10 lg:flex-row lg:space-x-4 lg:space-y-0 lg:pb-20">
             {props.applicationsList.map((app) => {
               return (
                 <Link
-                  className="ui-w-full ui-border ui-border-gray-500 ui-bg-black/50 ui-p-8 ui-text-gray-400 ui-transition ui-duration-200 hover:ui-bg-green-950/15 hover:ui-text-gray-300"
+                  className="w-full border border-gray-500 bg-black/50 p-8 text-gray-400 transition duration-200 hover:bg-green-950/15 hover:text-gray-300"
                   href={app.href}
                   key={app.title}
                 >
-                  <div className="ui-flex ui-items-center ui-justify-between">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="ui-text-white">{app.title}</p>
+                      <p className="text-white">{app.title}</p>
                     </div>
                     <Image
                       alt="link icon"
-                      className="ui-w-12 ui-border ui-border-green-500 ui-p-3"
+                      className="w-12 border border-green-500 p-3"
                       height={75}
                       src="/arrow-link-icon.svg"
                       width={75}
@@ -52,15 +53,15 @@ export function Footer(props: FooterProps): JSX.Element {
         </div>
       </div>
 
-      <div className="ui-black/50 ui-border-t ui-border-gray-500 ui-bg-black/50 ui-px-4 lg:ui-px-20">
-        <div className="ui-mx-auto ui-flex ui-w-full ui-max-w-screen-2xl ui-flex-col ui-items-center ui-justify-between ui-gap-6 ui-p-6 lg:ui-flex-row lg:ui-gap-0">
-          <p className="ui-hidden ui-text-left ui-text-sm ui-leading-5 ui-text-gray-400 lg:ui-block">
+      <div className="black/50 border-t border-gray-500 bg-black/50 px-4 lg:px-20">
+        <div className="mx-auto flex w-full max-w-screen-2xl flex-col items-center justify-between gap-6 p-6 lg:flex-row lg:gap-0">
+          <p className="hidden text-left text-sm leading-5 text-gray-400 lg:block">
             Making decentralized AI for everyone
           </p>
-          <div className="ui-flex ui-space-x-5 ui-px-4">
+          <div className="flex space-x-5 px-4">
             {socialList.map((item) => (
               <Link
-                className="ui-text-subtitle ui-leading-6 hover:ui-text-gray-800 hover:ui-underline"
+                className="text-subtitle leading-6 hover:text-gray-800 hover:underline"
                 href={item.href}
                 key={item.name}
               >
@@ -69,7 +70,7 @@ export function Footer(props: FooterProps): JSX.Element {
             ))}
           </div>
 
-          <p className="ui-text-center ui-text-sm ui-leading-5 ui-text-gray-400">
+          <p className="text-center text-sm leading-5 text-gray-400">
             &copy; 2024 Commune, Inc. No rights reserved.
           </p>
         </div>

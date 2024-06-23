@@ -1,44 +1,46 @@
 "use client";
 
+import type { SubmittableResult } from "@polkadot/api";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
+import type { DispatchError } from "@polkadot/types/interfaces";
 import { createContext, useContext, useEffect, useState } from "react";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 import {
   type InjectedAccountWithMeta,
   type InjectedExtension,
 } from "@polkadot/extension-inject/types";
-import type { SubmittableResult } from "@polkadot/api";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { toast } from "react-toastify";
-import type { DispatchError } from "@polkadot/types/interfaces";
-import { WalletModal } from "@repo/ui/wallet-modal";
-import { calculateAmount } from "../utils";
+
+import { WalletModal } from "@commune-ts/ui/wallet-modal";
+
 import type {
-  LastBlock,
   AddCustomProposal,
   AddDaoApplication,
+  BaseDao,
+  BaseProposal,
+  DaoState,
+  LastBlock,
+  ProposalState,
+  SS58Address,
   Stake,
+  StakeOutData,
   TransactionResult,
   Transfer,
   TransferStake,
-  Vote,
-  StakeOutData,
   UpdateDelegatingVotingPower,
-  SS58Address,
-  BaseProposal,
-  BaseDao,
-  ProposalState,
-  DaoState,
+  Vote,
 } from "../types";
 import {
   useAllStakeOut,
   useBalance,
   useCustomMetadata,
-  useDaoTreasury,
   useDaos,
+  useDaoTreasury,
   useLastBlock,
   useNotDelegatingVoting,
   useProposals,
 } from "../hooks";
+import { calculateAmount } from "../utils";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -261,7 +263,7 @@ export function CommuneProvider({
     amount,
     callback,
   }: Stake): Promise<void> {
-    if (!api?.tx.subspaceModule.addStake) return;
+    if (!api?.tx.subspaceModule?.addStake) return;
 
     const transaction = api.tx.subspaceModule.addStake(
       netUid,
@@ -277,7 +279,7 @@ export function CommuneProvider({
     amount,
     callback,
   }: Stake): Promise<void> {
-    if (!api?.tx.subspaceModule.removeStake) return;
+    if (!api?.tx.subspaceModule?.removeStake) return;
 
     const transaction = api.tx.subspaceModule.removeStake(
       netUid,
@@ -301,7 +303,7 @@ export function CommuneProvider({
     netUid,
     callback,
   }: TransferStake): Promise<void> {
-    if (!api?.tx.subspaceModule.transferStake) return;
+    if (!api?.tx.subspaceModule?.transferStake) return;
 
     const transaction = api.tx.subspaceModule.transferStake(
       netUid,
@@ -319,7 +321,7 @@ export function CommuneProvider({
     vote,
     callback,
   }: Vote): Promise<void> {
-    if (!api?.tx.governanceModule.voteProposal) return;
+    if (!api?.tx.governanceModule?.voteProposal) return;
 
     const transaction = api.tx.governanceModule.voteProposal(proposalId, vote);
     await sendTransaction("Vote", transaction, callback);
@@ -329,7 +331,7 @@ export function CommuneProvider({
     IpfsHash,
     callback,
   }: AddCustomProposal): Promise<void> {
-    if (!api?.tx.governanceModule.addGlobalCustomProposal) return;
+    if (!api?.tx.governanceModule?.addGlobalCustomProposal) return;
 
     const transaction =
       api.tx.governanceModule.addGlobalCustomProposal(IpfsHash);
@@ -341,7 +343,7 @@ export function CommuneProvider({
     applicationKey,
     callback,
   }: AddDaoApplication): Promise<void> {
-    if (!api?.tx.governanceModule.addDaoApplication) return;
+    if (!api?.tx.governanceModule?.addDaoApplication) return;
 
     const transaction = api.tx.governanceModule.addDaoApplication(
       applicationKey,
@@ -354,7 +356,11 @@ export function CommuneProvider({
     isDelegating,
     callback,
   }: UpdateDelegatingVotingPower): Promise<void> {
-    if (!api?.tx.governanceModule.addCustomProposal) return;
+    if (
+      !api?.tx.governanceModule?.enableVotePowerDelegation ||
+      !api?.tx.governanceModule.disableVotePowerDelegation
+    )
+      return;
 
     const transaction = isDelegating
       ? api.tx.governanceModule.enableVotePowerDelegation()

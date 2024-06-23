@@ -3,6 +3,7 @@ import {
   ArrowLongLeftIcon,
   ArrowLongRightIcon,
 } from "@heroicons/react/20/solid";
+
 import { DocSidebar } from "../../components/doc-sidebar";
 import { tutorials } from "./tutorials";
 

@@ -1,9 +1,11 @@
-import Link from "next/link";
 import Image from "next/image";
-import { handleDescription } from "@repo/ui/discord-widget";
+import Link from "next/link";
+
+import { handleDescription } from "@commune-ts/ui/discord-widget";
+
+import { applicationsList } from "../../../utils/applications-list";
 import Animation from "../animation/index";
 import { CountUpArea } from "../count-up-area";
-import { applicationsList } from "../../../utils/applications-list";
 
 export function HeroSection(): JSX.Element {
   return (

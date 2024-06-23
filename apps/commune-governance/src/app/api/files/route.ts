@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export const runtime = "edge";
 
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (e) {
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

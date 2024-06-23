@@ -1,13 +1,16 @@
 "use client";
 
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import type { ProposalState } from "@repo/providers/types";
-import { smallAddress } from "@repo/providers/utils";
-import { cairo } from "@repo/ui/fonts";
-import { useCommune } from "@repo/providers/use-commune";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+
+import type { ProposalState } from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { smallAddress } from "@commune-ts/providers/utils";
+import { cairo } from "@commune-ts/ui/fonts";
+
+import type { Vote } from "./vote-label";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
@@ -18,7 +21,6 @@ import { Card } from "./card";
 import { Label } from "./label";
 import { Skeleton } from "./skeleton";
 import { StatusLabel } from "./status-label";
-import type { Vote } from "./vote-label";
 import { VoteLabel } from "./vote-label";
 
 export interface ProposalCardProps {

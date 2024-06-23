@@ -1,18 +1,12 @@
-// tailwind config is required for editor support
-import type { Config } from 'tailwindcss'
+/*
+ * This file is not used for any compilation purpose, it is only used
+ * for Tailwind Intellisense & Autocompletion in the source files
+ */
+import type { Config } from "tailwindcss";
 
-import sharedConfig from "@repo/tailwind-config";
+import baseConfig from "@commune-ts/tailwind-config/web";
 
-const config: Pick<Config, "content" | "presets" | "theme"> = {
-  content: ["./src/app/**/*.tsx"],
-  presets: [sharedConfig],
-  theme: {
-    extend: {
-      boxShadow: {
-        'custom-dark': '3px 3px 0 0 rgba(255,255,255,1)',
-      },
-    },
-  },
-};
-
-export default config;
+export default {
+  content: ["./src/**/*.tsx"],
+  presets: [baseConfig],
+} satisfies Config;

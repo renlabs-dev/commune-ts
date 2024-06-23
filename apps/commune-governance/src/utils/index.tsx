@@ -1,4 +1,5 @@
-import { paramNameToDisplayName } from "@repo/providers/types";
+import { match } from "rustie";
+
 import type {
   CustomMetadataState,
   DAOCardFields,
@@ -6,9 +7,9 @@ import type {
   ProposalCardFields,
   ProposalState,
   ProposalStatus,
-} from "@repo/providers/types";
-import { bigintDivision, formatToken } from "@repo/providers/utils";
-import { match } from "rustie";
+} from "@commune-ts/providers/types";
+import { paramNameToDisplayName } from "@commune-ts/providers/types";
+import { bigintDivision, formatToken } from "@commune-ts/providers/utils";
 
 const paramsToMarkdown = (params: Record<string, unknown>): string => {
   const items = [];

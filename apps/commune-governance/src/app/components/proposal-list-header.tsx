@@ -1,7 +1,7 @@
 "use client";
 
-import { CreateProposal } from "./create-proposal";
 import { CreateDao } from "./create-dao";
+import { CreateProposal } from "./create-proposal";
 
 interface ProposalListHeaderProps {
   viewMode: string;

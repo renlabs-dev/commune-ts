@@ -1,12 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   ArrowPathIcon,
   InformationCircleIcon,
 } from "@heroicons/react/20/solid";
-import { useState, useEffect } from "react";
-import { useCommune } from "@repo/providers/use-commune";
-import type { TransactionResult } from "@repo/providers/types";
+
+import type { TransactionResult } from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
 
 export function VotingPowerButton(): JSX.Element | null {
   const { selectedAccount, updateDelegatingVotingPower, notDelegatingVoting } =

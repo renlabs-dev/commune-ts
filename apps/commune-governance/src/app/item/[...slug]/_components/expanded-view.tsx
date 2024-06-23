@@ -1,24 +1,27 @@
 "use client";
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
-import { formatToken, smallAddress } from "@repo/providers/utils";
+
 import type {
   DaoStatus,
   ProposalStatus,
   SS58Address,
-} from "@repo/providers/types";
-import { useCommune } from "@repo/providers/use-commune";
-import { MarkdownView } from "../../../components/markdown-view";
-import { VoteLabel, type Vote } from "../../../components/vote-label";
-import { StatusLabel } from "../../../components/status-label";
-import { DaoStatusLabel } from "../../../components/dao-status-label";
-import { VoteCard } from "../../../components/vote-card";
-import { VotingPowerButton } from "../../../components/voting-power-button";
+} from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+
+import type { Vote } from "../../../components/vote-label";
 import {
   calcProposalFavorablePercent,
   handleCustomDaos,
   handleCustomProposal,
 } from "../../../../utils";
+import { DaoStatusLabel } from "../../../components/dao-status-label";
+import { MarkdownView } from "../../../components/markdown-view";
+import { StatusLabel } from "../../../components/status-label";
+import { VoteCard } from "../../../components/vote-card";
+import { VoteLabel } from "../../../components/vote-label";
+import { VotingPowerButton } from "../../../components/voting-power-button";
 
 interface CustomContent {
   paramId: number;
