@@ -1,5 +1,5 @@
 {
-  "name": "@repo/providers",
+  "name": "@commune-ts/providers",
   "version": "0.0.0",
   "exports": {
     "./use-commune": "./src/context/commune.tsx",
