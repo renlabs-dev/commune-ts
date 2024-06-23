@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Disclosure } from "@headlessui/react";
+
 import { faqData } from "../../../utils/mocks/frequent-questions";
 
 export function FrequentQuestions(): JSX.Element {

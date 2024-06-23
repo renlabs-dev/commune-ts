@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { ToastProvider } from "./context/toast";
+
 import { CommuneProvider } from "./context/commune";
 import { ReactQueryProvider } from "./context/react-query";
+import { ToastProvider } from "./context/toast";
 
 function Providers({ children }: { children: ReactNode }): JSX.Element {
   return (

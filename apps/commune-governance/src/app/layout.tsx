@@ -1,13 +1,15 @@
 import "../styles/globals.css";
-import "@repo/ui/styles.css";
+import "@commune-ts/ui/styles.css";
 
 import type { Metadata } from "next";
-import { cairo } from "@repo/ui/fonts";
-import { Header } from "@repo/ui/header";
-import { Footer } from "@repo/ui/footer";
-import { Providers } from "@repo/providers/context";
-import { WalletButtonWithHook } from "@repo/providers/wallet-button-with-hook";
-import { links } from "@repo/ui/data";
+
+import { Providers } from "@commune-ts/providers/context";
+import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
+import { links } from "@commune-ts/ui/data";
+import { cairo } from "@commune-ts/ui/fonts";
+import { Footer } from "@commune-ts/ui/footer";
+import { Header } from "@commune-ts/ui/header";
+
 import { applicationsList } from "../utils/applications-list";
 import { FooterDivider } from "./components/footer-divider";
 

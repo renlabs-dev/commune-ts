@@ -1,9 +1,8 @@
 {
   "name": "@commune-ts/ui",
-  "version": "0.0.0",
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "exports": {
     "./styles.css": "./dist/index.css",
     "./header": "./src/components/header.tsx",
@@ -17,27 +16,31 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
-    "lint": "eslint src/",
-    "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-    "type-check": "tsc --noEmit"
-  },
-  "peerDependencies": {
-    "react": "^18.2.0"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/tailwind-config": "*",
-    "@repo/typescript-config": "*",
-    "@types/react": "^18.2.61",
-    "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35",
-    "react": "^18.2.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "next": "^14.2.3",
-    "@heroicons/react": "^2.1.3"
-  }
+    "@heroicons/react": "^2.1.3",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@commune-ts/eslint-config": "workspace:*",
+    "@commune-ts/prettier-config": "workspace:*",
+    "@commune-ts/tailwind-config": "workspace:*",
+    "@commune-ts/tsconfig": "workspace:*",
+    "@types/react": "^18.2.61",
+    "eslint": "^9.4.0",
+    "prettier": "^3.3.1",
+    "react": "^18.3.1",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "prettier": "@commune-ts/prettier-config"
 }

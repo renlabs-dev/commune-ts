@@ -1,7 +1,9 @@
 import "@polkadot/api-augment";
-import { Api, LastBlock, SS58Address, isSS58 } from "../types";
-import { handleDaos, handleProposals } from "../utils";
+
 import { ApiPromise } from "@polkadot/api";
+
+import { Api, isSS58, LastBlock, SS58Address } from "../types";
+import { handleDaos, handleProposals } from "../utils";
 
 // == chain ==
 

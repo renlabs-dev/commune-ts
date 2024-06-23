@@ -1,31 +1,36 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import "@polkadot/api-augment";
+
 import type { ApiPromise } from "@polkadot/api";
 import { useQueries, useQuery } from "@tanstack/react-query";
+
 import {
   queryBalance,
-  queryDaoTreasuryAddress,
   queryDaosEntries,
+  queryDaoTreasuryAddress,
   queryLastBlock,
   queryNotDelegatingVotingPower,
   queryProposalsEntries,
   queryStakeOut,
-} from "@repo/commune-ts/queries";
-import { buildIpfsGatewayUrl, parseIpfsUri } from "../utils";
+} from "@commune-ts/subspace/queries";
+
+import type {
+  Api,
+  CustomDataError,
+  CustomMetadata,
+  LastBlock,
+  Nullish,
+  Result,
+  SS58Address,
+} from "../types";
 import {
-  type Api,
-  type Nullish,
-  type LastBlock,
-  type Result,
-  type SS58Address,
-  type CustomMetadata,
-  type CustomDataError,
-  PROPOSALS_STALE_TIME,
-  LAST_BLOCK_STALE_TIME,
   CUSTOM_METADATA_SCHEMA,
+  LAST_BLOCK_STALE_TIME,
+  PROPOSALS_STALE_TIME,
   STAKE_STALE_TIME,
 } from "../types";
+import { buildIpfsGatewayUrl, parseIpfsUri } from "../utils";
 
 // == chain ==
 

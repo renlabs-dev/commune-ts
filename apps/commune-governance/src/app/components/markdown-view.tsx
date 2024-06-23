@@ -1,7 +1,8 @@
 "use client";
 
-import { cairo } from "@repo/ui/fonts";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+
+import { cairo } from "@commune-ts/ui/fonts";
 
 interface MarkdownViewProps {
   source: string;

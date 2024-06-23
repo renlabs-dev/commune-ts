@@ -1,28 +1,33 @@
 {
+  "name": "commune-ts",
   "private": true,
+  "engines": {
+    "node": ">=18.17.1"
+  },
+  "packageManager": "pnpm@9.2.0",
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "type-check": "turbo type-check",
-    "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "deploy-commune-page": "yarn run build && (cd apps/commune-page/ && npx @cloudflare/next-on-pages@1)",
-    "deploy-commune-governance": "yarn run build && (cd apps/commune-governance/ && npx @cloudflare/next-on-pages@1)"
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "db:push": "turbo -F @commune-ts/db push",
+    "db:studio": "turbo -F @commune-ts/db studio",
+    "dev": "turbo watch dev",
+    "dev:next": "turbo watch dev -F @commune-ts/nextjs...",
+    "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
+    "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "turbo run ui-add"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*",
-    "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.6.1",
-    "turbo": "latest"
+    "@commune-ts/prettier-config": "workspace:*",
+    "@turbo/gen": "^2.0.3",
+    "prettier": "^3.3.1",
+    "turbo": "^2.0.3",
+    "typescript": "^5.4.5"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "yarn@1.22.22",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "prettier": "@commune-ts/prettier-config"
 }
