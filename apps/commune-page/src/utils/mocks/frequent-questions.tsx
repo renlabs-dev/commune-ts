@@ -1,5 +1,6 @@
-import { links } from "@repo/ui/data";
 import Link from "next/link";
+
+import { links } from "@commune-ts/ui/data";
 
 interface HyperLink {
   children?: React.ReactNode;

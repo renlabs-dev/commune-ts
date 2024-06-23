@@ -1,14 +1,13 @@
-import {
+import { CID } from "multiformats/cid";
+
+import type {
   Codec,
+  DaoApplications,
   Entry,
   Proposal,
   RawEntry,
-  URL_SCHEMA,
-  parseDaos,
-  parseProposal,
-  DaoApplications,
 } from "../types";
-import { CID } from "multiformats/cid";
+import { parseDaos, parseProposal, URL_SCHEMA } from "../types";
 
 // == Calc ==
 

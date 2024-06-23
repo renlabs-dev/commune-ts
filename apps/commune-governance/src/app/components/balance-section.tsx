@@ -2,11 +2,13 @@
 "use client";
 
 import Image from "next/image";
-import { useCommune } from "@repo/providers/use-commune";
-import { formatToken, smallAddress } from "@repo/providers/utils";
-import { useBalance } from "@repo/providers/hooks";
-import { toast } from "@repo/providers/use-toast";
 import { LinkIcon } from "@heroicons/react/20/solid";
+
+import { useBalance } from "@commune-ts/providers/hooks";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
+import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+
 import { Skeleton } from "./skeleton";
 
 export function BalanceSection({

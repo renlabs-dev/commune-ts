@@ -1,5 +1,7 @@
 import { match } from "rustie";
-import type { ProposalStatus } from "@repo/providers/types";
+
+import type { ProposalStatus } from "@commune-ts/providers/types";
+
 import { Label } from "./label";
 
 interface StatusLabelProps {

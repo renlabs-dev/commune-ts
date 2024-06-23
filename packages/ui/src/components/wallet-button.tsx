@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { smallAddress } from "@repo/providers/utils";
+
 import type { InjectedAccountWithMeta } from "../types";
 
 interface PolkadotHook {
@@ -19,7 +19,7 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
 
   if (!isInitialized) {
     return (
-      <div className="ui-active:top-1 ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600">
+      <div className="relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 active:top-1">
         <Image
           alt="Wallet Icon"
           className="w-6"
@@ -39,15 +39,14 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
 
   return (
     <button
-      className={`ui-relative ui-inline-flex ui-items-center ui-justify-center ui-gap-3 ui-border ui-border-gray-500 ui-px-4 ui-py-2 ui-text-gray-400 hover:ui-border-green-600 hover:ui-bg-green-600/5 hover:ui-text-green-600 ${
-        selectedAccount &&
-        "ui-border-green-500 ui-bg-green-500/5 ui-text-green-500"
+      className={`relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 ${
+        selectedAccount && "border-green-500 bg-green-500/5 text-green-500"
       }`}
       disabled={!isInitialized}
       onClick={handleConnect}
       type="button"
     >
-      <span className="ui-flex ui-items-center ui-gap-3 ui-font-medium">
+      <span className="flex items-center gap-3 font-medium">
         <Image
           alt="Wallet Icon"
           className="w-6"
@@ -56,13 +55,14 @@ export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
           width={40}
         />
         {selectedAccount?.meta.name ? (
-          <div className="ui-flex ui-flex-col ui-items-start">
+          <div className="flex flex-col items-start">
             <span className="font-light">
-              {smallAddress(selectedAccount.address || "")}
+              {selectedAccount.address.slice(0, 8)}…
+              {selectedAccount.address.slice(-8)}
             </span>
           </div>
         ) : (
-          <span className="ui-text-white">Connect Wallet</span>
+          <span className="text-white">Connect Wallet</span>
         )}
       </span>
     </button>

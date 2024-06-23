@@ -1,15 +1,17 @@
 "use client";
 
-import type { ProposalStatus, SS58Address } from "@repo/providers/types";
 import { useState } from "react";
-import { useCommune } from "@repo/providers/use-commune";
+
+import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
+
 import type { Vote } from "./components/vote-label";
-import { ProposalCard } from "./components/proposal-card";
-import { DaoCard } from "./components/dao-card";
-import { Container } from "./components/container";
 import { BalanceSection } from "./components/balance-section";
-import { ProposalListHeader } from "./components/proposal-list-header";
 import { CardSkeleton } from "./components/card-skeleton";
+import { Container } from "./components/container";
+import { DaoCard } from "./components/dao-card";
+import { ProposalCard } from "./components/proposal-card";
+import { ProposalListHeader } from "./components/proposal-list-header";
 
 export default function HomePage(): JSX.Element {
   const {

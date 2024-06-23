@@ -1,11 +1,13 @@
 "use client";
-import Link from "next/link";
+
 import { useState } from "react";
+import Link from "next/link";
 import {
   Bars3Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
+
 import { tutorials } from "../docs/[...slug]/tutorials";
 
 interface DocSidebarProps {
@@ -60,7 +62,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
                     return (
                       <Link
                         //eslint-disable-next-line
-                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug[0] === tutorial.tutorialId ? 'text-white' : ' text-gray-400 hover:text-gray-200'}`}
+                        className={`relative mt-0 flex items-center border-l border-gray-600/70 p-3 ${params.slug[1] === content.href && params.slug[0] === tutorial.tutorialId ? "text-white" : " text-gray-400 hover:text-gray-200"}`}
                         href={`${prefix}/${tutorial.tutorialId}/${content.href}`}
                         key={content.name}
                       >

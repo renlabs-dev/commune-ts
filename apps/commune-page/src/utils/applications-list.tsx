@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { links } from "@repo/ui/data";
+
+import { links } from "@commune-ts/ui/data";
 
 export const applicationsList = [
   {

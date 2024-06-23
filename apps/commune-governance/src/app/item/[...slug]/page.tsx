@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
+
 import { ExpandedView } from "./_components/expanded-view";
 
 export const runtime = "edge";
