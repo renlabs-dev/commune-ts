@@ -6,9 +6,9 @@
 - `commune-governance`: a [Next.js](https://nextjs.org/) for the community governance application
 
 - `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared through `apps` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `@repo/providers`: a stub package that exports the `PolkadotProvider` and `ToastProvider`
+- `@commune-ts/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@commune-ts/tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `@commune-ts/providers`: a stub package that exports the `PolkadotProvider` and `ToastProvider`
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 

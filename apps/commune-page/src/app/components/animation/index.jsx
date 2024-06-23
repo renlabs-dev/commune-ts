@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import linesFragmentShader from "!!raw-loader!./shaders/lines/fragment.glsl";
+import pointsFragmentShader from "!!raw-loader!./shaders/points/fragment.glsl";
+import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
 import * as dat from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
-import linesFragmentShader from "!!raw-loader!./shaders/lines/fragment.glsl";
-import pointsFragmentShader from "!!raw-loader!./shaders/points/fragment.glsl";
 
 const getRandNum = (min, max) => {
   return Math.random() * (max - min) + min;

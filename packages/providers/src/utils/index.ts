@@ -1,1 +1,1 @@
-export * from "@repo/commune-ts/utils";
+export * from "@commune-ts/subspace/utils";

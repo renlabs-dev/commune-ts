@@ -1,5 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+
 import { oxanium } from "../fonts";
 import { MobileNavigation } from "./mobile-navigation";
 
@@ -12,27 +13,27 @@ interface HeaderProps {
 
 export function Header(props: HeaderProps): JSX.Element {
   return (
-    <header className="ui-sticky ui-top-0 ui-z-50 ui-w-full ui-border-b ui-border-gray-500 ui-bg-black/50 ui-backdrop-blur-sm">
-      <nav className="ui-mx-auto ui-flex ui-w-full ui-max-w-screen-2xl ui-items-center ui-justify-between ui-px-3 ui-py-3">
-        <Link className="ui-flex ui-items-center ui-gap-3" href="/">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-500 bg-black/50 backdrop-blur-sm">
+      <nav className="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-3 py-3">
+        <Link className="flex items-center gap-3" href="/">
           <Image
             alt="Logo"
-            className="ui-h-10 ui-w-10"
+            className="h-10 w-10"
             height={100}
             src={props.logoSrc}
             width={100}
           />
           <h3
-            className={`${oxanium.className} ui-mt-0.5 ui-hidden ui-text-2xl ui-font-light ui-text-white md:ui-flex`}
+            className={`${oxanium.className} mt-0.5 hidden text-2xl font-light text-white md:flex`}
           >
             {props.title}
           </h3>
         </Link>
-        <div className="ui-flex ui-items-center">
-          <div className="ui-hidden ui-pr-6 lg:ui-flex lg:ui-gap-6">
+        <div className="flex items-center">
+          <div className="hidden pr-6 lg:flex lg:gap-6">
             {props.navigationLinks.map(({ name, href, external }) => (
               <Link
-                className="ui-flex ui-flex-col ui-items-center ui-text-lg ui-font-normal ui-leading-6 ui-text-white ui-transition ui-duration-500 hover:ui-text-green-500"
+                className="flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500"
                 href={href}
                 key={name}
                 target={external ? "_blank" : "_self"}

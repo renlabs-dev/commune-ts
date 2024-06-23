@@ -1,6 +1,7 @@
 "use client";
 
-import { WalletButton } from "@repo/ui/wallet-button";
+import { WalletButton } from "@commune-ts/ui/wallet-button";
+
 import { useCommune } from "../context/commune";
 
 export function WalletButtonWithHook(): JSX.Element {

@@ -1,14 +1,15 @@
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import { InformationCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
-import type { TransactionResult } from "@repo/providers/types";
-import { useCommune } from "@repo/providers/use-commune";
-import { Loading } from "@repo/ui/loading";
-import { cairo } from "@repo/ui/fonts";
-import { toast } from "@repo/providers/use-toast";
+
+import type { TransactionResult } from "@commune-ts/providers/types";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
+import { cairo } from "@commune-ts/ui/fonts";
+import { Loading } from "@commune-ts/ui/loading";
 
 const proposalSchema = z.object({
   title: z.string().min(1, "Title is required"),
