@@ -1,7 +1,9 @@
 import type { Config } from "tailwindcss";
+import base from "./base";
 
-// We want each package to be responsible for its own content.
-const config: Omit<Config, "content"> = {
+export default {
+  content: base.content,
+  presets: [base],
   theme: {
     extend: {
       backgroundImage: {
@@ -24,5 +26,4 @@ const config: Omit<Config, "content"> = {
     },
   },
   plugins: [require('@tailwindcss/typography')],
-};
-export default config;
+} satisfies Config;
