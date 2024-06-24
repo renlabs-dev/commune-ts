@@ -1,39 +1,70 @@
 # commune-app
 
-### Apps and Packages
+## About
 
-- `commune-page`: a [Next.js](https://nextjs.org/) for the landing page
-- `commune-governance`: a [Next.js](https://nextjs.org/) for the community governance application
+This is a monorepo for the commune ai typescript ecosystem. It uses [Turborepo](https://turborepo.org) and contains:
 
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared through `apps` applications
-- `@commune-ts/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@commune-ts/tsconfig`: `tsconfig.json`s used throughout the monorepo
-- `@commune-ts/providers`: a stub package that exports the `PolkadotProvider` and `ToastProvider`
+```text
+.github
+  └─ workflows
+        └─ CI with pnpm cache setup
+.vscode
+  └─ Recommended extensions and settings for VSCode users
+apps
+  ├─ commune-governance
+  |   ├─ Next.js 14
+  |   ├─ React 18
+  |   ├─ Tailwind CSS
+  |   └─ Subspace calls through the provider library
+  ├─ commune-page
+  |   ├─ Next.js 14
+  |   ├─ React 18
+  |   ├─ Tailwind CSS
+  |   └─ Docs
+  └─ commune-validator
+      ├─ Next.js 14
+      ├─ React 18
+      ├─ Tailwind CSS
+      ├─ E2E Typesafe API Server & Client
+      └─ Subspace calls through the provider library
+packages
+  ├─ api
+  |   └─ tRPC v11 router definition
+  ├─ db
+  |   └─ Typesafe db calls using Drizzle & Supabase
+  ├─ providers
+  |   └─ Subspace/react-query/toast provider library
+  ├─ subspace
+  |   └─ Subspace client library
+  ├─ ui
+  |   └─ components library
+  └─ validators
+      └─ Typesafe validation library
+tooling
+  ├─ eslint
+  |   └─ shared, fine-grained, eslint presets
+  ├─ prettier
+  |   └─ shared prettier configuration
+  ├─ tailwind
+  |   └─ shared tailwind configuration
+  └─ typescript
+      └─ shared tsconfig you can extend from
+```
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-### Utilities
+### To get it running, follow the steps below:
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+```bash
+# Install dependencies
+pnpm i
 
-### Build
+# Configure environment variables
+# There is an `.env.example` in the root directory you can use for reference
+cp .env.example .env
 
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-yarn build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-yarn dev
+# Push the Drizzle schema to the database
+pnpm db:push
 ```
 
 ## Useful Links
@@ -44,3 +75,13 @@ yarn dev
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+---
+
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
+
+## References
+
+The stack originates from [create-t3-app](https://github.com/t3-oss/create-t3-app).
