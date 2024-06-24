@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "..";
 import { links } from "../data";
 import { handleDescription } from "./discord-widget";
 
@@ -15,31 +16,41 @@ interface FooterProps {
 
 export function Footer(props: FooterProps): JSX.Element {
   return (
-    <footer className="flex flex-col">
-      <div className="px-4 lg:px-20">
-        <div className="mx-auto max-w-screen-2xl space-y-12">
-          <div className="flex flex-col gap-6 pt-10 lg:flex-row lg:items-center lg:gap-16 lg:pt-20">
-            <div className="space-y-5">
-              <h3 className="text-3xl text-white lg:text-5xl">
+    <footer className={cn("flex flex-col")}>
+      <div className={cn("px-4 lg:px-20")}>
+        <div className={cn("mx-auto max-w-screen-2xl space-y-12")}>
+          <div
+            className={cn(
+              "flex flex-col gap-6 pt-10 lg:flex-row lg:items-center lg:gap-16 lg:pt-20",
+            )}
+          >
+            <div className={cn("space-y-5")}>
+              <h3 className={cn("text-3xl text-white lg:text-5xl")}>
                 Join the revolution of Incentive-driven Decentralized AI
               </h3>
             </div>
           </div>
-          <div className="flex flex-col justify-between space-y-4 pb-10 lg:flex-row lg:space-x-4 lg:space-y-0 lg:pb-20">
+          <div
+            className={cn(
+              "flex flex-col justify-between space-y-4 pb-10 lg:flex-row lg:space-x-4 lg:space-y-0 lg:pb-20",
+            )}
+          >
             {props.applicationsList.map((app) => {
               return (
                 <Link
-                  className="w-full border border-gray-500 bg-black/50 p-8 text-gray-400 transition duration-200 hover:bg-green-950/15 hover:text-gray-300"
+                  className={cn(
+                    "w-full border border-gray-500 bg-black/50 p-8 text-gray-400 transition duration-200 hover:bg-green-950/15 hover:text-gray-300",
+                  )}
                   href={app.href}
                   key={app.title}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className={cn("flex items-center justify-between")}>
                     <div>
-                      <p className="text-white">{app.title}</p>
+                      <p className={cn("text-white")}>{app.title}</p>
                     </div>
                     <Image
                       alt="link icon"
-                      className="w-12 border border-green-500 p-3"
+                      className={cn("w-12 border border-green-500 p-3")}
                       height={75}
                       src="/arrow-link-icon.svg"
                       width={75}
@@ -53,15 +64,29 @@ export function Footer(props: FooterProps): JSX.Element {
         </div>
       </div>
 
-      <div className="black/50 border-t border-gray-500 bg-black/50 px-4 lg:px-20">
-        <div className="mx-auto flex w-full max-w-screen-2xl flex-col items-center justify-between gap-6 p-6 lg:flex-row lg:gap-0">
-          <p className="hidden text-left text-sm leading-5 text-gray-400 lg:block">
+      <div
+        className={cn(
+          "black/50 border-t border-gray-500 bg-black/50 px-4 lg:px-20",
+        )}
+      >
+        <div
+          className={cn(
+            "mx-auto flex w-full max-w-screen-2xl flex-col items-center justify-between gap-6 p-6 lg:flex-row lg:gap-0",
+          )}
+        >
+          <p
+            className={cn(
+              "hidden text-left text-sm leading-5 text-gray-400 lg:block",
+            )}
+          >
             Making decentralized AI for everyone
           </p>
-          <div className="flex space-x-5 px-4">
+          <div className={cn("flex space-x-5 px-4")}>
             {socialList.map((item) => (
               <Link
-                className="text-subtitle leading-6 hover:text-gray-800 hover:underline"
+                className={cn(
+                  "text-subtitle leading-6 hover:text-gray-800 hover:underline",
+                )}
                 href={item.href}
                 key={item.name}
               >
@@ -70,7 +95,7 @@ export function Footer(props: FooterProps): JSX.Element {
             ))}
           </div>
 
-          <p className="text-center text-sm leading-5 text-gray-400">
+          <p className={cn("text-center text-sm leading-5 text-gray-400")}>
             &copy; 2024 Commune, Inc. No rights reserved.
           </p>
         </div>
