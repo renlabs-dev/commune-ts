@@ -4,6 +4,7 @@ import baseConfig, { restrictEnvAccess } from "@commune-ts/eslint-config/base";
 export default [
   {
     ignores: ["dist/**"],
+    strictNullChecks,
   },
   ...baseConfig,
   ...restrictEnvAccess,
