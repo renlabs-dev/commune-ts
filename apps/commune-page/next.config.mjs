@@ -52,7 +52,8 @@ createJiti(fileURLToPath(import.meta.url))("./src/env");
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: false,
-
+  // Configure `pageExtensions` to include MDX files
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
     "@commune-ts/api",
