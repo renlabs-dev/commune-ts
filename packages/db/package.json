@@ -30,7 +30,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "postgres": "^3.4.3",
+    "postgres": "^3.4.4",
     "@t3-oss/env-nextjs": "^0.10.1",
     "drizzle-orm": "^0.31.2",
     "drizzle-zod": "^0.5.1",
