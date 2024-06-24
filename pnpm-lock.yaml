@@ -336,18 +336,18 @@ importers:
 
   packages/db:
     dependencies:
-      '@t3-oss/env-core':
+      '@t3-oss/env-nextjs':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.5.2)(zod@3.23.8)
-      '@vercel/postgres':
-        specifier: ^0.8.0
-        version: 0.8.0
       drizzle-orm:
         specifier: ^0.31.2
-        version: 0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(react@18.3.1)
+        version: 0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(postgres@3.4.4)(react@18.3.1)
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(react@18.3.1))(zod@3.23.8)
+        version: 0.5.1(drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(postgres@3.4.4)(react@18.3.1))(zod@3.23.8)
+      postgres:
+        specifier: ^3.4.3
+        version: 3.4.4
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -3904,6 +3904,10 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
+  postgres@3.4.4:
+    resolution: {integrity: sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A==}
+    engines: {node: '>=12'}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -5326,6 +5330,7 @@ snapshots:
   '@neondatabase/serverless@0.7.2':
     dependencies:
       '@types/pg': 8.6.6
+    optional: true
 
   '@next/env@14.2.4': {}
 
@@ -5976,6 +5981,7 @@ snapshots:
       '@types/node': 20.14.8
       pg-protocol: 1.6.1
       pg-types: 2.2.0
+    optional: true
 
   '@types/prismjs@1.26.4': {}
 
@@ -6112,6 +6118,7 @@ snapshots:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
       ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
+    optional: true
 
   '@webassemblyjs/ast@1.12.1':
     dependencies:
@@ -6420,6 +6427,7 @@ snapshots:
   bufferutil@4.0.8:
     dependencies:
       node-gyp-build: 4.8.1
+    optional: true
 
   busboy@1.6.0:
     dependencies:
@@ -6727,17 +6735,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(react@18.3.1):
+  drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(postgres@3.4.4)(react@18.3.1):
     optionalDependencies:
       '@neondatabase/serverless': 0.7.2
       '@types/pg': 8.6.6
       '@types/react': 18.3.3
       '@vercel/postgres': 0.8.0
+      postgres: 3.4.4
       react: 18.3.1
 
-  drizzle-zod@0.5.1(drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(react@18.3.1))(zod@3.23.8):
+  drizzle-zod@0.5.1(drizzle-orm@0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(postgres@3.4.4)(react@18.3.1))(zod@3.23.8):
     dependencies:
-      drizzle-orm: 0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(react@18.3.1)
+      drizzle-orm: 0.31.2(@neondatabase/serverless@0.7.2)(@types/pg@8.6.6)(@types/react@18.3.3)(@vercel/postgres@0.8.0)(postgres@3.4.4)(react@18.3.1)
       zod: 3.23.8
 
   eastasianwidth@0.2.0: {}
@@ -8493,7 +8502,8 @@ snapshots:
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
 
-  node-gyp-build@4.8.1: {}
+  node-gyp-build@4.8.1:
+    optional: true
 
   node-plop@0.26.3:
     dependencies:
@@ -8705,9 +8715,11 @@ snapshots:
       estree-walker: 3.0.3
       is-reference: 3.0.2
 
-  pg-int8@1.0.1: {}
+  pg-int8@1.0.1:
+    optional: true
 
-  pg-protocol@1.6.1: {}
+  pg-protocol@1.6.1:
+    optional: true
 
   pg-types@2.2.0:
     dependencies:
@@ -8716,6 +8728,7 @@ snapshots:
       postgres-bytea: 1.0.0
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
+    optional: true
 
   picocolors@1.0.1: {}
 
@@ -8776,15 +8789,21 @@ snapshots:
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
-  postgres-array@2.0.0: {}
+  postgres-array@2.0.0:
+    optional: true
 
-  postgres-bytea@1.0.0: {}
+  postgres-bytea@1.0.0:
+    optional: true
 
-  postgres-date@1.0.7: {}
+  postgres-date@1.0.7:
+    optional: true
 
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
+    optional: true
+
+  postgres@3.4.4: {}
 
   prelude-ls@1.2.1: {}
 
@@ -9641,6 +9660,7 @@ snapshots:
   utf-8-validate@6.0.3:
     dependencies:
       node-gyp-build: 4.8.1
+    optional: true
 
   util-deprecate@1.0.2: {}
 
@@ -9780,13 +9800,15 @@ snapshots:
     optionalDependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
+    optional: true
 
   ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.3):
     optionalDependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
 
-  xtend@4.0.2: {}
+  xtend@4.0.2:
+    optional: true
 
   yallist@3.1.1: {}
 
