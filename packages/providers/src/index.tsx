@@ -9,7 +9,7 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
     <ReactQueryProvider>
       <ToastProvider>
         <CommuneProvider
-          wsEndpoint={String(process.env.NEXT_PUBLIC_WS_ENDPOINT)}
+          wsEndpoint={String(process.env.NEXT_PUBLIC_WS_PROVIDER_URL)}
         >
           {children}
         </CommuneProvider>
