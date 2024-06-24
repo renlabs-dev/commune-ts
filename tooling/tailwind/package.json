@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./native": "./native.ts",
     "./web": "./web.ts"
   },
   "license": "MIT",
@@ -14,8 +15,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1"
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",

@@ -1,9 +1,11 @@
+import { cn } from "..";
+
 export function Loading(): JSX.Element {
   return (
-    <div className="n grid place-content-center" role="status">
+    <div className={cn("grid place-content-center")} role="status">
       <svg
         aria-hidden="true"
-        className="h-8 w-8 animate-spin fill-blue-400 text-gray-200"
+        className={cn("h-8 w-8 animate-spin fill-blue-400 text-gray-200")}
         fill="none"
         viewBox="0 0 100 101"
         xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +19,7 @@ export function Loading(): JSX.Element {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className={cn("sr-only")}>Loading...</span>
     </div>
   );
 }
