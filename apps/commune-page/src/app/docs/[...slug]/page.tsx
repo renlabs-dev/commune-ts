@@ -40,10 +40,10 @@ export default function Docs({
         content: tutorials[activeTutorial].contents[activeContent - 1],
       };
     if (activeTutorial > 0) {
-      const contentLenght = tutorials[activeTutorial - 1]?.contents.length;
+      const contentLength = tutorials[activeTutorial - 1]?.contents.length;
       return {
         id: tutorials[activeTutorial - 1].tutorialId,
-        content: tutorials[activeTutorial - 1]?.contents[contentLenght - 1],
+        content: tutorials[activeTutorial - 1]?.contents[contentLength - 1],
       };
     }
     return null;
