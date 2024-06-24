@@ -13,7 +13,7 @@ const config = {
     "@commune-ts/api",
     "@commune-ts/db",
     "@commune-ts/ui",
-    "@commune-ts/validators",
+    // "@commune-ts/validators",
   ],
 
   /** We already do linting and typechecking as separate tasks in CI */

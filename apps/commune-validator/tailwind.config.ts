@@ -1,12 +1,11 @@
-/*
- * This file is not used for any compilation purpose, it is only used
- * for Tailwind Intellisense & Autocompletion in the source files
- */
 import type { Config } from "tailwindcss";
 
 import baseConfig from "@commune-ts/tailwind-config/web";
 
 export default {
-  content: ["./src/**/*.tsx"],
+  // We need to append the path to the UI package to the content array so that
+  // those classes are included correctly.
+  content: [...baseConfig.content, "../../packages/ui/**/*.{ts,tsx}"],
   presets: [baseConfig],
+  theme: {},
 } satisfies Config;

@@ -1,5 +1,4 @@
 import "../styles/globals.css";
-import "@commune-ts/ui/styles.css";
 
 import type { Metadata } from "next";
 
