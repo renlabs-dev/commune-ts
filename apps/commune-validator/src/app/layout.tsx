@@ -9,6 +9,7 @@ import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
+import { TRPCReactProvider } from "~/trpc/react";
 import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default function RootLayout({
             title="Commune AI"
             wallet={<WalletButtonWithHook />}
           />
-          {children}
+          <TRPCReactProvider>{children}</TRPCReactProvider>
           <Footer applicationsList={applicationsList} />
         </Providers>
       </body>
