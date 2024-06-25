@@ -109,7 +109,6 @@ export function ExpandedView(props: CustomContent): JSX.Element {
     isProposalsLoading,
   } = useCommune();
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleProposalsContent() {
     const proposal = proposalsWithMeta?.find((p) => p.id === paramId);
     if (!proposal) return null;
@@ -135,7 +134,6 @@ export function ExpandedView(props: CustomContent): JSX.Element {
     return CustomContent;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleDaosContent() {
     const dao = daosWithMeta?.find((d) => d.id === paramId);
     if (!dao) return null;
@@ -157,7 +155,6 @@ export function ExpandedView(props: CustomContent): JSX.Element {
     return daoContent;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function handleContent() {
     if (contentType === "dao") {
       return handleDaosContent();
@@ -232,12 +229,10 @@ export function ExpandedView(props: CustomContent): JSX.Element {
 
         <div className="border-b border-gray-500 p-6">
           <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
             <VoteLabel vote={content.voted!} />
             {contentType === "proposal" && (
               <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
                 {(content.netuid !== "GLOBAL" && (
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   <span> Subnet {content.netuid} </span>
                 )) || <span> Global </span>}
               </span>

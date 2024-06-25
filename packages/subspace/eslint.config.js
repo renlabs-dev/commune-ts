@@ -4,7 +4,7 @@ import baseConfig from "@commune-ts/eslint-config/base";
 export default [
   {
     ignores: ["dist/**"],
-    strictNullChecks,
+    strictNullChecks: true,
   },
   ...baseConfig,
 ];
