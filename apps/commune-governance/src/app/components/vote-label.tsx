@@ -21,6 +21,5 @@ export function VoteLabel(props: VoteLabelProps): JSX.Element {
     ),
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return votingStatus[vote || "UNVOTED"];
 }
