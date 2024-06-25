@@ -32,6 +32,5 @@ export const DaoStatusLabel = (props: StatusLabelProps): JSX.Element => {
       </Label>
     ),
   };
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return votingStatus[result ?? "Pending"];
 };
