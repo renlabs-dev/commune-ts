@@ -1,4 +1,4 @@
-# commune-app
+# commune-ts
 
 ## About
 
