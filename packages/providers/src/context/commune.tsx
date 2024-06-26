@@ -127,7 +127,7 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider('wss://testnet-commune-api-node-1.communeai.net');
+    const provider = new WsProvider(wsEndpoint);
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);
