@@ -13,16 +13,18 @@ interface PolkadotHook {
 
 interface WalletButtonProps {
   hook: PolkadotHook;
+  className?: string
 }
 
-export function WalletButton({ hook }: WalletButtonProps): JSX.Element {
+export function WalletButton(props: WalletButtonProps): JSX.Element {
+  const { hook, className } = props
   const { handleConnect, isInitialized, selectedAccount } = hook;
 
   if (!isInitialized) {
     return (
       <div
         className={cn(
-          "relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 active:top-1",
+          `relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 active:top-1 ${className}`,
         )}
       >
         <Image
