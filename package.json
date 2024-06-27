@@ -22,11 +22,11 @@
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
-    "postinstall": "pnpm lint:ws",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.12.0",
     "@commune-ts/prettier-config": "workspace:*",
     "@turbo/gen": "^2.0.3",
     "prettier": "^3.3.1",
