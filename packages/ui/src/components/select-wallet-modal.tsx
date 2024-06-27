@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/16/solid";
+
 import type { InjectedAccountWithMeta } from "../types";
 import { cn } from "..";
 
@@ -27,10 +28,22 @@ export function SelectWalletModal({
     >
       {/* Modal */}
       <div className={cn("fixed right-0 z-10 overflow-y-auto")}>
-        <div className={cn("flex min-h-full items-center justify-center p-4 text-center")}>
-          <div className={cn("relative w-full max-w-3xl transform overflow-hidden border border-gray-500 bg-black/70 text-left text-white backdrop-blur-sm")}>
+        <div
+          className={cn(
+            "flex min-h-full items-center justify-center p-4 text-center",
+          )}
+        >
+          <div
+            className={cn(
+              "relative w-full max-w-3xl transform overflow-hidden border border-gray-500 bg-black/70 text-left text-white backdrop-blur-sm",
+            )}
+          >
             {/* Modal Header */}
-            <div className={cn("flex flex-row items-center justify-between gap-3 border-b border-gray-500 p-4")}>
+            <div
+              className={cn(
+                "flex flex-row items-center justify-between gap-3 border-b border-gray-500 p-4",
+              )}
+            >
               <div className={cn("flex flex-col items-center md:flex-row")}>
                 <Image
                   alt="Module Logo"
@@ -43,7 +56,9 @@ export function SelectWalletModal({
                 </h3>
               </div>
               <button
-                className={cn("border border-gray-500 p-2 transition duration-200")}
+                className={cn(
+                  "border border-gray-500 p-2 transition duration-200",
+                )}
                 onClick={() => {
                   setOpen(false);
                 }}
@@ -57,7 +72,9 @@ export function SelectWalletModal({
             <div className={cn("flex flex-col gap-y-4 overflow-y-auto p-4")}>
               {wallets.map((item) => (
                 <button
-                  className={cn(`text-md flex cursor-pointer items-center gap-x-3 overflow-auto border px-4 py-2 ${selectedAccount === item ? "border-green-500" : "border-gray-500"}`)}
+                  className={cn(
+                    `text-md flex cursor-pointer items-center gap-x-3 overflow-auto border px-4 py-2 ${selectedAccount === item ? "border-green-500" : "border-gray-500"}`,
+                  )}
                   key={item.address}
                   onClick={() => {
                     setSelectedAccount(item);
@@ -66,16 +83,23 @@ export function SelectWalletModal({
                 >
                   <div className={cn("flex flex-col items-start gap-1")}>
                     <span className="font-semibold">{item.meta.name}</span>
-                    <p className={cn("text-gray-300 text-sm font-thin")}>{item.address}</p>
+                    <p className={cn("text-sm font-thin text-gray-300")}>
+                      {item.address}
+                    </p>
                   </div>
                 </button>
               ))}
               {!wallets.length && (
-                <div className={cn("flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-gray-300")}>
+                <div
+                  className={cn(
+                    "flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-gray-300",
+                  )}
+                >
                   <div className={cn("flex flex-col gap-2")}>
                     <p>
-                      <b className={cn("text-red-500")}>No wallet found</b>. Please
-                      install a Wallet extension or check permission settings.
+                      <b className={cn("text-red-500")}>No wallet found</b>.
+                      Please install a Wallet extension or check permission
+                      settings.
                     </p>
                   </div>
                   <p>
@@ -102,7 +126,9 @@ export function SelectWalletModal({
                 </div>
               )}
               <button
-                className={cn(`w-full border py-2 px-4 text-xl font-semibold ${selectedAccount ? "border-green-500 text-green-500" : "border-gray-500 text-gray-300"} transition hover:bg-white/5`)}
+                className={cn(
+                  `w-full border px-4 py-2 text-xl font-semibold ${selectedAccount ? "border-green-500 text-green-500" : "border-gray-500 text-gray-300"} transition hover:bg-white/5`,
+                )}
                 disabled={!selectedAccount}
                 onClick={() => {
                   if (!selectedAccount) {

@@ -13,11 +13,11 @@ interface PolkadotHook {
 
 interface WalletButtonProps {
   hook: PolkadotHook;
-  className?: string
+  className?: string;
 }
 
 export function WalletButton(props: WalletButtonProps): JSX.Element {
-  const { hook, className } = props
+  const { hook, className } = props;
   const { handleConnect, isInitialized, selectedAccount } = hook;
 
   if (!isInitialized) {
