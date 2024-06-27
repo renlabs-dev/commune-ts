@@ -14,7 +14,7 @@ export function HeroSection(): JSX.Element {
       id="hero"
     >
       <div className="flex flex-col lg:flex-row">
-        <div className="z-10 flex w-full flex-col justify-between border-gray-500 bg-[url('/bg-pattern.svg')] lg:max-w-[60%] lg:border-r">
+        <div className="z-10 flex w-full flex-col justify-between border-gray-500 lg:max-w-[60%] lg:border-r">
           <div className="flex h-full flex-col justify-center space-y-4 border-b border-gray-500 px-8">
             <div className="flex w-full py-16 lg:justify-end">
               <div className="flex w-full flex-col justify-between lg:max-w-4xl xl:pl-10">
