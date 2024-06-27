@@ -11,7 +11,7 @@ import {
 } from "@polkadot/extension-inject/types";
 import { toast } from "react-toastify";
 
-import { WalletModal } from "@commune-ts/ui/wallet-modal";
+import { Wallet } from "@commune-ts/ui/wallet";
 
 import type {
   AddCustomProposal,
@@ -40,7 +40,7 @@ import {
   useNotDelegatingVoting,
   useProposals,
 } from "../hooks";
-import { calculateAmount } from "../utils";
+import { calculateAmount, formatToken } from "../utils";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -111,7 +111,7 @@ export function CommuneProvider({
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [openWalletModal, setOpenWalletModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
@@ -177,22 +177,25 @@ export function CommuneProvider({
       const allAccounts = await getWallets();
       if (allAccounts) {
         setAccounts(allAccounts);
-        setOpenModal(true);
       }
+      setOpenWalletModal(true)
     } catch (error) {
       return undefined;
     }
   }
 
+  function handleWalletModal(state?: boolean): void {
+    setOpenWalletModal(state || !openWalletModal)
+  }
+
   function handleConnectWrapper(): void {
-    void handleConnect();
+    handleConnect();
   }
 
   function handleWalletSelections(wallet: InjectedAccountWithMeta): void {
     localStorage.setItem("favoriteWalletAddress", wallet.address);
     setSelectedAccount(wallet);
     setIsConnected(true);
-    setOpenModal(false);
   }
 
   // == Transaction Handler ==
@@ -500,10 +503,19 @@ export function CommuneProvider({
         isDaosLoading,
       }}
     >
-      <WalletModal
+      <Wallet
+        addStake={addStake}
+        balance={formatToken(balance || 0n)}
+        handleConnect={handleConnect}
+        handleWalletModal={handleWalletModal}
         handleWalletSelections={handleWalletSelections}
-        open={openModal}
-        setOpen={setOpenModal}
+        isInitialized={isInitialized}
+        openWalletModal={openWalletModal}
+        removeStake={removeStake}
+        selectedAccount={selectedAccount}
+        stakeOut={stakeOut}
+        transfer={transfer}
+        transferStake={transferStake}
         wallets={accounts}
       />
       {children}
