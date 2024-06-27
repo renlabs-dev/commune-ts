@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { copyToClipboard } from '../../../subspace/utils'
+
 import { cn } from "..";
+import { copyToClipboard } from "../../../subspace/utils";
 
 interface CodeComponentProps {
   code: string;
@@ -18,18 +19,29 @@ export function CopyButton(props: CodeComponentProps): JSX.Element {
     setTimeout(() => {
       setCopied(false);
     }, 1000);
-    await copyToClipboard(text)
+    await copyToClipboard(text);
 
-    return
+    return;
   }
 
   return (
     <button
-      className={cn(`text-gray-400 border-gray-500 border w-full flex items-center justify-center max-w-28 py-2 hover:border-green-600 hover:text-green-600 ${copied && "border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500 cursor-not-allowed"}`)}
+      className={cn(
+        `flex w-full max-w-28 items-center justify-center border border-gray-500 py-2 text-gray-400 hover:border-green-600 hover:text-green-600 ${copied && "cursor-not-allowed border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500"}`,
+      )}
       onClick={() => void copyTextToClipboard(code)}
       type="button"
     >
-      <span className={cn(`flex items-center ${copied ? 'text-green-' : ''}`)}>{!copied ? 'Copy' : 'Copied'} <Image alt="" className="ml-1" height={20} src="docs-icon.svg" width={20} /></span>
+      <span className={cn(`flex items-center ${copied ? "text-green-" : ""}`)}>
+        {!copied ? "Copy" : "Copied"}{" "}
+        <Image
+          alt=""
+          className="ml-1"
+          height={20}
+          src="docs-icon.svg"
+          width={20}
+        />
+      </span>
     </button>
   );
 }
