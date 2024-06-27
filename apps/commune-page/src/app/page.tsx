@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Footer } from "@commune-ts/ui/footer";
 import { Loading } from "@commune-ts/ui/loading";
 
+import Animation from "../app/components/animation";
 import { sections } from "../utils/mocks/sections-mock";
 import { FrequentQuestions } from "./components/sections/frequent-questions";
 import { GenericSection } from "./components/sections/generic-section";
@@ -20,8 +21,9 @@ export const metadata: Metadata = {
 export default function Page(): JSX.Element {
   return (
     <Suspense fallback={<Loading />}>
+      <Animation />
       <HeroSection />
-      <WelcomeSection />
+      {/* <WelcomeSection />
       {sections.map((section, index) => {
         return (
           <GenericSection
@@ -36,7 +38,7 @@ export default function Page(): JSX.Element {
         );
       })}
       <FrequentQuestions />
-      <Footer />
+      <Footer /> */}
     </Suspense>
   );
 }
