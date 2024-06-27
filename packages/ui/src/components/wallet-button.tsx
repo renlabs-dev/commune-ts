@@ -24,7 +24,7 @@ export function WalletButton(props: WalletButtonProps): JSX.Element {
     return (
       <div
         className={cn(
-          `relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 active:top-1 ${className}`,
+          "relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 active:top-1",
         )}
       >
         <Image
@@ -42,7 +42,7 @@ export function WalletButton(props: WalletButtonProps): JSX.Element {
   return (
     <button
       className={cn(
-        "relative inline-flex items-center justify-center gap-3 border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600",
+        "relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md hover:border-green-600 hover:bg-green-600/5 hover:text-green-600",
         {
           "border-green-500 bg-green-500/5 text-green-500": selectedAccount,
         },
@@ -67,7 +67,7 @@ export function WalletButton(props: WalletButtonProps): JSX.Element {
             </span>
           </div>
         ) : (
-          <span className={cn("text-white")}>Connect Wallet</span>
+          <span className={cn("text-white")}>Wallet</span>
         )}
       </span>
     </button>

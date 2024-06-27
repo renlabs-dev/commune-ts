@@ -10,7 +10,6 @@ import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import { applicationsList } from "../utils/applications-list";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -42,7 +41,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           <TRPCReactProvider>{children}</TRPCReactProvider>
-          <Footer applicationsList={applicationsList} />
+          <Footer />
         </Providers>
       </body>
     </html>

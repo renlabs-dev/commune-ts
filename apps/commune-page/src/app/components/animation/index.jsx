@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable import/no-unresolved */
 "use client";
 
@@ -5,7 +6,6 @@ import React, { useEffect, useRef } from "react";
 import linesFragmentShader from "!!raw-loader!./shaders/lines/fragment.glsl";
 import pointsFragmentShader from "!!raw-loader!./shaders/points/fragment.glsl";
 import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
-import * as dat from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -13,18 +13,18 @@ const getRandNum = (min, max) => {
   return Math.random() * (max - min) + min;
 };
 
-function createAnimation({ container, debug }) {
+function createAnimation({ container }) {
   const canvas = document.createElement("canvas");
   canvas.classList.add("webgl");
   container.appendChild(canvas);
 
   const sizes = {
-    width: window.screen.availWidth,
-    height: 600,
+    width: window.innerWidth,
+    height: window.innerHeight,
   };
   const clock = new THREE.Clock();
 
-  const debugObject = {
+  const object = {
     tubeRadius: 4,
     torusRadius: 4.5,
     radialSegments: 27,
@@ -36,14 +36,9 @@ function createAnimation({ container, debug }) {
   function init() {
     createScene();
     createCamera();
-    // playIntroAnimation();
     createRenderer();
     createControls();
     createObjects();
-
-    if (debug) {
-      addDebugUI();
-    }
 
     tick();
   }
@@ -160,7 +155,7 @@ function createAnimation({ container, debug }) {
       new THREE.BufferAttribute(new Float32Array(lineOpacity), 1),
     );
 
-    const { torusRadius, tubeRadius } = debugObject;
+    const { torusRadius, tubeRadius } = object;
 
     const lineMaterial = new THREE.ShaderMaterial({
       vertexShader: pointsVertexShader,
@@ -183,8 +178,7 @@ function createAnimation({ container, debug }) {
   }
 
   function createPoints() {
-    const { torusRadius, tubeRadius, radialSegments, tabularSegments } =
-      debugObject;
+    const { torusRadius, tubeRadius, radialSegments, tabularSegments } = object;
 
     const torusGeometry = new THREE.TorusGeometry(
       torusRadius,
@@ -251,22 +245,6 @@ function createAnimation({ container, debug }) {
     return points;
   }
 
-  function addDebugUI() {
-    const gui = new dat.GUI({ width: 340 });
-    // eslint-disable-next-line array-callback-return
-    Object.keys(debugObject).map((fieldName) => {
-      gui
-        .add(debugObject, fieldName)
-        .name(fieldName)
-        .onChange(() => {
-          scene.clear();
-          createObjects();
-        });
-    });
-
-    gui.add(camera.position, "z").name("camera z position").min(10).max(30);
-  }
-
   function createScene() {
     scene = new THREE.Scene();
   }
@@ -280,8 +258,8 @@ function createAnimation({ container, debug }) {
       0.1,
       200,
     );
-    camera.position.set(0, 0.5, 20); // Set initial position (zoomed out)
-    camera.rotation.x = -Math.PI / 4; // Set initial rotation (tilted)
+    camera.position.set(0, 0.5, 20);
+    camera.rotation.x = -Math.PI / 4;
     scene.add(camera);
   }
 
@@ -300,42 +278,6 @@ function createAnimation({ container, debug }) {
     controls.enableDamping = true;
     controls.enableZoom = false;
   }
-
-  // function playIntroAnimation() {
-  //   const targetPosition = new THREE.Vector3(0, 0.5, 20); // Target position after the animation
-  //   const targetRotation = new THREE.Euler(0, 0, 0); // Target rotation after the animation
-  //   const duration = 12; // Duration of the animation in seconds
-
-  //   const startTime = performance.now();
-
-  //   function animate() {
-  //     const currentTime = performance.now();
-  //     const elapsedTime = (currentTime - startTime) / 4000;
-
-  //     if (elapsedTime <= duration) {
-  //       const t = elapsedTime / duration;
-
-  //       // Interpolate position
-  //       camera.position.lerpVectors(camera.position, targetPosition, t);
-
-  //       // Interpolate rotation
-  //       camera.rotation.x = THREE.MathUtils.lerp(
-  //         camera.rotation.x,
-  //         targetRotation.x,
-  //         t
-  //       );
-  //       camera.rotation.y = THREE.MathUtils.lerp(0, Math.PI * 2, t); // Spin around the y-axis
-
-  //       requestAnimationFrame(animate);
-  //     } else {
-  //       // Animation finished, set the final position and rotation
-  //       camera.position.copy(targetPosition);
-  //       camera.rotation.copy(targetRotation);
-  //     }
-  //   }
-
-  //   animate();
-  // }
 
   function tick() {
     const elapsedTime = clock.getElapsedTime() * 0.25;
@@ -365,9 +307,9 @@ export default function Animation() {
 
   useEffect(() => {
     if (graphRef.current) {
-      createAnimation({ container: graphRef.current, debug: false });
+      createAnimation({ container: graphRef.current });
     }
   }, []);
 
-  return <div id="graph" ref={graphRef} />;
+  return <div id="graph" ref={graphRef} className="w-fit" />;
 }
