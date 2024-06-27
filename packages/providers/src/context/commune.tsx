@@ -177,26 +177,25 @@ export function CommuneProvider({
       const allAccounts = await getWallets();
       if (allAccounts) {
         setAccounts(allAccounts);
-        setOpenWalletModal(true);
       }
+      setOpenWalletModal(true)
     } catch (error) {
       return undefined;
     }
   }
 
-  function handleWalletModal(): void {
-    setOpenWalletModal(!openWalletModal)
+  function handleWalletModal(state?: boolean): void {
+    setOpenWalletModal(state || !openWalletModal)
   }
 
   function handleConnectWrapper(): void {
-    handleWalletModal();
+    handleConnect();
   }
 
   function handleWalletSelections(wallet: InjectedAccountWithMeta): void {
     localStorage.setItem("favoriteWalletAddress", wallet.address);
     setSelectedAccount(wallet);
     setIsConnected(true);
-    setOpenWalletModal(false);
   }
 
   // == Transaction Handler ==
@@ -504,12 +503,6 @@ export function CommuneProvider({
         isDaosLoading,
       }}
     >
-      {/* <WalletModal
-        handleWalletSelections={handleWalletSelections}
-        open={openModal}
-        setOpen={setOpenModal}
-        wallets={accounts}
-      /> */}
       <Wallet
         addStake={addStake}
         balance={formatToken(balance || 0n)}

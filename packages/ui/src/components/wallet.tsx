@@ -12,14 +12,14 @@ import { formatToken, copyToClipboard } from "../../../subspace/utils";
 import { cn } from "..";
 
 interface TWallet {
-  handleWalletModal: (args: boolean) => void
+  handleWalletModal: (state?: boolean) => void
   openWalletModal: boolean
   stakeOut: {
     total: bigint;
     perAddr: Map<string, bigint>;
     perNet: Map<number, bigint>;
     perAddrPerNet: Map<number, Map<string, bigint>>;
-  }
+  } | undefined
   balance: string
   handleConnect: () => void;
   isInitialized: boolean;
@@ -63,11 +63,8 @@ export function Wallet(props: TWallet): ReactElement {
 
   const [activeMenu, setActiveMenu] = useState<MenuType>(null);
   const [validator, setValidator] = useState<string>("");
-  // const [fromValidator, setFromValidator] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [netUid, setNetUid] = useState<number>(0);
-  // const [openValidators, setOpenValidators] = useState(false);
-  // const [openStakedValidators, setOpenStakedValidators] = useState(false);
 
   const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
     {
@@ -85,8 +82,6 @@ export function Wallet(props: TWallet): ReactElement {
   const handleCallback = (callbackReturn: TransactionResult) => {
     setTransactionStatus(callbackReturn);
   };
-
-  if (!selectedAccount) return null;
 
   const handleMenuClick = (type: MenuType) => {
     setValidator("");
@@ -109,6 +104,15 @@ export function Wallet(props: TWallet): ReactElement {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!selectedAccount) {
+      setTransactionStatus({
+        status: "ERROR",
+        finalized: true,
+        message: "Select your wallet",
+      });
+      return
+    }
+
     setTransactionStatus({
       status: "STARTING",
       finalized: false,
@@ -117,7 +121,14 @@ export function Wallet(props: TWallet): ReactElement {
 
     const isValidInput = handleCheckInput();
 
-    if (!isValidInput) return;
+    if (!isValidInput) {
+      setTransactionStatus({
+        status: "ERROR",
+        finalized: true,
+        message: "Input error...",
+      });
+      return
+    };
 
     if (activeMenu === "stake") {
       addStake({
@@ -210,6 +221,12 @@ export function Wallet(props: TWallet): ReactElement {
   const handleSelectWallet = () => {
     setOpenSelectWalletModal(true)
     handleConnect()
+  }
+
+  const handleWalletSelectionModal = (args: InjectedAccountWithMeta) => {
+    handleWalletSelections(args)
+    setOpenSelectWalletModal(false)
+    handleWalletModal(true)
   }
 
   return (
@@ -358,7 +375,7 @@ export function Wallet(props: TWallet): ReactElement {
         </div>
       )}
       <SelectWalletModal
-        handleWalletSelections={handleWalletSelections}
+        handleWalletSelections={handleWalletSelectionModal}
         open={openSelectWalletModal}
         setOpen={setOpenSelectWalletModal}
         wallets={wallets}
