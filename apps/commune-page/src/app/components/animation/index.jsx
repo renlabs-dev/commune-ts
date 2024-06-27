@@ -19,8 +19,8 @@ function createAnimation({ container }) {
   container.appendChild(canvas);
 
   const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: container.clientWidth,
+    height: container.clientHeight,
   };
   const clock = new THREE.Clock();
 
@@ -40,8 +40,11 @@ function createAnimation({ container }) {
     createControls();
     createObjects();
 
+    window.addEventListener("resize", onWindowResize);
+
     tick();
   }
+
   function createObjects() {
     const points = createPoints();
     const lines = createLines(points.geometry);
@@ -249,7 +252,7 @@ function createAnimation({ container }) {
     scene = new THREE.Scene();
   }
 
-  const fov = window.innerWidth <= 768 ? 74 : 47;
+  const fov = window.innerWidth <= 768 ? 79 : 65;
 
   function createCamera() {
     camera = new THREE.PerspectiveCamera(
@@ -258,8 +261,7 @@ function createAnimation({ container }) {
       0.1,
       200,
     );
-    camera.position.set(0, 0.5, 20);
-    camera.rotation.x = -Math.PI / 4;
+    camera.position.set(0, 1, 20);
     scene.add(camera);
   }
 
@@ -277,6 +279,14 @@ function createAnimation({ container }) {
     controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.enableZoom = false;
+  }
+
+  function onWindowResize() {
+    sizes.width = container.clientWidth;
+    sizes.height = container.clientHeight;
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(sizes.width, sizes.height);
   }
 
   function tick() {
@@ -311,5 +321,12 @@ export default function Animation() {
     }
   }, []);
 
-  return <div id="graph" ref={graphRef} className="w-fit" />;
+  return (
+    <div
+      id="graph"
+      ref={graphRef}
+      className="fixed left-0 top-0 -z-50 h-full w-full"
+      style={{ overflow: "hidden" }}
+    />
+  );
 }
