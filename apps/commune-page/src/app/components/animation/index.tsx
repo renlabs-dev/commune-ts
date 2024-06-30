@@ -1,5 +1,4 @@
-// @ts-nocheck
-/* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 "use client";
 
 import React, { useEffect, useRef } from "react";
@@ -9,11 +8,11 @@ import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-const getRandNum = (min, max) => {
+const getRandNum = (min: number, max: number) => {
   return Math.random() * (max - min) + min;
 };
 
-function createAnimation({ container }) {
+function createAnimation({ container }: { container: HTMLElement }) {
   const canvas = document.createElement("canvas");
   canvas.classList.add("webgl");
   container.appendChild(canvas);
@@ -31,7 +30,11 @@ function createAnimation({ container }) {
     tabularSegments: 56,
   };
 
-  let scene, camera, renderer, controls, objectsGroup;
+  let scene: THREE.Scene;
+  let camera: THREE.PerspectiveCamera;
+  let renderer: THREE.WebGLRenderer;
+  let controls: OrbitControls;
+  let objectsGroup: THREE.Group;
 
   function init() {
     createScene();
@@ -57,23 +60,20 @@ function createAnimation({ container }) {
     scene.add(objectsGroup);
   }
 
-  function createLines(pointsGeometry) {
+  function createLines(pointsGeometry: THREE.BufferGeometry) {
     // Access pointsGeometry attributes
-    const positions = pointsGeometry.attributes.position.array;
-    const colors = pointsGeometry.attributes.color.array;
-    const normals = pointsGeometry.attributes.normal.array;
+    const positions = pointsGeometry.attributes.position!.array;
+    const colors = pointsGeometry.attributes.color!.array;
+    const normals = pointsGeometry.attributes.normal!.array;
 
-    const linePositions = [];
-    const lineColors = [];
-    const lineNormals = [];
-    const lineOpacity = [];
+    const linePositions: unknown[] = [];
+    const lineColors: unknown[] = [];
+    const lineNormals: unknown[] = [];
+    const lineOpacity: unknown[] = [];
 
-    const addLine = (vertexIndex1, vertexIndex2) => {
+    const addLine = (vertexIndex1: number, vertexIndex2: number) => {
       const baseIndex1 = vertexIndex1 * 3;
       const baseIndex2 = vertexIndex2 * 3;
-
-      if (!positions[baseIndex1]) return;
-      if (!positions[baseIndex2]) return;
 
       linePositions.push(
         positions[baseIndex1],
@@ -110,7 +110,7 @@ function createAnimation({ container }) {
     const numVertices = positions.length / 3;
     for (let i = 0; i < numVertices; i++) {
       const numConnections = Math.floor(Math.random() * 3); // Random number of connections (0, 1, or 2)
-      const possibleConnections = [];
+      const possibleConnections: unknown[] = [];
 
       // Find possible connections
       for (let j = i + 1; j < numVertices / 2; j++) {
@@ -132,7 +132,7 @@ function createAnimation({ container }) {
         m < numConnections && m < possibleConnections.length;
         m++
       ) {
-        addLine(i, possibleConnections[m]);
+        addLine(i, possibleConnections[m] as number);
       }
     }
 
@@ -140,22 +140,22 @@ function createAnimation({ container }) {
 
     lineGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(linePositions), 3),
+      new THREE.BufferAttribute(new Float32Array(linePositions as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "color",
-      new THREE.BufferAttribute(new Float32Array(lineColors), 3),
+      new THREE.BufferAttribute(new Float32Array(lineColors as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "normal",
-      new THREE.BufferAttribute(new Float32Array(lineNormals), 3),
+      new THREE.BufferAttribute(new Float32Array(lineNormals as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "aOpacity",
-      new THREE.BufferAttribute(new Float32Array(lineOpacity), 1),
+      new THREE.BufferAttribute(new Float32Array(lineOpacity as number[]), 1),
     );
 
     const { torusRadius, tubeRadius } = object;
@@ -193,8 +193,8 @@ function createAnimation({ container }) {
     torusGeometry.computeVertexNormals();
 
     // Copy the positions from the TorusGeometry
-    const positions = torusGeometry.attributes.position.array;
-    const normals = torusGeometry.attributes.normal.array;
+    const positions = torusGeometry.attributes.position!.array;
+    const normals = torusGeometry.attributes.normal!.array;
     const maxPosition = Math.max(...positions);
 
     const customGeometry = new THREE.BufferGeometry();
@@ -203,9 +203,9 @@ function createAnimation({ container }) {
     const scales = [];
 
     for (let i = 0; i < positions.length; i += 3) {
-      const r = positions[i] / maxPosition + 0.3;
-      const g = positions[i] / maxPosition + 3;
-      const b = positions[i] / maxPosition + 0.3;
+      const r = positions[i]! / maxPosition + 0.3;
+      const g = positions[i]! / maxPosition + 3;
+      const b = positions[i]! / maxPosition + 0.3;
 
       colors.push(r, g * 2, b);
       scales.push(getRandNum(0.5, 3));
@@ -293,10 +293,11 @@ function createAnimation({ container }) {
     const elapsedTime = clock.getElapsedTime() * 0.25;
 
     objectsGroup.children.forEach((child) => {
-      const material = child.material;
+      const material = (child as THREE.Mesh).material as THREE.ShaderMaterial;
 
-      material.uniforms.uTime.value = elapsedTime;
-      material.uniforms.uWeight.value = 0.05 * Math.sin(elapsedTime) + 1.2;
+      if (material.uniforms.uTime) {
+        material.uniforms.uTime.value = elapsedTime;
+      }
     });
 
     // Update controls
@@ -313,7 +314,7 @@ function createAnimation({ container }) {
 }
 
 export default function Animation() {
-  const graphRef = useRef(null);
+  const graphRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (graphRef.current) {
