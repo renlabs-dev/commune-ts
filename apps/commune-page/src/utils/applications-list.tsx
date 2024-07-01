@@ -47,15 +47,15 @@ export const applicationsList = [
     ),
   },
   {
-    title: "Join Community",
-    description: null,
-    href: links.discord,
+    title: "View More",
+    description: "About, FAQ and more",
+    href: links.about,
     icon: (
       <Image
         alt="Community icon"
         className="mb-5 w-12"
         height={45}
-        src="/community-icon.svg"
+        src="/view-more-icon.svg"
         width={45}
       />
     ),

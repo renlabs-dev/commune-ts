@@ -8,5 +8,6 @@ export const links = {
 
   wallet: "https://wallet.communeai.org/",
   landing_page: "https://communeai.org/",
+  about: "/about",
   governance: "https://governance.communeai.org/",
 };
