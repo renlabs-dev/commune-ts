@@ -39,7 +39,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
-          <Footer />
+          <Footer shouldBeFixed />
         </Providers>
       </body>
     </html>

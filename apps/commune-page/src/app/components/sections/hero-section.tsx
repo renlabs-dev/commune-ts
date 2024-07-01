@@ -16,15 +16,15 @@ export function HeroSection(): JSX.Element {
   return (
     <div id="hero" className="flex justify-center">
       <div
-        className={`transition duration-700 ${triggerAnimation ? "opacity-70" : "opacity-90"}`}
+        className={`transition duration-700 ${triggerAnimation ? "opacity-70" : "opacity-100"}`}
       >
         <Animation />
       </div>
       <div className="flex h-full w-full max-w-screen-2xl flex-col">
         {!triggerAnimation ? (
-          <div className="flex h-full min-h-[85vh] w-full items-end justify-between">
-            <div className="flex h-full w-full flex-col items-start text-gray-400 lg:max-w-4xl xl:pl-10">
-              <p className="text-xl font-medium">
+          <div className="flex h-full min-h-[85vh] w-full flex-col justify-end gap-6 px-4 pb-12 md:flex-row md:items-end md:justify-between md:pb-0">
+            <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
+              <p className="font-medium md:text-xl">
                 <span className="text-green-400">Peer-to-peer </span>
                 Incentivized coordination network.
               </p>
@@ -35,29 +35,56 @@ export function HeroSection(): JSX.Element {
                 src="/logo-asci.svg"
                 width={200}
               />
-              <p className="mt-1 text-lg">
+              <p className="md:mt-1 md:text-lg">
                 Protocol and Market System for Incentive-driven Coordination of
                 Decentralized AI.
               </p>
-              <p className="text-lg">
+              <p className="md:text-lg">
                 Fully community driven, no bureaucracy, no team, no pre-mine.
                 Only code and contributors.
               </p>
             </div>
-            <button
-              onClick={handleButtonClick}
-              className="relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md"
-            >
-              View More
-            </button>
+            <div className="flex w-full gap-3 md:w-fit">
+              <button
+                onClick={handleButtonClick}
+                className="relative inline-flex w-full items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
+              >
+                <Image
+                  src="/join-community.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">JOIN COMMUNITY</span>
+              </button>
+              <button
+                onClick={handleButtonClick}
+                className="relative inline-flex w-full  items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
+              >
+                <Image
+                  src="/view-more.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">VIEW MORE</span>
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="flex h-full min-h-[85vh] w-full flex-col items-end justify-between">
+          <div className="flex h-full min-h-[85vh] w-full flex-col items-end justify-between px-4 pt-12">
             <button
               onClick={handleButtonClick}
-              className="relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md"
+              className="relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10"
             >
-              Back
+              <Image
+                src="/view-more.svg"
+                alt="link icon"
+                width={20}
+                height={20}
+                className="rotate-180"
+              />
+              <span className="text-nowrap">GO BACK</span>
             </button>
             <div className="flex w-full max-w-screen-2xl flex-col gap-6 lg:flex-row">
               {applicationsList.map((app, index) => {
