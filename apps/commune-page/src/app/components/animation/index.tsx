@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -13,7 +14,7 @@ const getRandNum = (min: number, max: number) => {
   return Math.random() * (max - min) + min;
 };
 
-function createAnimation({ container }: { container: HTMLElement }) {
+function CreateAnimation({ container }: { container: HTMLElement }) {
   const canvas = document.createElement("canvas");
   canvas.classList.add("webgl");
   container.appendChild(canvas);
@@ -44,6 +45,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
     createRenderer();
     createControls();
     createObjects();
+    playIntroAnimation();
 
     window.addEventListener("resize", onWindowResize);
 
@@ -255,7 +257,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
   }
 
   const fov = window.innerWidth <= 768 ? 90 : 60;
-  const cameraRotation = window.innerWidth <= 768 ? 6 : 1;
+  const cameraRotation = window.innerWidth <= 768 ? 12 : 1;
 
   function createCamera() {
     camera = new THREE.PerspectiveCamera(
@@ -264,7 +266,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
       0.1,
       200,
     );
-    camera.position.set(0, cameraRotation, 20);
+    camera.position.set(0, cameraRotation + 10, 20);
     scene.add(camera);
   }
 
@@ -316,6 +318,32 @@ function createAnimation({ container }: { container: HTMLElement }) {
     window.requestAnimationFrame(() => tick());
   }
 
+  function playIntroAnimation() {
+    camera.position.set(0, 0, 5);
+
+    const finalPosition = new THREE.Vector3(0, 1, 20);
+
+    const tl = gsap.timeline();
+
+    tl.to(camera.position, {
+      duration: 3,
+      x: finalPosition.x,
+      y: finalPosition.y,
+      z: finalPosition.z,
+      ease: "power2.out",
+      onUpdate: function () {
+        camera.lookAt(objectsGroup.position);
+      },
+    });
+
+    tl.fromTo(
+      scene,
+      { opacity: 0 },
+      { opacity: 1, duration: 2, ease: "power2.inOut" },
+      "-=2",
+    );
+  }
+
   init();
 }
 
@@ -324,7 +352,7 @@ export default function Animation() {
 
   useEffect(() => {
     if (graphRef.current) {
-      createAnimation({ container: graphRef.current });
+      CreateAnimation({ container: graphRef.current });
     }
   }, []);
 
