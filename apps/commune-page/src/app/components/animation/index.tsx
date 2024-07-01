@@ -29,6 +29,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
     torusRadius: 4.5,
     radialSegments: 27,
     tabularSegments: 56,
+    yPosition: 2.5,
   };
 
   let scene: THREE.Scene;
@@ -57,7 +58,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
     objectsGroup.add(points);
     objectsGroup.add(lines);
     objectsGroup.rotation.x = -Math.PI * 0.35;
-    objectsGroup.position.y = 1.3;
+    objectsGroup.position.y = window.innerWidth <= 768 ? 7 : 2.5;
     scene.add(objectsGroup);
   }
 
@@ -253,7 +254,8 @@ function createAnimation({ container }: { container: HTMLElement }) {
     scene = new THREE.Scene();
   }
 
-  const fov = window.innerWidth <= 768 ? 60 : 55;
+  const fov = window.innerWidth <= 768 ? 90 : 60;
+  const cameraRotation = window.innerWidth <= 768 ? 6 : 1;
 
   function createCamera() {
     camera = new THREE.PerspectiveCamera(
@@ -262,7 +264,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
       0.1,
       200,
     );
-    camera.position.set(0, 1, 20);
+    camera.position.set(0, cameraRotation, 20);
     scene.add(camera);
   }
 
@@ -330,7 +332,7 @@ export default function Animation() {
     <div
       id="graph"
       ref={graphRef}
-      className="fixed left-0 top-0 -z-50 h-[65vh] w-full md:h-[85vh]"
+      className="fixed left-0 top-0 -z-50 h-full w-full"
       style={{ overflow: "hidden" }}
     />
   );
