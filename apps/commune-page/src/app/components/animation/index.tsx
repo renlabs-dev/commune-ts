@@ -2,11 +2,12 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import linesFragmentShader from "!!raw-loader!./shaders/lines/fragment.glsl";
-import pointsFragmentShader from "!!raw-loader!./shaders/points/fragment.glsl";
-import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+import linesFragmentShader from "./shaders/lines/fragment.glsl";
+import pointsFragmentShader from "./shaders/points/fragment.glsl";
+import pointsVertexShader from "./shaders/points/vertex.glsl";
 
 const getRandNum = (min: number, max: number) => {
   return Math.random() * (max - min) + min;
@@ -101,7 +102,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
         normals[baseIndex2 + 2],
       );
 
-      const [oMin, oMax] = [0.01, 0.15];
+      const [oMin, oMax] = [0.01, 0.2];
 
       lineOpacity.push(getRandNum(oMin, oMax), getRandNum(oMin, oMax));
     };
@@ -252,7 +253,7 @@ function createAnimation({ container }: { container: HTMLElement }) {
     scene = new THREE.Scene();
   }
 
-  const fov = window.innerWidth <= 768 ? 79 : 65;
+  const fov = window.innerWidth <= 768 ? 60 : 55;
 
   function createCamera() {
     camera = new THREE.PerspectiveCamera(
@@ -293,10 +294,13 @@ function createAnimation({ container }: { container: HTMLElement }) {
     const elapsedTime = clock.getElapsedTime() * 0.25;
 
     objectsGroup.children.forEach((child) => {
-      const material = (child as THREE.Mesh).material as THREE.ShaderMaterial;
-
-      if (material.uniforms.uTime) {
-        material.uniforms.uTime.value = elapsedTime;
+      if (
+        "material" in child &&
+        child.material instanceof THREE.ShaderMaterial
+      ) {
+        child.material.uniforms.uTime!.value = elapsedTime;
+        child.material.uniforms.uWeight!.value =
+          0.05 * Math.sin(elapsedTime) + 0.8;
       }
     });
 
@@ -326,7 +330,7 @@ export default function Animation() {
     <div
       id="graph"
       ref={graphRef}
-      className="fixed left-0 top-0 -z-50 h-full w-full"
+      className="fixed left-0 top-0 -z-50 h-[65vh] w-full md:h-[85vh]"
       style={{ overflow: "hidden" }}
     />
   );

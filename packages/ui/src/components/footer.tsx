@@ -8,7 +8,7 @@ export function Footer(): JSX.Element {
   return (
     <footer
       className={cn(
-        "flex flex-col border-t border-white/20 bg-[#898989]/5 backdrop-blur-md",
+        "fixed bottom-0 flex w-full flex-col border-t border-white/20 bg-[#898989]/5 backdrop-blur-md",
       )}
     >
       <div
