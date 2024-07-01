@@ -6,6 +6,7 @@ import { Providers } from "@commune-ts/providers/context";
 import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
+import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { Footer } from "@commune-ts/ui/footer";
 import { Loading } from "@commune-ts/ui/loading";
 
-import Animation from "../app/components/animation";
-import { sections } from "../utils/mocks/sections-mock";
-import { FrequentQuestions } from "./components/sections/frequent-questions";
-import { GenericSection } from "./components/sections/generic-section";
 import { HeroSection } from "./components/sections/hero-section";
-import { WelcomeSection } from "./components/sections/welcome";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -21,7 +15,6 @@ export const metadata: Metadata = {
 export default function Page(): JSX.Element {
   return (
     <Suspense fallback={<Loading />}>
-      <Animation />
       <HeroSection />
       {/* <WelcomeSection />
       {sections.map((section, index) => {
