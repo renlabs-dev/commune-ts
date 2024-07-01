@@ -6,7 +6,7 @@ import { links } from "../data";
 export function Footer({ shouldBeFixed = false }): JSX.Element {
   return (
     <footer
-      className={`${shouldBeFixed && "fixed"} bottom-0 w-full border-t border-white/20 bg-[#898989]/5 backdrop-blur-md`}
+      className={`${shouldBeFixed && "fixed"} animate-fade-up animate-delay-700 bottom-0 w-full border-t border-white/20 bg-[#898989]/5 backdrop-blur-md`}
     >
       <div className="mx-auto max-w-screen-2xl">
         <div className="flex flex-col items-center justify-between gap-2 px-4 py-4 md:flex-row">

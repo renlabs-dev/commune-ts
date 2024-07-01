@@ -16,7 +16,7 @@ export function HeroSection(): JSX.Element {
   return (
     <div id="hero" className="flex justify-center">
       <div
-        className={`transition duration-700 ${triggerAnimation ? "opacity-70" : "opacity-100"}`}
+        className={`animate-fade animate-delay-700 transition duration-700 ${triggerAnimation ? "opacity-70" : "opacity-100"}`}
       >
         <Animation />
       </div>
@@ -24,22 +24,22 @@ export function HeroSection(): JSX.Element {
         {!triggerAnimation ? (
           <div className="flex h-full min-h-[85vh] w-full flex-col justify-end gap-6 px-4 pb-12 md:flex-row md:items-end md:justify-between md:pb-0">
             <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
-              <p className="font-medium md:text-xl">
+              <p className="animate-fade-right animate-delay-200 font-medium md:text-xl">
                 <span className="text-green-400">Peer-to-peer </span>
                 Incentivized coordination network.
               </p>
               <Image
                 alt="Commune ai logo"
-                className="w-full py-4"
+                className="animate-fade-right animate-delay-300 w-full py-4"
                 height={100}
                 src="/logo-asci.svg"
                 width={200}
               />
-              <p className="md:mt-1 md:text-lg">
+              <p className="animate-fade-right animate-delay-500 md:mt-1 md:text-lg">
                 Protocol and Market System for Incentive-driven Coordination of
                 Decentralized AI.
               </p>
-              <p className="md:text-lg">
+              <p className="animate-fade-right animate-delay-500 md:text-lg">
                 Fully community driven, no bureaucracy, no team, no pre-mine.
                 Only code and contributors.
               </p>
@@ -47,7 +47,7 @@ export function HeroSection(): JSX.Element {
             <div className="flex w-full gap-3 md:w-fit">
               <button
                 onClick={handleButtonClick}
-                className="relative inline-flex w-full items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
+                className="animate-fade-up animate-delay-500 relative inline-flex w-full items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
               >
                 <Image
                   src="/join-community.svg"
@@ -59,7 +59,7 @@ export function HeroSection(): JSX.Element {
               </button>
               <button
                 onClick={handleButtonClick}
-                className="relative inline-flex w-full  items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
+                className="animate-fade-up animate-delay-500 relative inline-flex w-full items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10 md:w-fit"
               >
                 <Image
                   src="/view-more.svg"
@@ -75,7 +75,7 @@ export function HeroSection(): JSX.Element {
           <div className="flex h-full min-h-[85vh] w-full flex-col items-end justify-between px-4 pt-12">
             <button
               onClick={handleButtonClick}
-              className="relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10"
+              className="animate-fade-down animate-delay-200 relative inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 hover:border-green-500 hover:bg-green-500/10"
             >
               <Image
                 src="/view-more.svg"
@@ -86,14 +86,14 @@ export function HeroSection(): JSX.Element {
               />
               <span className="text-nowrap">GO BACK</span>
             </button>
-            <div className="flex w-full max-w-screen-2xl flex-col gap-6 lg:flex-row">
+            <div className="animate-fade-up flex w-full max-w-screen-2xl flex-col gap-6 backdrop-blur-md lg:flex-row">
               {applicationsList.map((app, index) => {
                 return (
                   <Link
                     key={index}
                     href={app.href}
                     target={app.target ? app.target : "_self"}
-                    className="flex w-full flex-col border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md"
+                    className="flex w-full flex-col border border-white/20 bg-[#898989]/5 p-8 transition duration-300 hover:border-green-500 hover:bg-green-500/10"
                   >
                     {app.icon}
                     <div
