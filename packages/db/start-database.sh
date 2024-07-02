@@ -41,6 +41,6 @@ if [ "$DB_PASSWORD" = "password" ]; then
 fi
 
 docker run --name $DB_CONTAINER_NAME -e POSTGRES_PASSWORD=$DB_PASSWORD -e POSTGRES_DB=commune-ts-db -d -p 5432:5432 docker.io/postgres
-# docker run --name commune-ts-db -e POSTGRES_PASSWORD=password -e POSTGRES_DB=commune-ts-db -d -p 5432:5432 docker.io/postgres
+# docker run --name commune-ts-container -e POSTGRES_PASSWORD=password -e POSTGRES_DB=commune-ts-db -d -p 5432:5432 docker.io/postgres
 
 echo "Database container was successfully created"
