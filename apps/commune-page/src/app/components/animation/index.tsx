@@ -60,7 +60,7 @@ function CreateAnimation({ container }: { container: HTMLElement }) {
     objectsGroup.add(points);
     objectsGroup.add(lines);
     objectsGroup.rotation.x = -Math.PI * 0.35;
-    objectsGroup.position.y = window.innerWidth <= 768 ? 7 : 2.5;
+    objectsGroup.position.y = window.innerWidth <= 768 ? 7.5 : 2.5;
     scene.add(objectsGroup);
   }
 
