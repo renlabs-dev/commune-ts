@@ -22,7 +22,7 @@ export function MainSection(): JSX.Element {
       </div>
       <div className="flex h-full w-full max-w-screen-2xl flex-col">
         {!triggerAnimation ? (
-          <div className="flex h-full min-h-[85vh] w-full flex-col justify-end gap-6 px-4 md:flex-row md:items-end md:justify-between">
+          <div className="flex h-full min-h-[85vh] w-full flex-col justify-end gap-6 px-4 pb-6 md:flex-row md:items-end md:justify-between">
             <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
               <p className="animate-fade-right font-medium animate-delay-200 md:text-xl">
                 <span className="text-green-400">Peer-to-peer </span>
@@ -72,7 +72,7 @@ export function MainSection(): JSX.Element {
             </div>
           </div>
         ) : (
-          <div className="flex h-full min-h-[85vh] w-full flex-col items-end justify-between p-4">
+          <div className="flex h-full min-h-[85vh] w-full flex-col items-end justify-between p-4 pb-6">
             <button
               onClick={handleButtonClick}
               className="relative inline-flex animate-fade-down items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-200 hover:border-green-500 hover:bg-green-500/10"
