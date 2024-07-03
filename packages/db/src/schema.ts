@@ -24,7 +24,7 @@ export const createTable = pgTableCreator((name) => `${name}`);
 /**
  * A module on the Commune network considered by our system.
  */
-export const moduleItem = createTable("moduleItem", {
+export const moduleItem = createTable("module_item", {
   address: ss58Address("address").primaryKey(),
   lastSeenBlock: integer("last_seen_block"), // updated_at kinda
   metadataUri: text("metadata_uri"),
