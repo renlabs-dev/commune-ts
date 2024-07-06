@@ -16,7 +16,7 @@ export function Header(props: HeaderProps): JSX.Element {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-gray-500 bg-black/50 backdrop-blur-sm",
+        "sticky top-0 z-50 w-full animate-fade-down border-b border-white/20 bg-[#898989]/5 backdrop-blur-md",
       )}
     >
       <nav
