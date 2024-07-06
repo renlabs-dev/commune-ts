@@ -69,3 +69,19 @@ export const moduleTestPostSchema = createInsertSchema(moduleTest, {
   id: true,
   createdAt: true,
 });
+
+export const module = createTable("module", {
+  uid: serial("uid").primaryKey().notNull(),
+  key: varchar("key", { length: 256 }).unique().notNull(),
+  emission: integer("emission").default(0),
+  incentive: integer("incentive").default(0),
+  dividend: integer("dividend").default(0),
+  registrationBlock: integer("registration_block").default(0),
+  stakeFrom: integer("stake_from").default(0),
+  delegationFee: integer("delegation_fee").default(0),
+  metadataUri: text("metadata_uri").default(""),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
