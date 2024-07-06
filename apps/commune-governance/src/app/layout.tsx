@@ -9,7 +9,6 @@ import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
-import { applicationsList } from "../utils/applications-list";
 import { FooterDivider } from "./components/footer-divider";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
@@ -41,7 +40,7 @@ export default function RootLayout({
           />
           {children}
           <FooterDivider />
-          <Footer applicationsList={applicationsList} />
+          <Footer />
         </Providers>
       </body>
     </html>
