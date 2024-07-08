@@ -56,7 +56,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           <TRPCReactProvider>{children}</TRPCReactProvider>
-          <Footer />
+          <Footer shouldBeFixed />
         </Providers>
       </body>
     </html>
