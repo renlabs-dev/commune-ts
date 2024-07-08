@@ -25,8 +25,7 @@ async function CrudShowcase() {
             <ModuleCard
               address={module.key}
               id={module.uid}
-              title="Module BRO"
-              description="The hub for Commune Ai modules. Explore modules designed to enhance communication, collaboration, and creativity..."
+              metadata={module.metadataUri}
             />
           ))
         ) : (
