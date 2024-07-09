@@ -34,7 +34,9 @@ export function MobileNavigation(props: MobileNavigationProps) {
       alt: "Commune's Telegram Link",
     },
     {
-      href: links.x, icon: "/x-icon.svg", alt: "Commune's X Link",
+      href: links.x,
+      icon: "/x-icon.svg",
+      alt: "Commune's X Link",
     },
   ];
 
@@ -55,13 +57,18 @@ export function MobileNavigation(props: MobileNavigationProps) {
       </button>
 
       {mobileMenuOpen && (
-        <nav className={cn("absolute right-0 top-20 z-40 w-full h-full lg:hidden")}>
-          <div className={cn("min-w-1/4 sticky right-3 top-3 z-[50] ml-auto h-auto w-[70%] lg:w-[30%] bg-[url('/bg-pattern.svg')] border border-white/20")}>
+        <nav
+          className={cn("absolute right-0 top-20 z-40 h-full w-full lg:hidden")}
+        >
+          <div
+            className={cn(
+              "min-w-1/4 sticky right-3 top-3 z-[50] ml-auto h-auto w-[70%] border border-white/20 bg-[url('/bg-pattern.svg')] lg:w-[30%]",
+            )}
+          >
             <div className={cn("flow-root")}>
-
               {props.genericContent}
 
-              <div className={cn("border-white/20 p-4 space-y-2")}>
+              <div className={cn("space-y-2 border-white/20 p-4")}>
                 {props.navigationLinks &&
                   props?.navigationLinks?.map(({ name, href, external }) => (
                     <Link
@@ -70,8 +77,7 @@ export function MobileNavigation(props: MobileNavigationProps) {
                       onClick={toggleMobileMenu}
                       target={external ? "_blank" : "_self"}
                       className={cn(
-                        " block w-full p-3 px-6 text-base font-semibold leading-7 border  text-gray-400 hover:border-green-600 hover:text-green-600 hover:bg-green-600/5 border-white/20 text-center hover:bg-gray-400/10 hover:backdrop-blur-sm",
-
+                        " block w-full border border-white/20 p-3 px-6 text-center text-base  font-semibold leading-7 text-gray-400 hover:border-green-600 hover:bg-gray-400/10 hover:bg-green-600/5 hover:text-green-600 hover:backdrop-blur-sm",
                       )}
                     >
                       {name}
@@ -79,22 +85,29 @@ export function MobileNavigation(props: MobileNavigationProps) {
                   ))}
               </div>
 
-              <div className={cn("flex justify-between w-full p-6 py-4 border-t border-white/20 text-green-500")}>
+              <div
+                className={cn(
+                  "flex w-full justify-between border-t border-white/20 p-6 py-4 text-green-500",
+                )}
+              >
                 {headerSocialLinks.map((value) => {
                   return (
                     <Link key={value.href} href={value.href} target="_blank">
-                      <Image src={value.icon} alt={`${value.alt} Icon`} width={40} height={40} className={cn("w-8 h-8")} />
+                      <Image
+                        src={value.icon}
+                        alt={`${value.alt} Icon`}
+                        width={40}
+                        height={40}
+                        className={cn("h-8 w-8")}
+                      />
                     </Link>
-                  )
+                  );
                 })}
               </div>
             </div>
           </div>
         </nav>
-
-
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
