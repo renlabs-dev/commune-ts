@@ -29,8 +29,10 @@ export const moduleItem = createTable("module_item", {
   lastSeenBlock: integer("last_seen_block"), // updated_at kinda
   metadataUri: text("metadata_uri"),
   // if uid is null (worker will set) the module is de-registered
-  uid: varchar("uid", { length: 256 }),
+  uid: integer("uid"),
   // other module data UwU
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => sql`now()`),
 });
 
 /**
@@ -46,12 +48,24 @@ export const userModuleData = createTable("user_module_data", {
   favorite: boolean("favorite").default(false),
 });
 
+
+export enum ReportReason {
+  Spam = "Spam",
+  HarassmentOrBullying = "HarassmentOrBullying",
+  HateSpeech = "HateSpeech",
+  ViolenceOrHarm = "ViolenceOrHarm",
+  SexualContent = "SexualContent",
+}
+
+/**
+ * A report for a module on the Commune network.
+ */
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
   userAddress: ss58Address("address"),
   moduleAddress: ss58Address("address").references(() => moduleItem.address),
   content: text("content"),
-  reason: varchar("reason", { length: 16 }),
+  reason: varchar("reason"),
 });
 
 // Test Table
