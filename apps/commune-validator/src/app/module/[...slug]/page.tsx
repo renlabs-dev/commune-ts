@@ -2,13 +2,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 
+import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
 import { smallAddress } from "@commune-ts/providers/utils";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 import { api } from "~/trpc/server";
 
 interface Params {
   params: {
     slug: string[];
+  };
+}
+
+interface CustomMetadata {
+  Ok: {
+    title: string;
+    body: string;
   };
 }
 
@@ -31,24 +40,17 @@ export default async function ModulePage({ params }: Params) {
     notFound();
   }
 
-  {
-    /* <ul>
-        <li>uid: {mdl.uid}</li>
-        <li>address: {mdl.key}</li>
-        <li>emission: {mdl.emission}</li>
-        <li>incentive: {mdl.incentive}</li>
-        <li>dividend: {mdl.dividend}</li>
-        <li>registration block: {mdl.registrationBlock}</li>
-        <li>delegation fee: {mdl.delegationFee}</li>
-        <li>Created at: {new Date(mdl.createdAt).toLocaleString()}</li>
-      </ul> */
-  }
+  const metadata = (await fetchCustomMetadata(
+    "proposal",
+    mdl.uid,
+    mdl.metadataUri ?? "",
+  )) as CustomMetadata;
 
-  const description =
-    "Here, you can explore a diverse range of modules specifically designed to enhance communication, collaboration, and creativity. Whether you are looking to streamline your workflow, improve team dynamics, or unleash your creative potential, our modules offer the tools and features you need to achieve your goals. Each module is crafted with precision, ensuring a seamless and intuitive user experience. At Commune Ai, we believe that effective communication is the cornerstone of any successful endeavor. Our modules are designed to facilitate clear and efficient exchanges, breaking down barriers and fostering a deeper understanding among team members. From real-time messaging to advanced project management tools, our platform empowers you to stay connected and informed, no matter where you are..";
+  const title = metadata.Ok.title;
+  const description = metadata.Ok.body;
 
   return (
-    <div className="container mx-auto p-4 text-white">
+    <div className="container mx-auto p-4 pb-28 text-white">
       <div className="my-16 flex w-full items-center justify-between">
         <Link
           href="/"
@@ -58,18 +60,18 @@ export default async function ModulePage({ params }: Params) {
           Go back to modules list
         </Link>
         <h1 className="flex-grow animate-fade-right text-center text-3xl font-semibold">
-          Module BRO
+          {title}
         </h1>
       </div>
-      <div className="flex flex-col gap-6 md:flex-row">
-        <div className="w-[70%] animate-fade-down animate-delay-300">
+      <div className="flex flex-col-reverse gap-6 md:flex-row">
+        <div className="animate-fade-down animate-delay-300 md:w-[60%] xl:w-[70%]">
           <div className="border border-white/20 bg-[#898989]/5 p-8">
             <h2 className="mb-4 text-xl font-semibold">Description</h2>
-            <p className="pb-0.5">{description}</p>
+            <MarkdownView source={description} />
           </div>
         </div>
-        <div className="w-[30%] animate-fade-down animate-delay-500">
-          <div className="flex justify-around border border-white/20 bg-[#898989]/5 p-8">
+        <div className="animate-fade-down animate-delay-500 md:w-[40%] xl:w-[30%]">
+          <div className="flex justify-between border border-white/20 bg-[#898989]/5 p-8">
             <div className="flex flex-col gap-6">
               <div>
                 <h2 className="text-gray-400">Publication Date</h2>
