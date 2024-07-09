@@ -8,6 +8,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
 const ss58Address = (name: string) => varchar(name, { length: 256 });
 
@@ -22,7 +24,7 @@ export const createTable = pgTableCreator((name) => `${name}`);
 /**
  * A module on the Commune network considered by our system.
  */
-export const moduleItem = createTable("moduleItem", {
+export const moduleItem = createTable("module_item", {
   address: ss58Address("address").primaryKey(),
   lastSeenBlock: integer("last_seen_block"), // updated_at kinda
   metadataUri: text("metadata_uri"),
@@ -52,11 +54,18 @@ export const moduleReport = createTable("module_report", {
   reason: varchar("reason", { length: 16 }),
 });
 
-// TODO:
-export const moduleWeight = createTable("module_weigh", {
+// Test Table
+export const moduleTest = createTable("module_test", {
   id: serial("id").primaryKey(),
   weight: integer("weight").default(0),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
+});
+
+export const moduleTestPostSchema = createInsertSchema(moduleTest, {
+  weight: z.number().int().min(0).max(100),
+}).omit({
+  id: true,
+  createdAt: true,
 });
