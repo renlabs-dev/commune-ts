@@ -115,7 +115,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
             <div className="w-full py-2 mr-3 lg:w-auto lg:min-w-fit lg:py-0">
               <Link
                 className="flex items-center w-full px-2 py-4 text-sm text-white border border-white/10 min-w-auto hover:border-green-500 hover:bg-green-500/5 hover:text-green-500 lg:w-auto lg:px-4"
-                href={`/item/proposal/${proposalState.id}`}
+                href={`/proposal/${proposalState.id}`}
               >
                 View full proposal
                 <ArrowRightIcon className="w-5 ml-auto lg:ml-2" />
