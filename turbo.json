@@ -72,7 +72,8 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "PORT"
+    "PORT",
+    "NEXT_PUBLIC_WS_PROVIDER_URL"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

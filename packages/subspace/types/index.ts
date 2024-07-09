@@ -7,6 +7,7 @@ import { ApiPromise } from "@polkadot/api";
 import { decodeAddress } from "@polkadot/util-crypto";
 import { assert } from "tsafe";
 import { z } from "zod";
+import { Variant } from "rustie/dist/enum";
 
 export type { Codec } from "@polkadot/types/types";
 
@@ -19,10 +20,13 @@ export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
 export type Nullish = null | undefined;
 export type Api = ApiDecoration<"promise"> | ApiPromise;
 
-export interface CustomMetadata {
-  title?: string;
-  body?: string;
-}
+// == rustie related stuff ==
+type KeysOfUnion<T> = T extends T ? keyof T: never;
+
+type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<T, Record<K, unknown>>[K];
+
+type UnionToVariants<T> = KeysOfUnion<T> extends infer K ? K extends KeysOfUnion<T> ? Variant<K, ValueOfUnion<T, K>> : never : never;
+// ==========================
 
 export interface BaseProposal {
   id: number;
@@ -39,7 +43,7 @@ export const CUSTOM_METADATA_SCHEMA = z.object({
   body: z.string().optional(),
 });
 
-assert<Extends<z.infer<typeof CUSTOM_METADATA_SCHEMA>, CustomMetadata>>();
+export type CustomMetadata = z.infer<typeof CUSTOM_METADATA_SCHEMA>;
 
 export interface CustomDataError {
   message: string;
@@ -52,25 +56,33 @@ export const URL_SCHEMA = z.string().trim().url();
 
 export const isNotNull = <T>(item: T | null): item is T => item !== null;
 
-// == Subspace refresh times ==
-// TODO: these values should be passed as parameters in the functions passed by the apps (env).
-
-// Time to consider last block query un-fresh. Half block time is the expected
-// time for a new block at a random point in time, so:
-// block_time / 2  ==  8 seconds / 2  ==  4 seconds
+/**
+ * == Subspace refresh times ==
+ * 
+ * TODO: these values should be passed as parameters in the functions passed by the apps (env).
+ * 
+ * Time to consider last block query un-fresh. Half block time is the expected
+ * time for a new block at a random point in time, so:
+ * block_time / 2  ==  8 seconds / 2  ==  4 seconds
+ */
 export const LAST_BLOCK_STALE_TIME = (1000 * 8) / 2;
 
-// Time to consider proposals query state un-fresh. They don't change a lot,
-// only when a new proposal is created and people should be able to see new
-// proposals fast enough.
-// 1 minute (arbitrary).
+/**
+ * Time to consider proposals query state un-fresh. They don't change a lot,
+ * only when a new proposal is created and people should be able to see new
+ * proposals fast enough.
+ * 
+ * 1 minute (arbitrary).
+ */
 export const PROPOSALS_STALE_TIME = 1000 * 60;
 
-// Time to consider stake query state un-fresh. They also don't change a lot,
-// only when people move their stake / delegation. That changes the way votes
-// are computed, but only very marginally for a given typical stake change, with
-// a small chance of a relevant difference in displayed state.
-// 5 minutes (arbitrary).
+/**
+ * Time to consider stake query state un-fresh. They also don't change a lot,
+ * only when people move their stake / delegation. That changes the way votes
+ * are computed, but only very marginally for a given typical stake change, with
+ * a small chance of a relevant difference in displayed state.
+ * 5 minutes (arbitrary).
+ */
 export const STAKE_STALE_TIME = 1000 * 60 * 5; // 5 minutes (arbitrary)
 
 // == Stake ==
@@ -189,16 +201,6 @@ export const TOKEN_AMOUNT_SCHEMA = z
 
 export type DaoStatus = "Pending" | "Accepted" | "Refused";
 
-export interface DaoApplications {
-  id: number;
-  userId: SS58Address;
-  payingFor: SS58Address;
-  data: string;
-  body?: CustomMetadata;
-  status: DaoStatus;
-  applicationCost: bigint;
-}
-
 export const DAO_APPLICATIONS_SCHEMA = z.object({
   id: z.number(),
   userId: ADDRESS_SCHEMA, // TODO: validate SS58 address
@@ -214,7 +216,7 @@ export const DAO_APPLICATIONS_SCHEMA = z.object({
   applicationCost: TOKEN_AMOUNT_SCHEMA,
 });
 
-assert<Extends<z.infer<typeof DAO_APPLICATIONS_SCHEMA>, DaoApplications>>();
+export type DaoApplications = z.infer<typeof DAO_APPLICATIONS_SCHEMA>;
 
 export function parseDaos(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
@@ -233,18 +235,6 @@ export interface DAOCardFields {
 export type DaoState = WithMetadataState<DaoApplications>;
 
 // == Proposals ==
-
-export type ProposalStatus = Enum<{
-  open: {
-    votesFor: SS58Address[];
-    votesAgainst: SS58Address[];
-    stakeFor: bigint;
-    stakeAgainst: bigint;
-  };
-  accepted: { block: number; stakeFor: bigint; stakeAgainst: bigint };
-  refused: { block: number; stakeFor: bigint; stakeAgainst: bigint };
-  expired: null;
-}>;
 
 const PROPOSAL_STATUS_SCHEMA = z.union([
   z.object({
@@ -274,15 +264,7 @@ const PROPOSAL_STATUS_SCHEMA = z.union([
   }),
 ]);
 
-assert<Extends<z.infer<typeof PROPOSAL_STATUS_SCHEMA>, ProposalStatus>>();
-
-export type ProposalData = Enum<{
-  globalCustom: null;
-  globalParams: Record<string, unknown>;
-  subnetCustom: { subnetId: number };
-  subnetParams: { subnetId: number; params: Record<string, unknown> };
-  transferDaoTreasury: { account: SS58Address; amount: bigint };
-}>;
+export type ProposalStatus = UnionToVariants<z.infer<typeof PROPOSAL_STATUS_SCHEMA>>; 
 
 export const PROPOSAL_DATA_SCHEMA = z.union([
   z.object({ globalCustom: z.null() }),
@@ -311,7 +293,7 @@ export function parseProposal(valueRaw: Codec): Proposal | null {
   return validated.data;
 }
 
-assert<Extends<z.infer<typeof PROPOSAL_DATA_SCHEMA>, ProposalData>>();
+export type ProposalData = UnionToVariants<z.infer<typeof PROPOSAL_DATA_SCHEMA>>; 
 
 export interface Proposal {
   id: number;
@@ -335,6 +317,7 @@ export const PROPOSAL_SCHEMA = z.object({
   creationBlock: z.number(),
 });
 
+assert<Extends<Proposal, z.infer<typeof PROPOSAL_SCHEMA>>>();
 assert<Extends<z.infer<typeof PROPOSAL_SCHEMA>, Proposal>>();
 
 export type ProposalState = WithMetadataState<Proposal>;
@@ -348,7 +331,7 @@ export interface ProposalCardFields {
 
 // == Field Params ==
 
-const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
+const PARAM_FIELD_DISPLAY_NAMES = {
   // # Global
   maxNameLength: "Max Name Length",
   maxAllowedSubnets: "Max Allowed Subnets",
@@ -383,8 +366,28 @@ const PARAM_FIELD_DISPLAY_NAMES: Record<string, string> = {
   tempo: "Tempo",
   trustRatio: "Trust Ratio",
   voteMode: "Vote Mode",
-};
+} as const;
 
 export const paramNameToDisplayName = (paramName: string): string => {
-  return PARAM_FIELD_DISPLAY_NAMES[paramName] ?? paramName;
+  return PARAM_FIELD_DISPLAY_NAMES[paramName as keyof typeof PARAM_FIELD_DISPLAY_NAMES] ?? paramName;
 };
+
+export type SubspaceModuleProperty =
+  | "stakeFrom"
+  | "keys"
+  | "name"
+  | "address"
+  | "registrationBlock"
+  | 'delegationFee'
+  | 'emission'
+  | 'incentive'
+  | "dividends"
+  | 'lastUpdate'
+  | "metadata"
+
+type SubspaceModulePropertieValue<T extends SubspaceModuleProperty> = Awaited<ReturnType<ApiPromise['query']['subspaceModule'][T]['entries']>>[number]
+
+
+export type SubspaceModule = {uid: number} & {
+  [K in SubspaceModuleProperty]: SubspaceModulePropertieValue<K>
+}
