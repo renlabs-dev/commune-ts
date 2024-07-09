@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
@@ -10,6 +10,7 @@ import { links } from "../data";
 
 interface MobileNavigationProps {
   navigationLinks: { name: string; href: string; external: boolean }[];
+  genericContent?: ReactElement
 }
 
 export function MobileNavigation(props: MobileNavigationProps) {
@@ -50,10 +51,11 @@ export function MobileNavigation(props: MobileNavigationProps) {
           <Bars3Icon className={cn("h-6 w-6 text-gray-500")} />
         )}
       </button>
+
       {mobileMenuOpen && (
         <div
           className={cn(
-            "animate-fade-in fixed left-0 top-16 z-50 h-full w-full",
+            "animate-fade-in fixed left-0 top-16 z-50 h-full w-full md:hidden",
           )}
         >
           <div
@@ -61,8 +63,10 @@ export function MobileNavigation(props: MobileNavigationProps) {
               "relative mx-auto my-6 w-11/12 space-y-4 divide-y divide-gray-200/40 border border-gray-500 bg-black p-4",
             )}
           >
-            <div className={cn("ml-2 mt-6 space-y-2")}>
-              {props.navigationLinks.map(({ name, href, external }) => (
+            <div className={cn("space-y-2")}>
+              {props.genericContent}
+
+              {!props.genericContent && props.navigationLinks.map(({ name, href, external }) => (
                 <Link
                   key={name}
                   href={href}

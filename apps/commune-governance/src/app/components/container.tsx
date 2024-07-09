@@ -4,8 +4,6 @@ export function Container({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-    <div className="animate-fade-in-down flex justify-center">
-      <section className="w-full">{children}</section>
-    </div>
+    <main className="flex flex-col items-center justify-center w-full px-6 mx-auto animate-fade-in-down max-w-screen-2xl">{children}</main>
   );
 }

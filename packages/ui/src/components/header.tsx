@@ -4,15 +4,18 @@ import Link from "next/link";
 import { cn } from "..";
 import { oxanium } from "../fonts";
 import { MobileNavigation } from "./mobile-navigation";
+import { ReactElement } from "react";
 
 interface HeaderProps {
   logoSrc: string;
   title: string;
   navigationLinks: { name: string; href: string; external: boolean }[];
   wallet: JSX.Element;
+  mobileContent?: ReactElement;
 }
 
 export function Header(props: HeaderProps): JSX.Element {
+
   return (
     <header
       className={cn(
@@ -57,7 +60,7 @@ export function Header(props: HeaderProps): JSX.Element {
             ))}
           </div>
           {props.wallet}
-          <MobileNavigation navigationLinks={props.navigationLinks} />
+          <MobileNavigation navigationLinks={props.navigationLinks} genericContent={props.mobileContent} />
         </div>
       </nav>
     </header>

@@ -10,14 +10,14 @@ export function VoteLabel(props: VoteLabelProps): JSX.Element {
   const { vote } = props;
 
   const votingStatus = {
-    UNVOTED: <>{}</>,
+    UNVOTED: <>{ }</>,
     FAVORABLE: (
-      <Label className="border border-green-500 text-green-500">
+      <Label className="text-green-500 border border-green-500 bg-green-500/10">
         Favorable
       </Label>
     ),
     AGAINST: (
-      <Label className="border border-red-500 text-red-500">Against</Label>
+      <Label className="text-red-500 border border-red-500 bg-red-500/10">Against</Label>
     ),
   };
 

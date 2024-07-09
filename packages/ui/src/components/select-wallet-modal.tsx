@@ -7,6 +7,7 @@ import { XMarkIcon } from "@heroicons/react/16/solid";
 
 import type { InjectedAccountWithMeta } from "../types";
 import { cn } from "..";
+import { smallAddress } from "../../../subspace/utils";
 
 export function SelectWalletModal({
   open,
@@ -27,15 +28,15 @@ export function SelectWalletModal({
       role="dialog"
     >
       {/* Modal */}
-      <div className={cn("fixed right-0 z-10 overflow-y-auto")}>
+      <div className={cn("fixed right-0 z-10 overflow-y-auto w-full")}>
         <div
           className={cn(
-            "flex min-h-full items-center justify-center p-4 text-center",
+            "flex min-h-full items-center justify-end p-4 text-center",
           )}
         >
           <div
             className={cn(
-              "relative w-full max-w-3xl transform overflow-hidden border border-gray-500 bg-black/70 text-left text-white backdrop-blur-sm",
+              "relative w-full max-w-fit transform overflow-hidden border border-gray-500 bg-black/70 text-left text-white backdrop-blur-sm",
             )}
           >
             {/* Modal Header */}
@@ -84,7 +85,7 @@ export function SelectWalletModal({
                   <div className={cn("flex flex-col items-start gap-1")}>
                     <span className="font-semibold">{item.meta.name}</span>
                     <p className={cn("text-sm font-thin text-gray-300")}>
-                      {item.address}
+                      {smallAddress(item.address, 17)}
                     </p>
                   </div>
                 </button>
