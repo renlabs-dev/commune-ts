@@ -19,10 +19,11 @@ async function CrudShowcase() {
           <span className="text-green-600">community</span>.
         </h1>
       </div>
-      <div className="mb-16 grid animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {modules.length ? (
           modules.map((module) => (
             <ModuleCard
+              key={module.uid}
               address={module.key}
               id={module.uid}
               metadata={module.metadataUri}
