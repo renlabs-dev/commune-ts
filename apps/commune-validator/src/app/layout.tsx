@@ -32,16 +32,16 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex w-full animate-fade-down border-b border-gray-500 py-2.5">
-            <div className="mx-auto max-w-screen-md">
-              <span className="flex items-center gap-1 text-gray-400">
-                <InformationCircleIcon className="h-5 w-5 text-green-500" />
+            <div className="mx-auto flex max-w-screen-md items-center gap-1 px-2">
+              <InformationCircleIcon className="h-10 w-10 text-green-500 md:h-5 md:w-5" />
+              <p className="text-gray-400">
                 To assign weights to modules, you need to stake on our
                 validator. Click{" "}
                 <Link href="" className="text-green-500 hover:underline">
                   here
                 </Link>{" "}
                 to get started.
-              </span>
+              </p>
             </div>
           </div>
           <Header

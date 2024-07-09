@@ -24,13 +24,21 @@ export const createTable = pgTableCreator((name) => `${name}`);
 /**
  * A module on the Commune network considered by our system.
  */
-export const moduleItem = createTable("module_item", {
-  address: ss58Address("address").primaryKey(),
-  lastSeenBlock: integer("last_seen_block"), // updated_at kinda
+export const module = createTable("module", {
+  uid: serial("uid").primaryKey().notNull(),
+  key: varchar("key", { length: 256 }).unique().notNull(),
+  emission: integer("emission").default(0).notNull(),
+  incentive: integer("incentive").default(0).notNull(),
+  dividend: integer("dividend").default(0).notNull(),
+  delegationFee: integer("delegation_fee").default(0).notNull(),
   metadataUri: text("metadata_uri"),
-  // if uid is null (worker will set) the module is de-registered
-  uid: varchar("uid", { length: 256 }),
-  // other module data UwU
+  isActive: boolean("is_active").default(true).notNull(),
+  registrationBlock: integer("registration_block").default(0).notNull(),
+  lastSeenBlock: integer("last_seen_block").default(0).notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 /**
@@ -39,20 +47,28 @@ export const moduleItem = createTable("module_item", {
  */
 export const userModuleData = createTable("user_module_data", {
   userAddress: ss58Address("user_address").primaryKey(),
-  moduleAddress: ss58Address("module_address").references(
-    () => moduleItem.address,
-  ),
+  moduleAddress: ss58Address("module_address").references(() => module.key),
+  userStakedValue: integer("user_staked_value").default(0),
   weight: integer("weight").default(0),
-  favorite: boolean("favorite").default(false),
 });
 
+export const moduleStakeData = createTable("module_stake_data", {
+  moduleAddress: ss58Address("module_address").primaryKey(),
+  totalStaked: integer("total_stake").default(0),
+});
+
+/**
+ * A report made by a user about a module.  registrationBlock: integer("registration_block").default(0).notNull(),
+ */
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
   userAddress: ss58Address("address"),
-  moduleAddress: ss58Address("address").references(() => moduleItem.address),
+  moduleAddress: ss58Address("address").references(() => module.key),
   content: text("content"),
   reason: varchar("reason", { length: 16 }),
 });
+
+// New Tables
 
 // Test Table
 export const moduleTest = createTable("module_test", {
@@ -68,20 +84,4 @@ export const moduleTestPostSchema = createInsertSchema(moduleTest, {
 }).omit({
   id: true,
   createdAt: true,
-});
-
-export const module = createTable("module", {
-  uid: serial("uid").primaryKey().notNull(),
-  key: varchar("key", { length: 256 }).unique().notNull(),
-  emission: integer("emission").default(0),
-  incentive: integer("incentive").default(0),
-  dividend: integer("dividend").default(0),
-  registrationBlock: integer("registration_block").default(0),
-  stakeFrom: integer("stake_from").default(0),
-  delegationFee: integer("delegation_fee").default(0),
-  metadataUri: text("metadata_uri").default(""),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
