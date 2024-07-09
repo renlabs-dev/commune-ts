@@ -36,10 +36,10 @@ export function BalanceSection({
 
   return (
     <div
-      className={`w-full flex items-center justify-center mt-10`}
+      className={`w-full flex items-center justify-center lg:mt-10`}
     >
-      <div className={`text-2xl flex w-full flex-col border-b border-white/20 text-green-500 pb-5 divide-gray-500 lg:flex-row gap-10 ${className ?? ""}`}>
-        <div className="flex flex-row items-center justify-between border border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
+      <div className={`text-2xl flex w-full flex-col border-b border-white/20 text-green-500 lg:pb-5 divide-gray-500 lg:flex-row lg:gap-10 ${className ?? ""}`}>
+        <div className="flex flex-row items-center justify-between lg:border border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
           <div className="flex flex-col gap-1">
             {!daoTreasury && !isInitialized ? (
               <Skeleton className="w-1/5 py-3 md:mt-1 lg:w-2/5" />
@@ -56,7 +56,7 @@ export function BalanceSection({
           <Image alt="Dao Icon" height={40} src="/dao-icon.svg" width={40} />
         </div>
 
-        <div className="flex flex-row items-center justify-between border !border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
+        <div className="flex flex-row items-center justify-between border-t lg:border !border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
           <div className="flex flex-col items-start gap-2">
             {!isInitialized &&
               <Skeleton className="w-1/5 py-3 md:mt-1 lg:w-2/5" />}
@@ -90,7 +90,7 @@ export function BalanceSection({
           />
         </div>
 
-        <div className="flex flex-row items-center justify-between border !border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
+        <div className="flex flex-row items-center justify-between border-t lg:border !border-white/20 bg-[#898989]/5 backdrop-blur-md p-6 pr-6 lg:w-1/3 lg:pr-10">
           <div className="flex flex-col items-start gap-2">
             {!isInitialized ||
               (selectedAccount?.meta.name && userStakeWeight == null) ? (

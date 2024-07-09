@@ -30,12 +30,12 @@ export default function RootLayout({
         <Providers>
           <Header
             logoSrc="/logo.svg"
-            navigationLinks={[
-              { name: "Home Page", href: links.landing_page, external: true },
-            ]}
             title="Community Governance"
             wallet={<WalletButtonWithHook />}
             mobileContent={<MobileHeaderContent />}
+            navigationLinks={[
+              { name: "Homepage", href: links.landing_page, external: true },
+            ]}
           />
           {children}
           <Footer />
