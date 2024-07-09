@@ -1,10 +1,10 @@
+import { ReactElement } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "..";
 import { oxanium } from "../fonts";
 import { MobileNavigation } from "./mobile-navigation";
-import { ReactElement } from "react";
 
 interface HeaderProps {
   logoSrc: string;
@@ -15,11 +15,10 @@ interface HeaderProps {
 }
 
 export function Header(props: HeaderProps): JSX.Element {
-
   return (
     <header
       className={cn(
-        "animate-fade-down sticky top-0 z-50 w-full border-b border-white/20 bg-[#898989]/5 backdrop-blur-md",
+        "sticky top-0 z-50 w-full animate-fade-down border-b border-white/20 bg-[#898989]/5 backdrop-blur-md",
       )}
     >
       <nav
@@ -60,7 +59,10 @@ export function Header(props: HeaderProps): JSX.Element {
             ))}
           </div>
           {props.wallet}
-          <MobileNavigation navigationLinks={props.navigationLinks} genericContent={props.mobileContent} />
+          <MobileNavigation
+            navigationLinks={props.navigationLinks}
+            genericContent={props.mobileContent}
+          />
         </div>
       </nav>
     </header>

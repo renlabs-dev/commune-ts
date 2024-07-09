@@ -28,7 +28,7 @@ export function SelectWalletModal({
       role="dialog"
     >
       {/* Modal */}
-      <div className={cn("fixed right-0 z-10 overflow-y-auto w-full")}>
+      <div className={cn("fixed right-0 z-10 w-full overflow-y-auto")}>
         <div
           className={cn(
             "flex min-h-full items-center justify-end p-4 text-center",
