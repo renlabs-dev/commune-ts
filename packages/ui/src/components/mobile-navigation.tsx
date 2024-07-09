@@ -10,7 +10,7 @@ import { links } from "../data";
 
 interface MobileNavigationProps {
   navigationLinks: { name: string; href: string; external: boolean }[];
-  genericContent?: ReactElement
+  genericContent?: ReactElement;
 }
 
 export function MobileNavigation(props: MobileNavigationProps) {
@@ -66,19 +66,20 @@ export function MobileNavigation(props: MobileNavigationProps) {
             <div className={cn("space-y-2")}>
               {props.genericContent}
 
-              {!props.genericContent && props.navigationLinks.map(({ name, href, external }) => (
-                <Link
-                  key={name}
-                  href={href}
-                  onClick={toggleMobileMenu}
-                  target={external ? "_blank" : "_self"}
-                  className={cn(
-                    "-mx-3 block w-full px-3 py-1 text-base font-semibold leading-7 text-white hover:bg-gray-400/10 hover:backdrop-blur-sm",
-                  )}
-                >
-                  {name}
-                </Link>
-              ))}
+              {!props.genericContent &&
+                props.navigationLinks.map(({ name, href, external }) => (
+                  <Link
+                    key={name}
+                    href={href}
+                    onClick={toggleMobileMenu}
+                    target={external ? "_blank" : "_self"}
+                    className={cn(
+                      "-mx-3 block w-full px-3 py-1 text-base font-semibold leading-7 text-white hover:bg-gray-400/10 hover:backdrop-blur-sm",
+                    )}
+                  >
+                    {name}
+                  </Link>
+                ))}
             </div>
             <div className={cn("flex justify-between space-x-3 py-4")}>
               {headerSocialLinks.map(({ href, icon, alt }) => (
