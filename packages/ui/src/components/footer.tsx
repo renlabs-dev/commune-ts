@@ -24,7 +24,7 @@ export function Footer({ shouldBeFixed = false }): JSX.Element {
           <div className="flex justify-center gap-6 md:w-4/12">
             {socialList.map((item) => (
               <Link
-                className="text-subtitle leading-6 hover:text-gray-800 hover:underline"
+                className="leading-6 text-subtitle hover:text-gray-800 hover:underline"
                 href={item.href}
                 key={item.name}
               >
