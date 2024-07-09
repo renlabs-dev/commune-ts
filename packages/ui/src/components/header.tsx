@@ -9,7 +9,7 @@ import { MobileNavigation } from "./mobile-navigation";
 interface HeaderProps {
   logoSrc: string;
   title: string;
-  navigationLinks: { name: string; href: string; external: boolean }[];
+  navigationLinks?: { name: string; href: string; external: boolean }[];
   wallet: JSX.Element;
   mobileContent?: ReactElement;
 }
@@ -44,8 +44,9 @@ export function Header(props: HeaderProps): JSX.Element {
           </h3>
         </Link>
         <div className={cn("flex items-center")}>
+
           <div className={cn("hidden pr-6 lg:flex lg:gap-6")}>
-            {props.navigationLinks.map(({ name, href, external }) => (
+            {props.navigationLinks && props.navigationLinks.map(({ name, href, external }) => (
               <Link
                 className={cn(
                   "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
@@ -58,7 +59,9 @@ export function Header(props: HeaderProps): JSX.Element {
               </Link>
             ))}
           </div>
+
           {props.wallet}
+
           <MobileNavigation
             navigationLinks={props.navigationLinks}
             genericContent={props.mobileContent}

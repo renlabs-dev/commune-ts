@@ -30,7 +30,7 @@ export function ProposalListHeader(
   }
 
   return (
-    <div className="flex flex-col w-full gap-10 divide-gray-500 lg:pt-5 lg:max-w-screen-2xl lg:flex-row">
+    <div className="flex flex-col w-full gap-10 divide-gray-500 lg:pt-5 lg:max-w-screen-2xl lg:flex-row mt-10 lg:mt-0">
       <div className={`w-full hidden lg:flex`}>
         <button
           className="text-white flex lg:flex-col xl:flex-row justify-center px-5 py-3 items-center w-full border border-white/20 hover:border-green-500 bg-[#898989]/5 backdrop-blur-md xl:gap-2"
