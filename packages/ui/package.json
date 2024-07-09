@@ -16,7 +16,9 @@
     "./wallet-modal": "./src/components/wallet-modal.tsx",
     "./discord-widget": "./src/components/discord-widget.tsx",
     "./data": "./src/data.ts",
-    "./fonts": "./src/fonts.ts"
+    "./fonts": "./src/fonts.ts",
+    "./scrollbar-style": "./src/components/scrollbar-style.ts"
+
   },
   "license": "MIT",
   "scripts": {
