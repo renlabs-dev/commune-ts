@@ -25,11 +25,8 @@ export const createTable = pgTableCreator((name) => `${name}`);
  * |lastSeenBlock - atBlock| < 1 week --> should be deleted
  */
 export const moduleData = createTable("module_data", {
-  moduleKey: ss58Address("module_key")
-    // .references(() => moduleData.moduleKey)
-    .primaryKey()
-    .notNull(),
-  id: integer("id").notNull(),
+  id: serial("id").primaryKey(),
+  moduleKey: ss58Address("module_key").notNull(),
 
   netuid: integer("netuid").notNull(),
   metadataUri: text("metadata_uri"),
