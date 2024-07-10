@@ -1,6 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { useCommune } from "@commune-ts/providers/use-commune";
+
 import { useDelegateStore } from "~/stores/delegateStore";
+import { api } from "~/trpc/react";
 
 export function DelegatedModulesList() {
   const {
@@ -10,10 +16,46 @@ export function DelegatedModulesList() {
     getTotalPercentage,
   } = useDelegateStore();
   const totalPercentage = getTotalPercentage();
+  const { selectedAccount } = useCommune();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePercentageChange = (id: number, percentage: number) => {
     if (percentage >= 0 && percentage <= 100) {
       updatePercentage(id, percentage);
+    }
+  };
+
+  const createUserModuleData = api.module.createUserModuleData.useMutation({
+    onSuccess: () => {
+      router.refresh();
+      setIsSubmitting(false);
+    },
+    onError: (error) => {
+      console.error("Error submitting data:", error);
+      setIsSubmitting(false);
+    },
+  });
+
+  const handleSubmit = async () => {
+    if (!selectedAccount?.address || totalPercentage !== 100) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      for (const delegatedModule of delegatedModules) {
+        await createUserModuleData.mutateAsync({
+          userKey: selectedAccount.address,
+          moduleKey: delegatedModule.address,
+          weight: delegatedModule.percentage,
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -51,10 +93,21 @@ export function DelegatedModulesList() {
       ))}
       <div className="mt-4 text-white">
         Total Percentage: {totalPercentage}%
-        {totalPercentage > 100 && (
-          <span className="ml-2 text-red-500">Exceeds 100%</span>
+        {totalPercentage !== 100 && (
+          <span className="ml-2 text-red-500">
+            {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
+          </span>
         )}
       </div>
+      <button
+        onClick={handleSubmit}
+        className="mt-4 bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:opacity-50"
+        disabled={
+          isSubmitting || totalPercentage !== 100 || !selectedAccount?.address
+        }
+      >
+        {isSubmitting ? "Submitting..." : "Submit"}
+      </button>
     </div>
   );
 }
