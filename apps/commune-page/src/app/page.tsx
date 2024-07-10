@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { Footer } from "@commune-ts/ui/footer";
 import { Loading } from "@commune-ts/ui/loading";
 
-import { applicationsList } from "../utils/applications-list";
 import { sections } from "../utils/mocks/sections-mock";
 import { FrequentQuestions } from "./components/sections/frequent-questions";
 import { GenericSection } from "./components/sections/generic-section";
@@ -37,7 +36,7 @@ export default function Page(): JSX.Element {
         );
       })}
       <FrequentQuestions />
-      <Footer applicationsList={applicationsList} />
+      <Footer />
     </Suspense>
   );
 }

@@ -17,7 +17,7 @@
   "dependencies": {
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animated": "^1.1.0"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
