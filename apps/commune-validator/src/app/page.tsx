@@ -25,7 +25,7 @@ async function ModulesCard() {
             <ModuleCard
               id={module.id}
               key={module.id}
-              address={module.moduleKey}
+              moduleKey={module.moduleKey}
               metadata={module.metadataUri}
             />
           ))
