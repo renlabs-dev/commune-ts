@@ -34,7 +34,7 @@ export default async function ModulePage({ params }: Params) {
     notFound();
   }
 
-  const mdl = await api.module.byId({ uid: Number(id) });
+  const mdl = await api.module.byId({ id: Number(id) });
 
   if (!mdl) {
     notFound();
@@ -42,7 +42,7 @@ export default async function ModulePage({ params }: Params) {
 
   const metadata = (await fetchCustomMetadata(
     "proposal",
-    mdl.uid,
+    mdl.id,
     mdl.metadataUri ?? "",
   )) as CustomMetadata;
 
@@ -79,7 +79,7 @@ export default async function ModulePage({ params }: Params) {
               </div>
               <div>
                 <h2 className="text-gray-400">Address</h2>
-                <span>{smallAddress(String(mdl.key))}</span>
+                <span>{smallAddress(String(mdl.moduleKey))}</span>
               </div>
               <div>
                 <h2 className="text-gray-400">Emission</h2>

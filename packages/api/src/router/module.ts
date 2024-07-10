@@ -2,23 +2,29 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { eq, sql } from "@commune-ts/db";
-import { moduleData, userModuleData } from "@commune-ts/db/schema";
+import {
+  moduleData,
+  moduleReport,
+  moduleReportPostSchema,
+  userModuleData,
+  userModuleDataPostSchema,
+} from "@commune-ts/db/schema";
 
 import { publicProcedure } from "../trpc";
 
 export const moduleRouter = {
+  // GET
   all: publicProcedure.query(({ ctx }) => {
-    // return ctx.db.select().from(schema.post).orderBy(desc(schema.post.id));
     return ctx.db.query.moduleData.findMany();
   }),
   byId: publicProcedure
-    .input(z.object({ uid: z.number() }))
+    .input(z.object({ id: z.number() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.moduleData.findFirst({
-        where: eq(moduleData.uid, input.uid),
+        where: eq(moduleData.id, input.id),
       });
     }),
-  allModuleWeight: publicProcedure.query(async ({ ctx, input }) => {
+  allModuleWeight: publicProcedure.query(async ({ ctx }) => {
     const result = await ctx.db
       .select({
         userKey: userModuleData.userKey,
@@ -49,4 +55,16 @@ export const moduleRouter = {
     });
     return userWeightMap;
   }),
+
+  // POST
+  createUserModuleData: publicProcedure
+    .input(userModuleDataPostSchema)
+    .mutation(({ ctx, input }) => {
+      return ctx.db.insert(userModuleData).values(input);
+    }),
+  createModuleReport: publicProcedure
+    .input(moduleReportPostSchema)
+    .mutation(({ ctx, input }) => {
+      return ctx.db.insert(moduleReport).values(input);
+    }),
 } satisfies TRPCRouterRecord;
