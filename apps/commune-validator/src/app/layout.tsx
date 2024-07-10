@@ -12,6 +12,7 @@ import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { DelegatedModulesList } from "./components/delegated-modules-list";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -55,7 +56,9 @@ export default function RootLayout({
             title="Commune AI"
             wallet={<WalletButtonWithHook />}
           />
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children} <DelegatedModulesList />
+          </TRPCReactProvider>
           <Footer shouldBeFixed />
         </Providers>
       </body>
