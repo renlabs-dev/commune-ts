@@ -17,25 +17,6 @@ export const ss58Address = (name: string) => varchar(name, { length: 256 });
 
 export const createTable = pgTableCreator((name) => `${name}`);
 
-// /**
-//  * A module on the Commune network considered by our system.
-//  *
-//  * You can should only append a new module key.
-//  */
-// export const module = createTable("module", {
-//   key: ss58Address("key").primaryKey(),
-//   lastSeenBlock: integer("last_seen_block"),
-
-//   createdAt: timestamp("created_at")
-//     .default(sql`CURRENT_TIMESTAMP`)
-//     .notNull(),
-//   updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
-// });
-
-`lastSeenBlock = (SELECT atBlock FROM module_data ORDER BY atBlock DESC LIMIT 1)`;
-
-// export const userView = pgView("user_view").as((qb) => qb.select().from(user)); <- view
-
 /**
  * Modules registered on the Commune chain.
  *
@@ -48,17 +29,19 @@ export const moduleData = createTable("module_data", {
     // .references(() => moduleData.moduleKey)
     .primaryKey()
     .notNull(),
+  id: integer("id").notNull(),
 
-  atBlock: integer("at_block").notNull(),
   netuid: integer("netuid").notNull(),
-  uid: integer("uid").notNull(),
   metadataUri: text("metadata_uri"),
 
+  atBlock: integer("at_block").notNull(),
   registrationBlock: integer("registration_block"),
+
   emission: bigint("total_staked", { mode: "bigint" }),
   incentive: bigint("total_staked", { mode: "bigint" }),
   dividend: bigint("total_staked", { mode: "bigint" }),
   delegationFee: integer("delegation_fee"),
+
   totalStaked: bigint("total_staked", { mode: "bigint" }),
   totalStakers: integer("total_stakers"),
   totalRewards: bigint("total_staked", { mode: "bigint" }),
@@ -88,6 +71,14 @@ export const userModuleData = createTable(
     unq: unique().on(t.userKey, t.userKey),
   }),
 );
+
+export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
+  userKey: z.string(),
+  moduleKey: z.string(),
+  weight: z.number(),
+}).omit({
+  id: true,
+});
 
 /**
  * A report made by a user about a module.
