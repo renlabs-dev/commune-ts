@@ -55,16 +55,24 @@ export const moduleRouter = {
     });
     return userWeightMap;
   }),
-
   // POST
   createUserModuleData: publicProcedure
     .input(userModuleDataPostSchema)
-    .mutation(({ ctx, input }) => {
-      return ctx.db.insert(userModuleData).values(input);
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(userModuleData).values({
+        moduleKey: input.moduleKey,
+        userKey: input.userKey,
+        weight: input.weight,
+      });
     }),
   createModuleReport: publicProcedure
     .input(moduleReportPostSchema)
-    .mutation(({ ctx, input }) => {
-      return ctx.db.insert(moduleReport).values(input);
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(moduleReport).values({
+        moduleKey: input.moduleKey,
+        userKey: input.userKey,
+        content: input.content,
+        reason: input.reason,
+      });
     }),
 } satisfies TRPCRouterRecord;

@@ -99,5 +99,4 @@ export const moduleReportPostSchema = createInsertSchema(moduleReport, {
   reason: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
 });
