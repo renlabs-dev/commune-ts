@@ -10,7 +10,7 @@ import { DelegateModuleWeight } from "./delegate-module-weight";
 
 interface ModuleCardProps {
   id: number;
-  address: string; // SS58.1
+  moduleKey: string; // SS58.1
   metadata: string | null; // IPFS
 }
 
@@ -39,13 +39,17 @@ export async function ModuleCard(props: ModuleCardProps) {
       <div className="flex items-center justify-between gap-2">
         <span className="flex w-full items-center gap-1 border border-white/20 bg-[#898989]/5 py-2 pl-2 backdrop-blur-md  md:text-sm 2xl:text-base">
           <Squares2X2Icon className="h-6 w-6 text-green-500" />{" "}
-          {smallAddress(String(props.address))}
+          {smallAddress(String(props.moduleKey))}
         </span>
-        <CopySquareButton address={props.address} />
+        <CopySquareButton address={props.moduleKey} />
         {/* <CopySquareButton address={props.address} /> */}
       </div>
       <div className="flex items-center justify-between gap-2">
-        <DelegateModuleWeight />
+        <DelegateModuleWeight
+          id={props.id}
+          title={title}
+          moduleKey={props.moduleKey}
+        />
         <Link
           className="flex w-full items-center justify-between border border-white/20 bg-[#898989]/5 p-2 pl-3 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10"
           href={`module/${props.id}`}

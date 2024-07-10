@@ -1,52 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChartPieIcon } from "@heroicons/react/24/outline";
 
-type Change = "up" | "down";
+import { useDelegateStore } from "~/stores/delegateStore";
 
-// TODO: Delegation submit logic
-export function DelegateModuleWeight() {
-  const [weight, setWeight] = useState<number | null>(null);
+interface DelegateModuleWeightProps {
+  id: number;
+  title: string;
+  moduleKey: string;
+}
 
-  const BASE_WEIGHT = 100;
+export function DelegateModuleWeight(props: DelegateModuleWeightProps) {
+  const { delegatedModules, addModule, removeModule } = useDelegateStore();
+  const isModuleDelegated = delegatedModules.some((m) => m.id === props.id);
 
-  function handleWeightChange(change: Change) {
-    if (weight === null) {
-      if (change === "up") {
-        setWeight(BASE_WEIGHT);
-      } else {
-        setWeight(0);
-      }
-      return;
-    }
-
-    if (change === "up") {
-      setWeight(weight + 10);
+  const handleDelegateClick = () => {
+    if (isModuleDelegated) {
+      removeModule(props.id);
     } else {
-      setWeight(Math.max(weight - 10, 0));
+      addModule({ id: props.id, address: props.moduleKey, title: props.title });
     }
-  }
+  };
 
   return (
-    <>
-      <div className="flex w-full items-center gap-2 border border-white/20 bg-[#898989]/5 backdrop-blur-md">
-        <button
-          className="border-r border-white/20 p-2 hover:bg-red-500/10"
-          onClick={() => handleWeightChange("down")}
-        >
-          <ChevronDownIcon className="h-5 w-5 text-red-500" />
-        </button>
-        <div className="flex w-full items-center justify-center border-white/20 p-2">
-          {weight}
-        </div>
-        <button
-          className="border-l border-white/20 p-2 hover:bg-green-500/10"
-          onClick={() => handleWeightChange("up")}
-        >
-          <ChevronUpIcon className="h-5 w-5 text-green-500" />
-        </button>
-      </div>
-    </>
+    <button
+      onClick={handleDelegateClick}
+      className={`flex w-fit items-center gap-2 border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 ${
+        isModuleDelegated
+          ? "border-red-500 bg-red-500/10 hover:bg-red-500/20"
+          : "hover:border-green-500 hover:bg-green-500/10"
+      }`}
+    >
+      <ChartPieIcon
+        className={`h-6 w-6 ${isModuleDelegated ? "text-red-500" : "text-green-500"}`}
+      />
+      {isModuleDelegated ? "Remove" : "Delegate"}
+    </button>
   );
 }
