@@ -20,7 +20,7 @@ export function MainSection(): JSX.Element {
         <Animation />
       </div>
       <div className="flex h-full w-full max-w-screen-2xl flex-col mt-4 lg:mt-0">
-        <div className="flex h-full min-h-[85vh] w-full flex-col justify-end gap-6 px-4 pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex h-full min-h-[85svh] w-full flex-col justify-end gap-6 px-4 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
             <p className="animate-fade-right font-medium animate-delay-200 md:text-xl">
               <span className="text-green-400">Peer-to-peer </span>
