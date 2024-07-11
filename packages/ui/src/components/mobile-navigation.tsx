@@ -5,8 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
 
-import { cn } from "..";
-import { links } from "../data";
+import { cn, links } from "..";
 
 interface MobileNavigationProps {
   navigationLinks?: { name: string; href: string; external: boolean }[];

@@ -1,14 +1,11 @@
 import "../styles/globals.css";
 
 import type { Metadata } from "next";
-
 import { Providers } from "@commune-ts/providers/context";
 import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
-import { links } from "@commune-ts/ui/data";
-import { cairo } from "@commune-ts/ui/fonts";
-import { Footer } from "@commune-ts/ui/footer";
-import { Header } from "@commune-ts/ui/header";
+import { Header, Footer, cairo, links } from "@commune-ts/ui"
 import { MobileHeaderContent } from './components/mobile-header-content'
+
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
   robots: "all",

@@ -1,6 +1,6 @@
-import { cx } from "class-variance-authority";
-import { twMerge } from "tailwind-merge";
+export * from './data'
+export * from './fonts'
+export * from './types'
 
-const cn = (...inputs: Parameters<typeof cx>) => twMerge(cx(inputs));
-
-export { cn };
+// Components needs to be the last export
+export * from './components'
