@@ -2,9 +2,7 @@ import { ReactElement } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { cn } from "..";
-import { oxanium } from "../fonts";
-import { MobileNavigation } from "./mobile-navigation";
+import { oxanium, cn, MobileNavigation } from "..";
 
 interface HeaderProps {
   logoSrc: string;

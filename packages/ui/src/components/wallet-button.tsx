@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
-import type { InjectedAccountWithMeta } from "../types";
-import { cn } from "..";
+import { cn, type InjectedAccountWithMeta } from "..";
 
 interface PolkadotHook {
   handleConnect: () => void;
