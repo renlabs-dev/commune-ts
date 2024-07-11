@@ -1,7 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
   bigint,
-  boolean,
   integer,
   pgTableCreator,
   serial,
@@ -25,11 +24,8 @@ export const createTable = pgTableCreator((name) => `${name}`);
  * |lastSeenBlock - atBlock| < 1 week --> should be deleted
  */
 export const moduleData = createTable("module_data", {
-  moduleKey: ss58Address("module_key")
-    // .references(() => moduleData.moduleKey)
-    .primaryKey()
-    .notNull(),
-  id: integer("id").notNull(),
+  id: serial("id").primaryKey(),
+  moduleKey: ss58Address("module_key").notNull(),
 
   netuid: integer("netuid").notNull(),
   metadataUri: text("metadata_uri"),
@@ -66,7 +62,7 @@ export const userModuleData = createTable(
     weight: integer("weight").default(0).notNull(),
   },
   (t) => ({
-    unq: unique().on(t.userKey, t.userKey),
+    unq: unique().on(t.userKey, t.moduleKey),
   }),
 );
 
@@ -92,19 +88,20 @@ export enum ReportReason {
  */
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
-  userAddress: ss58Address("address"),
-  moduleAddress: ss58Address("address").references(() => moduleData.moduleKey),
+  userKey: ss58Address("user_key"),
+  moduleKey: ss58Address("module_key")
+    .references(() => moduleData.moduleKey)
+    .notNull(),
   content: text("content"),
   reason: varchar("reason", { length: 16 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const moduleReportPostSchema = createInsertSchema(moduleReport, {
-  userAddress: z.string(),
-  moduleAddress: z.string(),
+  userKey: z.string(),
+  moduleKey: z.string(),
   content: z.string(),
   reason: z.string(),
 }).omit({
   id: true,
-  createdAt: true,
 });
