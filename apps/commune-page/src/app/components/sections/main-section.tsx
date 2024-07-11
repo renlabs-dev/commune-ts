@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Animation from "../animation";
+import { links } from "@commune-ts/ui";
 
 export function MainSection(): JSX.Element {
   const [triggerAnimation, setTriggerAnimation] = useState(false);
@@ -43,43 +44,64 @@ export function MainSection(): JSX.Element {
             </p>
           </div>
           <div className="flex w-full gap-3 lg:w-fit flex-col lg:flex-row">
-            <button
-              onClick={handleButtonClick}
-              className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-            >
-              <Image
-                src="/docs-icon.svg"
-                alt="link icon"
-                width={20}
-                height={20}
-              />
-              <span className="text-nowrap">DAO</span>
-            </button>
-            <button
-              onClick={handleButtonClick}
-              className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-            >
-              <Image
-                src="/governance-icon.svg"
-                alt="link icon"
-                width={20}
-                height={20}
-              />
-              <span className="text-nowrap">DOCS</span>
-            </button>
-            <button
-              onClick={handleButtonClick}
-              className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-            >
-              <Image
-                src="/join-community.svg"
-                alt="link icon"
-                width={20}
-                height={20}
-              />
-              <span className="text-nowrap">JOIN COMMUNITY</span>
-            </button>
-            <Link href={'/about'}>
+            <Link href={links.governance}>
+              <button
+                onClick={handleButtonClick}
+                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+              >
+                <Image
+                  src="/governance-icon.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">DAO</span>
+              </button>
+            </Link>
+            <Link href={links.docs}>
+              <button
+                onClick={handleButtonClick}
+                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+              >
+                <Image
+                  src="/docs-icon.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">DOCS</span>
+              </button>
+            </Link>
+            <Link href={links.explorer}>
+              <button
+                onClick={handleButtonClick}
+                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+              >
+                <Image
+                  src="/view-more-icon.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">Scan</span>
+              </button>
+            </Link>
+            <Link href={links.discord}>
+              <button
+                onClick={handleButtonClick}
+                className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+              >
+                <Image
+                  src="/join-community.svg"
+                  alt="link icon"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-nowrap">JOIN COMMUNITY</span>
+              </button>
+            </Link>
+
+            <Link href={links.about}>
               <button
                 onClick={handleButtonClick}
                 className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
