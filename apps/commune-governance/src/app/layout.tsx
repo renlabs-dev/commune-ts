@@ -5,6 +5,7 @@ import { Providers } from "@commune-ts/providers/context";
 import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 import { Header, Footer, cairo, links } from "@commune-ts/ui"
 import { MobileHeaderContent } from './components/mobile-header-content'
+import { FooterDivider } from "./components/footer-divider";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -35,9 +36,10 @@ export default function RootLayout({
             ]}
           />
           {children}
+          <FooterDivider />
           <Footer />
-        </Providers>
-      </body>
+        </Providers >
+      </body >
     </html >
   );
 }

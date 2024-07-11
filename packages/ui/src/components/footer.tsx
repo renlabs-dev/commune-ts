@@ -3,45 +3,6 @@ import Link from "next/link";
 
 import { links } from "..";
 
-const socialList = [
-  {
-    name: "Discord",
-    href: links.discord,
-    icon: (
-      <Image
-        alt="Discord icon"
-        height={26}
-        src="/discord-icon.svg"
-        width={26}
-      />
-    ),
-  },
-  {
-    name: "X",
-    href: links.x,
-    icon: <Image alt="X icon" height={22} src="/x-icon.svg" width={22} />,
-  },
-  {
-    name: "GitHub",
-    href: links.github,
-    icon: (
-      <Image alt="Github icon" height={23} src="/github-icon.svg" width={23} />
-    ),
-  },
-  {
-    name: "Telegram",
-    href: links.telegram,
-    icon: (
-      <Image
-        alt="Telegram icon"
-        height={22}
-        src="/telegram-icon.svg"
-        width={22}
-      />
-    ),
-  },
-];
-
 export function Footer({ shouldBeFixed = false }): JSX.Element {
   return (
     <footer
@@ -80,3 +41,42 @@ export function Footer({ shouldBeFixed = false }): JSX.Element {
     </footer>
   );
 }
+
+const socialList = [
+  {
+    name: "Discord",
+    href: links.discord,
+    icon: (
+      <Image
+        alt="Discord icon"
+        height={26}
+        src="/discord-icon.svg"
+        width={26}
+      />
+    ),
+  },
+  {
+    name: "X",
+    href: links.x,
+    icon: <Image alt="X icon" height={22} src="/x-icon.svg" width={22} />,
+  },
+  {
+    name: "GitHub",
+    href: links.github,
+    icon: (
+      <Image alt="Github icon" height={23} src="/github-icon.svg" width={23} />
+    ),
+  },
+  {
+    name: "Telegram",
+    href: links.telegram,
+    icon: (
+      <Image
+        alt="Telegram icon"
+        height={22}
+        src="/telegram-icon.svg"
+        width={22}
+      />
+    ),
+  },
+];

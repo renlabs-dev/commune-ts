@@ -5,26 +5,27 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import type { InjectedAccountWithMeta } from "..";
 import type {
   Stake,
   TransactionResult,
   Transfer,
   TransferStake,
 } from "../../../subspace/types";
-import { cn, CopyButton, Loading, type InjectedAccountWithMeta, SelectWalletModal, WalletButton } from "..";
+import { cn, CopyButton, Loading, SelectWalletModal, WalletButton } from "..";
 import { copyToClipboard, formatToken } from "../../../subspace/utils";
 
 interface TWallet {
   handleWalletModal: (state?: boolean) => void;
   openWalletModal: boolean;
   stakeOut:
-  | {
-    total: bigint;
-    perAddr: Map<string, bigint>;
-    perNet: Map<number, bigint>;
-    perAddrPerNet: Map<number, Map<string, bigint>>;
-  }
-  | undefined;
+    | {
+        total: bigint;
+        perAddr: Map<string, bigint>;
+        perNet: Map<number, bigint>;
+        perAddrPerNet: Map<number, Map<string, bigint>>;
+      }
+    | undefined;
   balance: string;
   handleConnect: () => void;
   isInitialized: boolean;
@@ -346,8 +347,8 @@ export function Wallet(props: TWallet): ReactElement {
               <div className={cn("w-full")}>
                 <span className={cn("text-base")}>
                   {activeMenu === "stake" ||
-                    activeMenu === "transfer" ||
-                    activeMenu === "unstake" ? (
+                  activeMenu === "transfer" ||
+                  activeMenu === "unstake" ? (
                     <div
                       className={cn(
                         "flex flex-col items-end gap-3 md:flex-row",
@@ -376,8 +377,8 @@ export function Wallet(props: TWallet): ReactElement {
                   }}
                   placeholder={
                     activeMenu === "stake" ||
-                      activeMenu === "transfer" ||
-                      activeMenu === "unstake"
+                    activeMenu === "transfer" ||
+                    activeMenu === "unstake"
                       ? "The full address of the validator"
                       : "The full address of the recipient"
                   }
@@ -421,22 +422,22 @@ export function Wallet(props: TWallet): ReactElement {
               {(activeMenu === "stake" ||
                 activeMenu === "unstake" ||
                 activeMenu === "transfer") && (
-                  <div className={cn("w-full")}>
-                    <p className={cn("text-base")}>Net UID</p>
-                    <input
-                      className={cn(
-                        "w-full border border-gray-500 bg-black p-2 text-gray-400",
-                      )}
-                      disabled={transactionStatus.status === "PENDING"}
-                      onChange={(e) => {
-                        setNetUid(parseInt(e.target.value));
-                      }}
-                      placeholder="The net UID to use in the transaction"
-                      type="number"
-                      value={netUid}
-                    />
-                  </div>
-                )}
+                <div className={cn("w-full")}>
+                  <p className={cn("text-base")}>Net UID</p>
+                  <input
+                    className={cn(
+                      "w-full border border-gray-500 bg-black p-2 text-gray-400",
+                    )}
+                    disabled={transactionStatus.status === "PENDING"}
+                    onChange={(e) => {
+                      setNetUid(parseInt(e.target.value));
+                    }}
+                    placeholder="The net UID to use in the transaction"
+                    type="number"
+                    value={netUid}
+                  />
+                </div>
+              )}
               <button
                 className={cn(
                   "w-full border border-green-500 py-2 text-green-500",
