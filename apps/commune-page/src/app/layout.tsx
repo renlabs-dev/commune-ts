@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`relative bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
           <Header
@@ -39,7 +39,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
-          <Footer shouldBeFixed />
+          <Footer shouldBeFixed className="lg:block md:hidden" />
         </Providers>
       </body>
     </html>

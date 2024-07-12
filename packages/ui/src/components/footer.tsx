@@ -3,22 +3,15 @@ import Link from "next/link";
 
 import { links } from "..";
 
-export function Footer({ shouldBeFixed = false }): JSX.Element {
+export function Footer({ shouldBeFixed = false, className = "" }): JSX.Element {
   return (
     <footer
-      className={`${shouldBeFixed && "fixed"} bottom-0 hidden w-full animate-fade-up border-t border-white/20 bg-[#898989]/5 backdrop-blur-md animate-delay-700 md:block`}
+      className={`${shouldBeFixed && "fixed"} bottom-0 hidden w-full animate-fade-up border-t border-white/20 bg-[#898989]/5 backdrop-blur-md animate-delay-700 md:block ${className}`}
     >
       <div className="mx-auto max-w-screen-2xl">
         <div className="flex flex-col items-center justify-between gap-2 px-4 py-4 md:flex-row">
           <p className="hidden w-4/12 text-sm text-gray-400 lg:block">
-            Making decentralized AI for everyone. For blockchain data{" "}
-            <Link
-              className="text-green-500 hover:underline"
-              href="https://stats.communex.ai/"
-            >
-              visit explorer
-            </Link>
-            .
+            Making decentralized AI for everyone.
           </p>
 
           <div className="flex justify-center gap-6 md:w-4/12">

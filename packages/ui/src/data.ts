@@ -13,3 +13,31 @@ export const links = {
   landing_page: "https://communeai.org/",
   wallet: "https://wallet.communeai.org/",
 };
+
+export const landingPageButtons = [
+  {
+    href: links.governance,
+    name: "DAO",
+    icon: "/governance-icon.svg",
+  },
+  {
+    href: links.docs,
+    name: "DOCS",
+    icon: "/docs-icon.svg",
+  },
+  {
+    href: links.explorer,
+    name: "SCAN",
+    icon: "/view-more-icon.svg",
+  },
+  {
+    href: links.discord,
+    name: "JOIN COMMUNITY",
+    icon: "/join-community.svg",
+  },
+  {
+    href: links.about,
+    name: "ABOUT",
+    icon: "/arrow-link-icon.svg",
+  },
+];

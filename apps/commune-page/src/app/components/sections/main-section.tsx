@@ -5,10 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Animation from "../animation";
-import { links } from "@commune-ts/ui";
+import { links, landingPageButtons } from "@commune-ts/ui";
+import { ViewMoreModal } from "../view-more-modal";
 
 export function MainSection(): JSX.Element {
   const [triggerAnimation, setTriggerAnimation] = useState(false);
+  const [viewMoreIsVisible, setViewMoreIsVisible] = useState(false);
+
+  const handleModalVisibility = (visibility?: boolean) => {
+    setViewMoreIsVisible(visibility ?? !viewMoreIsVisible)
+  }
 
   const handleButtonClick = () => {
     setTriggerAnimation(!triggerAnimation);
@@ -20,7 +26,7 @@ export function MainSection(): JSX.Element {
       >
         <Animation />
       </div>
-      <div className="flex h-full w-full max-w-screen-2xl flex-col mt-4 lg:mt-0">
+      <div className={`h-full w-full max-w-screen-2xl flex-col mt-4 lg:mt-0 ${viewMoreIsVisible ? 'hidden' : 'flex'}`}>
         <div className="flex h-full min-h-[85svh] w-full flex-col justify-end gap-6 px-4 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
             <p className="animate-fade-right font-medium animate-delay-200 md:text-xl">
@@ -43,53 +49,29 @@ export function MainSection(): JSX.Element {
               Only code and contributors.
             </p>
           </div>
-          <div className="flex w-full gap-3 lg:w-fit flex-col lg:flex-row">
-            <Link href={links.governance}>
-              <button
-                onClick={handleButtonClick}
-                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-              >
-                <Image
-                  src="/governance-icon.svg"
-                  alt="link icon"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-nowrap">DAO</span>
-              </button>
-            </Link>
-            <Link href={links.docs}>
-              <button
-                onClick={handleButtonClick}
-                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-              >
-                <Image
-                  src="/docs-icon.svg"
-                  alt="link icon"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-nowrap">DOCS</span>
-              </button>
-            </Link>
-            <Link href={links.explorer}>
-              <button
-                onClick={handleButtonClick}
-                className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-              >
-                <Image
-                  src="/view-more-icon.svg"
-                  alt="link icon"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-nowrap">Scan</span>
-              </button>
-            </Link>
+          <div className={"flex w-full gap-3 lg:w-fit flex-col lg:flex-row"}>
+            {landingPageButtons.map((pageButton) => {
+              return (
+                <Link href={pageButton.href}>
+                  <button
+                    onClick={handleButtonClick}
+                    className="hidden relative lg:inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+                  >
+                    <Image
+                      src={pageButton.icon}
+                      alt="link icon"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-nowrap">{pageButton.name}</span>
+                  </button>
+                </Link>
+              )
+            })}
             <Link href={links.discord}>
               <button
                 onClick={handleButtonClick}
-                className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+                className=" lg:hidden relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
               >
                 <Image
                   src="/join-community.svg"
@@ -101,23 +83,22 @@ export function MainSection(): JSX.Element {
               </button>
             </Link>
 
-            <Link href={links.about}>
-              <button
-                onClick={handleButtonClick}
-                className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
-              >
-                <Image
-                  src="/view-more.svg"
-                  alt="link icon"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-nowrap">VIEW MORE</span>
-              </button>
-            </Link>
+            <button
+              onClick={() => handleModalVisibility(true)}
+              className="lg:hidden relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:w-fit"
+            >
+              <Image
+                src="/view-more.svg"
+                alt="link icon"
+                width={20}
+                height={20}
+              />
+              <span className="text-nowrap">VIEW MORE</span>
+            </button>
           </div>
         </div>
       </div>
+      <ViewMoreModal viewMoreIsVisible={viewMoreIsVisible} handleModalVisibility={handleModalVisibility} />
     </div>
   );
 }
