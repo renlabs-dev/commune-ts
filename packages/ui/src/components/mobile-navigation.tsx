@@ -40,7 +40,7 @@ export function MobileNavigation(props: MobileNavigationProps) {
   ];
 
   return (
-    <div>
+    <div className={cn("z-50")}>
       <button
         type="button"
         className={cn(
