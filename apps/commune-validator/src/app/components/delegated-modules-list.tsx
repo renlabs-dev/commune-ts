@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { smallAddress } from "@commune-ts/providers/utils";
 
 import { useDelegateStore } from "~/stores/delegateStore";
 import { api } from "~/trpc/react";
@@ -60,54 +61,67 @@ export function DelegatedModulesList() {
   };
 
   return (
-    <div className="absolute bottom-0 right-0 mb-24 mr-4 mt-8 border border-white/20 bg-[#898989]/5 p-2 backdrop-blur-md">
-      <h2 className="mb-4 text-xl font-semibold text-white">
-        Delegated Modules
-      </h2>
-      {delegatedModules.map((module) => (
-        <div
-          key={module.id}
-          className="mb-2 flex items-center justify-between border border-white/20 bg-[#898989]/5 p-2"
-        >
-          <span className="text-white">{module.title}</span>
-          <div className="flex items-center">
-            <input
-              type="number"
-              value={module.percentage}
-              onChange={(e) =>
-                handlePercentageChange(module.id, Number(e.target.value))
-              }
-              className="mr-2 w-16 bg-[#898989]/10 p-1 text-white"
-              min="0"
-              max="100"
-            />
-            <span className="mr-2 text-white">%</span>
-            <button
-              onClick={() => removeModule(module.id)}
-              className="text-red-500 hover:text-red-400"
+    <>
+      {selectedAccount?.address && delegatedModules.length > 0 && (
+        <div className="absolute bottom-0 right-0 mb-24 mr-4 mt-8 animate-fade-up border border-white/20 bg-[#898989]/5 p-2 backdrop-blur-md">
+          <h2 className="mb-4 text-xl font-semibold text-white">
+            Delegated Modules
+          </h2>
+          {delegatedModules.map((module) => (
+            <div
+              key={module.id}
+              className="mb-2 flex animate-fade-up items-center justify-between gap-12 border border-white/20 bg-[#898989]/5 p-2 animate-delay-100"
             >
-              Remove
-            </button>
+              <div className="flex flex-col">
+                <span className="font-semibold text-gray-400">
+                  {module.title}
+                </span>
+                <span className="text-white">
+                  {smallAddress(module.address)}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="number"
+                  value={module.percentage}
+                  onChange={(e) =>
+                    handlePercentageChange(module.id, Number(e.target.value))
+                  }
+                  className="mr-2 w-16 bg-[#898989]/10 p-1 text-white"
+                  min="0"
+                  max="100"
+                />
+                <span className="mr-2 text-white">%</span>
+                <button
+                  onClick={() => removeModule(module.id)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+          <div className="mt-4 animate-fade-up text-white animate-delay-200">
+            Total Percentage: {totalPercentage}%
+            {totalPercentage !== 100 && (
+              <span className="ml-2 text-red-500">
+                {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
+              </span>
+            )}
           </div>
+          <button
+            onClick={handleSubmit}
+            className="w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 hover:border-green-500 hover:bg-green-500/10"
+            disabled={
+              isSubmitting ||
+              totalPercentage !== 100 ||
+              !selectedAccount.address
+            }
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </button>
         </div>
-      ))}
-      <div className="mt-4 text-white">
-        Total Percentage: {totalPercentage}%
-        {totalPercentage !== 100 && (
-          <span className="ml-2 text-red-500">
-            {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
-          </span>
-        )}
-      </div>
-      <button
-        onClick={handleSubmit}
-        className="mt-4 bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:opacity-50"
-        disabled={
-          isSubmitting || totalPercentage !== 100 || !selectedAccount?.address
-        }
-      >
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </button>
-    </div>
+      )}
+    </>
   );
 }
