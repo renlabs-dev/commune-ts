@@ -13,15 +13,17 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -f ../../.env run --",
+    "with-env": "dotenv -e ../../.env --",
     "start": "pnpm with-env tsx ./src/index.ts"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/subspace": "workspace:*",
+    "@commune-ts/db": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
     "@polkadot/api-augment": "^11.1.1",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8.0.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.1",
