@@ -1,50 +1,86 @@
 import { WsProvider } from "@polkadot/api";
 import { queryLastBlock, ApiPromise, queryRegisteredModulesInfo } from '@commune-ts/subspace/queries';
-import { Codec, isSS58, type LastBlock } from "@commune-ts/subspace/types";
+import { Codec, isSS58, SubspaceModule, type LastBlock } from "@commune-ts/subspace/types";
 import { SQL, PgTable, getTableColumns, sql } from '@commune-ts/db';
 import { db } from '@commune-ts/db/client';
 import { moduleData } from '@commune-ts/db/schema';
 
 
-const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-console.log("Connecting to ", wsEndpoint);
+function log(...args: any[]) {
+    const [first, ...rest] = args;
+    console.log(`[${new Date().toISOString()}] ${first}`, ...rest);
+}
 
-const provider = new WsProvider(wsEndpoint);
-const api = await ApiPromise.create({ provider });
+const NETUID_ZERO = 0;
 
-const lastBlock: LastBlock = await queryLastBlock(api);
+async function setup(): Promise<ApiPromise> {
+    const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL
+
+    log("Connecting to ", wsEndpoint);
+
+    const provider = new WsProvider(wsEndpoint);
+    const api = await ApiPromise.create({ provider });
+
+    return api;
+}
 
 async function main () {
-    const NETUID_ZERO = 0;
+    const api = await setup();
 
-    const results = await queryRegisteredModulesInfo(lastBlock.apiAtBlock, [
-        "name",
-        "address",
-        "metadata",
-        "registrationBlock",
-    ], [NETUID_ZERO]);
+    let lastBlockNumber: number = -1;
+    let lastBlock: LastBlock;
 
-    console.log(`Block ${lastBlock.blockNumber}: ${results.length} modules registered`);
+    while (true) {
+        try {
+            const currentTime = new Date();
+            lastBlock = await queryLastBlock(api);
+            if (lastBlock.blockNumber === lastBlockNumber) {
+                log(`Block ${lastBlock.blockNumber} already processed, skipping`);
+                await sleep(1000);
+                continue;
+            }
+            lastBlockNumber = lastBlock.blockNumber;
 
-    await db.transaction(async (db) => {
-        await db.insert(moduleData).values(results.map(m => ({
-            netuid: m.netuid,
-            moduleKey: m.key,
-            name: m.name,
-            atBlock: lastBlock.blockNumber,
-            addressUri: m.address,
-            metadataUri: m.metadata,
-            registrationBlock: m.registrationBlock
-        }))).onConflictDoUpdate({
-            target: [moduleData.netuid, moduleData.moduleKey],
-            set: buildConflictUpdateColumns(moduleData, ["atBlock", "addressUri", "metadataUri", "registrationBlock", "name"])
-        }).execute();
-    });
-  }
-  
-  main().catch(console.error).finally(() => process.exit());
+            log(`Block ${lastBlock.blockNumber}: processing`);
 
+            const modules = await queryRegisteredModulesInfo(lastBlock.apiAtBlock, [
+                "name",
+                "address",
+                "metadata",
+                "registrationBlock",
+            ], [NETUID_ZERO]);
+
+            log(`Block ${lastBlock.blockNumber}: upserting  ${modules.length} modules`)
+
+            await upsertModuleData(modules, lastBlock.blockNumber);
+
+            log(`Block ${lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime())/1000} seconds`);
+        } catch (e) {
+            log("UNEXPECTED ERROR: ", e);
+            await sleep(1000);
+            continue;
+        }
+    }
+}
+
+async function upsertModuleData(modules: SubspaceModule[], atBlock: number) {
+    await db.insert(moduleData).values(modules.map(m => ({
+        netuid: m.netuid,
+        moduleKey: m.key,
+        name: m.name,
+        atBlock,
+        addressUri: m.address,
+        metadataUri: m.metadata,
+        registrationBlock: m.registrationBlock
+    }))).onConflictDoUpdate({
+        target: [moduleData.netuid, moduleData.moduleKey],
+        set: buildConflictUpdateColumns(moduleData, ["atBlock", "addressUri", "metadataUri", "registrationBlock", "name"])
+    }).execute();
+}
 
 // util for upsert https://orm.drizzle.team/learn/guides/upsert#postgresql-and-sqlite
 function buildConflictUpdateColumns<T extends PgTable, Q extends keyof T['_']['columns']>(
@@ -58,3 +94,5 @@ function buildConflictUpdateColumns<T extends PgTable, Q extends keyof T['_']['c
     return acc;
     }, {} as Record<Q, SQL>);
 };
+
+main().catch(console.error).finally(() => process.exit());
