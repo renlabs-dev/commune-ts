@@ -2,9 +2,8 @@ import "@polkadot/api-augment";
 
 import { ApiPromise } from "@polkadot/api";
 
-import { Api, isSS58, LastBlock, SS58Address, SubspaceModuleProperty, SubspaceModule } from "../types";
-import { handleDaos, handleProposals } from "../utils";
-import { assert } from "console";
+import { Api, isSS58, LastBlock, SS58Address, SubspaceModule, SUBSPACE_MODULE_SCHEMA, OptionalProperties, subspacePropResolvers, modulePropResolvers, StorageEntry, newSubstrateModule } from "../types";
+import { assertOrThrow, handleDaos, handleProposals } from "../utils";
 
 export { ApiPromise };
 
@@ -89,8 +88,6 @@ export async function queryStakeOut(api: Api) {
 
   for (const [keyRaw, valueRaw] of stakeToQuery) {
     const [netuidRaw, fromAddrRaw] = keyRaw.args;
-    assert(netuidRaw, "netuidRaw is defined");
-    assert(fromAddrRaw, "fromAddrRaw is defined");
     const netuid = netuidRaw!.toPrimitive() as number;
     const fromAddr = fromAddrRaw!.toString();
 
@@ -100,7 +97,6 @@ export async function queryStakeOut(api: Api) {
     >;
 
     for (const moduleKey in stakeToMapForKey) {
-      assert(stakeToMapForKey[moduleKey], "stakeToMapForKey[moduleKey] is defined");
       const staked = BigInt(stakeToMapForKey[moduleKey]!);
 
       total += staked;
@@ -121,30 +117,138 @@ export async function queryStakeOut(api: Api) {
   };
 }
 
-// === validators ===
+// === modules ===
 
-export async function queryRegisteredModulesInfo<P extends SubspaceModuleProperty>(api: Api, props: P[]): Promise<Pick<SubspaceModule, P | 'uid'>[]> {
-  const result = (await Promise.all(props.map(async (prop) => {
-    const values = await api.query.subspaceModule![prop]?.entriesPaged({pageSize: 256, args: []});
-    // const values = await api.query.subspaceModule![prop]?.entries();
-    console.log(values?.length);
-    return [prop, values] as const;
-  }))).reduce((acc, [prop, values]) => {
-    acc[prop] = values!;
-    return acc;
-  }, {} as Record<P, SubspaceModule[P][]>);
+/**
+ * @param api 
+ * @param extraProps if empty, only the required properties are returned (netuid, uid, key)
+ * @param netuidWhitelist if empty, modules from all subnets are returned
+ */
+export async function queryRegisteredModulesInfo<P extends OptionalProperties<SubspaceModule>>(
+  api: Api,
+  extraProps: P[] = [],
+  netuidWhitelist?: number[]
+): Promise<SubspaceModule[]> {
+  netuidWhitelist = netuidWhitelist?.length ? Array.from(new Set(netuidWhitelist)) : undefined;
 
-  const registeredModules = [];
+  console.log("Fetching module keys from the chain...")
 
-  for (let i = 0; i < result['keys'].length; i++) {
-    const module = { uid: i } as Pick<SubspaceModule, P | 'uid'>;
-    for (const prop of props) {
-      module[prop] = result[prop][i]!;
-    }
-    registeredModules.push(module);
+  const keyEntries = (await api.query.subspaceModule!.keys!.entries()).map(
+    (entry) => new StorageEntry(entry)
+  ).filter(
+    (entry: StorageEntry) => !netuidWhitelist || netuidWhitelist.includes(entry.netuid)
+  );
+
+  console.log(`Fetched ${keyEntries.length} module keys`);
+
+  const modulesMap = newSubstrateModuleMap(keyEntries.map(newSubstrateModule));
+
+  await enrichSubspaceModules(api, modulesMap, extraProps, netuidWhitelist);
+
+  console.log("modules per netuid:")
+  for (const [netuid, map] of modulesMap) {
+    console.log(`netuid ${netuid}: ${map.size} modules`);
   }
 
-  return registeredModules;
+  const modules = Array.from(modulesMap.values()).flatMap((map) => Array.from(map.values()));
+
+  return modules
+    .map(m => SUBSPACE_MODULE_SCHEMA.safeParse(m))
+    .filter((parsed) => parsed.success || console.error("UNEXPECTED ERROR: ", parsed.error))
+    .map((parsed) => parsed.data!);
 }
 
-// const a = await queryRegisteredModulesInfo({} as any, ["Name", "Address"])
+/**
+ * enriches the modules fetching the properties in `props`
+ * 
+ * @returns the same moduleMap passed as argument
+ */
+async function enrichSubspaceModules<P extends OptionalProperties<SubspaceModule>>(
+  api: Api,
+  moduleMap: Map<number, Map<SS58Address, SubspaceModule>>,
+  props: P[],
+  netuidWhitelist?: number[] | undefined
+): Promise<Map<number, Map<SS58Address, SubspaceModule>>> {
+  if (props.length === 0) {
+    return moduleMap;
+  }
+  props = Array.from(new Set(props));
+
+  const uidKeyMap = newUidKeyMap(moduleMap);
+
+  await Promise.all(props.map(async (prop) => {
+    console.log(`Fetching "${prop}" entries...`);
+    const entries = (await api.query.subspaceModule?.[prop]?.entries())?.map(
+      (entry) => new StorageEntry(entry)
+    ).filter(
+      (entry: StorageEntry) => !netuidWhitelist || netuidWhitelist.includes(entry.netuid)
+    );
+
+    assertOrThrow(Array.isArray(entries), `entries of "${prop}" is an array`);
+
+    console.log(`Fetched ${entries?.length} "${prop}" entries`);
+
+    for (const entry of entries) {
+      const netuid = entry.netuid;
+      const key = entry.resolveKey(uidKeyMap);
+
+      const module = moduleMap.get(netuid)?.get(key);
+
+      if (!module) {
+        console.info(`UNEXPECT: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`);
+        continue;
+      }
+
+      const parsedValue = modulePropResolvers[prop](entry.value);
+
+      if (!parsedValue.success) {
+        console.error(`Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`);
+        console.error(parsedValue.error);
+        continue;
+      }
+
+      module[prop] = parsedValue.data;
+    }
+  }));
+
+  return moduleMap;
+}
+
+/**
+ * maps netuid -> uid -> key
+ */
+function newUidKeyMap(moduleMap: Map<number, Map<SS58Address, SubspaceModule>>): Map<number, Map<number, SS58Address>> {
+  const uidKeyMap = new Map<number, Map<number, SS58Address>>();
+
+  for (const [netuid, keyMap] of moduleMap) {
+    if (!uidKeyMap.has(netuid)) {
+      uidKeyMap.set(netuid, new Map());
+    }
+
+    for (const [key, module] of keyMap) {
+      uidKeyMap.get(netuid)!.set(module.uid, key);
+    }
+  }
+
+  return uidKeyMap;
+}
+
+/**
+ * maps netuid -> key -> SubspaceModule
+ */
+function newSubstrateModuleMap(
+  subspaceModules: SubspaceModule[]
+): Map<number, Map<SS58Address, SubspaceModule>> {
+  const moduleMap = new Map<number, Map<SS58Address, SubspaceModule>>();
+
+  for (const module of subspaceModules) {
+    if (!moduleMap.has(module.netuid)) {
+      moduleMap.set(module.netuid, new Map());
+    }
+
+    moduleMap.get(module.netuid)!.set(module.key, module);
+  }
+
+  return moduleMap;
+}
+
