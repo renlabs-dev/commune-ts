@@ -1,8 +1,28 @@
 {
-  "extends": "@commune-ts/tsconfig/internal-package.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "incremental": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
   },
-  "include": ["src"],
   "exclude": [
     "node_modules",
     "build",
