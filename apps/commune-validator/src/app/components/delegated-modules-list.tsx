@@ -15,6 +15,7 @@ export function DelegatedModulesList() {
     updatePercentage,
     removeModule,
     getTotalPercentage,
+    clearStorage,
   } = useDelegateStore();
   const totalPercentage = getTotalPercentage();
   const { selectedAccount } = useCommune();
@@ -57,6 +58,7 @@ export function DelegatedModulesList() {
       console.error("Error submitting data:", error);
     } finally {
       setIsSubmitting(false);
+      clearStorage();
     }
   };
 
