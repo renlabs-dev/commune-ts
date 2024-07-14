@@ -25,27 +25,33 @@ export const createTable = pgTableCreator((name) => `${name}`);
  */
 export const moduleData = createTable("module_data", {
   id: serial("id").primaryKey(),
-  moduleKey: ss58Address("module_key").notNull(),
 
   netuid: integer("netuid").notNull(),
-  metadataUri: text("metadata_uri"),
+  moduleKey: ss58Address("module_key").notNull(),
 
   atBlock: integer("at_block").notNull(),
-  registrationBlock: integer("registration_block"),
 
-  emission: bigint("total_staked", { mode: "bigint" }),
-  incentive: bigint("total_staked", { mode: "bigint" }),
-  dividend: bigint("total_staked", { mode: "bigint" }),
+  name: text("name"),
+
+  registrationBlock: integer("registration_block"),
+  addressUri: text("address_uri"),
+  metadataUri: text("metadata_uri"),
+
+  emission: bigint("emission", { mode: "bigint" }),
+  incentive: bigint("incentive", { mode: "bigint" }),
+  dividend: bigint("dividend", { mode: "bigint" }),
   delegationFee: integer("delegation_fee"),
 
   totalStaked: bigint("total_staked", { mode: "bigint" }),
   totalStakers: integer("total_stakers"),
-  totalRewards: bigint("total_staked", { mode: "bigint" }),
-  
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => sql`now()`),
-  deletedAt: timestamp("deleted_at").default(sql`NULL`),
-});
+  totalRewards: bigint("total_rewards", { mode: "bigint" }),
+
+  createdAt: timestamp("created_at", {withTimezone: true, mode: "date"}).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", {withTimezone: true, mode: "date"}).defaultNow().notNull().$onUpdateFn(() => new Date()),
+  deletedAt: timestamp("deleted_at", {withTimezone: true, mode: "date"}).default(null),
+}, (t) => ({
+  unq: unique().on(t.netuid, t.moduleKey),
+}),);
 
 /**
  * Data for the relation a user have with a specific module.
@@ -56,20 +62,20 @@ export const userModuleData = createTable(
   {
     id: serial("id").primaryKey(),
     userKey: ss58Address("user_key").notNull(),
-    moduleKey: ss58Address("module_key")
-      .references(() => moduleData.moduleKey)
+    moduleId: integer("module_id")
+      .references(() => moduleData.id)
       .notNull(),
     weight: integer("weight").default(0).notNull(),
   },
   (t) => ({
-    unq: unique().on(t.userKey, t.moduleKey),
+    unq: unique().on(t.userKey, t.moduleId),
   }),
 );
 
 export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
   userKey: z.string(),
-  moduleKey: z.string(),
-  weight: z.number(),
+  moduleId: z.number().int(),
+  weight: z.number().positive(),
 }).omit({
   id: true,
 });
@@ -89,8 +95,8 @@ export enum ReportReason {
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key"),
-  moduleKey: ss58Address("module_key")
-    .references(() => moduleData.moduleKey)
+  moduleId: integer("module_id")
+    .references(() => moduleData.id)
     .notNull(),
   content: text("content"),
   reason: varchar("reason", { length: 16 }),
@@ -99,7 +105,7 @@ export const moduleReport = createTable("module_report", {
 
 export const moduleReportPostSchema = createInsertSchema(moduleReport, {
   userKey: z.string(),
-  moduleKey: z.string(),
+  moduleId: z.number().int(),
   content: z.string(),
   reason: z.string(),
 }).omit({
