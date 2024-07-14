@@ -15,7 +15,7 @@
     "dev:governance": "turbo watch dev -F commune-governance",
     "dev:page": "turbo watch dev -F commune-page",
     "dev:validator": "turbo watch dev -F commune-validator",
-    "dev:commune-worker": "turbo watch dev -F commune-worker",
+    "dev:comrads-worker": "turbo watch dev -F comrads-worker",
     "dev:roadmap": "turbo watch dev -F communex-roadmap",
     "dev:api": "turbo watch dev -F @commune-ts/api",
     "dev:db": "turbo watch dev -F @commune-ts/db",
