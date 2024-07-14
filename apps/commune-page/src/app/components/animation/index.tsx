@@ -28,8 +28,8 @@ function CreateAnimation({ container }: { container: HTMLElement }) {
   const object = {
     tubeRadius: 4,
     torusRadius: 4.5,
-    radialSegments: 27,
-    tabularSegments: 56,
+    radialSegments: 30,
+    tabularSegments: 60,
     yPosition: 2.5,
   };
 
@@ -59,7 +59,8 @@ function CreateAnimation({ container }: { container: HTMLElement }) {
     objectsGroup = new THREE.Group();
     objectsGroup.add(points);
     objectsGroup.add(lines);
-    objectsGroup.rotation.x = -Math.PI * 0.35;
+    objectsGroup.rotation.x =
+      -Math.PI * (window.innerWidth <= 768 ? 0.25 : 0.35);
     objectsGroup.position.y = window.innerWidth <= 768 ? 7.5 : 2.5;
     scene.add(objectsGroup);
   }
@@ -284,6 +285,7 @@ function CreateAnimation({ container }: { container: HTMLElement }) {
     controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.enableZoom = false;
+    controls.enableRotate = false;
   }
 
   function onWindowResize() {
