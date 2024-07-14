@@ -1,6 +1,6 @@
 import type { ApiDecoration } from "@polkadot/api/types";
 import type { Header } from "@polkadot/types/interfaces";
-import type { Codec, IU8a } from "@polkadot/types/types";
+import type { AnyTuple, Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
 import type { Extends } from "tsafe";
 import { ApiPromise } from "@polkadot/api";
@@ -8,6 +8,8 @@ import { decodeAddress } from "@polkadot/util-crypto";
 import { assert } from "tsafe";
 import { z } from "zod";
 import { Variant } from "rustie/dist/enum";
+import { StorageKey } from "@polkadot/types";
+import { assertOrThrow } from "../utils";
 
 export type { Codec } from "@polkadot/types/types";
 
@@ -372,22 +374,72 @@ export const paramNameToDisplayName = (paramName: string): string => {
   return PARAM_FIELD_DISPLAY_NAMES[paramName as keyof typeof PARAM_FIELD_DISPLAY_NAMES] ?? paramName;
 };
 
-export type SubspaceModuleProperty =
-  | "stakeFrom"
-  | "keys"
-  | "name"
-  | "address"
-  | "registrationBlock"
-  | 'delegationFee'
-  | 'emission'
-  | 'incentive'
-  | "dividends"
-  | 'lastUpdate'
-  | "metadata"
+export const SUBSPACE_MODULE_NAME_SCHEMA = z.string();
+export const SUBSPACE_MODULE_ADDRESS_SCHEMA = z.string();
+export const SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA = z.number();
+export const SUBSPACE_MODULE_METADATA_SCHEMA = z.string(); // TODO: validate it's a valid ipfs hash or something (?)
+export const SUBSPACE_MODULE_LAST_UPDATE_SCHEMA = z.any();
 
-type SubspaceModulePropertieValue<T extends SubspaceModuleProperty> = Awaited<ReturnType<ApiPromise['query']['subspaceModule'][T]['entries']>>[number]
+export const SUBSPACE_MODULE_SCHEMA = z.object({
+  netuid: z.number(),
+  key: ADDRESS_SCHEMA,
+  uid: z.number(),
+  name: SUBSPACE_MODULE_NAME_SCHEMA.optional(),
+  address: SUBSPACE_MODULE_ADDRESS_SCHEMA.optional(),
+  registrationBlock: SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.optional(),
+  metadata: SUBSPACE_MODULE_METADATA_SCHEMA.optional(),
+  lastUpdate: SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.optional(),
+});
+
+export interface SubspaceModule extends z.infer<typeof SUBSPACE_MODULE_SCHEMA> {};
 
 
-export type SubspaceModule = {uid: number} & {
-  [K in SubspaceModuleProperty]: SubspaceModulePropertieValue<K>
+export type OptionalProperties<T> = keyof T extends infer K ? K extends keyof T ? T[K] extends infer U ? U extends undefined ? K : never : never : never : never;
+
+export const modulePropResolvers: { [P in OptionalProperties<SubspaceModule>]: (value: Codec) => z.SafeParseReturnType<any, SubspaceModule[P]> } = {
+  name: (value: Codec) => SUBSPACE_MODULE_NAME_SCHEMA.safeParse(value.toPrimitive()),
+  address: (value: Codec) => SUBSPACE_MODULE_ADDRESS_SCHEMA.safeParse(value.toPrimitive()),
+  registrationBlock: (value: Codec) => SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.safeParse(value.toPrimitive()),
+  lastUpdate: (value: Codec) => SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.safeParse(value.toPrimitive()), // not really working right now (Cannot read properties of undefined (reading 'toPrimitive'))
+  metadata: (value: Codec) => SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
+}
+
+export class StorageEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
+
+  get netuid(): number {
+    return this.entry[0].args[0]!.toPrimitive() as number;
+  }
+
+  get uidOrKey(): string | number {
+    return this.entry[0].args[1]!.toPrimitive() as string | number;
+  }
+
+  get value(): Codec {
+    return this.entry[1] as Codec;
+  }
+
+  /**
+   * as the module identifier can be a uid or a key, this function resolves it to a key
+   */
+  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
+    const isUid = typeof this.uidOrKey === 'number';
+
+    const key = isUid ? uidKeyMap.get(this.netuid)!.get(this.uidOrKey)! : this.uidOrKey;
+
+    assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
+
+    return key;
+  }
+}
+
+// the value of a "keys" entry is a codec that holds a ss58 address
+export function newSubstrateModule(keyEntry: StorageEntry): SubspaceModule {
+  const key = keyEntry.value.toPrimitive() as SS58Address;
+
+  return SUBSPACE_MODULE_SCHEMA.parse({
+    uid: keyEntry.uidOrKey as number,
+    netuid: keyEntry.netuid,
+    key
+  });
 }
