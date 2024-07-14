@@ -8,6 +8,15 @@ import type {
   RawEntry,
 } from "../types";
 import { parseDaos, parseProposal, URL_SCHEMA } from "../types";
+import { AssertionError } from "tsafe";
+
+// == assertion ==
+
+export function assertOrThrow(condition: any, message: string): asserts condition {
+  if (!condition) {
+    throw new AssertionError(message);
+  }
+}
 
 // == Calc ==
 
