@@ -1,12 +1,16 @@
 import {
-  ShareIcon,
-  SquaresPlusIcon,
-  GlobeAltIcon,
-  ServerStackIcon,
+  ChartBarIcon,
   CircleStackIcon,
+  CubeIcon,
   GiftTopIcon,
   ScaleIcon,
+  ServerStackIcon,
+  ShareIcon,
   ShieldCheckIcon,
+  SignalIcon,
+  SparklesIcon,
+  SquaresPlusIcon,
+  UsersIcon,
 } from "@heroicons/react/20/solid";
 
 export const sections = [
@@ -28,7 +32,6 @@ export const sections = [
       },
     ],
   },
-
   {
     sectionName: "parallel",
     title: "Parallel",
@@ -37,7 +40,7 @@ export const sections = [
     features: [
       {
         description:
-          "Subnets and other economic applications run and scale in parallel, allowing to host highly specialized and complimentary mechanisms.",
+          "Subnets and other economic applications run and scale in parallel, allowing to host highly specialized and complimentary mechanisms",
         icon: ServerStackIcon,
       },
     ],
@@ -46,72 +49,68 @@ export const sections = [
     sectionName: "offchain",
     title: "Offchain",
     subtitle: "Any mechanism on any compute",
-    iconSrc: "/scalability-icon.svg",
+    iconSrc: "/tokenomics-icon.svg",
     features: [
       {
         description:
           "The blockchain is only responsible for the economic information. all mechanisms and applications build on Commune run offchain without constraints.",
-        icon: ServerStackIcon,
+        icon: CircleStackIcon,
       },
       {
-        description: `This allows subnets and applications to be arbitrarily complex and computationally expensive, without facing blockchain limitations.`,
-        icon: GlobeAltIcon,
+        description:
+          "This allows subnets and applications to be arbitrarily complex and computationally expensive, without facing blockchain limitations.",
+        icon: SparklesIcon,
       },
     ],
   },
   {
     sectionName: "decentralized",
     title: "Decentralized",
-    subtitle: "Any mechanism on any compute",
-    iconSrc: "/scalability-icon.svg",
+    subtitle: `No foundation, only DAO`,
+    iconSrc: "/validators-icon.svg",
     features: [
       {
-        description:
-          "All changes to Commune are decided collectively by the DAO. No central authority has full control over the Protocol.",
-        icon: ServerStackIcon,
+        description: `All changes to Commune are decided collectively by the DAO. No central authority has full control over the Protocol.`,
+        icon: ShieldCheckIcon,
       },
       {
         description: `DAO participation is incentivized to motivate holders to take part in deciding their destiny.`,
-        icon: GlobeAltIcon,
+        icon: ScaleIcon,
       },
     ],
   },
   {
-    sectionName: "bottomup",
+    sectionName: "bottom-up",
     title: "Bottom up",
-    subtitle: "Any mechanism on any compute",
-    iconSrc: "/scalability-icon.svg",
+    subtitle: `No central team`,
+    iconSrc: "/validators-icon.svg",
     features: [
       {
-        description:
-          "There was never any bureaucracy or rigid hierarchy, Commune was birthed out of cypherpunk ideals.",
-        icon: ServerStackIcon,
+        description: `There was never any bureaucracy or rigid hierarchy, Commune was birthed out of cypherpunk ideals.`,
+        icon: SignalIcon,
       },
       {
-        description: `Anyone can become a core contributor and grow to wield big impact. Ideas efficiently rise from the bottom up to implementation. `,
-        icon: GlobeAltIcon,
+        description: `Anyone can become a core contributor and grow to wield big impact. Ideas efficiently rise from the bottom up to implementation.`,
+        icon: UsersIcon,
       },
     ],
   },
   {
     sectionName: "tokenomics",
     title: "Tokenomics",
-    subtitle: "No Premine, Meritocratic Distribution",
+    subtitle: `Premine`,
     iconSrc: "/tokenomics-icon.svg",
     features: [
       {
-        description:
-          "Commune is continuously optimizing the allocation of emissions to create positive sum competitions.",
-        icon: CircleStackIcon,
+        description: `Commune is continuously optimizing the allocation of emissions to create positive sum competitions.`,
+        icon: ChartBarIcon,
       },
       {
-        description:
-          "The current standard framework is a 50/50 reward split between miners and validators. miners compete to optimize or solve what validators define. validators evaluate the performance of miners.",
-        icon: GiftTopIcon,
+        description: `The current standard framework is a 50/50 reward split between miners and validators. miners compete to optimize or solve what validators define. validators evaluate the performance of miners.`,
+        icon: CubeIcon,
       },
       {
-        description:
-          "Rewards are distributed every 100 blocks, with a block time of 8 seconds.",
+        description: `Rewards are distributed every 100 blocks, with a block time of 8 seconds.`,
         icon: GiftTopIcon,
       },
     ],
