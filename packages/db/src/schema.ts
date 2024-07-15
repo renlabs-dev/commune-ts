@@ -74,19 +74,19 @@ export const userModuleData = createTable(
   {
     id: serial("id").primaryKey(),
     userKey: ss58Address("user_key").notNull(),
-    moduleId: integer("module_id")
+    moduleKey: ss58Address("module_key")
       .references(() => moduleData.id)
       .notNull(),
     weight: integer("weight").default(0).notNull(),
   },
   (t) => ({
-    unq: unique().on(t.userKey, t.moduleId),
+    unq: unique().on(t.userKey, t.moduleKey),
   }),
 );
 
 export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
   userKey: z.string(),
-  moduleId: z.number().int(),
+  moduleKey: z.string(),
   weight: z.number().positive(),
 }).omit({
   id: true,
@@ -106,7 +106,7 @@ export enum ReportReason {
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key"),
-  moduleId: integer("module_id")
+  moduleKey: integer("module_key")
     .references(() => moduleData.id)
     .notNull(),
   content: text("content"),
@@ -116,7 +116,7 @@ export const moduleReport = createTable("module_report", {
 
 export const moduleReportPostSchema = createInsertSchema(moduleReport, {
   userKey: z.string(),
-  moduleId: z.number().int(),
+  moduleKey: z.number().int(),
   content: z.string(),
   reason: z.string(),
 }).omit({

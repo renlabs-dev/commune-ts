@@ -1,41 +1,41 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import "@polkadot/api-augment";
 
 type SS58Address = string;
 
-
-
 // ----------------------------------- retrieve weights -----------------------------------
 
-async function getUserWeightMap(db: Db ) {
-  const result = await db
-    .select({
-      userKey: userModuleData.userKey,
-      moduleKey: userModuleData.moduleKey,
-      weight: userModuleData.weight,
-    })
-    .from(moduleData)
-    .where(
-      eq(
-        moduleData.atBlock,
-        sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
-      ),
-    )
-    .innerJoin(
-      userModuleData,
-      eq(moduleData.moduleKey, userModuleData.moduleKey),
-    );
+// async function getUserWeightMap(db: Db) {
+//   const result = await db
+//     .select({
+//       userKey: userModuleData.userKey,
+//       moduleKey: userModuleData.moduleKey,
+//       weight: userModuleData.weight,
+//     })
+//     .from(moduleData)
+//     .where(
+//       eq(
+//         moduleData.atBlock,
+//         sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
+//       ),
+//     )
+//     .innerJoin(
+//       userModuleData,
+//       eq(moduleData.moduleKey, userModuleData.moduleKey),
+//     );
 
-  // user -> module key -> weight (0–100)
-  const userWeightMap = new Map<string, Map<string, bigint>>();
-  result.forEach((entry) => {
-    if (!userWeightMap.has(entry.userKey)) {
-      userWeightMap.set(entry.userKey, new Map<string, bigint>());
-    }
-    userWeightMap
-      .get(entry.userKey)!
-      .set(entry.moduleKey!, BigInt(entry.weight!));
-  });
-  return userWeightMap;
-}
+//   // user -> module key -> weight (0–100)
+//   const userWeightMap = new Map<string, Map<string, bigint>>();
+//   result.forEach((entry) => {
+//     if (!userWeightMap.has(entry.userKey)) {
+//       userWeightMap.set(entry.userKey, new Map<string, bigint>());
+//     }
+//     userWeightMap
+//       .get(entry.userKey)!
+//       .set(entry.moduleKey!, BigInt(entry.weight!));
+//   });
+//   return userWeightMap;
+// }
 
 // ----------------------------------- calc weights -----------------------------------
 
@@ -160,8 +160,10 @@ function testFinalWeights() {
   user_weight_maps.get("B")!.set("module3", 50n);
   user_weight_maps.get("C")!.set("module3", 100n);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const result = finalWeights(user_stakes, user_weight_maps);
   const normalized = normalizeModuleWeights(result);
+
   console.log(result);
   console.log(normalized);
 }
