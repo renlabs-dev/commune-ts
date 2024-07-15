@@ -5,19 +5,15 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import type { InjectedAccountWithMeta } from "..";
 import type {
   Stake,
   TransactionResult,
   Transfer,
   TransferStake,
 } from "../../../subspace/types";
-import type { InjectedAccountWithMeta } from "../types";
-import { cn } from "..";
+import { cn, CopyButton, Loading, SelectWalletModal, WalletButton } from "..";
 import { copyToClipboard, formatToken } from "../../../subspace/utils";
-import { CopyButton } from "./copy-button";
-import { Loading } from "./loading";
-import { SelectWalletModal } from "./select-wallet-modal";
-import { WalletButton } from "./wallet-button";
 
 interface TWallet {
   handleWalletModal: (state?: boolean) => void;
@@ -315,7 +311,7 @@ export function Wallet(props: TWallet): ReactElement {
                 return (
                   <button
                     className={cn(
-                      `flex w-1/5 flex-col items-center border-gray-500 px-4 py-3 text-gray-400 ${activeMenu == action.name.toLocaleLowerCase() ? action.bgColor : ""}`,
+                      `flex w-1/5 flex-col items-center border-gray-500 px-3.5 py-3 text-gray-400 ${activeMenu == action.name.toLocaleLowerCase() ? action.bgColor : ""}`,
                     )}
                     key={action.name}
                     onClick={() => {

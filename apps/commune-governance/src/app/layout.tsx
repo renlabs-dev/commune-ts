@@ -10,6 +10,7 @@ import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
 import { FooterDivider } from "./components/footer-divider";
+import { MobileHeaderContent } from "./components/mobile-header-content";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -27,16 +28,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
           <Header
             logoSrc="/logo.svg"
-            navigationLinks={[
-              { name: "Home Page", href: links.landing_page, external: true },
-            ]}
             title="Community Governance"
             wallet={<WalletButtonWithHook />}
+            mobileContent={<MobileHeaderContent />}
+            navigationLinks={[
+              { name: "Homepage", href: links.landing_page, external: true },
+            ]}
           />
           {children}
           <FooterDivider />

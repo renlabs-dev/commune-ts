@@ -23,6 +23,7 @@
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
+    "@tailwindcss/typography": "^0.5.10",
     "eslint": "^8.0.0",
     "prettier": "^3.3.1",
     "typescript": "^5.4.5"

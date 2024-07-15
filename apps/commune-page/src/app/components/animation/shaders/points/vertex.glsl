@@ -1,5 +1,3 @@
-// Noise Shader
-
 vec3 mod289(vec3 x)
 {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -169,7 +167,7 @@ void main() {
 
   gl_Position = projectedPosition;
 
-  gl_PointSize = 30.0 * aScale;
+  gl_PointSize = 40.0 * aScale;
   gl_PointSize *= (1.0 / - viewPosition.z);
 
   float opacity = uColorOpacity;

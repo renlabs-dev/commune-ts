@@ -6,6 +6,7 @@ import { Providers } from "@commune-ts/providers/context";
 import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
+import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`relative bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
           <Header
@@ -38,6 +39,7 @@ export default function RootLayout({
             wallet={<WalletButtonWithHook />}
           />
           {children}
+          <Footer shouldBeFixed className="lg:block md:hidden" />
         </Providers>
       </body>
     </html>

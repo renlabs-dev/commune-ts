@@ -3,7 +3,6 @@
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type {
-  DaoStatus,
   ProposalStatus,
   SS58Address,
 } from "@commune-ts/providers/types";
@@ -13,10 +12,8 @@ import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 import type { Vote } from "../../../components/vote-label";
 import {
   calcProposalFavorablePercent,
-  handleCustomDaos,
   handleCustomProposal,
 } from "../../../../utils";
-import { DaoStatusLabel } from "../../../components/dao-status-label";
 import { MarkdownView } from "../../../components/markdown-view";
 import { StatusLabel } from "../../../components/status-label";
 import { VoteCard } from "../../../components/vote-card";
@@ -25,7 +22,6 @@ import { VotingPowerButton } from "../../../components/voting-power-button";
 
 interface CustomContent {
   paramId: number;
-  contentType: string;
 }
 
 function renderVoteData(favorablePercent: number | null): JSX.Element | null {
@@ -43,7 +39,7 @@ function renderVoteData(favorablePercent: number | null): JSX.Element | null {
           </span>
         </div>
       </div>
-      <div className="bg-dark my-2 w-full">
+      <div className="bg-section-gray my-2 w-full">
         <div
           className="bg-green-400 py-2"
           style={{
@@ -60,7 +56,7 @@ function renderVoteData(favorablePercent: number | null): JSX.Element | null {
           </span>
         </div>
       </div>
-      <div className="bg-dark my-2 w-full">
+      <div className="bg-section-gray my-2 w-full">
         <div
           className="bg-red-400 py-2"
           style={{
@@ -98,13 +94,11 @@ const handleUserVotes = ({
   return "UNVOTED";
 };
 
-export function ExpandedView(props: CustomContent): JSX.Element {
-  const { paramId, contentType } = props;
+export function ProposalExpandedView(props: CustomContent): JSX.Element {
+  const { paramId } = props;
 
   const {
     selectedAccount,
-    daosWithMeta,
-    isDaosLoading,
     proposalsWithMeta,
     isProposalsLoading,
   } = useCommune();
@@ -134,55 +128,13 @@ export function ExpandedView(props: CustomContent): JSX.Element {
     return CustomContent;
   }
 
-  function handleDaosContent() {
-    const dao = daosWithMeta?.find((d) => d.id === paramId);
-    if (!dao) return null;
-
-    const { body, title } = handleCustomDaos(dao.id, dao.customData ?? null);
-
-    const daoContent = {
-      body,
-      title,
-      status: dao.status,
-      author: dao.userId,
-      id: dao.id,
-      expirationBlock: null,
-      invalid: null,
-      netuid: null,
-      voted: null,
-      stakeInfo: null,
-    };
-    return daoContent;
-  }
-
   function handleContent() {
-    if (contentType === "dao") {
-      return handleDaosContent();
-    }
-    if (contentType === "proposal") {
-      return handleProposalsContent();
-    }
-    return null;
+    return handleProposalsContent();
   }
-
-  function handleIsLoading(type: string | undefined): boolean {
-    switch (type) {
-      case "dao":
-        return isDaosLoading;
-
-      case "proposal":
-        return isProposalsLoading;
-
-      default:
-        return false;
-    }
-  }
-
-  const isLoading = handleIsLoading(contentType);
 
   const content = handleContent();
 
-  if (isLoading || !content)
+  if (isProposalsLoading || !content)
     return (
       <div className="flex w-full items-center justify-center lg:h-[calc(100svh-203px)]">
         <h1 className="text-2xl text-white">Loading...</h1>
@@ -215,49 +167,36 @@ export function ExpandedView(props: CustomContent): JSX.Element {
                 {smallAddress(content.author)}
               </span>
             </div>
-
-            {content.expirationBlock ? (
-              <div>
-                <span className="text-gray-500">Expiration block</span>
-                <span className="flex items-center">
-                  {content.expirationBlock}
-                </span>
-              </div>
-            ) : null}
+            <div>
+              <span className="text-gray-500">Expiration block</span>
+              <span className="flex items-center">
+                {content.expirationBlock}
+              </span>
+            </div>
           </div>
         </div>
 
         <div className="border-b border-gray-500 p-6">
           <div className="flex items-center gap-3">
             <VoteLabel vote={content.voted!} />
-            {contentType === "proposal" && (
-              <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
-                {(content.netuid !== "GLOBAL" && (
-                  <span> Subnet {content.netuid} </span>
-                )) || <span> Global </span>}
-              </span>
-            )}
-            {contentType === "dao" ? (
-              <DaoStatusLabel result={content.status as DaoStatus} />
-            ) : (
-              <StatusLabel result={content.status as ProposalStatus} />
-            )}
+            <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
+              {(content.netuid !== "GLOBAL" && (
+                <span> Subnet {content.netuid} </span>
+              )) || <span> Global </span>}
+            </span>
+            <StatusLabel result={content.status as ProposalStatus} />
           </div>
         </div>
 
-        {contentType == "proposal" && (
-          <>
-            <VoteCard proposalId={content.id} voted="UNVOTED" />
-            <div className="border-b border-gray-500 p-6">
-              <VotingPowerButton />
-            </div>
-            <div className="w-full border-gray-500 p-6 lg:border-b">
-              {renderVoteData(
-                calcProposalFavorablePercent(content.status as ProposalStatus),
-              )}
-            </div>
-          </>
-        )}
+        <VoteCard proposalId={content.id} voted="UNVOTED" />
+        <div className="border-b border-gray-500 p-6">
+          <VotingPowerButton />
+        </div>
+        <div className="w-full border-gray-500 p-6 lg:border-b">
+          {renderVoteData(
+            calcProposalFavorablePercent(content.status as ProposalStatus),
+          )}
+        </div>
       </div>
     </>
   );

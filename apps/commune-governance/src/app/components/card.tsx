@@ -6,7 +6,7 @@ interface CardProps {
 function CardRoot(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return (
-    <div className={`border border-gray-500 bg-black/50 ${className}`}>
+    <div className={`border border-white/20 bg-black/50 ${className}`}>
       {children}
     </div>
   );
@@ -16,7 +16,7 @@ function CardHeader(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return (
     <div
-      className={`relative flex w-full items-center justify-center border-b border-gray-500 px-4 py-3 lg:flex-row lg:justify-start ${className}`}
+      className={`relative flex w-full items-center justify-center border-b bg-[#898989]/5 backdrop-blur-md border-white/20 px-4 py-3 lg:flex-row lg:justify-start ${className}`}
     >
       {children}
     </div>
@@ -25,7 +25,7 @@ function CardHeader(props: CardProps): JSX.Element {
 
 function CardBody(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
-  return <div className={`p-4 ${className}`}>{children}</div>;
+  return <div className={`p-4 backdrop-blur-md ${className}`}>{children}</div>;
 }
 
 export const Card = {
