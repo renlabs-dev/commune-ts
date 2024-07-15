@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
-import animate from "tailwindcss-animated";
 import typography from "@tailwindcss/typography";
+import animate from "tailwindcss-animated";
 
 import base from "./base";
 
