@@ -124,7 +124,8 @@ export function CreateProposal(): JSX.Element {
   return (
     <>
       <button
-        className="min-w-auto w-full border border-gray-500 px-4 py-2 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 lg:w-auto"
+        className="min-w-auto w-full border bg-[#898989]/5 h-full backdrop-blur-md px-4 py-3 text-white hover:border-green-600 hover:text-green-600"
+
         onClick={toggleModalMenu}
         type="button"
       >
@@ -135,14 +136,14 @@ export function CreateProposal(): JSX.Element {
         role="dialog"
       >
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity" />
+        <div className="fixed inset-0 transition-opacity bg-black bg-opacity-60 backdrop-blur-sm" />
 
         {/* Modal */}
-        <div className="animate-fade-in-down fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto animate-fade-in-down">
+          <div className="flex items-center justify-center min-h-full p-4 text-center">
             <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-gray-500 bg-white bg-[url('/bg-pattern.svg')] text-left text-white md:w-[80%]">
               {/* Modal Header */}
-              <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-cover bg-center bg-no-repeat p-6 md:flex-row">
+              <div className="flex items-center justify-between gap-3 p-6 bg-center bg-no-repeat bg-cover border-b border-gray-500 md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">
                   <h3
                     className="pl-2 text-xl font-bold leading-6"
@@ -157,7 +158,7 @@ export function CreateProposal(): JSX.Element {
                   onClick={toggleModalMenu}
                   type="button"
                 >
-                  <XMarkIcon className="h-6 w-6" />
+                  <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
               {/* Modal Body */}
@@ -183,7 +184,7 @@ export function CreateProposal(): JSX.Element {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          className="w-full bg-black p-3 text-white"
+                          className="w-full p-3 text-white bg-black"
                           onChange={(e) => {
                             setTitle(e.target.value);
                           }}
@@ -192,7 +193,7 @@ export function CreateProposal(): JSX.Element {
                           value={title}
                         />
                         <textarea
-                          className="w-full bg-black p-3 text-white"
+                          className="w-full p-3 text-white bg-black"
                           onChange={(e) => {
                             setBody(e.target.value);
                           }}
@@ -240,7 +241,7 @@ export function CreateProposal(): JSX.Element {
 
                   <div className="flex flex-wrap items-center gap-1 pt-2 text-sm text-white">
                     <div className="flex items-center gap-1">
-                      <InformationCircleIcon className="h-4 w-4 fill-green-500" />
+                      <InformationCircleIcon className="w-4 h-4 fill-green-500" />
                       <span>Want a different approach?</span>
                     </div>
                     <span>

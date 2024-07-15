@@ -1,15 +1,15 @@
+import { ReactElement } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { cn } from "..";
-import { oxanium } from "../fonts";
-import { MobileNavigation } from "./mobile-navigation";
+import { cn, MobileNavigation, oxanium } from "..";
 
 interface HeaderProps {
   logoSrc: string;
   title: string;
-  navigationLinks: { name: string; href: string; external: boolean }[];
+  navigationLinks?: { name: string; href: string; external: boolean }[];
   wallet: JSX.Element;
+  mobileContent?: ReactElement;
 }
 
 export function Header(props: HeaderProps): JSX.Element {
@@ -43,21 +43,27 @@ export function Header(props: HeaderProps): JSX.Element {
         </Link>
         <div className={cn("flex items-center")}>
           <div className={cn("hidden pr-6 lg:flex lg:gap-6")}>
-            {props.navigationLinks.map(({ name, href, external }) => (
-              <Link
-                className={cn(
-                  "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
-                )}
-                href={href}
-                key={name}
-                target={external ? "_blank" : "_self"}
-              >
-                {name}
-              </Link>
-            ))}
+            {props.navigationLinks &&
+              props.navigationLinks.map(({ name, href, external }) => (
+                <Link
+                  className={cn(
+                    "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
+                  )}
+                  href={href}
+                  key={name}
+                  target={external ? "_blank" : "_self"}
+                >
+                  {name}
+                </Link>
+              ))}
           </div>
+
           {props.wallet}
-          <MobileNavigation navigationLinks={props.navigationLinks} />
+
+          <MobileNavigation
+            navigationLinks={props.navigationLinks}
+            genericContent={props.mobileContent}
+          />
         </div>
       </nav>
     </header>

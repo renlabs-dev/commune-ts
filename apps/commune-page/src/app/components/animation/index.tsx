@@ -1,52 +1,57 @@
-/* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import linesFragmentShader from "!!raw-loader!./shaders/lines/fragment.glsl";
-import pointsFragmentShader from "!!raw-loader!./shaders/points/fragment.glsl";
-import pointsVertexShader from "!!raw-loader!./shaders/points/vertex.glsl";
-import * as dat from "lil-gui";
+import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-const getRandNum = (min, max) => {
+import linesFragmentShader from "./shaders/lines/fragment.glsl";
+import pointsFragmentShader from "./shaders/points/fragment.glsl";
+import pointsVertexShader from "./shaders/points/vertex.glsl";
+
+const getRandNum = (min: number, max: number) => {
   return Math.random() * (max - min) + min;
 };
 
-function createAnimation({ container, debug }) {
+function CreateAnimation({ container }: { container: HTMLElement }) {
   const canvas = document.createElement("canvas");
   canvas.classList.add("webgl");
   container.appendChild(canvas);
 
   const sizes = {
-    width: window.screen.availWidth,
-    height: 600,
+    width: container.clientWidth,
+    height: container.clientHeight,
   };
   const clock = new THREE.Clock();
 
-  const debugObject = {
+  const object = {
     tubeRadius: 4,
     torusRadius: 4.5,
-    radialSegments: 27,
-    tabularSegments: 56,
+    radialSegments: 30,
+    tabularSegments: 60,
+    yPosition: 2.5,
   };
 
-  let scene, camera, renderer, controls, objectsGroup;
+  let scene: THREE.Scene;
+  let camera: THREE.PerspectiveCamera;
+  let renderer: THREE.WebGLRenderer;
+  let controls: OrbitControls;
+  let objectsGroup: THREE.Group;
 
   function init() {
     createScene();
     createCamera();
-    // playIntroAnimation();
     createRenderer();
     createControls();
     createObjects();
+    playIntroAnimation();
 
-    if (debug) {
-      addDebugUI();
-    }
+    window.addEventListener("resize", onWindowResize);
 
     tick();
   }
+
   function createObjects() {
     const points = createPoints();
     const lines = createLines(points.geometry);
@@ -54,28 +59,26 @@ function createAnimation({ container, debug }) {
     objectsGroup = new THREE.Group();
     objectsGroup.add(points);
     objectsGroup.add(lines);
-    objectsGroup.rotation.x = -Math.PI * 0.35;
-    objectsGroup.position.y = 1.3;
+    objectsGroup.rotation.x =
+      -Math.PI * (window.innerWidth <= 768 ? 0.25 : 0.35);
+    objectsGroup.position.y = window.innerWidth <= 768 ? 7.5 : 2.5;
     scene.add(objectsGroup);
   }
 
-  function createLines(pointsGeometry) {
+  function createLines(pointsGeometry: THREE.BufferGeometry) {
     // Access pointsGeometry attributes
-    const positions = pointsGeometry.attributes.position.array;
-    const colors = pointsGeometry.attributes.color.array;
-    const normals = pointsGeometry.attributes.normal.array;
+    const positions = pointsGeometry.attributes.position!.array;
+    const colors = pointsGeometry.attributes.color!.array;
+    const normals = pointsGeometry.attributes.normal!.array;
 
-    const linePositions = [];
-    const lineColors = [];
-    const lineNormals = [];
-    const lineOpacity = [];
+    const linePositions: unknown[] = [];
+    const lineColors: unknown[] = [];
+    const lineNormals: unknown[] = [];
+    const lineOpacity: unknown[] = [];
 
-    const addLine = (vertexIndex1, vertexIndex2) => {
+    const addLine = (vertexIndex1: number, vertexIndex2: number) => {
       const baseIndex1 = vertexIndex1 * 3;
       const baseIndex2 = vertexIndex2 * 3;
-
-      if (!positions[baseIndex1]) return;
-      if (!positions[baseIndex2]) return;
 
       linePositions.push(
         positions[baseIndex1],
@@ -103,7 +106,7 @@ function createAnimation({ container, debug }) {
         normals[baseIndex2 + 2],
       );
 
-      const [oMin, oMax] = [0.01, 0.15];
+      const [oMin, oMax] = [0.01, 0.2];
 
       lineOpacity.push(getRandNum(oMin, oMax), getRandNum(oMin, oMax));
     };
@@ -112,7 +115,7 @@ function createAnimation({ container, debug }) {
     const numVertices = positions.length / 3;
     for (let i = 0; i < numVertices; i++) {
       const numConnections = Math.floor(Math.random() * 3); // Random number of connections (0, 1, or 2)
-      const possibleConnections = [];
+      const possibleConnections: unknown[] = [];
 
       // Find possible connections
       for (let j = i + 1; j < numVertices / 2; j++) {
@@ -134,7 +137,7 @@ function createAnimation({ container, debug }) {
         m < numConnections && m < possibleConnections.length;
         m++
       ) {
-        addLine(i, possibleConnections[m]);
+        addLine(i, possibleConnections[m] as number);
       }
     }
 
@@ -142,25 +145,25 @@ function createAnimation({ container, debug }) {
 
     lineGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(linePositions), 3),
+      new THREE.BufferAttribute(new Float32Array(linePositions as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "color",
-      new THREE.BufferAttribute(new Float32Array(lineColors), 3),
+      new THREE.BufferAttribute(new Float32Array(lineColors as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "normal",
-      new THREE.BufferAttribute(new Float32Array(lineNormals), 3),
+      new THREE.BufferAttribute(new Float32Array(lineNormals as number[]), 3),
     );
 
     lineGeometry.setAttribute(
       "aOpacity",
-      new THREE.BufferAttribute(new Float32Array(lineOpacity), 1),
+      new THREE.BufferAttribute(new Float32Array(lineOpacity as number[]), 1),
     );
 
-    const { torusRadius, tubeRadius } = debugObject;
+    const { torusRadius, tubeRadius } = object;
 
     const lineMaterial = new THREE.ShaderMaterial({
       vertexShader: pointsVertexShader,
@@ -183,8 +186,7 @@ function createAnimation({ container, debug }) {
   }
 
   function createPoints() {
-    const { torusRadius, tubeRadius, radialSegments, tabularSegments } =
-      debugObject;
+    const { torusRadius, tubeRadius, radialSegments, tabularSegments } = object;
 
     const torusGeometry = new THREE.TorusGeometry(
       torusRadius,
@@ -196,8 +198,8 @@ function createAnimation({ container, debug }) {
     torusGeometry.computeVertexNormals();
 
     // Copy the positions from the TorusGeometry
-    const positions = torusGeometry.attributes.position.array;
-    const normals = torusGeometry.attributes.normal.array;
+    const positions = torusGeometry.attributes.position!.array;
+    const normals = torusGeometry.attributes.normal!.array;
     const maxPosition = Math.max(...positions);
 
     const customGeometry = new THREE.BufferGeometry();
@@ -206,9 +208,9 @@ function createAnimation({ container, debug }) {
     const scales = [];
 
     for (let i = 0; i < positions.length; i += 3) {
-      const r = positions[i] / maxPosition + 0.3;
-      const g = positions[i] / maxPosition + 3;
-      const b = positions[i] / maxPosition + 0.3;
+      const r = positions[i]! / maxPosition + 0.3;
+      const g = positions[i]! / maxPosition + 3;
+      const b = positions[i]! / maxPosition + 0.3;
 
       colors.push(r, g * 2, b);
       scales.push(getRandNum(0.5, 3));
@@ -251,27 +253,12 @@ function createAnimation({ container, debug }) {
     return points;
   }
 
-  function addDebugUI() {
-    const gui = new dat.GUI({ width: 340 });
-    // eslint-disable-next-line array-callback-return
-    Object.keys(debugObject).map((fieldName) => {
-      gui
-        .add(debugObject, fieldName)
-        .name(fieldName)
-        .onChange(() => {
-          scene.clear();
-          createObjects();
-        });
-    });
-
-    gui.add(camera.position, "z").name("camera z position").min(10).max(30);
-  }
-
   function createScene() {
     scene = new THREE.Scene();
   }
 
-  const fov = window.innerWidth <= 768 ? 74 : 47;
+  const fov = window.innerWidth <= 768 ? 90 : 60;
+  const cameraRotation = window.innerWidth <= 768 ? 12 : 1;
 
   function createCamera() {
     camera = new THREE.PerspectiveCamera(
@@ -280,8 +267,7 @@ function createAnimation({ container, debug }) {
       0.1,
       200,
     );
-    camera.position.set(0, 0.5, 20); // Set initial position (zoomed out)
-    camera.rotation.x = -Math.PI / 4; // Set initial rotation (tilted)
+    camera.position.set(0, cameraRotation + 10, 20);
     scene.add(camera);
   }
 
@@ -299,52 +285,29 @@ function createAnimation({ container, debug }) {
     controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.enableZoom = false;
+    controls.enableRotate = false;
   }
 
-  // function playIntroAnimation() {
-  //   const targetPosition = new THREE.Vector3(0, 0.5, 20); // Target position after the animation
-  //   const targetRotation = new THREE.Euler(0, 0, 0); // Target rotation after the animation
-  //   const duration = 12; // Duration of the animation in seconds
-
-  //   const startTime = performance.now();
-
-  //   function animate() {
-  //     const currentTime = performance.now();
-  //     const elapsedTime = (currentTime - startTime) / 4000;
-
-  //     if (elapsedTime <= duration) {
-  //       const t = elapsedTime / duration;
-
-  //       // Interpolate position
-  //       camera.position.lerpVectors(camera.position, targetPosition, t);
-
-  //       // Interpolate rotation
-  //       camera.rotation.x = THREE.MathUtils.lerp(
-  //         camera.rotation.x,
-  //         targetRotation.x,
-  //         t
-  //       );
-  //       camera.rotation.y = THREE.MathUtils.lerp(0, Math.PI * 2, t); // Spin around the y-axis
-
-  //       requestAnimationFrame(animate);
-  //     } else {
-  //       // Animation finished, set the final position and rotation
-  //       camera.position.copy(targetPosition);
-  //       camera.rotation.copy(targetRotation);
-  //     }
-  //   }
-
-  //   animate();
-  // }
+  function onWindowResize() {
+    sizes.width = container.clientWidth;
+    sizes.height = container.clientHeight;
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(sizes.width, sizes.height);
+  }
 
   function tick() {
     const elapsedTime = clock.getElapsedTime() * 0.25;
 
     objectsGroup.children.forEach((child) => {
-      const material = child.material;
-
-      material.uniforms.uTime.value = elapsedTime;
-      material.uniforms.uWeight.value = 0.05 * Math.sin(elapsedTime) + 1.2;
+      if (
+        "material" in child &&
+        child.material instanceof THREE.ShaderMaterial
+      ) {
+        child.material.uniforms.uTime!.value = elapsedTime;
+        child.material.uniforms.uWeight!.value =
+          0.05 * Math.sin(elapsedTime) + 0.8;
+      }
     });
 
     // Update controls
@@ -357,17 +320,50 @@ function createAnimation({ container, debug }) {
     window.requestAnimationFrame(() => tick());
   }
 
+  function playIntroAnimation() {
+    camera.position.set(0, 0, 5);
+
+    const finalPosition = new THREE.Vector3(0, 1, 20);
+
+    const tl = gsap.timeline();
+
+    tl.to(camera.position, {
+      duration: 3,
+      x: finalPosition.x,
+      y: finalPosition.y,
+      z: finalPosition.z,
+      ease: "power2.out",
+      onUpdate: function () {
+        camera.lookAt(objectsGroup.position);
+      },
+    });
+
+    tl.fromTo(
+      scene,
+      { opacity: 0 },
+      { opacity: 1, duration: 2, ease: "power2.inOut" },
+      "-=2",
+    );
+  }
+
   init();
 }
 
 export default function Animation() {
-  const graphRef = useRef(null);
+  const graphRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (graphRef.current) {
-      createAnimation({ container: graphRef.current, debug: false });
+      CreateAnimation({ container: graphRef.current });
     }
   }, []);
 
-  return <div id="graph" ref={graphRef} />;
+  return (
+    <div
+      id="graph"
+      ref={graphRef}
+      className="fixed left-0 top-0 -z-50 h-full w-full"
+      style={{ overflow: "hidden" }}
+    />
+  );
 }

@@ -12,6 +12,7 @@ import { Container } from "./components/container";
 import { DaoCard } from "./components/dao-card";
 import { ProposalCard } from "./components/proposal-card";
 import { ProposalListHeader } from "./components/proposal-list-header";
+import { FooterDivider } from "./components/footer-divider";
 
 export default function HomePage(): JSX.Element {
   const {
@@ -20,6 +21,7 @@ export default function HomePage(): JSX.Element {
     daosWithMeta,
     isDaosLoading,
     selectedAccount,
+    daoTreasury,
   } = useCommune();
 
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
@@ -98,16 +100,17 @@ export default function HomePage(): JSX.Element {
   const content = viewMode === "proposals" ? renderProposals() : renderDaos();
 
   return (
-    <main className="flex w-full flex-col items-center justify-center">
-      <div className="h-full w-full bg-repeat">
+    <main className="flex flex-col items-center justify-center w-full">
+      <div className="w-full h-full bg-repeat">
         <Container>
           <BalanceSection className="hidden lg:flex" />
 
-          <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} />
+          <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} daoTreasury={daoTreasury} />
 
-          <div className="mx-auto max-w-screen-2xl space-y-10 px-4 py-8">
+          <div className="w-full py-10 space-y-10">
             {isLoading ? <CardSkeleton /> : content}
           </div>
+          <FooterDivider />
         </Container>
       </div>
     </main>
