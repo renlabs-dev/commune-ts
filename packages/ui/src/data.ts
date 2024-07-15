@@ -31,13 +31,13 @@ export const landingPageButtons = [
     icon: "/view-more-icon.svg",
   },
   {
-    href: links.discord,
-    name: "JOIN COMMUNITY",
-    icon: "/join-community.svg",
-  },
-  {
     href: links.about,
     name: "ABOUT",
     icon: "/arrow-link-icon.svg",
+  },
+  {
+    href: links.discord,
+    name: "JOIN COMMUNITY",
+    icon: "/join-community.svg",
   },
 ];
