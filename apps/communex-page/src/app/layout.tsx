@@ -12,7 +12,7 @@ import { Header } from "@commune-ts/ui/header";
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
   robots: "all",
-  title: "CommuneX Roadmap",
+  title: "CommuneX",
   icons: [{ rel: "icon", url: "favicon.ico" }],
   description: "Making decentralized AI for everyone",
 };
@@ -33,11 +33,11 @@ export default function RootLayout({
             navigationLinks={[
               { name: "Home Page", href: links.landing_page, external: true },
             ]}
-            title="CommuneX Roadmap"
+            title="CommuneX"
             wallet={<WalletButtonWithHook />}
           />
           {children}
-          <Footer />
+          <Footer shouldBeFixed />
         </Providers>
       </body>
     </html>
