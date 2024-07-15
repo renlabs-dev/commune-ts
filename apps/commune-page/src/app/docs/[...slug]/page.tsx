@@ -75,7 +75,7 @@ export default function Docs({
         prefix={prefix}
       />
 
-      <div className="flex h-[calc(100svh-129px)] w-full flex-col items-center overflow-y-scroll pt-6 md:pt-10 lg:h-[calc(100svh-81px)] lg:pl-[19.5rem]">
+      <div className="flex h-[calc(100svh-118px)] w-full flex-col items-center overflow-y-scroll pt-6 md:pt-10 lg:h-[calc(100svh-123px)] lg:pl-[19.5rem]">
         <div className="prose prose-invert flex w-full max-w-[100%] flex-col px-8 sm:max-w-[80%] xl:max-w-[70%] 2xl:max-w-screen-2xl">
           <div className="mb-6 flex w-full">
             <Link
