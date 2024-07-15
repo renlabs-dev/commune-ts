@@ -315,7 +315,7 @@ importers:
         specifier: ^5.4.5
         version: 5.5.3
 
-  apps/communex-roadmap:
+  apps/communex-page:
     dependencies:
       '@commune-ts/providers':
         specifier: workspace:*
