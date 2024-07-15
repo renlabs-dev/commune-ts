@@ -18,29 +18,77 @@ export const sections = [
     features: [
       {
         description:
-          "Commune supports a modular architecture that encourages code reuse, allowing developers to create self-contained modules that can be easily integrated into multiple projects. This enhances scalability and maintainability. ",
+          "Commune follows a modular, reusable and minimal architecture philosophy, able to quickly add, adapt and compose parts of the system on the fly.",
         icon: SquaresPlusIcon,
       },
       {
         description:
-          "Commune facilitates the sharing and discovery of reusable modules among developers, enabling them to contribute their own modules and benefit from the shared pool of resources. ",
+          "Commune assumes to be continually innovated and build upon through the DAO, making a scalable and robust architecture a foundational requirement.",
         icon: ShareIcon,
       },
     ],
   },
+
   {
-    sectionName: "scalability",
-    title: "Scalability",
-    subtitle: "Parallelize Use cases ",
+    sectionName: "parallel",
+    title: "Parallel",
+    subtitle: "Horizontal scaling",
     iconSrc: "/scalability-icon.svg",
     features: [
       {
         description:
-          "With a large number of specialized network sectors (subnets), the protocol ensures that every industry can be represented.",
+          "Subnets and other economic applications run and scale in parallel, allowing to host highly specialized and complimentary mechanisms.",
+        icon: ServerStackIcon,
+      },
+    ],
+  },
+  {
+    sectionName: "offchain",
+    title: "Offchain",
+    subtitle: "Any mechanism on any compute",
+    iconSrc: "/scalability-icon.svg",
+    features: [
+      {
+        description:
+          "The blockchain is only responsible for the economic information. all mechanisms and applications build on Commune run offchain without constraints.",
         icon: ServerStackIcon,
       },
       {
-        description: `The low entry cost and the protocol's landscape ensure that useful miners have incentive to participate, helping the network to grow.`,
+        description: `This allows subnets and applications to be arbitrarily complex and computationally expensive, without facing blockchain limitations.`,
+        icon: GlobeAltIcon,
+      },
+    ],
+  },
+  {
+    sectionName: "decentralized",
+    title: "Decentralized",
+    subtitle: "Any mechanism on any compute",
+    iconSrc: "/scalability-icon.svg",
+    features: [
+      {
+        description:
+          "All changes to Commune are decided collectively by the DAO. No central authority has full control over the Protocol.",
+        icon: ServerStackIcon,
+      },
+      {
+        description: `DAO participation is incentivized to motivate holders to take part in deciding their destiny.`,
+        icon: GlobeAltIcon,
+      },
+    ],
+  },
+  {
+    sectionName: "bottomup",
+    title: "Bottom up",
+    subtitle: "Any mechanism on any compute",
+    iconSrc: "/scalability-icon.svg",
+    features: [
+      {
+        description:
+          "There was never any bureaucracy or rigid hierarchy, Commune was birthed out of cypherpunk ideals.",
+        icon: ServerStackIcon,
+      },
+      {
+        description: `Anyone can become a core contributor and grow to wield big impact. Ideas efficiently rise from the bottom up to implementation. `,
         icon: GlobeAltIcon,
       },
     ],
@@ -48,34 +96,23 @@ export const sections = [
   {
     sectionName: "tokenomics",
     title: "Tokenomics",
-    subtitle: "No Pre mine, Meritocratic Distribution",
+    subtitle: "No Premine, Meritocratic Distribution",
     iconSrc: "/tokenomics-icon.svg",
     features: [
       {
         description:
-          "Rewards are split 50% to miners (specialized APIs with off-chain architectures) and 50% to validators, validating the legitimacy of the miners.",
+          "Commune is continuously optimizing the allocation of emissions to create positive sum competitions.",
         icon: CircleStackIcon,
+      },
+      {
+        description:
+          "The current standard framework is a 50/50 reward split between miners and validators. miners compete to optimize or solve what validators define. validators evaluate the performance of miners.",
+        icon: GiftTopIcon,
       },
       {
         description:
           "Rewards are distributed every 100 blocks, with a block time of 8 seconds.",
         icon: GiftTopIcon,
-      },
-    ],
-  },
-  {
-    sectionName: "validators",
-    title: "Validators",
-    subtitle: `Managing protocol's incentives`,
-    iconSrc: "/validators-icon.svg",
-    features: [
-      {
-        description: `Validators have to evaluate miners at regular intervals, ensuring coverage of the entire network and updating for new projects.`,
-        icon: ShieldCheckIcon,
-      },
-      {
-        description: `Miner's prioritize serving Validators based on Stake and consensus, the more Stake the more weight on incentives.`,
-        icon: ScaleIcon,
       },
     ],
   },
