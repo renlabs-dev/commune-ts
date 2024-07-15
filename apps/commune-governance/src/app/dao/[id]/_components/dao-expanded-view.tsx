@@ -52,7 +52,7 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
 
   return (
     <>
-      <div className="flex flex-col lg:h-[calc(100svh-203px)] lg:w-2/3 lg:overflow-auto">
+      <div className="flex flex-col lg:h-full lg:w-2/3 lg:overflow-auto">
         <div className="border-b border-gray-500 p-6">
           <h2 className="text-base font-semibold">{content.title}</h2>
         </div>
