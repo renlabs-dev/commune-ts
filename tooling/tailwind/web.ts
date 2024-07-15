@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animated";
-import typography from '@tailwindcss/typography'
 
 import base from "./base";
 
@@ -30,8 +30,5 @@ export default {
       },
     },
   },
-  plugins: [
-    animate,
-    typography
-  ],
+  plugins: [animate, typography],
 } satisfies Config;
