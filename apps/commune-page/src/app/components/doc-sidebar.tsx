@@ -34,7 +34,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
       <div
         aria-hidden="true"
         aria-label="Global"
-        className={`animate-menu-fade fixed z-10 h-[calc(100svh-81px)] w-full backdrop-blur-sm lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
+        className={`animate-menu-fade fixed z-10 h-[calc(100svh-69px)] lg:h-[calc(100svh-123px)] w-full backdrop-blur-sm lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
         onClick={toggleMobileMenu}
       >
         <div
