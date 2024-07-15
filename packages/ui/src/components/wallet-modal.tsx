@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 
-import type { InjectedAccountWithMeta } from "../types";
+import type { InjectedAccountWithMeta } from "..";
 import { cn } from "..";
 
 export function WalletModal({

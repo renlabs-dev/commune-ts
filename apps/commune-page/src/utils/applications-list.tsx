@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { links } from "@commune-ts/ui/data";
 
 export const applicationsList = [
@@ -7,57 +5,25 @@ export const applicationsList = [
     title: "Governance",
     description: "Community Proposals",
     href: links.governance,
-    icon: (
-      <Image
-        alt="Governance icon"
-        className="mb-5 w-12"
-        height={45}
-        src="/governance-icon.svg"
-        width={45}
-      />
-    ),
+    icon: "/governance-icon.svg",
   },
   {
     title: "Docs",
     description: "Dev Documentation",
     href: links.docs,
-    icon: (
-      <Image
-        alt="Docs icon"
-        className="mb-5 w-12"
-        height={45}
-        src="/docs-icon.svg"
-        width={45}
-      />
-    ),
+    icon: "/docs-icon.svg",
   },
   {
     title: "Blog",
     target: "_blank",
     description: "View recent updates",
     href: links.blog,
-    icon: (
-      <Image
-        alt="Updates icon"
-        className="mb-5 w-12"
-        height={45}
-        src="/updates-icon.svg"
-        width={45}
-      />
-    ),
+    icon: "/updates-icon.svg",
   },
   {
-    title: "Join Community",
-    description: null,
-    href: links.discord,
-    icon: (
-      <Image
-        alt="Community icon"
-        className="mb-5 w-12"
-        height={45}
-        src="/community-icon.svg"
-        width={45}
-      />
-    ),
+    title: "View More",
+    description: "About, FAQ and more",
+    href: links.about,
+    icon: "/view-more-icon.svg",
   },
 ];

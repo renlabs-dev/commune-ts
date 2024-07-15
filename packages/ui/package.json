@@ -17,7 +17,9 @@
     "./discord-widget": "./src/components/discord-widget.tsx",
     "./markdown-view": "./src/components/markdown-view.tsx",
     "./data": "./src/data.ts",
-    "./fonts": "./src/fonts.ts"
+    "./fonts": "./src/fonts.ts",
+    "./scrollbar-style": "./src/components/scrollbar-style.ts",
+    "./components": "./src/components/index.ts"
   },
   "license": "MIT",
   "scripts": {

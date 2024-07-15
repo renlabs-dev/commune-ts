@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
 
-import { cn } from "..";
-import { links } from "../data";
+import { cn, links } from "..";
 
 interface MobileNavigationProps {
-  navigationLinks: { name: string; href: string; external: boolean }[];
+  navigationLinks?: { name: string; href: string; external: boolean }[];
+  genericContent?: ReactElement;
 }
 
 export function MobileNavigation(props: MobileNavigationProps) {
@@ -32,15 +32,19 @@ export function MobileNavigation(props: MobileNavigationProps) {
       icon: "/telegram-icon.svg",
       alt: "Commune's Telegram Link",
     },
-    { href: links.x, icon: "/x-icon.svg", alt: "Commune's X Link" },
+    {
+      href: links.x,
+      icon: "/x-icon.svg",
+      alt: "Commune's X Link",
+    },
   ];
 
   return (
-    <div>
+    <div className={cn("z-50")}>
       <button
         type="button"
         className={cn(
-          "ml-2 flex h-11 w-11 items-center justify-center border border-gray-500 p-2 text-white hover:bg-gray-400/[0.10] md:hidden",
+          "ml-2 flex h-11 w-11 items-center justify-center border border-gray-500 p-2 text-white hover:bg-gray-400/[0.10] lg:hidden",
         )}
         onClick={toggleMobileMenu}
       >
@@ -50,48 +54,58 @@ export function MobileNavigation(props: MobileNavigationProps) {
           <Bars3Icon className={cn("h-6 w-6 text-gray-500")} />
         )}
       </button>
+
       {mobileMenuOpen && (
-        <div
-          className={cn(
-            "animate-fade-in fixed left-0 top-16 z-50 h-full w-full",
-          )}
+        <nav
+          className={cn("absolute right-0 top-20 z-40 h-full w-full lg:hidden")}
         >
           <div
             className={cn(
-              "relative mx-auto my-6 w-11/12 space-y-4 divide-y divide-gray-200/40 border border-gray-500 bg-black p-4",
+              "min-w-1/4 sticky right-3 top-3 z-[50] ml-auto h-auto w-[70%] border border-white/20 bg-[url('/bg-pattern.svg')] lg:w-[30%]",
             )}
           >
-            <div className={cn("ml-2 mt-6 space-y-2")}>
-              {props.navigationLinks.map(({ name, href, external }) => (
-                <Link
-                  key={name}
-                  href={href}
-                  onClick={toggleMobileMenu}
-                  target={external ? "_blank" : "_self"}
-                  className={cn(
-                    "-mx-3 block w-full px-3 py-1 text-base font-semibold leading-7 text-white hover:bg-gray-400/10 hover:backdrop-blur-sm",
-                  )}
-                >
-                  {name}
-                </Link>
-              ))}
-            </div>
-            <div className={cn("flex justify-between space-x-3 py-4")}>
-              {headerSocialLinks.map(({ href, icon, alt }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  target="_blank"
-                  className={cn(
-                    "flex h-12 w-12 items-center justify-center p-1.5 text-white hover:bg-gray-400/[0.10]",
-                  )}
-                >
-                  <Image src={icon} width={25} height={25} alt={alt} />
-                </Link>
-              ))}
+            <div className={cn("flow-root")}>
+              {props.genericContent}
+
+              <div className={cn("space-y-2 border-white/20 p-4")}>
+                {props.navigationLinks &&
+                  props?.navigationLinks?.map(({ name, href, external }) => (
+                    <Link
+                      key={name}
+                      href={href}
+                      onClick={toggleMobileMenu}
+                      target={external ? "_blank" : "_self"}
+                      className={cn(
+                        " block w-full border border-white/20 p-3 px-6 text-center text-base  font-semibold leading-7 text-gray-400 hover:border-green-600 hover:bg-gray-400/10 hover:bg-green-600/5 hover:text-green-600 hover:backdrop-blur-sm",
+                      )}
+                    >
+                      {name}
+                    </Link>
+                  ))}
+              </div>
+
+              <div
+                className={cn(
+                  "flex w-full justify-between border-t border-white/20 p-6 py-4 text-green-500",
+                )}
+              >
+                {headerSocialLinks.map((value) => {
+                  return (
+                    <Link key={value.href} href={value.href} target="_blank">
+                      <Image
+                        src={value.icon}
+                        alt={`${value.alt} Icon`}
+                        width={40}
+                        height={40}
+                        className={cn("h-8 w-8")}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        </nav>
       )}
     </div>
   );
