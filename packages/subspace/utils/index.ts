@@ -1,4 +1,5 @@
 import { CID } from "multiformats/cid";
+import { AssertionError } from "tsafe";
 
 import type {
   Codec,
@@ -8,11 +9,13 @@ import type {
   RawEntry,
 } from "../types";
 import { parseDaos, parseProposal, URL_SCHEMA } from "../types";
-import { AssertionError } from "tsafe";
 
 // == assertion ==
 
-export function assertOrThrow(condition: any, message: string): asserts condition {
+export function assertOrThrow(
+  condition: any,
+  message: string,
+): asserts condition {
   if (!condition) {
     throw new AssertionError(message);
   }
@@ -41,8 +44,8 @@ export function calculateAmount(amount: string): number {
   return Math.floor(Number(amount) * 10 ** 9);
 }
 
-export function smallAddress(address: string): string {
-  return `${address.slice(0, 8)}…${address.slice(-8)}`;
+export function smallAddress(address: string, size?: number): string {
+  return `${address.slice(0, size || 8)}…${address.slice(size ? size * -1 : -8)}`;
 }
 
 // == IPFS ==

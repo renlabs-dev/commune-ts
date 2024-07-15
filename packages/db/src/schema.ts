@@ -23,35 +23,47 @@ export const createTable = pgTableCreator((name) => `${name}`);
  * atBlock <  lastSeenBlock           --> deregistered
  * |lastSeenBlock - atBlock| < 1 week --> should be deleted
  */
-export const moduleData = createTable("module_data", {
-  id: serial("id").primaryKey(),
+export const moduleData = createTable(
+  "module_data",
+  {
+    id: serial("id").primaryKey(),
 
-  netuid: integer("netuid").notNull(),
-  moduleKey: ss58Address("module_key").notNull(),
+    netuid: integer("netuid").notNull(),
+    moduleKey: ss58Address("module_key").notNull(),
 
-  atBlock: integer("at_block").notNull(),
+    atBlock: integer("at_block").notNull(),
 
-  name: text("name"),
+    name: text("name"),
 
-  registrationBlock: integer("registration_block"),
-  addressUri: text("address_uri"),
-  metadataUri: text("metadata_uri"),
+    registrationBlock: integer("registration_block"),
+    addressUri: text("address_uri"),
+    metadataUri: text("metadata_uri"),
 
-  emission: bigint("emission", { mode: "bigint" }),
-  incentive: bigint("incentive", { mode: "bigint" }),
-  dividend: bigint("dividend", { mode: "bigint" }),
-  delegationFee: integer("delegation_fee"),
+    emission: bigint("emission", { mode: "bigint" }),
+    incentive: bigint("incentive", { mode: "bigint" }),
+    dividend: bigint("dividend", { mode: "bigint" }),
+    delegationFee: integer("delegation_fee"),
 
-  totalStaked: bigint("total_staked", { mode: "bigint" }),
-  totalStakers: integer("total_stakers"),
-  totalRewards: bigint("total_rewards", { mode: "bigint" }),
+    totalStaked: bigint("total_staked", { mode: "bigint" }),
+    totalStakers: integer("total_stakers"),
+    totalRewards: bigint("total_rewards", { mode: "bigint" }),
 
-  createdAt: timestamp("created_at", {withTimezone: true, mode: "date"}).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", {withTimezone: true, mode: "date"}).defaultNow().notNull().$onUpdateFn(() => new Date()),
-  deletedAt: timestamp("deleted_at", {withTimezone: true, mode: "date"}).default(null),
-}, (t) => ({
-  unq: unique().on(t.netuid, t.moduleKey),
-}),);
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
+      .notNull()
+      .$onUpdateFn(() => new Date()),
+    deletedAt: timestamp("deleted_at", {
+      withTimezone: true,
+      mode: "date",
+    }).default(sql`null`),
+  },
+  (t) => ({
+    unq: unique().on(t.netuid, t.moduleKey),
+  }),
+);
 
 /**
  * Data for the relation a user have with a specific module.
@@ -79,7 +91,6 @@ export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
 }).omit({
   id: true,
 });
-
 
 export enum ReportReason {
   Spam = "Spam",
