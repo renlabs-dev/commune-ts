@@ -2,7 +2,7 @@ import "@polkadot/api-augment";
 
 import { ApiPromise } from "@polkadot/api";
 
-import { Api, isSS58, LastBlock, SS58Address, SubspaceModule, SUBSPACE_MODULE_SCHEMA, OptionalProperties, subspacePropResolvers, modulePropResolvers, StorageEntry, newSubstrateModule } from "../types";
+import { Api, isSS58, LastBlock, SS58Address, SubspaceModule, SUBSPACE_MODULE_SCHEMA, OptionalProperties, modulePropResolvers, StorageEntry, newSubstrateModule } from "../types";
 import { assertOrThrow, handleDaos, handleProposals } from "../utils";
 
 export { ApiPromise };
@@ -195,7 +195,9 @@ async function enrichSubspaceModules<P extends OptionalProperties<SubspaceModule
       const module = moduleMap.get(netuid)?.get(key);
 
       if (!module) {
-        console.info(`UNEXPECT: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`);
+        if (process.env.DEBUG === "true") {
+          console.info(`WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`);
+        }
         continue;
       }
 
