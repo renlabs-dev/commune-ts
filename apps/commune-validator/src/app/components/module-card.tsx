@@ -15,9 +15,9 @@ interface ModuleCardProps {
 }
 
 interface CustomMetadata {
-  Ok: {
-    title: string;
-    body: string;
+  Ok?: {
+    title?: string;
+    body?: string;
   };
 }
 
@@ -28,9 +28,9 @@ export async function ModuleCard(props: ModuleCardProps) {
     props.metadata ?? "",
   )) as CustomMetadata;
 
-  const title = metadata.Ok.title;
+  const title = metadata.Ok?.title ?? "Untitled Module";
   // limited to 140 characters
-  const description = metadata.Ok.body;
+  const description = metadata.Ok?.body ?? "";
 
   return (
     <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
