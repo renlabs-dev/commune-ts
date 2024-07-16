@@ -24,43 +24,41 @@ export const moduleRouter = {
         where: eq(moduleData.id, input.id),
       });
     }),
-  allModuleWeight: publicProcedure.query(async ({ ctx }) => {
-    const result = await ctx.db
-      .select({
-        userKey: userModuleData.userKey,
-        moduleKey: userModuleData.moduleKey,
-        weight: userModuleData.weight,
-      })
-      .from(moduleData)
-      .where(
-        eq(
-          moduleData.atBlock,
-          sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
-        ),
-      )
-      .innerJoin(
-        userModuleData,
-        eq(moduleData.moduleKey, userModuleData.moduleKey),
-      );
+  // allModuleWeight: publicProcedure.query(async ({ ctx }) => {
+  //   const result = await ctx.db
+  //     .select({
+  //       userKey: userModuleData.userKey,
+  //       moduleId: userModuleData.moduleId,
+  //       weight: userModuleData.weight,
+  //     })
+  //     .from(moduleData)
+  //     .where(
+  //       eq(
+  //         moduleData.atBlock,
+  //         sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
+  //       ),
+  //     )
+  //     .innerJoin(
+  //       userModuleData,
+  //       eq(moduleData.moduleKey, userModuleData.moduleId),
+  //     );
 
-    // user -> module key -> weight (0–100)
-    const userWeightMap = new Map<string, Map<string, bigint>>();
-    result.forEach((entry) => {
-      if (!userWeightMap.has(entry.userKey)) {
-        userWeightMap.set(entry.userKey, new Map<string, bigint>());
-      }
-      userWeightMap
-        .get(entry.userKey)!
-        .set(entry.moduleKey!, BigInt(entry.weight!));
-    });
-    return userWeightMap;
-  }),
+  //   // user -> module key -> weight (0–100)
+  //   const userWeightMap = new Map<string, Map<number, bigint>>();
+  //   result.forEach((entry) => {
+  //     if (!userWeightMap.has(entry.userKey)) {
+  //       userWeightMap.set(entry.userKey, new Map<number, bigint>());
+  //     }
+  //     userWeightMap.get(entry.userKey)!.set(entry.moduleId, entry.weight);
+  //   });
+  //   return userWeightMap;
+  // }),
   // POST
   createUserModuleData: publicProcedure
     .input(userModuleDataPostSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userModuleData).values({
-        moduleKey: input.moduleKey,
+        moduleId: input.moduleId,
         userKey: input.userKey,
         weight: input.weight,
       });
@@ -69,7 +67,7 @@ export const moduleRouter = {
     .input(moduleReportPostSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(moduleReport).values({
-        moduleKey: input.moduleKey,
+        moduleId: input.moduleId,
         userKey: input.userKey,
         content: input.content,
         reason: input.reason,
