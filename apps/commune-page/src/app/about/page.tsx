@@ -10,7 +10,6 @@ export default function Page(): JSX.Element {
           About
           <span className="font-thin text-green-500"> us</span>
         </h2>
-        <p className="text-xl text-gray-400">A Knowledge Treasure Trove</p>
       </div>
       {sections.map((section, index) => {
         return (
@@ -25,6 +24,11 @@ export default function Page(): JSX.Element {
           />
         );
       })}
+      <div className="flex w-full flex-col space-y-4 pb-8 pt-16">
+        <h2 className="w-[80%] text-3xl font-medium text-white lg:text-5xl">
+          FAQ
+        </h2>
+      </div>
       <FrequentQuestions />
     </main>
   );
