@@ -98,7 +98,7 @@ export const sections = [
   {
     sectionName: "tokenomics",
     title: "Tokenomics",
-    subtitle: `Premine`,
+    subtitle: `No Premine`,
     iconSrc: "/tokenomics-icon.svg",
     features: [
       {
