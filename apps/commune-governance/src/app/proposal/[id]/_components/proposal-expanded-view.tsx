@@ -136,7 +136,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
   if (isProposalsLoading || !content)
     return (
-      <div className="flex w-full items-center justify-center lg:h-[calc(100svh-203px)]">
+      <div className="flex w-full items-center justify-center lg:h-auto">
         <h1 className="text-2xl text-white">Loading...</h1>
         <ArrowPathIcon className="ml-2 animate-spin" color="#FFF" width={20} />
       </div>
@@ -144,7 +144,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
   return (
     <>
-      <div className="flex flex-col lg:h-[calc(100svh-203px)] lg:w-2/3 lg:overflow-auto">
+      <div className="flex flex-col lg:w-2/3 lg:overflow-auto">
         <div className="border-b border-gray-500 p-6">
           <h2 className="text-base font-semibold">{content.title}</h2>
         </div>
