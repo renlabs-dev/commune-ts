@@ -8,13 +8,12 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "tsc ./src/index.ts",
+    "dev": "pnpm with-env tsx ./src/index.ts",
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --",
-    "start": "pnpm with-env tsx ./src/index.ts"
+    "with-env": "dotenv -e ../../.env --"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
