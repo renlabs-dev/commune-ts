@@ -1,13 +1,16 @@
 import React from "react";
 
 interface StepperCardProps {
+  item: number;
   description: string;
 }
 
-const StepperCard: React.FC<StepperCardProps> = ({ description }) => {
+const StepperCard: React.FC<StepperCardProps> = ({ description, item }) => {
   return (
-    <div className="border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
-      <p className="text-gray-400">{description}</p>
+    <div>
+      <p className="mb-2 text-gray-400">
+        <b className="text-white">{item + 1}.</b> {description}
+      </p>
     </div>
   );
 };

@@ -4,39 +4,31 @@ import {
   ChevronDoubleRightIcon,
   ChevronDoubleUpIcon,
 } from "@heroicons/react/20/solid";
-import { BackwardIcon, ForwardIcon } from "@heroicons/react/24/outline";
 
 import type { RoadmapDataType } from "~/roadmap-data";
 import StepperCard from "./StepperCard";
 
 const Stepper = ({ steps }: { steps: RoadmapDataType }) => {
   const stepTitles = Object.keys(steps);
-  const currentQuarterIndex = stepTitles.findIndex(
-    (title) => steps[title]?.date === "current",
-  );
-  const [currentStepIndex, setCurrentStepIndex] = useState(
-    currentQuarterIndex !== -1 ? currentQuarterIndex : 0,
-  );
-
-  const handlePrevious = () => {
-    setCurrentStepIndex((prevIndex) => Math.max(0, prevIndex - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentStepIndex((prevIndex) =>
-      Math.min(stepTitles.length - 1, prevIndex + 1),
-    );
-  };
+  const [closedSteps, setClosedSteps] = useState<Set<number>>(new Set());
 
   const handleStepClick = (index: number) => {
-    setCurrentStepIndex(index);
+    setClosedSteps((prevClosedSteps) => {
+      const newClosedSteps = new Set(prevClosedSteps);
+      if (newClosedSteps.has(index)) {
+        newClosedSteps.delete(index);
+      } else {
+        newClosedSteps.add(index);
+      }
+      return newClosedSteps;
+    });
   };
 
   const renderStepperCards = (stepCards: string[] = []) => {
     return (
-      <div className="mb-24 grid animate-fade-right grid-cols-1 gap-4 animate-delay-300 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-16 grid animate-fade-right grid-cols-1 gap-4 animate-delay-300">
         {stepCards.map((card, index) => (
-          <StepperCard key={index} description={card} />
+          <StepperCard key={index} description={card} item={index} />
         ))}
       </div>
     );
@@ -57,6 +49,7 @@ const Stepper = ({ steps }: { steps: RoadmapDataType }) => {
         <div className="mb-12">
           {stepTitles.map((title, index) => {
             const item = steps[title];
+            const isStepClosed = closedSteps.has(index);
             return (
               <div
                 key={title}
@@ -65,7 +58,7 @@ const Stepper = ({ steps }: { steps: RoadmapDataType }) => {
                 <div className="mr-4 flex flex-col items-center">
                   <button
                     onClick={() => handleStepClick(index)}
-                    className={`absolute mr-9 flex h-12 w-12 items-center justify-center rounded-full ${
+                    className={`absolute mr-9 mt-1.5 flex h-12 w-12 items-center justify-center rounded-full ${
                       item?.date === "past"
                         ? "shadow-custom-green bg-green-600/10 text-white"
                         : item?.date === "current"
@@ -99,30 +92,15 @@ const Stepper = ({ steps }: { steps: RoadmapDataType }) => {
                   <h2 className="mb-1 animate-fade-right text-xl font-semibold animate-delay-100">
                     {title}
                   </h2>
-                  <p className="mb-10 text-gray-400">{item?.description}</p>
-                  {index === currentStepIndex &&
-                    renderStepperCards(item?.steps)}
+                  <p className="mb-6 text-lg text-gray-400">
+                    {item?.description}
+                  </p>
+                  {!isStepClosed && renderStepperCards(item?.steps)}
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
-      <div className="fixed bottom-20 right-6 flex gap-3">
-        <button
-          onClick={handlePrevious}
-          disabled={currentStepIndex === 0}
-          className="inline-flex animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-3 py-2 text-gray-400 backdrop-blur-md animate-delay-200 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600"
-        >
-          <BackwardIcon className="h-5 w-5 text-green-500" /> Previous Quarter
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={currentStepIndex === stepTitles.length - 1}
-          className="animate-fade-in inline-flex items-center justify-center gap-3 border border-white/20 bg-[#898989]/5 px-3 py-2 text-gray-400 backdrop-blur-md animate-delay-200 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600"
-        >
-          Next Quarter <ForwardIcon className="h-5 w-5 text-green-500" />
-        </button>
       </div>
     </>
   );
