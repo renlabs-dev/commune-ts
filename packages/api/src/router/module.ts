@@ -24,6 +24,38 @@ export const moduleRouter = {
         where: eq(moduleData.id, input.id),
       });
     }),
+  paginatedAll: publicProcedure
+    .input(
+      z.object({
+        page: z.number().int().positive().default(1),
+        limit: z.number().int().positive().max(100).default(50),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit } = input;
+      const offset = (page - 1) * limit;
+
+      const modules = await ctx.db.query.moduleData.findMany({
+        limit: limit,
+        offset: offset,
+        orderBy: (moduleData, { asc }) => [asc(moduleData.id)],
+      });
+
+      const totalCount = await ctx.db
+        .select({ count: sql`count(*)` })
+        .from(moduleData)
+        .then((result) => Number(result[0]?.count));
+
+      return {
+        modules,
+        metadata: {
+          currentPage: page,
+          pageSize: limit,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+        },
+      };
+    }),
   // allModuleWeight: publicProcedure.query(async ({ ctx }) => {
   //   const result = await ctx.db
   //     .select({
