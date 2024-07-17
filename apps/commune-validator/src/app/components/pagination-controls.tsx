@@ -28,7 +28,7 @@ export function PaginationControls({ totalPages }: PaginationControlsProps) {
   };
 
   return (
-    <div className="mt-4 flex w-full items-center justify-between pb-24">
+    <div className="mt-4 flex w-fit items-center justify-start gap-6 pb-24">
       <button
         onClick={handlePrevPage}
         disabled={currentPage === 1}
@@ -36,9 +36,6 @@ export function PaginationControls({ totalPages }: PaginationControlsProps) {
       >
         Previous
       </button>
-      <span>
-        Page {currentPage} of {totalPages}
-      </span>
       <button
         onClick={handleNextPage}
         disabled={currentPage === totalPages}
@@ -46,6 +43,9 @@ export function PaginationControls({ totalPages }: PaginationControlsProps) {
       >
         Next
       </button>
+      <span>
+        Page {currentPage} of {totalPages}
+      </span>
     </div>
   );
 }

@@ -15,9 +15,9 @@ interface Params {
 }
 
 interface CustomMetadata {
-  Ok: {
-    title: string;
-    body: string;
+  Ok?: {
+    title?: string;
+    body?: string;
   };
 }
 
@@ -46,8 +46,9 @@ export default async function ModulePage({ params }: Params) {
     mdl.metadataUri ?? "",
   )) as CustomMetadata;
 
-  const title = metadata.Ok.title;
-  const description = metadata.Ok.body;
+  const title = metadata.Ok?.title ?? "No Metadata";
+  // limited to 140 characters
+  const description = metadata.Ok?.body ?? "This module has no custom metadata";
 
   return (
     <div className="container mx-auto p-4 pb-28 text-white">
@@ -83,7 +84,7 @@ export default async function ModulePage({ params }: Params) {
               </div>
               <div>
                 <h2 className="text-gray-400">Emission</h2>
-                <span>{mdl.emission}</span>
+                <span>{mdl.emission ?? 0}</span>
               </div>
             </div>
             <div className="flex flex-col gap-6">
@@ -97,7 +98,7 @@ export default async function ModulePage({ params }: Params) {
               </div>
               <div>
                 <h2 className="text-gray-400">Incentive</h2>
-                <span>{mdl.incentive}</span>
+                <span>{mdl.incentive ?? 0}</span>
               </div>
             </div>
           </div>

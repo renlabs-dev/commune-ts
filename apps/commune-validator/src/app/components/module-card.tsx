@@ -3,13 +3,13 @@ import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
 import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
 import { smallAddress } from "@commune-ts/providers/utils";
-import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 import { CopySquareButton } from "./copy-square-button";
 import { DelegateModuleWeight } from "./delegate-module-weight";
 
 interface ModuleCardProps {
   id: number;
+  name?: string;
   moduleKey: string; // SS58.1
   metadata: string | null; // IPFS
 }
@@ -28,14 +28,12 @@ export async function ModuleCard(props: ModuleCardProps) {
     props.metadata ?? "",
   )) as CustomMetadata;
 
-  const title = metadata.Ok?.title ?? "Untitled Module";
-  // limited to 140 characters
-  const description = metadata.Ok?.body ?? "";
+  const title = metadata.Ok?.title ?? "No Metadata";
 
   return (
     <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
       <h2 className="text-xl font-semibold text-white">{title}</h2>
-      <MarkdownView source={description.slice(0, 100)} />
+      <p>{props.name ?? ""}</p>
       <div className="flex items-center justify-between gap-2">
         <span className="flex w-full items-center gap-1 border border-white/20 bg-[#898989]/5 py-2 pl-2 backdrop-blur-md  md:text-sm 2xl:text-base">
           <Squares2X2Icon className="h-6 w-6 text-green-500" />{" "}
@@ -48,6 +46,7 @@ export async function ModuleCard(props: ModuleCardProps) {
         <DelegateModuleWeight
           id={props.id}
           title={title}
+          name={props.name ?? ""}
           moduleKey={props.moduleKey}
         />
         <Link
