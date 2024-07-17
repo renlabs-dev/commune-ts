@@ -32,6 +32,7 @@ export default async function Page({
             <ModuleCard
               id={module.id}
               key={module.id}
+              name={module.name ?? ""}
               moduleKey={module.moduleKey}
               metadata={module.metadataUri}
             />
