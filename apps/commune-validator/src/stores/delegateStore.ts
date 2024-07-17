@@ -5,6 +5,7 @@ interface DelegatedModule {
   id: number;
   address: string;
   title: string;
+  name: string;
   percentage: number;
 }
 
