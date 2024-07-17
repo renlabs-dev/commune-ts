@@ -7,6 +7,7 @@ import { useDelegateStore } from "~/stores/delegateStore";
 interface DelegateModuleWeightProps {
   id: number;
   title: string;
+  name: string;
   moduleKey: string;
 }
 
@@ -18,7 +19,12 @@ export function DelegateModuleWeight(props: DelegateModuleWeightProps) {
     if (isModuleDelegated) {
       removeModule(props.id);
     } else {
-      addModule({ id: props.id, address: props.moduleKey, title: props.title });
+      addModule({
+        id: props.id,
+        address: props.moduleKey,
+        title: props.title,
+        name: props.name,
+      });
     }
   };
 

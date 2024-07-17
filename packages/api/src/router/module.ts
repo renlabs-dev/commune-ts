@@ -86,6 +86,13 @@ export const moduleRouter = {
   //   return userWeightMap;
   // }),
   // POST
+  deleteUserModuleData: publicProcedure
+    .input(z.object({ userKey: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(userModuleData)
+        .where(eq(userModuleData.userKey, input.userKey));
+    }),
   createUserModuleData: publicProcedure
     .input(userModuleDataPostSchema)
     .mutation(async ({ ctx, input }) => {
