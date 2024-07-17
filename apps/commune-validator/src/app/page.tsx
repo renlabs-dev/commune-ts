@@ -1,12 +1,19 @@
+import { Suspense } from "react";
+
 import { api } from "~/trpc/server";
 import { ModuleCard } from "./components/module-card";
+import { PaginationControls } from "./components/pagination-controls";
 
-export default function Page(): JSX.Element {
-  return <ModulesCard />;
-}
-
-async function ModulesCard() {
-  const modules = await api.module.all();
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const currentPage = Number(searchParams.page) || 1;
+  const { modules, metadata } = await api.module.paginatedAll({
+    page: currentPage,
+    limit: 24,
+  });
 
   return (
     <main className="mx-auto flex max-w-screen-2xl flex-col items-start justify-center px-4 text-white">
@@ -33,6 +40,9 @@ async function ModulesCard() {
           <p>No modules found</p>
         )}
       </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <PaginationControls totalPages={metadata.totalPages} />
+      </Suspense>
     </main>
   );
 }
