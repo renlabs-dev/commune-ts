@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, sql } from "@commune-ts/db";
+import { eq, InferSelectModel, sql } from "@commune-ts/db";
 import {
   moduleData,
   moduleReport,
@@ -56,35 +56,6 @@ export const moduleRouter = {
         },
       };
     }),
-  // allModuleWeight: publicProcedure.query(async ({ ctx }) => {
-  //   const result = await ctx.db
-  //     .select({
-  //       userKey: userModuleData.userKey,
-  //       moduleId: userModuleData.moduleId,
-  //       weight: userModuleData.weight,
-  //     })
-  //     .from(moduleData)
-  //     .where(
-  //       eq(
-  //         moduleData.atBlock,
-  //         sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
-  //       ),
-  //     )
-  //     .innerJoin(
-  //       userModuleData,
-  //       eq(moduleData.moduleKey, userModuleData.moduleId),
-  //     );
-
-  //   // user -> module key -> weight (0–100)
-  //   const userWeightMap = new Map<string, Map<number, bigint>>();
-  //   result.forEach((entry) => {
-  //     if (!userWeightMap.has(entry.userKey)) {
-  //       userWeightMap.set(entry.userKey, new Map<number, bigint>());
-  //     }
-  //     userWeightMap.get(entry.userKey)!.set(entry.moduleId, entry.weight);
-  //   });
-  //   return userWeightMap;
-  // }),
   // POST
   deleteUserModuleData: publicProcedure
     .input(z.object({ userKey: z.string() }))
