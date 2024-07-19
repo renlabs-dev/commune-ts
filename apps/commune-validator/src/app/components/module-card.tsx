@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
@@ -21,14 +24,36 @@ interface CustomMetadata {
   };
 }
 
-export async function ModuleCard(props: ModuleCardProps) {
-  const metadata = (await fetchCustomMetadata(
-    "proposal",
-    props.id,
-    props.metadata ?? "",
-  )) as CustomMetadata;
+// Custom hook for fetching metadata
+function useCustomMetadata(id: number, metadata: string | null) {
+  const [customMetadata, setCustomMetadata] = useState<CustomMetadata | null>(
+    null,
+  );
 
-  const title = metadata.Ok?.title ?? "No Metadata";
+  useEffect(() => {
+    async function fetchMetadata() {
+      try {
+        const result = await fetchCustomMetadata(
+          "proposal",
+          id,
+          metadata ?? "",
+        );
+        setCustomMetadata(result as CustomMetadata);
+      } catch (error) {
+        console.error("Error fetching custom metadata:", error);
+      }
+    }
+
+    void fetchMetadata();
+  }, [id, metadata]);
+
+  return customMetadata;
+}
+
+export function ModuleCard(props: ModuleCardProps) {
+  const customMetadata = useCustomMetadata(props.id, props.metadata);
+
+  const title = customMetadata?.Ok?.title ?? "No Metadata";
 
   return (
     <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
@@ -40,7 +65,6 @@ export async function ModuleCard(props: ModuleCardProps) {
           {smallAddress(String(props.moduleKey))}
         </span>
         <CopySquareButton address={props.moduleKey} />
-        {/* <CopySquareButton address={props.address} /> */}
       </div>
       <div className="flex items-center justify-between gap-2">
         <DelegateModuleWeight

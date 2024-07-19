@@ -24,6 +24,19 @@ export const moduleRouter = {
         where: eq(moduleData.id, input.id),
       });
     }),
+  byUserModuleData: publicProcedure
+    .input(z.object({ userKey: z.string() }))
+    .query(async ({ ctx, input }) => {
+      // Query modules table joining it with user module data table and
+      // filtering by userKey
+      return await ctx.db
+        .select()
+        .from(moduleData)
+        .innerJoin(userModuleData, eq(moduleData.id, userModuleData.moduleId))
+        .where(eq(userModuleData.userKey, input.userKey))
+        .execute();
+    }),
+
   paginatedAll: publicProcedure
     .input(
       z.object({
