@@ -8,7 +8,7 @@ import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 import { api } from "~/trpc/server";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 interface Params {
   params: {
