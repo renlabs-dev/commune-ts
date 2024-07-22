@@ -68,13 +68,13 @@ export default async function ModulePage({ params }: Params) {
       </div>
       <div className="flex flex-col-reverse gap-6 md:flex-row">
         <div className="animate-fade-down animate-delay-300 md:w-[60%] xl:w-[70%]">
-          <div className="border border-white/20 bg-[#898989]/5 p-8">
+          <div className="border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
             <h2 className="mb-4 text-xl font-semibold">Description</h2>
             <MarkdownView source={description} />
           </div>
         </div>
-        <div className="animate-fade-down animate-delay-500 md:w-[40%] xl:w-[30%]">
-          <div className="flex justify-between border border-white/20 bg-[#898989]/5 p-8">
+        <div className="flex animate-fade-down flex-col gap-6 animate-delay-500 md:w-[40%] xl:w-[30%]">
+          <div className="flex justify-between border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
             <div className="flex flex-col gap-6">
               <div>
                 <h2 className="text-gray-400">Publication Date</h2>
@@ -87,6 +87,10 @@ export default async function ModulePage({ params }: Params) {
               <div>
                 <h2 className="text-gray-400">Emission</h2>
                 <span>{mdl.emission ?? 0}</span>
+              </div>
+              <div>
+                <h2 className="text-gray-400">Total Stakers</h2>
+                <span>{mdl.totalStakers ?? 0}</span>
               </div>
             </div>
             <div className="flex flex-col gap-6">
@@ -102,6 +106,25 @@ export default async function ModulePage({ params }: Params) {
                 <h2 className="text-gray-400">Incentive</h2>
                 <span>{mdl.incentive ?? 0}</span>
               </div>
+              <div>
+                <h2 className="text-gray-400">Total Staked</h2>
+                <span>{mdl.totalStaked ?? 0}</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col justify-between border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
+            <h2 className="mb-4 text-xl font-semibold">Stake to this Module</h2>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-gray-400">Amount</h2>
+              <input
+                type="number"
+                className="w-full bg-[#898989]/10 p-1 text-white"
+                min="0"
+                max="100000000000000"
+              />
+              <button className="w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10">
+                Stake
+              </button>
             </div>
           </div>
         </div>
