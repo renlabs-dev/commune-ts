@@ -23,13 +23,13 @@ export default function RootLayout({
       <div className="mb-4 flex w-full animate-fade-down flex-col gap-4 border-b border-white/20 pb-4 animate-delay-300 md:flex-row">
         <Link
           href="/"
-          className={`w-full gap-2 border  bg-[#898989]/5 p-3 text-center text-lg text-white transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
+          className={`w-full gap-2 border  bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
           All
         </Link>
         <Link
           href="/weighted"
-          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/weighted" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
+          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/weighted" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
           Weighted
         </Link>

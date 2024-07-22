@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronUpIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/providers/utils";
@@ -121,16 +122,22 @@ export function DelegatedModulesList() {
   return (
     <>
       {selectedAccount?.address && delegatedModules.length > 0 && (
-        <div className="fixed bottom-14 right-0 mr-4 mt-8 w-fit animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md">
+        <div className="fixed bottom-0 right-0 mt-8 w-full min-w-96 animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md md:bottom-14 md:mr-4 md:w-fit">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="flex w-full items-center justify-between p-2 text-xl font-semibold text-white"
           >
-            <span>Delegated Modules</span>
-            <span>{isOpen ? "▲" : "▼"}</span>
+            <span>Your Module List</span>
+            <span>
+              <ChevronUpIcon
+                className={`h-6 w-6 transform transition-transform ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </span>
           </button>
           {isOpen && (
-            <div className="p-2">
+            <div className="p-2 pt-2">
               <div className="mb-2 grid grid-cols-3 gap-6 border-b border-white/20 pb-2 text-sm font-semibold text-gray-400 md:grid-cols-4">
                 <div>Module</div>
                 <div className="hidden md:block">Name</div>
