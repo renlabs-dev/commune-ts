@@ -17,7 +17,7 @@ export default async function Page({
 
   return (
     <>
-      <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 backdrop-blur-md animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {modules.length ? (
           modules.map((module) => (
             <ModuleCard
