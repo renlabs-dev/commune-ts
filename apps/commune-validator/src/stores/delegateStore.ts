@@ -11,18 +11,21 @@ interface DelegatedModule {
 
 interface DelegateState {
   delegatedModules: DelegatedModule[];
+  originalModules: DelegatedModule[];
   addModule: (module: Omit<DelegatedModule, "percentage">) => void;
   removeModule: (id: number) => void;
   updatePercentage: (id: number, percentage: number) => void;
   getTotalPercentage: () => number;
-  setDelegatedModules: (modules: DelegatedModule[]) => void;
-  clearStorage: () => void;
+  setDelegatedModulesFromDB: (modules: DelegatedModule[]) => void;
+  hasUnsavedChanges: () => boolean;
+  updateOriginalModules: () => void;
 }
 
 export const useDelegateStore = create<DelegateState>()(
   persist(
     (set, get) => ({
       delegatedModules: [],
+      originalModules: [],
       addModule: (module) =>
         set((state) => ({
           delegatedModules: [
@@ -43,9 +46,23 @@ export const useDelegateStore = create<DelegateState>()(
       getTotalPercentage: () => {
         return get().delegatedModules.reduce((sum, m) => sum + m.percentage, 0);
       },
-      setDelegatedModules: (modules) =>
-        set(() => ({ delegatedModules: modules })),
-      clearStorage: () => set(() => ({ delegatedModules: [] })),
+      setDelegatedModulesFromDB: (modules) =>
+        set(() => ({ delegatedModules: modules, originalModules: modules })),
+      updateOriginalModules: () =>
+        set((state) => ({ originalModules: [...state.delegatedModules] })),
+      hasUnsavedChanges: () => {
+        const state = get();
+        if (state.delegatedModules.length !== state.originalModules.length) {
+          return true;
+        }
+        return state.delegatedModules.some((module, index) => {
+          const originalModule = state.originalModules[index];
+          return (
+            module.id !== originalModule?.id ||
+            module.percentage !== originalModule.percentage
+          );
+        });
+      },
     }),
     {
       name: "delegate-storage",
