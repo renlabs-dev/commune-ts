@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
@@ -15,13 +15,36 @@ export function DelegatedModulesList() {
     updatePercentage,
     removeModule,
     getTotalPercentage,
-    clearStorage,
+    setDelegatedModulesFromDB,
+    updateOriginalModules,
+    hasUnsavedChanges,
   } = useDelegateStore();
   const totalPercentage = getTotalPercentage();
   const { selectedAccount } = useCommune();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+
+  const { data: userModuleData, error } = api.module.byUserModuleData.useQuery(
+    { userKey: selectedAccount?.address ?? "" },
+    { enabled: !!selectedAccount?.address },
+  );
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching user module data:", error);
+    }
+    if (userModuleData) {
+      const formattedModules = userModuleData.map((module) => ({
+        id: module.module_data.id,
+        address: module.module_data.moduleKey,
+        title: module.module_data.name ?? "",
+        name: module.module_data.name ?? "",
+        percentage: module.user_module_data.weight,
+      }));
+      setDelegatedModulesFromDB(formattedModules);
+    }
+  }, [userModuleData, error, setDelegatedModulesFromDB, selectedAccount]);
 
   const handlePercentageChange = (id: number, percentage: number) => {
     if (percentage >= 0 && percentage <= 100) {
@@ -70,11 +93,28 @@ export function DelegatedModulesList() {
           weight: delegatedModule.percentage,
         });
       }
+
+      updateOriginalModules();
+
+      // Fetch updated data from the database
+      const { data: userModuleData } = api.module.byUserModuleData.useQuery(
+        { userKey: selectedAccount.address },
+        { enabled: !!selectedAccount.address },
+      );
+
+      // Update the store with the new data
+      const formattedModules = userModuleData?.map((module) => ({
+        id: module.module_data.id,
+        address: module.module_data.moduleKey,
+        title: module.module_data.name ?? "",
+        name: module.module_data.name ?? "",
+        percentage: module.user_module_data.weight,
+      }));
+      setDelegatedModulesFromDB(formattedModules ?? []);
+
+      setIsSubmitting(false);
     } catch (error) {
       console.error("Error submitting data:", error);
-    } finally {
-      setIsSubmitting(false);
-      clearStorage();
     }
   };
 
@@ -141,22 +181,30 @@ export function DelegatedModulesList() {
                   </span>
                 )}
               </div>
-              <button
-                onClick={handleSubmit}
-                className={`mt-4 w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
-                  isSubmitting ||
-                  totalPercentage !== 100 ||
-                  (!selectedAccount.address &&
-                    `hover:border-green-500 hover:bg-green-500/10`)
-                } disabled:opacity-50`}
-                disabled={
-                  isSubmitting ||
-                  totalPercentage !== 100 ||
-                  !selectedAccount.address
-                }
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </button>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleSubmit}
+                  className={`mt-4 w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
+                    isSubmitting ||
+                    totalPercentage !== 100 ||
+                    (!selectedAccount.address &&
+                      `hover:border-green-500 hover:bg-green-500/10`)
+                  } disabled:opacity-50`}
+                  disabled={
+                    isSubmitting ||
+                    totalPercentage !== 100 ||
+                    !selectedAccount.address
+                  }
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </button>
+                {hasUnsavedChanges() && (
+                  <div className="mb-4 bg-yellow-500/20 p-2 text-center text-yellow-500">
+                    You have unsaved changes. Please submit them before leaving
+                    the page.
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
