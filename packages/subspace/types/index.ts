@@ -4,11 +4,12 @@ import type { AnyTuple, Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
 import type { Extends } from "tsafe";
 import { ApiPromise } from "@polkadot/api";
+import { StorageKey } from "@polkadot/types";
 import { decodeAddress } from "@polkadot/util-crypto";
+import { Variant } from "rustie/dist/enum";
 import { assert } from "tsafe";
 import { z } from "zod";
-import { Variant } from "rustie/dist/enum";
-import { StorageKey } from "@polkadot/types";
+
 import { assertOrThrow } from "../utils";
 
 export type { Codec } from "@polkadot/types/types";
@@ -23,11 +24,19 @@ export type Nullish = null | undefined;
 export type Api = ApiDecoration<"promise"> | ApiPromise;
 
 // == rustie related stuff ==
-type KeysOfUnion<T> = T extends T ? keyof T: never;
+type KeysOfUnion<T> = T extends T ? keyof T : never;
 
-type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<T, Record<K, unknown>>[K];
+type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
+  T,
+  Record<K, unknown>
+>[K];
 
-type UnionToVariants<T> = KeysOfUnion<T> extends infer K ? K extends KeysOfUnion<T> ? Variant<K, ValueOfUnion<T, K>> : never : never;
+type UnionToVariants<T> =
+  KeysOfUnion<T> extends infer K
+    ? K extends KeysOfUnion<T>
+      ? Variant<K, ValueOfUnion<T, K>>
+      : never
+    : never;
 // ==========================
 
 export interface BaseProposal {
@@ -60,9 +69,9 @@ export const isNotNull = <T>(item: T | null): item is T => item !== null;
 
 /**
  * == Subspace refresh times ==
- * 
+ *
  * TODO: these values should be passed as parameters in the functions passed by the apps (env).
- * 
+ *
  * Time to consider last block query un-fresh. Half block time is the expected
  * time for a new block at a random point in time, so:
  * block_time / 2  ==  8 seconds / 2  ==  4 seconds
@@ -73,7 +82,7 @@ export const LAST_BLOCK_STALE_TIME = (1000 * 8) / 2;
  * Time to consider proposals query state un-fresh. They don't change a lot,
  * only when a new proposal is created and people should be able to see new
  * proposals fast enough.
- * 
+ *
  * 1 minute (arbitrary).
  */
 export const PROPOSALS_STALE_TIME = 1000 * 60;
@@ -92,8 +101,7 @@ export const STAKE_STALE_TIME = 1000 * 60 * 5; // 5 minutes (arbitrary)
 export interface StakeOutData {
   total: bigint;
   perAddr: Map<string, bigint>;
-  perNet: Map<number, bigint>;
-  perAddrPerNet: Map<number, Map<string, bigint>>;
+  perAddrPerNet: Map<string, Map<string, bigint>>;
 }
 
 export interface LastBlock {
@@ -266,7 +274,9 @@ const PROPOSAL_STATUS_SCHEMA = z.union([
   }),
 ]);
 
-export type ProposalStatus = UnionToVariants<z.infer<typeof PROPOSAL_STATUS_SCHEMA>>; 
+export type ProposalStatus = UnionToVariants<
+  z.infer<typeof PROPOSAL_STATUS_SCHEMA>
+>;
 
 export const PROPOSAL_DATA_SCHEMA = z.union([
   z.object({ globalCustom: z.null() }),
@@ -295,7 +305,9 @@ export function parseProposal(valueRaw: Codec): Proposal | null {
   return validated.data;
 }
 
-export type ProposalData = UnionToVariants<z.infer<typeof PROPOSAL_DATA_SCHEMA>>; 
+export type ProposalData = UnionToVariants<
+  z.infer<typeof PROPOSAL_DATA_SCHEMA>
+>;
 
 export interface Proposal {
   id: number;
@@ -371,7 +383,11 @@ const PARAM_FIELD_DISPLAY_NAMES = {
 } as const;
 
 export const paramNameToDisplayName = (paramName: string): string => {
-  return PARAM_FIELD_DISPLAY_NAMES[paramName as keyof typeof PARAM_FIELD_DISPLAY_NAMES] ?? paramName;
+  return (
+    PARAM_FIELD_DISPLAY_NAMES[
+      paramName as keyof typeof PARAM_FIELD_DISPLAY_NAMES
+    ] ?? paramName
+  );
 };
 
 export const SUBSPACE_MODULE_NAME_SCHEMA = z.string();
@@ -391,18 +407,35 @@ export const SUBSPACE_MODULE_SCHEMA = z.object({
   lastUpdate: SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.optional(),
 });
 
-export interface SubspaceModule extends z.infer<typeof SUBSPACE_MODULE_SCHEMA> {};
+export interface SubspaceModule
+  extends z.infer<typeof SUBSPACE_MODULE_SCHEMA> {}
 
+export type OptionalProperties<T> = keyof T extends infer K
+  ? K extends keyof T
+    ? T[K] extends infer U
+      ? U extends undefined
+        ? K
+        : never
+      : never
+    : never
+  : never;
 
-export type OptionalProperties<T> = keyof T extends infer K ? K extends keyof T ? T[K] extends infer U ? U extends undefined ? K : never : never : never : never;
-
-export const modulePropResolvers: { [P in OptionalProperties<SubspaceModule>]: (value: Codec) => z.SafeParseReturnType<any, SubspaceModule[P]> } = {
-  name: (value: Codec) => SUBSPACE_MODULE_NAME_SCHEMA.safeParse(value.toPrimitive()),
-  address: (value: Codec) => SUBSPACE_MODULE_ADDRESS_SCHEMA.safeParse(value.toPrimitive()),
-  registrationBlock: (value: Codec) => SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.safeParse(value.toPrimitive()),
-  lastUpdate: (value: Codec) => SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.safeParse(value.toPrimitive()), // not really working right now (Cannot read properties of undefined (reading 'toPrimitive'))
-  metadata: (value: Codec) => SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
-}
+export const modulePropResolvers: {
+  [P in OptionalProperties<SubspaceModule>]: (
+    value: Codec,
+  ) => z.SafeParseReturnType<any, SubspaceModule[P]>;
+} = {
+  name: (value: Codec) =>
+    SUBSPACE_MODULE_NAME_SCHEMA.safeParse(value.toPrimitive()),
+  address: (value: Codec) =>
+    SUBSPACE_MODULE_ADDRESS_SCHEMA.safeParse(value.toPrimitive()),
+  registrationBlock: (value: Codec) =>
+    SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.safeParse(value.toPrimitive()),
+  lastUpdate: (value: Codec) =>
+    SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.safeParse(value.toPrimitive()), // not really working right now (Cannot read properties of undefined (reading 'toPrimitive'))
+  metadata: (value: Codec) =>
+    SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
+};
 
 export class StorageEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
@@ -423,9 +456,11 @@ export class StorageEntry {
    * as the module identifier can be a uid or a key, this function resolves it to a key
    */
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
-    const isUid = typeof this.uidOrKey === 'number';
+    const isUid = typeof this.uidOrKey === "number";
 
-    const key = isUid ? uidKeyMap.get(this.netuid)!.get(this.uidOrKey)! : this.uidOrKey;
+    const key = isUid
+      ? uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
+      : this.uidOrKey;
 
     assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
 
@@ -440,6 +475,6 @@ export function newSubstrateModule(keyEntry: StorageEntry): SubspaceModule {
   return SUBSPACE_MODULE_SCHEMA.parse({
     uid: keyEntry.uidOrKey as number,
     netuid: keyEntry.netuid,
-    key
+    key,
   });
 }

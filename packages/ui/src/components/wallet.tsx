@@ -22,8 +22,7 @@ interface TWallet {
     | {
         total: bigint;
         perAddr: Map<string, bigint>;
-        perNet: Map<number, bigint>;
-        perAddrPerNet: Map<number, Map<string, bigint>>;
+        perAddrPerNet: Map<string, Map<string, bigint>>;
       }
     | undefined;
   balance: string;
