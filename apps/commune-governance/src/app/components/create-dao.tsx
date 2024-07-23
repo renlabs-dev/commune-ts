@@ -88,6 +88,7 @@ export function CreateDao(): JSX.Element {
         });
       }
       router.refresh();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setUploading(false);
       toast.error("Error uploading S0 Application");
@@ -134,7 +135,7 @@ export function CreateDao(): JSX.Element {
   return (
     <>
       <button
-        className="min-w-auto w-full border bg-[#898989]/5 backdrop-blur-md px-4 py-3 text-white hover:border-green-600 hover:text-green-600"
+        className="min-w-auto w-full border bg-[#898989]/5 px-4 py-3 text-white backdrop-blur-md hover:border-green-600 hover:text-green-600"
         onClick={toggleModalMenu}
         type="button"
       >
@@ -145,14 +146,14 @@ export function CreateDao(): JSX.Element {
         role="dialog"
       >
         {/* Backdrop */}
-        <div className="fixed inset-0 transition-opacity bg-black bg-opacity-60 backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-black/60 bg-opacity-60 backdrop-blur-sm transition-opacity" />
 
         {/* Modal */}
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto animate-fade-in-down">
-          <div className="flex items-center justify-center min-h-full p-4 text-center">
-            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-gray-500 bg-[url('/bg-pattern.svg')] text-left md:w-[80%]">
+        <div className="fixed inset-0 z-10 w-screen animate-fade-in-down overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-white/20 bg-[#898989]/5 px-4 py-3 text-left text-white backdrop-blur-md md:w-[80%]">
               {/* Modal Header */}
-              <div className="flex items-center justify-between gap-3 p-6 text-white bg-center bg-no-repeat border-b border-gray-500 md:flex-row">
+              <div className="flex items-center justify-between gap-3 border-b border-white/20 bg-center bg-no-repeat p-6 text-white md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">
                   <h3
                     className="pl-2 text-xl font-bold leading-6 text-white"
@@ -167,7 +168,7 @@ export function CreateDao(): JSX.Element {
                   onClick={toggleModalMenu}
                   type="button"
                 >
-                  <XMarkIcon className="w-6 h-6 fill-white" />
+                  <XMarkIcon className="h-6 w-6 fill-white" />
                 </button>
               </div>
               {/* Modal Body */}
@@ -193,7 +194,7 @@ export function CreateDao(): JSX.Element {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setApplicationKey(e.target.value);
                           }}
@@ -202,7 +203,7 @@ export function CreateDao(): JSX.Element {
                           value={applicationKey}
                         />
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setDiscordId(e.target.value);
                           }}
@@ -211,7 +212,7 @@ export function CreateDao(): JSX.Element {
                           value={discordId}
                         />
                         <input
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setTitle(e.target.value);
                           }}
@@ -220,7 +221,7 @@ export function CreateDao(): JSX.Element {
                           value={title}
                         />
                         <textarea
-                          className="w-full p-3 text-white bg-black"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setBody(e.target.value);
                           }}
@@ -266,7 +267,7 @@ export function CreateDao(): JSX.Element {
                     </p>
                   ) : null}
 
-                  <div className="flex items-start gap-1 mt-1 text-white">
+                  <div className="mt-1 flex items-start gap-1 text-white">
                     <InformationCircleIcon className="mt-0.5 h-4 w-4 fill-green-500 text-sm" />
                     <span className="text-sm">
                       Please make sure, that your application meets all of the

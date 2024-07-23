@@ -48,7 +48,7 @@ export function VotingPowerButton(): JSX.Element | null {
     "By default, your voting power is delegated to a validator. If you're not a validator and prefer to manage your own votes, click here!";
 
   return (
-    <div className="p-6">
+    <div>
       <div className="flex w-full flex-row items-center justify-center gap-3">
         <button
           className="w-11/12 border border-gray-500 py-1 font-semibold text-green-500 transition duration-200 hover:border-green-600 hover:bg-green-500/10"

@@ -16,7 +16,7 @@ function CardHeader(props: CardProps): JSX.Element {
   const { children, className = "" } = props;
   return (
     <div
-      className={`relative flex w-full items-center justify-center border-b bg-[#898989]/5 backdrop-blur-md border-white/20 px-4 py-3 lg:flex-row lg:justify-start ${className}`}
+      className={`relative flex w-full items-center justify-center border-b border-white/20 bg-[#898989]/5 px-4 py-3 backdrop-blur-md lg:flex-row lg:justify-start ${className}`}
     >
       {children}
     </div>
