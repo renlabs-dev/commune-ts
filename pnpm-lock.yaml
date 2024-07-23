@@ -31,7 +31,14 @@ importers:
 
   apps/commune-cache:
     dependencies:
+<<<<<<< HEAD
       "@polkadot/api":
+=======
+      '@commune-ts/subspace':
+        specifier: workspace:*
+        version: link:../../packages/subspace
+      '@polkadot/api':
+>>>>>>> b93d558 (chore: update pnpm lock)
         specifier: ^11.1.1
         version: 11.3.1
       express:
@@ -41,19 +48,27 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
     devDependencies:
+<<<<<<< HEAD
       "@commune-ts/db":
         specifier: workspace:*
         version: link:../../packages/db
       "@commune-ts/eslint-config":
+=======
+      '@commune-ts/eslint-config':
+>>>>>>> b93d558 (chore: update pnpm lock)
         specifier: workspace:*
         version: link:../../tooling/eslint
       "@commune-ts/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
+<<<<<<< HEAD
       "@commune-ts/subspace":
         specifier: workspace:*
         version: link:../../packages/subspace
       "@commune-ts/tsconfig":
+=======
+      '@commune-ts/tsconfig':
+>>>>>>> b93d558 (chore: update pnpm lock)
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@polkadot/api-augment":
@@ -709,6 +724,24 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.5.4
+
+  packages/log:
+    devDependencies:
+      '@commune-ts/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@commune-ts/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.14.10
+      tsx:
+        specifier: ^4.15.6
+        version: 4.16.2
+      typescript:
+        specifier: ^5.4.5
+        version: 5.5.3
 
   packages/providers:
     dependencies:
