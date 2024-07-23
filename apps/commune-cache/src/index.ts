@@ -8,13 +8,13 @@ import JSONBigInt from "json-bigint"
 
 import express from "express";
 
-const JSONBig = JSONBigInt({ useNativeBigInt: true, alwaysParseAsBig: true, strict: true });
-
 import {
   ApiPromise,
   queryLastBlock,
   queryStakeOut,
 } from "@commune-ts/subspace/queries";
+
+const JSONBig = JSONBigInt({ useNativeBigInt: true, alwaysParseAsBig: true, strict: true });
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -121,11 +121,42 @@ function mapToObj<K extends string | number, V>(map: Map<K, V>): Record<string, 
 }
 
 stakeOutLoop()
-.catch(console.error);
+  .catch(console.error);
 
 const app = express()
 
-app.get('/api/stake-out', (req, res) => {
+type Ms = number;
+
+// wait for something, checking if it's ready every interval ms, until maxTime ms have passed
+const waitFor = async (
+  awaiter: string,
+  resourceName: string,
+  interval: Ms,
+  maxTime: Ms,
+  isReady: () => boolean,
+  verbose: boolean
+) => {
+  let totalTime = 0;
+  while (totalTime < maxTime && !isReady()) {
+    if (verbose)
+      console.log(`${awaiter} is waiting for ${resourceName} for ${totalTime/1000}s`);
+    await sleep(interval);
+    totalTime += interval;
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+app.get('/api/stake-out', async (req, res) => {
+  const hasData = () => stakeOutData.atBlock !== -1n;
+
+  // if we don't have data yet, wait for it for at most 50s
+  await waitFor(`request ${req.ip}`, "StakeOut data", 2000, 50_000, hasData, true);
+
+  if (!hasData()) {
+    res.status(503).send("StakeOut data not available yet");
+    return;
+  }
+
   res.header('Content-Type', 'application/json').send(getStakeOutDataStringfied());
 })
 
