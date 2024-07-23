@@ -136,12 +136,12 @@ export function CreateProposal(): JSX.Element {
         role="dialog"
       >
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity" />
+        <div className="fixed inset-0 bg-black/60 bg-opacity-60 backdrop-blur-sm transition-opacity" />
 
         {/* Modal */}
         <div className="fixed inset-0 z-10 w-screen animate-fade-in-down overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-gray-500 bg-white bg-[url('/bg-pattern.svg')] text-left text-white md:w-[80%]">
+            <div className="relative w-[100%] max-w-screen-2xl transform overflow-hidden border border-white/20 bg-[#898989]/5 px-5 py-3 text-left text-white backdrop-blur-md md:w-[80%]">
               {/* Modal Header */}
               <div className="flex items-center justify-between gap-3 border-b border-gray-500 bg-cover bg-center bg-no-repeat p-6 md:flex-row">
                 <div className="flex flex-col items-center md:flex-row">
@@ -184,7 +184,7 @@ export function CreateProposal(): JSX.Element {
                     {editMode ? (
                       <div className="flex flex-col gap-3">
                         <input
-                          className="w-full bg-black p-3 text-white"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setTitle(e.target.value);
                           }}
@@ -193,7 +193,7 @@ export function CreateProposal(): JSX.Element {
                           value={title}
                         />
                         <textarea
-                          className="w-full bg-black p-3 text-white"
+                          className="w-full bg-white/10 p-3 text-white"
                           onChange={(e) => {
                             setBody(e.target.value);
                           }}
