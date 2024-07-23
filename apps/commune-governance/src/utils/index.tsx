@@ -151,6 +151,24 @@ export function calcProposalFavorablePercent(
   });
 }
 
+export function handleProposalVotesInFavor(proposalStatus: ProposalStatus) {
+  return match(proposalStatus)({
+    open: ({ stakeFor }) => formatToken(Number(stakeFor)),
+    accepted: ({ stakeFor }) => formatToken(Number(stakeFor)),
+    refused: ({ stakeFor }) => formatToken(Number(stakeFor)),
+    expired: () => "—",
+  });
+}
+
+export function handleProposalVotesAgainst(proposalStatus: ProposalStatus) {
+  return match(proposalStatus)({
+    open: ({ stakeAgainst }) => formatToken(Number(stakeAgainst)),
+    accepted: ({ stakeAgainst }) => formatToken(Number(stakeAgainst)),
+    refused: ({ stakeAgainst }) => formatToken(Number(stakeAgainst)),
+    expired: () => "—",
+  });
+}
+
 export function handleProposalStakeVoted(
   proposalStatus: ProposalStatus,
 ): string {

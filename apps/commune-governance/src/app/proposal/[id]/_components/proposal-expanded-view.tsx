@@ -2,17 +2,16 @@
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-import type {
-  ProposalStatus,
-  SS58Address,
-} from "@commune-ts/providers/types";
+import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
+  handleProposalVotesAgainst,
+  handleProposalVotesInFavor,
 } from "../../../../utils";
 import { MarkdownView } from "../../../components/markdown-view";
 import { StatusLabel } from "../../../components/status-label";
@@ -24,8 +23,12 @@ interface CustomContent {
   paramId: number;
 }
 
-function renderVoteData(favorablePercent: number | null): JSX.Element | null {
-  if (favorablePercent === null) return null;
+function renderVoteData(
+  favorablePercent: number | null,
+  proposalStatus: ProposalStatus,
+) {
+  if (favorablePercent === null)
+    return "This proposal has no votes yet or is closed.";
 
   const againstPercent = 100 - favorablePercent;
   return (
@@ -33,13 +36,15 @@ function renderVoteData(favorablePercent: number | null): JSX.Element | null {
       <div className="flex justify-between">
         <span className="text-sm font-semibold">Favorable</span>
         <div className="flex items-center gap-2 divide-x">
-          <span className="text-xs">{favorablePercent} COMAI</span>
+          <span className="text-xs">
+            {handleProposalVotesInFavor(proposalStatus)} COMAI
+          </span>
           <span className="pl-2 text-sm font-semibold text-green-500">
             {favorablePercent.toFixed(2)}%
           </span>
         </div>
       </div>
-      <div className="bg-section-gray my-2 w-full">
+      <div className="my-2 w-full bg-section-gray">
         <div
           className="bg-green-400 py-2"
           style={{
@@ -50,13 +55,15 @@ function renderVoteData(favorablePercent: number | null): JSX.Element | null {
       <div className="mt-8 flex justify-between">
         <span className="font-semibold">Against</span>
         <div className="flex items-center gap-2 divide-x">
-          <span className="text-xs">{formatToken(againstPercent)} COMAI</span>
+          <span className="text-xs">
+            {handleProposalVotesAgainst(proposalStatus)} COMAI
+          </span>
           <span className="pl-2 text-sm font-semibold text-red-500">
             {againstPercent.toFixed(2)}%
           </span>
         </div>
       </div>
-      <div className="bg-section-gray my-2 w-full">
+      <div className="my-2 w-full bg-section-gray">
         <div
           className="bg-red-400 py-2"
           style={{
@@ -97,11 +104,8 @@ const handleUserVotes = ({
 export function ProposalExpandedView(props: CustomContent): JSX.Element {
   const { paramId } = props;
 
-  const {
-    selectedAccount,
-    proposalsWithMeta,
-    isProposalsLoading,
-  } = useCommune();
+  const { selectedAccount, proposalsWithMeta, isProposalsLoading } =
+    useCommune();
 
   function handleProposalsContent() {
     const proposal = proposalsWithMeta?.find((p) => p.id === paramId);
@@ -143,61 +147,64 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
     );
 
   return (
-    <>
-      <div className="flex flex-col lg:w-2/3 lg:overflow-auto">
-        <div className="border-b border-gray-500 p-6">
-          <h2 className="text-base font-semibold">{content.title}</h2>
+    <div className="flex flex-col md:mb-48 md:flex-row">
+      <div className="m-2 flex h-fit flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md lg:w-2/3">
+        <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
+          <h2 className="text-lg font-semibold">{content.title}</h2>
         </div>
-        <div className="h-full p-6 lg:overflow-auto">
+        <div className="h-full lg:overflow-auto">
           <MarkdownView source={(content.body as string | undefined) ?? ""} />
         </div>
       </div>
 
       <div className="flex flex-col lg:w-1/3">
-        <div className="border-b border-t border-gray-500 p-6 pr-20 lg:border-t-0">
+        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
           <div className="flex flex-col gap-3">
             <div>
-              <span className="text-gray-500">ID</span>
-              <span className="flex items-center">{content.id}</span>
+              <span>ID</span>
+              <span className="flex items-center text-white">{content.id}</span>
             </div>
 
             <div>
-              <span className="text-gray-500">Author</span>
-              <span className="flex items-center">
+              <span>Author</span>
+              <span className="flex items-center text-white">
                 {smallAddress(content.author)}
               </span>
             </div>
             <div>
-              <span className="text-gray-500">Expiration block</span>
-              <span className="flex items-center">
+              <span>Expiration block</span>
+              <span className="flex items-center text-white">
                 {content.expirationBlock}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="border-b border-gray-500 p-6">
+        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <VoteLabel vote={content.voted!} />
+            <VoteLabel vote={content.voted} />
             <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
-              {(content.netuid !== "GLOBAL" && (
-                <span> Subnet {content.netuid} </span>
-              )) || <span> Global </span>}
+              <span>Subnet {content.netuid}</span>
             </span>
-            <StatusLabel result={content.status as ProposalStatus} />
+            <StatusLabel result={content.status} />
           </div>
         </div>
 
-        <VoteCard proposalId={content.id} voted="UNVOTED" />
-        <div className="border-b border-gray-500 p-6">
+        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+          <VoteCard proposalId={content.id} voted="UNVOTED" />
+        </div>
+
+        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
           <VotingPowerButton />
         </div>
-        <div className="w-full border-gray-500 p-6 lg:border-b">
+
+        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
           {renderVoteData(
-            calcProposalFavorablePercent(content.status as ProposalStatus),
+            calcProposalFavorablePercent(content.status),
+            content.status,
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
