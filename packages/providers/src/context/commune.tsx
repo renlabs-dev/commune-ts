@@ -178,14 +178,14 @@ export function CommuneProvider({
       if (allAccounts) {
         setAccounts(allAccounts);
       }
-      setOpenWalletModal(true)
+      setOpenWalletModal(true);
     } catch (error) {
       return undefined;
     }
   }
 
   function handleWalletModal(state?: boolean): void {
-    setOpenWalletModal(state || !openWalletModal)
+    setOpenWalletModal(state || !openWalletModal);
   }
 
   function handleConnectWrapper(): void {
