@@ -70,10 +70,10 @@ pnpm db:push
 ## Docker
 
 The Docker setup for each app is in `docker/<app-name>`. You can build and run
-the image for the sample app with
+the image for the sample app with:
 
 ```sh
-
+docker compose -f docker/sample-app/docker-compose.yml up
 ```
 
 ## Useful Links
