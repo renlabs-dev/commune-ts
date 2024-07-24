@@ -1,11 +1,13 @@
 "use client";
 
-import type { SS58Address } from "@commune-ts/providers/types";
-import { CreateDao } from "./create-dao";
-import { CreateProposal } from "./create-proposal";
 import { LinkIcon } from "@heroicons/react/20/solid";
+
+import type { SS58Address } from "@commune-ts/providers/types";
 import { toast } from "@commune-ts/providers/use-toast";
 import { smallAddress } from "@commune-ts/providers/utils";
+
+import { CreateDao } from "./create-dao";
+import { CreateProposal } from "./create-proposal";
 
 interface ProposalListHeaderProps {
   viewMode: string;
@@ -30,26 +32,28 @@ export function ProposalListHeader(
   }
 
   return (
-    <div className="flex flex-col w-full gap-10 divide-gray-500 lg:pt-5 lg:max-w-screen-2xl lg:flex-row mt-10 lg:mt-0">
-      <div className={`w-full hidden lg:flex`}>
+    <div className="mt-10 flex w-full flex-col gap-10 divide-gray-500 lg:mt-0 lg:max-w-screen-2xl lg:flex-row lg:pt-5">
+      <div
+        className={`hidden w-full animate-fade-down animate-delay-300 lg:flex`}
+      >
         <button
-          className="text-white flex lg:flex-col xl:flex-row justify-center px-5 py-3 items-center w-full border border-white/20 hover:border-green-500 bg-[#898989]/5 backdrop-blur-md xl:gap-2"
+          className="flex w-full items-center justify-center border border-white/20 bg-[#898989]/5 px-5 py-3 text-white backdrop-blur-md hover:border-green-500 lg:flex-col xl:flex-row xl:gap-2"
           onClick={handleCopyClick}
         >
-          <span className="flex items-center text-base font-light text-gray-200 text-pretty">
-            <LinkIcon className="w-5 h-5 mr-2" />
+          <span className="flex items-center text-pretty text-base font-light text-gray-200">
+            <LinkIcon className="mr-2 h-5 w-5" />
             DAO treasury address
           </span>
           {daoTreasury ? (
-            <span className="text-green-500 text-pretty">
+            <span className="text-pretty text-green-500">
               {smallAddress(daoTreasury)}
             </span>
           ) : null}
         </button>
       </div>
-      <div className="flex items-center justify-center w-full gap-3">
+      <div className="flex w-full animate-fade-down items-center justify-center gap-3 animate-delay-500">
         <button
-          className={`w-1/2 border bg-[#898989]/5 h-full backdrop-blur-md px-5 py-3 ${viewMode === "proposals" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
+          className={`h-full w-1/2 border bg-[#898989]/5 px-5 py-3 backdrop-blur-md ${viewMode === "proposals" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
           onClick={() => {
             setViewMode("proposals");
           }}
@@ -58,7 +62,7 @@ export function ProposalListHeader(
           Proposals View
         </button>
         <button
-          className={`w-1/2 border bg-[#898989]/5 h-full backdrop-blur-md px-5 py-3 ${viewMode === "daos" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
+          className={`h-full w-1/2 border bg-[#898989]/5 px-5 py-3 backdrop-blur-md ${viewMode === "daos" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
           onClick={() => {
             setViewMode("daos");
           }}
@@ -67,10 +71,10 @@ export function ProposalListHeader(
           S0 Applications
         </button>
       </div>
-      <div className="items-center justify-end hidden w-full gap-2 lg:flex">
+      <div className="hidden w-full animate-fade-down items-center justify-end gap-2 animate-delay-700 lg:flex">
         <CreateProposal />
         <CreateDao />
       </div>
-    </div >
+    </div>
   );
 }

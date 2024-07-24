@@ -10,9 +10,9 @@ import { BalanceSection } from "./components/balance-section";
 import { CardSkeleton } from "./components/card-skeleton";
 import { Container } from "./components/container";
 import { DaoCard } from "./components/dao-card";
+import { FooterDivider } from "./components/footer-divider";
 import { ProposalCard } from "./components/proposal-card";
 import { ProposalListHeader } from "./components/proposal-list-header";
-import { FooterDivider } from "./components/footer-divider";
 
 export default function HomePage(): JSX.Element {
   const {
@@ -22,6 +22,7 @@ export default function HomePage(): JSX.Element {
     isDaosLoading,
     selectedAccount,
     daoTreasury,
+    isInitialized,
   } = useCommune();
 
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
@@ -100,15 +101,36 @@ export default function HomePage(): JSX.Element {
   const content = viewMode === "proposals" ? renderProposals() : renderDaos();
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      <div className="w-full h-full bg-repeat">
+    <main className="flex w-full flex-col items-center justify-center">
+      <div className="h-full w-full bg-repeat">
         <Container>
           <BalanceSection className="hidden lg:flex" />
 
-          <ProposalListHeader setViewMode={setViewMode} viewMode={viewMode} daoTreasury={daoTreasury} />
+          <ProposalListHeader
+            setViewMode={setViewMode}
+            viewMode={viewMode}
+            daoTreasury={daoTreasury}
+          />
 
-          <div className="w-full py-10 space-y-10">
-            {isLoading ? <CardSkeleton /> : content}
+          <div className="w-full space-y-10 py-10">
+            {isLoading ||
+            !isInitialized ||
+            !proposalsWithMeta ||
+            !daosWithMeta ? (
+              <div className="flex flex-col gap-6">
+                <div className="animate-fade-up animate-delay-200">
+                  <CardSkeleton />
+                </div>
+                <div className="animate-fade-up animate-delay-500">
+                  <CardSkeleton />
+                </div>
+                <div className="animate-fade-up animate-delay-700">
+                  <CardSkeleton />
+                </div>
+              </div>
+            ) : (
+              content
+            )}
           </div>
           <FooterDivider />
         </Container>
