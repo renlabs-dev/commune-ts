@@ -135,7 +135,7 @@ export function CreateDao(): JSX.Element {
   return (
     <>
       <button
-        className="min-w-auto w-full border bg-[#898989]/5 px-4 py-3 text-white backdrop-blur-md hover:border-green-600 hover:text-green-600"
+        className="min-w-auto w-full animate-fade-down border bg-[#898989]/5 px-4 py-3 text-white backdrop-blur-md animate-delay-700 hover:border-green-600 hover:text-green-600"
         onClick={toggleModalMenu}
         type="button"
       >

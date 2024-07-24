@@ -71,7 +71,7 @@ export function ProposalListHeader(
           S0 Applications
         </button>
       </div>
-      <div className="hidden w-full animate-fade-down items-center justify-end gap-2 animate-delay-700 lg:flex">
+      <div className="hidden w-full items-center justify-end gap-2 lg:flex">
         <CreateProposal />
         <CreateDao />
       </div>
