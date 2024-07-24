@@ -352,7 +352,7 @@ export function CommuneProvider({
       applicationKey,
       IpfsHash,
     );
-    await sendTransaction("Create S0 Application", transaction, callback);
+    await sendTransaction("Create S2 Application", transaction, callback);
   }
 
   async function updateDelegatingVotingPower({

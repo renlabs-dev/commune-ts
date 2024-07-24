@@ -68,7 +68,7 @@ export function ProposalListHeader(
           }}
           type="button"
         >
-          S0 Applications
+          S2 Applications
         </button>
       </div>
       <div className="hidden w-full items-center justify-end gap-2 lg:flex">

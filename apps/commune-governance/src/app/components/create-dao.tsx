@@ -79,19 +79,19 @@ export function CreateDao(): JSX.Element {
         });
       } else {
         toast.error(
-          `Insufficient balance to create S0 Application. Required: ${daoApplicationCost} but got ${balance}`,
+          `Insufficient balance to create S2 Application. Required: ${daoApplicationCost} but got ${balance}`,
         );
         setTransactionStatus({
           status: "ERROR",
           finalized: true,
-          message: "Insufficient balance to create S0 Application",
+          message: "Insufficient balance to create S2 Application",
         });
       }
       router.refresh();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setUploading(false);
-      toast.error("Error uploading S0 Application");
+      toast.error("Error uploading S2 Application");
     }
   }
 
@@ -100,7 +100,7 @@ export function CreateDao(): JSX.Element {
     setTransactionStatus({
       status: "STARTING",
       finalized: false,
-      message: "Starting S0 Application creation...",
+      message: "Starting S2 Application creation...",
     });
 
     const result = daoSchema.safeParse({
@@ -115,7 +115,7 @@ export function CreateDao(): JSX.Element {
       setTransactionStatus({
         status: "ERROR",
         finalized: true,
-        message: "Error creating S0 Application",
+        message: "Error creating S2 Application",
       });
       return;
     }
@@ -139,7 +139,7 @@ export function CreateDao(): JSX.Element {
         onClick={toggleModalMenu}
         type="button"
       >
-        Create New S0 Application
+        Create New S2 Application
       </button>
       <div
         className={`relative z-50 ${modalOpen ? "visible" : "hidden"} -mr-2`}
@@ -159,7 +159,7 @@ export function CreateDao(): JSX.Element {
                     className="pl-2 text-xl font-bold leading-6 text-white"
                     id="modal-title"
                   >
-                    Build New S0 Application
+                    Build New S2 Application
                   </h3>
                 </div>
 
@@ -252,7 +252,7 @@ export function CreateDao(): JSX.Element {
                       disabled={!isConnected}
                       type="submit"
                     >
-                      {uploading ? "Uploading..." : "Submit S0 Application"}
+                      {uploading ? "Uploading..." : "Submit S2 Application"}
                     </button>
                   </div>
                   {transactionStatus.status ? (
