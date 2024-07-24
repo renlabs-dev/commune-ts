@@ -147,8 +147,8 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
     );
 
   return (
-    <div className="flex flex-col md:mb-48 md:flex-row">
-      <div className="m-2 flex h-fit flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md lg:w-2/3">
+    <div className="flex flex-col md:flex-row">
+      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[810px] md:min-h-[810px] lg:w-2/3">
         <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
           <h2 className="text-lg font-semibold">{content.title}</h2>
         </div>
@@ -158,7 +158,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
       </div>
 
       <div className="flex flex-col lg:w-1/3">
-        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400  backdrop-blur-md animate-delay-200">
           <div className="flex flex-col gap-3">
             <div>
               <span>ID</span>
@@ -180,7 +180,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           </div>
         </div>
 
-        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-300">
           <div className="flex items-center gap-3">
             <VoteLabel vote={content.voted} />
             <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
@@ -190,15 +190,15 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           </div>
         </div>
 
-        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-500">
           <VoteCard proposalId={content.id} voted="UNVOTED" />
         </div>
 
-        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-700">
           <VotingPowerButton />
         </div>
 
-        <div className="m-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-1000">
           {renderVoteData(
             calcProposalFavorablePercent(content.status),
             content.status,
