@@ -7,6 +7,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
+import { VoterList } from "~/app/components/voter-list";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
@@ -27,12 +28,19 @@ function renderVoteData(
   favorablePercent: number | null,
   proposalStatus: ProposalStatus,
 ) {
-  if (favorablePercent === null)
-    return "This proposal has no votes yet or is closed.";
+  if (favorablePercent === null) {
+    return (
+      <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-1000">
+        <h3 className="mb-2 text-lg font-semibold">Votes</h3>
+        <p>This proposal has no votes yet or is closed.</p>
+      </div>
+    );
+  }
 
   const againstPercent = 100 - favorablePercent;
   return (
-    <>
+    <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-1000">
+      <h3 className="mb-2 text-lg font-semibold">Votes</h3>
       <div className="flex justify-between">
         <span className="text-sm font-semibold">Favorable</span>
         <div className="flex items-center gap-2 divide-x">
@@ -52,7 +60,7 @@ function renderVoteData(
           }}
         />
       </div>
-      <div className="mt-8 flex justify-between">
+      <div className="mt-6 flex justify-between">
         <span className="font-semibold">Against</span>
         <div className="flex items-center gap-2 divide-x">
           <span className="text-xs">
@@ -71,7 +79,7 @@ function renderVoteData(
           }}
         />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -147,8 +155,8 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
     );
 
   return (
-    <div className="flex flex-col md:flex-row">
-      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[810px] md:min-h-[810px] lg:w-2/3">
+    <div className="flex w-full flex-col md:flex-row">
+      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[77.5vh] md:min-h-[77.5vh] lg:w-2/3">
         <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
           <h2 className="text-lg font-semibold">{content.title}</h2>
         </div>
@@ -202,12 +210,12 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           <VotingPowerButton />
         </div>
 
-        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-1000">
-          {renderVoteData(
-            calcProposalFavorablePercent(content.status),
-            content.status,
-          )}
-        </div>
+        {renderVoteData(
+          calcProposalFavorablePercent(content.status),
+          content.status,
+        )}
+
+        <VoterList proposalStatus={content.status} />
       </div>
     </div>
   );
