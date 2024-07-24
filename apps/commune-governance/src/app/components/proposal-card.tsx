@@ -19,7 +19,6 @@ import {
 } from "../../utils";
 import { Card } from "./card";
 import { Label } from "./label";
-import { Skeleton } from "./skeleton";
 import { StatusLabel } from "./status-label";
 import { VoteLabel } from "./vote-label";
 
@@ -76,13 +75,17 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
       className={`${invalid ? "opacity-50" : ""} ${invalid ? "hidden" : ""}`}
       key={proposalState.id}
     >
-      <Card.Header className="z-10 flex-col bg-[#898989]/5 backdrop-blur-md">
+      <Card.Header className="flex-col bg-[#898989]/5 backdrop-blur-md">
         {title ? (
           <h2 className="pb-4 text-base font-semibold text-white lg:pb-0">
             {title}
           </h2>
         ) : null}
-        {!title && <Skeleton className="mb-3 w-8/12 py-3 pb-4 lg:mb-0" />}
+        {!title && (
+          <h2 className="animate-pulse pb-4 text-base font-semibold text-gray-500 lg:pb-0">
+            Loading Custom Metadata Title
+          </h2>
+        )}
 
         <div className="mb-2 flex w-full flex-row justify-center gap-2 lg:mb-0 lg:ml-auto lg:w-auto lg:flex-row lg:justify-end lg:pl-4">
           <VoteLabel vote={voted} />

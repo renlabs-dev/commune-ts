@@ -34,7 +34,14 @@ export function VotingPowerButton(): JSX.Element | null {
   }
 
   if (!selectedAccount) {
-    return null;
+    return (
+      <button
+        className="w-full border border-gray-500 py-1 font-semibold text-gray-500 transition duration-200 hover:border-gray-600 hover:bg-gray-500/10"
+        disabled={true}
+      >
+        Add wallet to Become a Power User
+      </button>
+    );
   }
 
   function handleVote(): void {
