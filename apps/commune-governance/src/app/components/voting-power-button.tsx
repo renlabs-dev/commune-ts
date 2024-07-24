@@ -64,7 +64,9 @@ export function VotingPowerButton(): JSX.Element | null {
           }}
           type="submit"
         >
-          {isPowerUser ? "Enable vote power delegation" : "Become a Power User"}
+          {isPowerUser
+            ? "Enable vote power delegation"
+            : "Click to Become a Power User"}
         </button>
         <div className="relative w-1/12">
           <button
