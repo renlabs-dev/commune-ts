@@ -4,7 +4,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
 import {
@@ -104,7 +104,7 @@ const handleUserVotes = ({
 export function ProposalExpandedView(props: CustomContent): JSX.Element {
   const { paramId } = props;
 
-  const { selectedAccount, proposalsWithMeta, isProposalsLoading } =
+  const { selectedAccount, proposalsWithMeta, isProposalsLoading, lastBlock } =
     useCommune();
 
   function handleProposalsContent() {
@@ -172,9 +172,13 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
               </span>
             </div>
             <div>
-              <span>Expiration block</span>
-              <span className="flex items-center text-white">
-                {content.expirationBlock}
+              <span>Expiration Time</span>
+              <span className="flex items-end gap-1 text-white">
+                {getExpirationTime(
+                  lastBlock?.blockNumber,
+                  content.expirationBlock,
+                  true,
+                )}
               </span>
             </div>
           </div>
