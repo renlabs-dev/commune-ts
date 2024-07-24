@@ -184,7 +184,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           <div className="flex items-center gap-3">
             <VoteLabel vote={content.voted} />
             <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
-              <span>Subnet {content.netuid}</span>
+              <span>{content.netuid}</span>
             </span>
             <StatusLabel result={content.status} />
           </div>
