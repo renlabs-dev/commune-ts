@@ -107,3 +107,36 @@ export const copyToClipboard = (text: string) => {
   // @ts-ignore
   navigator.clipboard.writeText(text);
 };
+
+// == Time ==
+
+export function getExpirationTime(
+  blockNumber: number | undefined,
+  expirationBlock: number,
+  shouldReturnRemainingTime: boolean,
+) {
+  if (!blockNumber) return "Unknown";
+
+  const blocksRemaining = expirationBlock - blockNumber;
+  const secondsRemaining = blocksRemaining * 8; // 8 seconds per block
+
+  const expirationDate = new Date(Date.now() + secondsRemaining * 1000);
+  const currentDate = new Date();
+
+  // Format the date as MM/DD/YYYY
+  const month = (expirationDate.getMonth() + 1).toString().padStart(2, "0");
+  const day = expirationDate.getDate().toString().padStart(2, "0");
+  const year = expirationDate.getFullYear();
+
+  const formattedDate = `${month}/${day}/${year}`;
+
+  // Check if the expiration time has passed
+  if (expirationDate <= currentDate) {
+    return `${formattedDate} ${shouldReturnRemainingTime ? "(Expired)" : ""}`;
+  }
+
+  // Calculate hours remaining
+  const hoursRemaining = Math.floor(secondsRemaining / 3600);
+
+  return `${formattedDate} ${shouldReturnRemainingTime ? `(${hoursRemaining} hours)` : ""}`;
+}
