@@ -11,6 +11,7 @@ import { Header } from "@commune-ts/ui/header";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { MobileHeaderContent } from "./components/mobile-header-content";
+import ProposalRewardCard from "./components/proposal-reward-card";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
+          <ProposalRewardCard />
           <TRPCReactProvider>
             <Header
               logoSrc="/logo.svg"
