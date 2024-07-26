@@ -40,6 +40,8 @@ import {
   useLastBlock,
   useNotDelegatingVoting,
   useProposals,
+  useRewardAllocation,
+  useUnrewardedProposals,
 } from "../hooks";
 import { calculateAmount, formatToken } from "../utils";
 
@@ -85,6 +87,12 @@ interface CommuneContextType {
 
   notDelegatingVoting: string[] | undefined;
   isNotDelegatingVotingLoading: boolean;
+
+  unrewardedProposals: number[] | undefined;
+  isUnrewardedProposalsLoading: boolean;
+
+  rewardAllocation: bigint | null | undefined;
+  isRewardAllocationLoading: boolean;
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
@@ -421,6 +429,14 @@ export function CommuneProvider({
   const { data: notDelegatingVoting, isLoading: isNotDelegatingVotingLoading } =
     useNotDelegatingVoting(lastBlock?.apiAtBlock);
 
+  // Unrewarded Proposals
+  const { data: unrewardedProposals, isLoading: isUnrewardedProposalsLoading } =
+    useUnrewardedProposals(lastBlock?.apiAtBlock);
+
+  // Reward Allocation
+  const { data: rewardAllocation, isLoading: isRewardAllocationLoading } =
+    useRewardAllocation(lastBlock?.apiAtBlock);
+
   // Stake Out
   const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
     lastBlock?.apiAtBlock,
@@ -521,6 +537,12 @@ export function CommuneProvider({
 
         notDelegatingVoting,
         isNotDelegatingVotingLoading,
+
+        unrewardedProposals,
+        isUnrewardedProposalsLoading,
+
+        rewardAllocation,
+        isRewardAllocationLoading,
 
         stakeOut,
         isStakeOutLoading,
