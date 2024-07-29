@@ -28,14 +28,10 @@ importers:
 
   apps/commune-cache:
     dependencies:
-<<<<<<< HEAD
-      "@polkadot/api":
-=======
-      '@commune-ts/subspace':
+      "@commune-ts/subspace":
         specifier: workspace:*
         version: link:../../packages/subspace
-      '@polkadot/api':
->>>>>>> b93d558 (chore: update pnpm lock)
+      "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
       express:
@@ -45,27 +41,13 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
     devDependencies:
-<<<<<<< HEAD
-      "@commune-ts/db":
-        specifier: workspace:*
-        version: link:../../packages/db
       "@commune-ts/eslint-config":
-=======
-      '@commune-ts/eslint-config':
->>>>>>> b93d558 (chore: update pnpm lock)
         specifier: workspace:*
         version: link:../../tooling/eslint
       "@commune-ts/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-<<<<<<< HEAD
-      "@commune-ts/subspace":
-        specifier: workspace:*
-        version: link:../../packages/subspace
       "@commune-ts/tsconfig":
-=======
-      '@commune-ts/tsconfig':
->>>>>>> b93d558 (chore: update pnpm lock)
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@polkadot/api-augment":
@@ -77,6 +59,9 @@ importers:
       "@types/json-bigint":
         specifier: ^1.0.4
         version: 1.0.4
+      "@types/node":
+        specifier: ^20.11.24
+        version: 20.14.12
       dotenv-cli:
         specifier: ^7.4.2
         version: 7.4.2
@@ -94,13 +79,13 @@ importers:
         version: 3.3.3
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.14.10)(typescript@5.5.3)
+        version: 10.9.2(@types/node@20.14.12)(typescript@5.5.4)
       tsx:
         specifier: ^4.15.6
         version: 4.16.2
       typescript:
         specifier: ^5.4.5
-        version: 5.5.3
+        version: 5.5.4
 
   apps/commune-governance:
     dependencies:
@@ -613,24 +598,6 @@ importers:
         specifier: ^5.4.5
         version: 5.5.4
 
-  packages/log:
-    devDependencies:
-      '@commune-ts/eslint-config':
-        specifier: workspace:*
-        version: link:../../tooling/eslint
-      '@commune-ts/tsconfig':
-        specifier: workspace:*
-        version: link:../../tooling/typescript
-      '@types/node':
-        specifier: ^20.11.24
-        version: 20.14.10
-      tsx:
-        specifier: ^4.15.6
-        version: 4.16.2
-      typescript:
-        specifier: ^5.4.5
-        version: 5.5.3
-
   packages/providers:
     dependencies:
       "@commune-ts/subspace":
@@ -746,9 +713,9 @@ importers:
       "@commune-ts/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
-      tsx:
-        specifier: ^4.15.6
-        version: 4.16.2
+      "@types/node":
+        specifier: ^20.11.24
+        version: 20.14.12
 
   packages/ui:
     dependencies:
@@ -4916,6 +4883,12 @@ packages:
       }
     engines: { node: ">=16" }
     hasBin: true
+
+  ee-first@1.1.1:
+    resolution:
+      {
+        integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==,
+      }
 
   electron-to-chromium@1.5.0:
     resolution:
@@ -10157,6 +10130,13 @@ packages:
       }
     engines: { node: ^14.17.0 || ^16.13.0 || >=18.0.0 }
 
+  vary@1.1.2:
+    resolution:
+      {
+        integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==,
+      }
+    engines: { node: ">= 0.8" }
+
   vercel@35.1.0:
     resolution:
       {
@@ -11781,11 +11761,11 @@ snapshots:
   "@types/body-parser@1.19.5":
     dependencies:
       "@types/connect": 3.4.38
-      "@types/node": 20.14.10
+      "@types/node": 20.14.12
 
   "@types/connect@3.4.38":
     dependencies:
-      "@types/node": 20.14.10
+      "@types/node": 20.14.12
 
   "@types/debug@4.1.12":
     dependencies:
@@ -11809,7 +11789,7 @@ snapshots:
 
   "@types/express-serve-static-core@4.19.5":
     dependencies:
-      "@types/node": 20.14.10
+      "@types/node": 20.14.12
       "@types/qs": 6.9.15
       "@types/range-parser": 1.2.7
       "@types/send": 0.17.4
@@ -11889,12 +11869,12 @@ snapshots:
   "@types/send@0.17.4":
     dependencies:
       "@types/mime": 1.3.5
-      "@types/node": 20.14.10
+      "@types/node": 20.14.12
 
   "@types/serve-static@1.15.7":
     dependencies:
       "@types/http-errors": 2.0.4
-      "@types/node": 20.14.10
+      "@types/node": 20.14.12
       "@types/send": 0.17.4
 
   "@types/stats.js@0.17.3": {}
@@ -12996,6 +12976,8 @@ snapshots:
       pretty-ms: 7.0.1
       signal-exit: 4.0.2
       time-span: 4.0.0
+
+  ee-first@1.1.1: {}
 
   electron-to-chromium@1.5.0: {}
 
@@ -16764,6 +16746,8 @@ snapshots:
   v8-compile-cache-lib@3.0.1: {}
 
   validate-npm-package-name@5.0.1: {}
+
+  vary@1.1.2: {}
 
   vercel@35.1.0:
     dependencies:
