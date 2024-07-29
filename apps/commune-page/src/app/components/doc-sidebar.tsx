@@ -66,7 +66,7 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
       <div
         aria-hidden="true"
         aria-label="Global"
-        className={`animate-menu-fade fixed z-10 h-[calc(100svh-69px)] w-full backdrop-blur-sm lg:h-[calc(100svh-123px)] lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
+        className={`fixed z-10 h-[calc(100svh-69px)] w-full backdrop-blur-sm lg:h-[calc(100svh-123px)] lg:w-[17rem] lg:backdrop-blur-none ${mobileMenuOpen ? "visible" : "hidden"} lg:block`}
       >
         <div
           id="background-blurred"
@@ -88,9 +88,9 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
             />
           </button>
 
-          <div className="mb-4 mt-8 flex h-fit items-center border border-white/20 bg-black lg:mt-0">
+          <div className="mb-4 mt-8 flex h-fit items-center pr-4 lg:mt-0">
             <input
-              className="w-auto bg-black px-2 py-1 text-gray-200 focus:outline-none"
+              className="w-fit border border-white/20 bg-black px-2 py-1 text-gray-200"
               value={searchValue}
               onChange={(e) => {
                 handleSearchInput(e.target.value);
