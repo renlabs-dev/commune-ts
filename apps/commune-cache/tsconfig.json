@@ -1,9 +1,19 @@
 {
   "extends": "@commune-ts/tsconfig/internal-package.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+    "outDir": "./dist",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "noEmit": false,
+    "emitDeclarationOnly": false,
   },
   "include": ["*.ts", "src"],
-  "exclude": ["node_modules", "build", "dist", ".next"]
+  "exclude": ["node_modules"]
 }
