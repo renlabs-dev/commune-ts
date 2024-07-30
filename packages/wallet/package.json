@@ -1,0 +1,24 @@
+{
+  "name": "@commune-ts/wallet",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./button": "./src/components/wallet-button.tsx"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@commune-ts/ui": "workspace:*",
+    "@commune-ts/providers": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@commune-ts/eslint-config": "workspace:*",
+    "@commune-ts/tailwind-config": "workspace:*",
+    "@commune-ts/tsconfig": "workspace:*",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "typescript": "^5.4.5"
+  }
+}

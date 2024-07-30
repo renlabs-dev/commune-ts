@@ -11,8 +11,6 @@ import {
 } from "@polkadot/extension-inject/types";
 import { toast } from "react-toastify";
 
-import { Wallet } from "@commune-ts/ui/wallet";
-
 import type {
   AddCustomProposal,
   AddDaoApplication,
@@ -40,7 +38,7 @@ import {
   useNotDelegatingVoting,
   useProposals,
 } from "../hooks";
-import { calculateAmount, formatToken } from "../utils";
+import { calculateAmount } from "../utils";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -111,7 +109,6 @@ export function CommuneProvider({
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [openWalletModal, setOpenWalletModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
@@ -178,24 +175,13 @@ export function CommuneProvider({
       if (allAccounts) {
         setAccounts(allAccounts);
       }
-      setOpenWalletModal(true);
     } catch (error) {
       return undefined;
     }
   }
 
-  function handleWalletModal(state?: boolean): void {
-    setOpenWalletModal(state || !openWalletModal);
-  }
-
   function handleConnectWrapper(): void {
     handleConnect();
-  }
-
-  function handleWalletSelections(wallet: InjectedAccountWithMeta): void {
-    localStorage.setItem("favoriteWalletAddress", wallet.address);
-    setSelectedAccount(wallet);
-    setIsConnected(true);
   }
 
   // == Transaction Handler ==
@@ -261,7 +247,6 @@ export function CommuneProvider({
   // == Transactions ==
 
   async function addStake({
-    netUid,
     validator,
     amount,
     callback,
@@ -269,7 +254,6 @@ export function CommuneProvider({
     if (!api?.tx.subspaceModule?.addStake) return;
 
     const transaction = api.tx.subspaceModule.addStake(
-      netUid,
       validator,
       calculateAmount(amount),
     );
@@ -277,7 +261,6 @@ export function CommuneProvider({
   }
 
   async function removeStake({
-    netUid,
     validator,
     amount,
     callback,
@@ -285,7 +268,6 @@ export function CommuneProvider({
     if (!api?.tx.subspaceModule?.removeStake) return;
 
     const transaction = api.tx.subspaceModule.removeStake(
-      netUid,
       validator,
       calculateAmount(amount),
     );
@@ -303,13 +285,11 @@ export function CommuneProvider({
     fromValidator,
     toValidator,
     amount,
-    netUid,
     callback,
   }: TransferStake): Promise<void> {
     if (!api?.tx.subspaceModule?.transferStake) return;
 
     const transaction = api.tx.subspaceModule.transferStake(
-      netUid,
       fromValidator,
       toValidator,
       calculateAmount(amount),
@@ -503,21 +483,6 @@ export function CommuneProvider({
         isDaosLoading,
       }}
     >
-      <Wallet
-        addStake={addStake}
-        balance={formatToken(balance || 0n)}
-        handleConnect={handleConnect}
-        handleWalletModal={handleWalletModal}
-        handleWalletSelections={handleWalletSelections}
-        isInitialized={isInitialized}
-        openWalletModal={openWalletModal}
-        removeStake={removeStake}
-        selectedAccount={selectedAccount}
-        stakeOut={stakeOut}
-        transfer={transfer}
-        transferStake={transferStake}
-        wallets={accounts}
-      />
       {children}
     </CommuneContext.Provider>
   );
