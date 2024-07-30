@@ -13,6 +13,8 @@ import {
   queryRegisteredModulesInfo,
 } from "@commune-ts/subspace/queries";
 
+import express from "express";
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -125,3 +127,15 @@ function buildConflictUpdateColumns<
 main()
   .catch(console.error)
   .finally(() => process.exit());
+
+const app = express();
+
+app.get("/api/health", (_, res) => {
+  res.send("OK");
+})
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  log(`/helth listening on port ${port}`);
+});
