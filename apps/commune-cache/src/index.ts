@@ -28,15 +28,15 @@ function log(msg: unknown, ...args: unknown[]) {
 const stakeOutData: {
   total: bigint;
   perAddr: Record<string, bigint>;
-  perNet: Record<number, bigint>;
-  perNetPerAddr: Record<number, Record<string, bigint>>;
+  perAddrPerNet: Record<number, Record<string, bigint>>;
   atBlock: bigint;
+  atTime: Date;
 } = {
   total: -1n,
   perAddr: {},
-  perNet: {},
-  perNetPerAddr: {},
+  perAddrPerNet: {},
   atBlock: -1n,
+  atTime: new Date(),
 };
 
 const stakeOutDataStringfied = {
@@ -85,19 +85,18 @@ async function stakeOutLoop() {
       const data = await queryStakeOut(lastBlock.apiAtBlock);
 
       const total = data.total;
-      const perNetPerAddr: Record<string, Record<string, bigint>> = {};
+      const perAddrPerNet: Record<string, Record<string, bigint>> = {};
       
-      for (const [net, perAddr] of data.perAddrPerNet.entries()) {
-        perNetPerAddr[net] = mapToObj(perAddr);
+      for (const [from, toMany] of data.perAddrPerNet.entries()) {
+        perAddrPerNet[from] = mapToObj(toMany);
       }
-      const perNet = mapToObj(data.perNet);
       const perAddr = mapToObj(data.perAddr);
 
       stakeOutData.total = total;
       stakeOutData.perAddr = perAddr;
-      stakeOutData.perNet = perNet;
-      stakeOutData.perNetPerAddr = perNetPerAddr;
+      stakeOutData.perAddrPerNet = perAddrPerNet;
       stakeOutData.atBlock = BigInt(lastBlock.blockNumber);
+      stakeOutData.atTime = new Date();
 
       log(
         `Block ${lastBlock.blockNumber}: queryStakeOut in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
@@ -160,6 +159,16 @@ app.get('/api/stake-out', async (req, res) => {
   res.header('Content-Type', 'application/json').send(getStakeOutDataStringfied());
 })
 
-app.listen(3000, () => {
+app.get('/api/health', (req, res) => {
+  res.status(200).send("OK");
+});
+
+app.get('/api/health/details', (req, res) => {
+  res.status(200).send({ status: 'ok', lastBlock: Number(stakeOutData.atBlock), atTime: stakeOutData.atTime, deltaSeconds: (new Date().getTime() - stakeOutData.atTime.getTime()) / 1000 });
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
   console.log('server running on port 3000')
 })
