@@ -16,6 +16,7 @@ import { Wallet } from "@commune-ts/ui/wallet";
 import type {
   AddCustomProposal,
   AddDaoApplication,
+  addTransferDaoTreasuryProposal,
   BaseDao,
   BaseProposal,
   DaoState,
@@ -65,6 +66,9 @@ interface CommuneContextType {
 
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
+  addTransferDaoTreasuryProposal: (
+    proposal: addTransferDaoTreasuryProposal,
+  ) => Promise<void>;
 
   updateDelegatingVotingPower: (
     updateDelegating: UpdateDelegatingVotingPower,
@@ -355,6 +359,26 @@ export function CommuneProvider({
     await sendTransaction("Create S2 Application", transaction, callback);
   }
 
+  async function addTransferDaoTreasuryProposal({
+    IpfsHash,
+    value,
+    dest,
+    callback,
+  }: addTransferDaoTreasuryProposal): Promise<void> {
+    if (!api?.tx.governanceModule?.addTransferDaoTreasuryProposal) return;
+
+    const transaction = api.tx.governanceModule.addTransferDaoTreasuryProposal(
+      IpfsHash,
+      calculateAmount(value),
+      dest,
+    );
+    await sendTransaction(
+      "Create Transfer Dao Treasury Proposal",
+      transaction,
+      callback,
+    );
+  }
+
   async function updateDelegatingVotingPower({
     isDelegating,
     callback,
@@ -481,6 +505,7 @@ export function CommuneProvider({
         voteProposal,
         addCustomProposal,
         addDaoApplication,
+        addTransferDaoTreasuryProposal,
 
         updateDelegatingVotingPower,
 
