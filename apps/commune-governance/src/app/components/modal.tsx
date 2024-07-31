@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
+import { CreateTransferDaoTreasuryProposal } from "./add-transfer-dao-treasury-proposal";
 import { CreateDao } from "./create-dao";
 import { CreateProposal } from "./create-proposal";
 
@@ -67,13 +68,21 @@ export function CreateModal() {
                   <option value="dao" className="bg-gray-900">
                     Create new S2 Application
                   </option>
+                  <option
+                    value="create-transfer-dao-treasury"
+                    className="bg-gray-900"
+                  >
+                    Create Transfer Dao Treasury Proposal
+                  </option>
                 </select>
 
                 {/* Modal Body */}
                 {selectedView === "proposal" ? (
                   <CreateProposal />
-                ) : (
+                ) : selectedView === "dao" ? (
                   <CreateDao />
+                ) : (
+                  <CreateTransferDaoTreasuryProposal />
                 )}
               </div>
             </div>
