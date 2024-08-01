@@ -1,105 +1,71 @@
 # Running a Commune Node
 
-## Requirements
+## Running the Subspace Node with Docker
 
-- [Docker](https://docs.docker.com/get-docker/)
-- **Docker Compose**
-- [**wget**](https://github.com/mirror/wget)
-- [**yq**](https://mikefarah.gitbook.io/yq/)
+**Must have:**
 
-Installing on Ubuntu:
+**Docker Installed**: Ensure you have Docker installed on your machine. If not, you can download it from [Docker's official website](https://www.docker.com/products/docker-desktop).
 
-```sh
-sudo apt install docker.io docker-compose
-sudo apt install wget
+#### Step-by-Step Instructions
 
-# Ubuntu has **yq** on apt since 23.04
-sudo apt install yq
-# On older versions, you can install it with:
-sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && \
-    sudo chmod +x /usr/bin/yq
-```
+1. **Run the Docker Command**:
+   ```sh
+   docker run --rm -ti ghcr.io/agicommies/subspace:ad75e7d node-subspace --chain main --sync warp
+   ```
+   This command will:
+   - `docker run` starts a new Docker container.
+   - `--rm` ensures the container is removed after it stops.
+   - `-ti` allocates a pseudo-TTY and keeps the container interactive.
+   - `ghcr.io/agicommies/subspace:ad75e7d` specifies the Docker image to use.
+   - `node-subspace --chain main --sync warp` runs the Subspace node with the specified options.
 
-## Docker Image
+2. **Verify the Node is Running**:
+   - You should see output in the terminal indicating the node is starting. If there are any errors, make sure Docker is correctly installed and try running the command again.
 
-We provide the laster Docker image for the Commune node in [this Github
-package](https://github.com/agicommies/subspace-network/pkgs/container/subspace) at the [**latest** tag](https://github.com/agicommies/subspace-network/pkgs/container/subspace/164109015?tag=latest). You can pull the
-image with the command:
+#### Viewing Package Versions
 
-```sh
-docker pull ghcr.io/agicommies/subspace:dd5a1e5
-```
+You can view all package versions for the Docker image at the following link:
+[Subspace Docker Package Versions](https://github.com/agicommies/subspace-network/pkgs/container/subspace/229541186?tag=ad75e7d)
 
-## Chain specs
+## Running the Subspace Node from Source
 
-You can get the chain specs file from the [**main/specs/main.json** file] at
-[github.com/agicommies/subspace/blob/current/specs/main.json](https://github.com/agicommies/subspace/blob/current/specs/main.json):
+**Must have:**
 
-```sh
-wget https://github.com/agicommies/subspace/raw/current/specs/main.json
-```
+1. **Git Installed**: You'll need Git to clone the repository. Download it from [Git's official website](https://git-scm.com/).
+2. **Rust Installed**: The Rust programming language is required for building the source code. Install it from [Rust's official website](https://www.rust-lang.org/).
 
-## Getting bootnodes
+#### Step-by-Step Instructions
 
-You can currently get the bootnodes list with:
+1. **Clone the Repository**:
+   - Open a terminal and run:
+     ```sh
+     git clone https://github.com/commune-ai/subspace
+     ```
+   - This command will clone the Subspace repository to your local machine.
 
-```sh
-wget https://github.com/agicommies/communex/raw/main/docs/bootnodes.txt
-```
+2. **Navigate to the Project Directory**:
+   - Change to the cloned directory:
+     ```sh
+     cd subspace
+     ```
 
-## Deploying the config
+3. **Install Rust** (if not already installed):
+   - Run the following command to install Rust:
+     ```sh
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+     ```
+   - Follow the on-screen instructions to complete the installation. You may need to restart your terminal or run `source $HOME/.cargo/env` to update your environment.
 
-```sh
-# cd into this directory if you haven't already
-cd docs/running_a_node/
-```
+4. **Compile the Latest Release**:
+   - Ensure you're in the `subspace` directory, then run:
+     ```sh
+     cargo build --release
+     ```
+   - This command will compile the Subspace node. It may take some time, depending on your computer's performance.
 
-Pick a directory to store the node data, and copy the chain specs, bootnodes
-list and start script into it:
-
-```sh
-export COMMUNE_NODE_DIR="/commune-node"
-echo COMMUNE_NODE_DIR=$COMMUNE_NODE_DIR > .env
-
-mkdir -p "$COMMUNE_NODE_DIR/specs"
-
-cp main.json "$COMMUNE_NODE_DIR/specs/main.json"
-cp bootnodes.txt "$COMMUNE_NODE_DIR/bootnodes.txt"
-cp node-start.sh "$COMMUNE_NODE_DIR/node-start.sh"
-```
-
-### Note
-
-- Make sure that the **COMMUNE_NODE_DIR** variable is correctly set in your shell
-  and in the **.env** file (used by **docker-compose**).
-- Make sure you don't have old node data in that directory if you want to run
-  the node fresh!
-
-## Running the node
-
-The provided [**docker-compose.yml** file](https://github.com/agicommies/communex/blob/main/docs/running_a_node/docker-compose.yml) expects the environment variable
-**COMMUNE_NODE_DIR** to be set to the node data directory, that will be mounted to
-**/node-data** inside the container. It will serve the P2P connection at **30333**
-and the RPC service at **9933**.
-
-```sh
-docker-compose up -d
-```
-
-By default the node will work in archive mode, which means it will store all the
-chain data (gigabytes). This can be changed by replacing the **--pruning=archive**
-and **--sync=full** flags with **--sync=warp** in the **docker-compose.yml** script.
-
-Now you can track the telemetry using [this link](http://telemetry.communeai.net/#/0xbc6eb9753e2417476601485f9f8ef8474701ec199d456f989bd397682c9425c5)
-
----
-
-References:
-
-- [docs.substrate.io/reference/command-line-tools/node-template/](https://docs.substrate.io/reference/command-line-tools/node-template/)
-
-[docker-package]: https://github.com/orgs/agicommies/packages/container/package/subspace
-[docker-image]: https://github.com/orgs/agicommies/packages/container/subspace/164109015?tag=latest
-[**commune/modules/subspace/chain/chain.yaml** file]: https://github.com/commune-ai/commune/blob/main/commune/modules/subspace/chain/chain.yaml
-[**main/specs/main.json** file]: https://github.com/commune-ai/subspace/blob/main/specs/main.json
-[**./docker-compose.yml** file]: https://github.com/agicommies/communex/blob/main/docs/running_a_node/docker-compose.yml
+5. **Start the Node**:
+   - Once the compilation is complete, start the node with:
+     ```sh
+     ./target/release/node-subspace --chain main --sync warp
+     ```
+   - You should see output indicating the node is starting. If there are any errors, ensure Rust and its dependencies are correctly installed and try running the command again.
