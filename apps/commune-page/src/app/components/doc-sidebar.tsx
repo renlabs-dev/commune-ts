@@ -87,7 +87,6 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
               className="h-6 w-6 fill-white"
             />
           </button>
-
           <div className="mb-4 mt-8 flex h-fit items-center pr-4 lg:mt-0">
             <input
               className="w-fit border border-white/20 bg-black px-2 py-1 text-gray-200"
