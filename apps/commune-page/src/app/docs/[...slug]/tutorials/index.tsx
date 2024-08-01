@@ -21,6 +21,7 @@ import ParticipatingOnSubnet from "./participating-on-a-subnet.mdx";
 import RunMiner from "./run-miner.mdx";
 import RunValidator from "./run-validator.mdx";
 import RunningLocalNode from "./running-local-node.mdx";
+import RunningPrivateChain from "./running-private-chain.mdx";
 // Installation
 import SetupCommune from "./setup-commune.mdx";
 import SetupWallet from "./setup-wallet.mdx";
@@ -268,6 +269,11 @@ const subspaceSection = [
     component: <RunningLocalNode />,
     href: `running-local-node`,
     name: "Running a Local Node",
+  },
+  {
+    component: <RunningPrivateChain />,
+    href: `running-private-chain`,
+    name: "Running a Private Chain",
   },
 ];
 
