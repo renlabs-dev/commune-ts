@@ -135,3 +135,21 @@ export const proposalCommentSchema = createTable("proposal_comment", {
 }, (t) => ({
   proposalIdIndex: index("proposal_id_index").on(t.proposalId),
 }));
+
+export enum VoteType {
+  UP = "UP",
+  DOWN = "DOWN",
+}
+
+export const commentInteractionSchema = createTable("comment_interaction", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  commentId: uuid("comment_id")
+    .references(() => proposalCommentSchema.id).notNull(),
+  userKey: ss58Address("user_key").notNull(),
+  voteType: varchar("vote_type", { length: 4 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => ({
+  unq: unique().on(t.commentId, t.userKey),
+  commentIdIndex: index("comment_id_index").on(t.commentId),
+  commentVoteIndex: index("comment_vote_index").on(t.commentId, t.voteType),
+}),);
