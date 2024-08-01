@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import {
   bigint,
   integer,
@@ -153,3 +153,17 @@ export const commentInteractionSchema = createTable("comment_interaction", {
   commentIdIndex: index("comment_id_index").on(t.commentId),
   commentVoteIndex: index("comment_vote_index").on(t.commentId, t.voteType),
 }),);
+
+/**
+ * A report made by a user about comment.
+ */
+export const commentReport = createTable("comment_report", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key"),
+  commentId: uuid("comment_id")
+    .references(() => proposalCommentSchema.id)
+    .notNull(),
+  content: text("content"),
+  reason: varchar("reason", { length: 16 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
