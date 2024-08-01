@@ -111,7 +111,6 @@ export default function HomePage(): JSX.Element {
             viewMode={viewMode}
             daoTreasury={daoTreasury}
           />
-
           <div className="w-full space-y-10 py-10">
             {isLoading ||
             !isInitialized ||
