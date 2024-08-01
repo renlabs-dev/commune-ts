@@ -49,7 +49,12 @@ export function ProposalListHeader(
               <LinkIcon className="mr-2 h-5 w-5" />
               {smallAddress(daoTreasury)}
             </span>
-          ) : null}
+          ) : (
+            <span className="flex animate-pulse text-pretty text-white hover:text-green-500">
+              <LinkIcon className="mr-2 h-5 w-5" />
+              Loading address...
+            </span>
+          )}
         </button>
       </div>
       <div className="flex w-full animate-fade-down flex-col items-start justify-start gap-1 pt-[1px] animate-delay-500">
