@@ -8,6 +8,8 @@ import {
   timestamp,
   unique,
   varchar,
+  uuid,
+  index,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -122,3 +124,14 @@ export const moduleReportPostSchema = createInsertSchema(moduleReport, {
 }).omit({
   id: true,
 });
+
+export const proposalCommentSchema = createTable("proposal_comment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  proposalId: integer("proposal_id").notNull(),
+  userKey: ss58Address("user_key").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at").default(sql`null`),
+}, (t) => ({
+  proposalIdIndex: index("proposal_id_index").on(t.proposalId),
+}));
