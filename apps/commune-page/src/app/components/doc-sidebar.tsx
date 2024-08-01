@@ -134,7 +134,6 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
           })}
         </div>
       </div>
-
       <div className="relative w-full overflow-hidden">
         <div className="sticky top-0 z-0 flex h-12 w-full items-center border-b border-gray-50/[0.06] bg-transparent pl-6 text-sm text-gray-400 lg:hidden">
           <button
