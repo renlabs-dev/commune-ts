@@ -52,6 +52,8 @@ COPY --from=builder --chown=nodejs:nodejs /app .
 WORKDIR /app/apps/${PROJECT}
 
 ARG PORT
+ENV PORT=${PORT}
+
 EXPOSE ${PORT}
 
-CMD node dist/main
+CMD ["npm", "start"]
