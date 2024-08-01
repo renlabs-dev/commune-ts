@@ -10,6 +10,7 @@ import {
   varchar,
   uuid,
   index,
+  pgMaterializedView
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -153,6 +154,36 @@ export const commentInteractionSchema = createTable("comment_interaction", {
   commentIdIndex: index("comment_id_index").on(t.commentId),
   commentVoteIndex: index("comment_vote_index").on(t.commentId, t.voteType),
 }),);
+
+
+/**
+ * A view that aggregates votes on comments.
+ * This view computes the number of upvotes and downvotes for each comment at write time. 
+ * so that we can query the data more efficiently.
+ */
+export const proposalCommentDigestView = pgMaterializedView("comment_digest").as(
+  qb => qb
+    .select({
+      id: proposalCommentSchema.id,
+      proposalId: proposalCommentSchema.proposalId,
+      userKey: proposalCommentSchema.userKey,
+      content: proposalCommentSchema.content,
+      createdAt: proposalCommentSchema.createdAt,
+      upvotes: sql<number>`SUM(CASE WHEN ${commentInteractionSchema.voteType} = "UP" THEN 1 ELSE 0 END)`.mapWith(Number).as("upvotes"),
+      downvotes: sql<number>`SUM(CASE WHEN ${commentInteractionSchema.voteType} = ${VoteType.DOWN} THEN 1 ELSE 0 END)`.mapWith(Number).as("downvotes"),
+    })
+    .from(proposalCommentSchema)
+    .where(sql`${proposalCommentSchema.deletedAt} IS NULL`)
+    .leftJoin(commentInteractionSchema, eq(proposalCommentSchema.id, commentInteractionSchema.commentId))
+    .groupBy(
+      proposalCommentSchema.id,
+      proposalCommentSchema.proposalId,
+      proposalCommentSchema.userKey,
+      proposalCommentSchema.content,
+      proposalCommentSchema.createdAt
+    )
+    .orderBy(asc(proposalCommentSchema.createdAt)),
+)
 
 /**
  * A report made by a user about comment.
