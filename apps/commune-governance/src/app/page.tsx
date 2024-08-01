@@ -74,7 +74,7 @@ export default function HomePage(): JSX.Element {
       });
 
       return (
-        <div className="animate-fade-in-down" key={proposal.id}>
+        <div key={proposal.id}>
           <ProposalCard
             key={proposal.id}
             proposalState={proposal}
@@ -116,7 +116,7 @@ export default function HomePage(): JSX.Element {
             !isInitialized ||
             !proposalsWithMeta ||
             !daosWithMeta ? (
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-10">
                 <div className="animate-fade-up animate-delay-200">
                   <CardSkeleton />
                 </div>
