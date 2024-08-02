@@ -1,3 +1,5 @@
+import '../output.css'
+
 export function NoWalletExtensionDisplay() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-gray-300">
