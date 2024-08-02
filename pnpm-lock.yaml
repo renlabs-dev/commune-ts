@@ -729,6 +729,9 @@ importers:
       '@commune-ts/ui':
         specifier: workspace:*
         version: link:../ui
+      next:
+        specifier: ^14.2.3
+        version: 14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -745,6 +748,9 @@ importers:
       '@commune-ts/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@next/eslint-plugin-next':
+        specifier: ^14.2.3
+        version: 14.2.5
       '@types/node':
         specifier: ^20.11.24
         version: 20.14.13
@@ -754,6 +760,18 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.19
         version: 18.3.0
+      autoprefixer:
+        specifier: ^10.4.18
+        version: 10.4.19(postcss@8.4.40)
+      eslint-config-next:
+        specifier: 14.2.4
+        version: 14.2.4(eslint@8.57.0)(typescript@5.5.4)
+      postcss:
+        specifier: ^8.4.38
+        version: 8.4.40
+      tailwindcss:
+        specifier: ^3.4.3
+        version: 3.4.7(ts-node@10.9.2(@types/node@20.14.13)(typescript@5.5.4))
       typescript:
         specifier: ^5.4.5
         version: 5.5.4

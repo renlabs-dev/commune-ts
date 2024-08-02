@@ -7,7 +7,8 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton, Wallet } from "@commune-ts/wallet/components";
+import { Wallet, WalletButton } from "@commune-ts/wallet";
+
 
 import { MobileHeaderContent } from "./components/mobile-header-content";
 
