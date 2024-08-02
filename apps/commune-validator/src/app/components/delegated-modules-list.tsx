@@ -121,94 +121,101 @@ export function DelegatedModulesList() {
 
   return (
     <>
-      <div className="fixed bottom-0 right-0 mt-8 w-full min-w-96 animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md md:bottom-14 md:mr-4 md:w-fit">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex w-full items-center justify-between p-2 text-xl font-semibold text-white"
-        >
-          <span>Your Module List</span>
-          <span>
-            <ChevronUpIcon
-              className={`h-6 w-6 transform transition-transform ${
-                isOpen ? "rotate-180" : ""
-              }`}
-            />
-          </span>
-        </button>
-        {isOpen && (
-          <div className="p-2 pt-2">
-            <div className="mb-2 grid grid-cols-3 gap-6 border-b border-white/20 pb-2 text-sm font-semibold text-gray-400 md:grid-cols-4">
-              <div>Module</div>
-              <div className="hidden md:block">Name</div>
-              <div>Address</div>
-              <div>Percentage</div>
-            </div>
-            {delegatedModules.map((module) => (
-              <div
-                key={module.id}
-                className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
-              >
-                <div className="text-white">{module.title}</div>
-                <div className="hidden text-white md:block">{module.name}</div>
-                <div className="text-gray-400">
-                  {smallAddress(module.address)}
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    value={module.percentage}
-                    onChange={(e) =>
-                      handlePercentageChange(module.id, Number(e.target.value))
-                    }
-                    className="mr-2 w-16 bg-[#898989]/10 p-1 text-white"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="mr-2 text-white">%</span>
-                  <button
-                    onClick={() => removeModule(module.id)}
-                    className="text-red-500 hover:text-red-400"
-                  >
-                    ✕
-                  </button>
-                </div>
+      {selectedAccount?.address && (
+        <div className="fixed bottom-0 right-0 mt-8 w-full min-w-96 animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md md:bottom-14 md:mr-4 md:w-fit">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex w-full items-center justify-between p-2 text-xl font-semibold text-white"
+          >
+            <span>Your Module List</span>
+            <span>
+              <ChevronUpIcon
+                className={`h-6 w-6 transform transition-transform ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </span>
+          </button>
+          {isOpen && (
+            <div className="p-2 pt-2">
+              <div className="mb-2 grid grid-cols-3 gap-6 border-b border-white/20 pb-2 text-sm font-semibold text-gray-400 md:grid-cols-4">
+                <div>Module</div>
+                <div className="hidden md:block">Name</div>
+                <div>Address</div>
+                <div>Percentage</div>
               </div>
-            ))}
-            <div className="mt-4 animate-fade-up text-white animate-delay-200">
-              Total Percentage: {totalPercentage}%
-              {totalPercentage !== 100 && (
-                <span className="ml-2 text-red-500">
-                  {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={handleSubmit}
-                className={`mt-4 w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
-                  isSubmitting ||
-                  totalPercentage !== 100 ||
-                  (!selectedAccount?.address &&
-                    `hover:border-green-500 hover:bg-green-500/10`)
-                } disabled:opacity-50`}
-                disabled={
-                  isSubmitting ||
-                  totalPercentage !== 100 ||
-                  !selectedAccount?.address
-                }
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </button>
-              {hasUnsavedChanges() && (
-                <div className="mb-4 bg-yellow-500/20 p-2 text-center text-yellow-500">
-                  You have unsaved changes. Please submit them before leaving
-                  the page.
+              {delegatedModules.map((module) => (
+                <div
+                  key={module.id}
+                  className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
+                >
+                  <div className="text-white">{module.title}</div>
+                  <div className="hidden text-white md:block">
+                    {module.name}
+                  </div>
+                  <div className="text-gray-400">
+                    {smallAddress(module.address)}
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="number"
+                      value={module.percentage}
+                      onChange={(e) =>
+                        handlePercentageChange(
+                          module.id,
+                          Number(e.target.value),
+                        )
+                      }
+                      className="mr-2 w-16 bg-[#898989]/10 p-1 text-white"
+                      min="0"
+                      max="100"
+                    />
+                    <span className="mr-2 text-white">%</span>
+                    <button
+                      onClick={() => removeModule(module.id)}
+                      className="text-red-500 hover:text-red-400"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
-              )}
+              ))}
+              <div className="mt-4 animate-fade-up text-white animate-delay-200">
+                Total Percentage: {totalPercentage}%
+                {totalPercentage !== 100 && (
+                  <span className="ml-2 text-red-500">
+                    {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleSubmit}
+                  className={`mt-4 w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
+                    isSubmitting ||
+                    totalPercentage !== 100 ||
+                    (!selectedAccount.address &&
+                      `hover:border-green-500 hover:bg-green-500/10`)
+                  } disabled:opacity-50`}
+                  disabled={
+                    isSubmitting ||
+                    totalPercentage !== 100 ||
+                    !selectedAccount.address
+                  }
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </button>
+                {hasUnsavedChanges() && (
+                  <div className="mb-4 bg-yellow-500/20 p-2 text-center text-yellow-500">
+                    You have unsaved changes. Please submit them before leaving
+                    the page.
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </>
   );
 }

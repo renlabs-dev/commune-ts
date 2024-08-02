@@ -9,7 +9,12 @@ export default function Page() {
   const { selectedAccount } = useCommune();
   const { delegatedModules } = useDelegateStore();
 
-  if (!selectedAccount?.address) return null;
+  if (!selectedAccount?.address)
+    return (
+      <span className="w-full justify-center pt-12 text-center text-xl">
+        Connect Wallet to view your weighted modules.
+      </span>
+    );
 
   const weightedModules = delegatedModules.filter(
     (module) => module.percentage > 0,
