@@ -40,7 +40,7 @@ export default function RootLayout({
             ]}
           />
           {children}
-          <Footer shouldBeFixed />
+          <Footer />
         </Providers>
       </body>
     </html>

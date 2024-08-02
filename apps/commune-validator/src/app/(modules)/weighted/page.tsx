@@ -16,20 +16,27 @@ export default function Page() {
   );
 
   return (
-    <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {weightedModules.length ? (
-        weightedModules.map((module) => (
-          <ModuleCard
-            id={module.id}
-            key={module.id}
-            name={module.name}
-            moduleKey={module.address}
-            metadata={null} // You might need to adjust this if metadata is stored differently
-          />
-        ))
-      ) : (
-        <p>No weighted modules found</p>
-      )}
-    </div>
+    <>
+      <div
+        key={module.id}
+        className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        {weightedModules.length ? (
+          weightedModules.map((module) => (
+            <ModuleCard
+              id={module.id}
+              key={module.id}
+              name={module.name}
+              moduleKey={module.address}
+              metadata={null} // TODO - metadataUri
+            />
+          ))
+        ) : (
+          <span className="absolute w-full justify-center pt-12 text-center text-xl">
+            No weighted modules found.
+          </span>
+        )}
+      </div>
+    </>
   );
 }
