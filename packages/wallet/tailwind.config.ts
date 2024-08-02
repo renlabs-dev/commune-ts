@@ -1,11 +1,12 @@
-// tailwind config is required for editor support
-
+/*
+ * This file is not used for any compilation purpose, it is only used
+ * for Tailwind Intellisense & Autocompletion in the source files
+ */
 import type { Config } from "tailwindcss";
-import sharedConfig from "@commune-ts/tailwind-config";
 
-const config: Pick<Config, "content" | "presets"> = {
-  content: ["./src/**/*.{tsx,ts,jsx,js}"],
-  presets: [sharedConfig],
-};
+import baseConfig from "@commune-ts/tailwind-config/web";
 
-export default config;
+export const config: Pick<Config, "content" | "presets"> = {
+  content: [...baseConfig.content, "../../packages/ui/**/*.{ts,tsx}"],
+  presets: [baseConfig],
+} satisfies Config;

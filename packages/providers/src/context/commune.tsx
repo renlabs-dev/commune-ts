@@ -55,6 +55,9 @@ interface CommuneContextType {
   accounts: InjectedAccountWithMeta[];
   selectedAccount: InjectedAccountWithMeta | null;
 
+  handleWalletModal(state?: boolean): void;
+  openWalletModal: boolean;
+
   addStake: (stake: Stake) => Promise<void>;
   removeStake: (stake: Stake) => Promise<void>;
   transfer: (transfer: Transfer) => Promise<void>;
@@ -109,6 +112,7 @@ export function CommuneProvider({
   });
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [openWalletModal, setOpenWalletModal] = useState(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
@@ -124,7 +128,7 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider(wsEndpoint);
+    const provider = new WsProvider('wss://commune.api.onfinality.io/public-ws');
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);
@@ -175,9 +179,14 @@ export function CommuneProvider({
       if (allAccounts) {
         setAccounts(allAccounts);
       }
+      setOpenWalletModal(true);
     } catch (error) {
       return undefined;
     }
+  }
+
+  function handleWalletModal(state?: boolean): void {
+    setOpenWalletModal(state || !openWalletModal);
   }
 
   function handleConnectWrapper(): void {
@@ -449,6 +458,9 @@ export function CommuneProvider({
         accounts,
         selectedAccount,
         handleConnect: handleConnectWrapper,
+
+        handleWalletModal,
+        openWalletModal,
 
         balance,
         isBalanceLoading,
