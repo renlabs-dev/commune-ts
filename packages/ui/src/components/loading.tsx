@@ -2,7 +2,7 @@ import { cn } from "..";
 
 export function Loading(): JSX.Element {
   return (
-    <div className={cn("grid place-content-center")} role="status">
+    <div className={cn("mr-1 grid place-content-center")} role="status">
       <svg
         aria-hidden="true"
         className={cn("h-8 w-8 animate-spin fill-blue-400 text-gray-200")}

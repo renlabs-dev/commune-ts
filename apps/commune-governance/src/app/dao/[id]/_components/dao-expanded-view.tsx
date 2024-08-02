@@ -2,15 +2,11 @@
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-import type {
-  DaoStatus,
-} from "@commune-ts/providers/types";
+import type { DaoStatus } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/providers/utils";
 
-import {
-  handleCustomDaos,
-} from "../../../../utils";
+import { handleCustomDaos } from "../../../../utils";
 import { DaoStatusLabel } from "../../../components/dao-status-label";
 import { MarkdownView } from "../../../components/markdown-view";
 
@@ -48,43 +44,41 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
         <ArrowPathIcon className="ml-2 animate-spin" color="#FFF" width={20} />
       </div>
     );
-  console.log(content)
+  console.log(content);
 
   return (
-    <>
-      <div className="flex flex-col lg:h-full lg:w-2/3 lg:overflow-auto">
-        <div className="border-b border-gray-500 p-6">
-          <h2 className="text-base font-semibold">{content.title}</h2>
+    <div className="flex w-full flex-col md:flex-row">
+      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[77.5vh] md:min-h-[77.5vh] lg:w-2/3">
+        <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
+          <h2 className="text-lg font-semibold">{content.title}</h2>
         </div>
-        <div className="h-full p-6 lg:overflow-auto">
+        <div className="h-full lg:overflow-auto">
           <MarkdownView source={(content.body as string | undefined) ?? ""} />
         </div>
       </div>
 
       <div className="flex flex-col lg:w-1/3">
-        <div className="border-b border-t border-gray-500 p-6 pr-20 lg:border-t-0">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400  backdrop-blur-md animate-delay-200">
           <div className="flex flex-col gap-3">
             <div>
               <span className="text-gray-500">ID</span>
-              <span className="flex items-center">{content.id}</span>
+              <span className="flex items-center text-white">{content.id}</span>
             </div>
 
             <div>
               <span className="text-gray-500">Author</span>
-              <span className="flex items-center">
+              <span className="flex items-center text-white">
                 {smallAddress(content.author, 16)}
               </span>
             </div>
           </div>
         </div>
-
-        <div className="border-b border-gray-500 p-6">
+        <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400  backdrop-blur-md animate-delay-200">
           <div className="flex items-center gap-3">
             <DaoStatusLabel result={content.status as DaoStatus} />
           </div>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }

@@ -189,6 +189,13 @@ export interface AddCustomProposal {
   callback?: (status: TransactionResult) => void;
 }
 
+export interface addTransferDaoTreasuryProposal {
+  IpfsHash: string;
+  value: string;
+  dest: string;
+  callback?: (status: TransactionResult) => void;
+}
+
 export interface AddDaoApplication {
   IpfsHash: string;
   applicationKey: string;

@@ -7,6 +7,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
+import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
 import { VoterList } from "~/app/components/voter-list";
 import {
   calcProposalFavorablePercent,
@@ -133,6 +134,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
       invalid,
       id: proposal.id,
       status: proposal.status,
+      data: proposal.data,
       author: proposal.proposer,
       expirationBlock: proposal.expirationBlock,
       voted,
@@ -199,6 +201,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
               <span>{content.netuid}</span>
             </span>
             <StatusLabel result={content.status} />
+            <ProposalTypeLabel result={content.data} />
           </div>
         </div>
 

@@ -19,6 +19,7 @@ import {
 } from "../../utils";
 import { Card } from "./card";
 import { Label } from "./label";
+import { ProposalTypeLabel } from "./proposal-type-label";
 import { StatusLabel } from "./status-label";
 import { VoteLabel } from "./vote-label";
 
@@ -89,7 +90,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
 
         <div className="mb-2 flex w-full flex-row justify-center gap-2 lg:mb-0 lg:ml-auto lg:w-auto lg:flex-row lg:justify-end lg:pl-4">
           <VoteLabel vote={voted} />
-
+          <ProposalTypeLabel result={proposalState.data} />
           <div className="flex items-center">
             <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
               {netuid !== "GLOBAL" ? `Subnet ${netuid}` : "Global"}

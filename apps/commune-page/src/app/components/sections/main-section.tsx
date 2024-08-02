@@ -30,7 +30,7 @@ export function MainSection(): JSX.Element {
       <div
         className={`mt-4 h-full w-full max-w-screen-2xl flex-col lg:mt-0 ${viewMoreIsVisible ? "hidden" : "flex"}`}
       >
-        <div className="flex h-full min-h-[85svh] w-full flex-col justify-end px-4 pb-4 md:gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex h-full min-h-[85svh] w-full flex-col justify-end px-4 md:gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex h-full w-fit flex-col items-start text-gray-400 lg:max-w-4xl">
             <p className="animate-fade-right font-medium animate-delay-200 md:text-xl">
               <span className="text-green-400">Peer-to-peer </span>
@@ -38,16 +38,16 @@ export function MainSection(): JSX.Element {
             </p>
             <Image
               alt="Commune ai logo"
-              className="w-full animate-fade-right py-4 animate-delay-300"
+              className="w-full animate-fade-right pt-2 animate-delay-300 md:py-4 md:pt-4"
               height={100}
               src="/logo-asci.svg"
               width={200}
             />
-            <p className="animate-fade-right animate-delay-500 md:mt-1 md:text-lg">
+            <p className="hidden animate-fade-right animate-delay-500 md:mt-1 md:block md:text-lg">
               Protocol and Market System for Incentive-driven Coordination of
               Decentralized AI.
             </p>
-            <p className="animate-fade-right animate-delay-500 md:text-lg">
+            <p className="hidden animate-fade-right animate-delay-500 md:block md:text-lg">
               Fully community driven, no bureaucracy, no team, no pre-mine. Only
               code and contributors.
             </p>
