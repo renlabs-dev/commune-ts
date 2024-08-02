@@ -96,7 +96,15 @@ export default async function ModulePage({ params }: Params) {
             <div className="flex flex-col gap-6">
               <div>
                 <h2 className="text-gray-400">Category</h2>
-                <span>Module</span>
+                <span>
+                  {mdl.incentive === mdl.dividend ||
+                  !mdl.incentive ||
+                  !mdl.dividend
+                    ? "Inactive"
+                    : mdl.incentive > mdl.dividend
+                      ? "Miner"
+                      : "Validator"}
+                </span>
               </div>
               <div>
                 <h2 className="text-gray-400">Reading Time</h2>
