@@ -25,13 +25,13 @@ export default function RootLayout({
           href="/"
           className={`w-full gap-2 border  bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
-          All
+          All Modules
         </Link>
         <Link
           href="/weighted"
           className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/weighted" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
-          Weighted
+          Your Weighted Modules
         </Link>
       </div>
       {children}

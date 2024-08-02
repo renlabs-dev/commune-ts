@@ -42,16 +42,32 @@ export const moduleRouter = {
       z.object({
         page: z.number().int().positive().default(1),
         limit: z.number().int().positive().max(100).default(50),
+        sortBy: z
+          .enum([
+            "id",
+            "emission",
+            "incentive",
+            "dividend",
+            "delegationFee",
+            "totalStakers",
+            "totalStaked",
+            "totalRewards",
+            "createdAt",
+          ])
+          .default("id"),
+        order: z.enum(["asc", "desc"]).default("asc"),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, sortBy, order } = input;
       const offset = (page - 1) * limit;
 
       const modules = await ctx.db.query.moduleData.findMany({
         limit: limit,
         offset: offset,
-        orderBy: (moduleData, { asc }) => [asc(moduleData.id)],
+        orderBy: (moduleData, { asc, desc }) => [
+          order === "asc" ? asc(moduleData[sortBy]) : desc(moduleData[sortBy]),
+        ],
       });
 
       const totalCount = await ctx.db
