@@ -96,12 +96,11 @@ export const handleCustomProposal = (
       return handleProposalParams(proposal.id, params, subnetId);
     },
     transferDaoTreasury(): ProposalCardFields {
-      return {
-        title: `Transfer proposal #${proposal.id}`,
-        body: `Transfer proposal #${proposal.id} to treasury`,
-        netuid: "GLOBAL",
-        invalid: true,
-      };
+      return handleCustomProposalData(
+        proposal.id,
+        proposal.customData ?? null,
+        "GLOBAL",
+      );
     },
   });
 

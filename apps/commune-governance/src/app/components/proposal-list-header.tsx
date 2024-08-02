@@ -1,13 +1,10 @@
-"use client";
-
 import { LinkIcon } from "@heroicons/react/20/solid";
 
 import type { SS58Address } from "@commune-ts/providers/types";
 import { toast } from "@commune-ts/providers/use-toast";
 import { smallAddress } from "@commune-ts/providers/utils";
 
-import { CreateDao } from "./create-dao";
-import { CreateProposal } from "./create-proposal";
+import { CreateModal } from "./modal";
 
 interface ProposalListHeaderProps {
   viewMode: string;
@@ -31,49 +28,57 @@ export function ProposalListHeader(
       });
   }
 
+  function handleViewChange(event: React.ChangeEvent<HTMLSelectElement>): void {
+    setViewMode(event.target.value as "proposals" | "daos");
+  }
+
   return (
-    <div className="mt-10 flex w-full flex-col gap-10 divide-gray-500 lg:mt-0 lg:max-w-screen-2xl lg:flex-row lg:pt-5">
+    <div className="mt-10 flex w-full flex-row justify-between gap-6 divide-gray-500 lg:mt-0 lg:max-w-screen-2xl lg:pt-5">
       <div
-        className={`hidden w-full animate-fade-down animate-delay-300 lg:flex`}
+        className={`hidden w-full animate-fade-down flex-col justify-end gap-1 animate-delay-300 lg:flex`}
       >
+        <p className="flex items-center text-pretty text-base font-light text-gray-200">
+          DAO treasury address:
+        </p>
         <button
-          className="flex w-full items-center justify-center border border-white/20 bg-[#898989]/5 px-5 py-3 text-white backdrop-blur-md hover:border-green-500 lg:flex-col xl:flex-row xl:gap-2"
+          className="flex h-full w-full items-center justify-center border border-white/20 bg-[#898989]/5 p-5 text-white backdrop-blur-md hover:border-green-500 lg:flex-col xl:flex-row"
           onClick={handleCopyClick}
         >
-          <span className="flex items-center text-pretty text-base font-light text-gray-200">
-            <LinkIcon className="mr-2 h-5 w-5" />
-            DAO treasury address
-          </span>
           {daoTreasury ? (
-            <span className="text-pretty text-green-500">
+            <span className="flex text-pretty text-white hover:text-green-500">
+              <LinkIcon className="mr-2 h-5 w-5" />
               {smallAddress(daoTreasury)}
             </span>
-          ) : null}
+          ) : (
+            <span className="flex animate-pulse text-pretty text-white hover:text-green-500">
+              <LinkIcon className="mr-2 h-5 w-5" />
+              Loading address...
+            </span>
+          )}
         </button>
       </div>
-      <div className="flex w-full animate-fade-down items-center justify-center gap-3 animate-delay-500">
-        <button
-          className={`h-full w-1/2 border bg-[#898989]/5 px-5 py-3 backdrop-blur-md ${viewMode === "proposals" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
-          onClick={() => {
-            setViewMode("proposals");
-          }}
-          type="button"
+      <div className="flex w-full animate-fade-down flex-col items-start justify-start gap-1 pt-[1px] animate-delay-500">
+        <p className="flex items-center text-pretty pb-0.5 text-base font-light text-gray-200">
+          View mode:
+        </p>
+        <select
+          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 text-white outline-none outline-1 outline-white/25 backdrop-blur-md transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
+          value={viewMode}
+          onChange={handleViewChange}
         >
-          Proposals View
-        </button>
-        <button
-          className={`h-full w-1/2 border bg-[#898989]/5 px-5 py-3 backdrop-blur-md ${viewMode === "daos" ? "border-green-500  text-green-500" : "border-white text-white hover:border-green-600 hover:text-green-600"}`}
-          onClick={() => {
-            setViewMode("daos");
-          }}
-          type="button"
-        >
-          S2 Applications
-        </button>
+          <option value="proposals" className="bg-gray-900">
+            Proposals View
+          </option>
+          <option value="daos" className="bg-gray-900">
+            S2 Applications
+          </option>
+        </select>
       </div>
-      <div className="hidden w-full items-center justify-end gap-2 lg:flex">
-        <CreateProposal />
-        <CreateDao />
+      <div className="hidden w-full flex-col items-start gap-1 lg:flex">
+        <p className="flex animate-fade-down items-center text-pretty text-base font-light text-gray-200 animate-delay-700">
+          Want to change something:
+        </p>
+        <CreateModal />
       </div>
     </div>
   );

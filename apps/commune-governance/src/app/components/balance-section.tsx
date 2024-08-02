@@ -34,7 +34,7 @@ export function BalanceSection({
       className={`flex w-full flex-col items-center justify-center lg:mt-10`}
     >
       <div
-        className={`flex w-full flex-col divide-gray-500 border-white/20 text-2xl text-green-500 lg:flex-row lg:gap-10 lg:pb-5 ${className ?? ""}`}
+        className={`flex w-full flex-col divide-gray-500 border-white/20 text-2xl text-green-500 lg:flex-row lg:gap-6 lg:pb-5 ${className ?? ""}`}
       >
         <div className="flex animate-fade-down flex-row items-center justify-between border-white/20 bg-[#898989]/5 p-6 pr-6 backdrop-blur-md lg:w-1/3 lg:border lg:pr-10">
           <div className="flex flex-col gap-1">
@@ -57,7 +57,7 @@ export function BalanceSection({
         </div>
 
         <div className="flex animate-fade-down flex-row items-center justify-between border-t !border-white/20 bg-[#898989]/5 p-6 pr-6 backdrop-blur-md animate-delay-100 lg:w-1/3 lg:border lg:pr-10">
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-col items-start gap-1">
             {!isInitialized && (
               <p className="animate-pulse text-gray-400">
                 Loading...
@@ -98,7 +98,7 @@ export function BalanceSection({
         </div>
 
         <div className="flex animate-fade-down flex-row items-center justify-between border-t !border-white/20 bg-[#898989]/5 p-6 pr-6 backdrop-blur-md animate-delay-200 lg:w-1/3 lg:border lg:pr-10">
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-col items-start gap-1">
             {!isInitialized ||
             (selectedAccount?.meta.name && userStakeWeight == null) ? (
               <p className="animate-pulse text-gray-400">

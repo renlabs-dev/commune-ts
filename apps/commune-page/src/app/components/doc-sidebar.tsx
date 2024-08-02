@@ -87,7 +87,6 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
               className="h-6 w-6 fill-white"
             />
           </button>
-
           <div className="mb-4 mt-8 flex h-fit items-center pr-4 lg:mt-0">
             <input
               className="w-fit border border-white/20 bg-black px-2 py-1 text-gray-200"
@@ -135,7 +134,6 @@ export function DocSidebar(props: DocSidebarProps): JSX.Element {
           })}
         </div>
       </div>
-
       <div className="relative w-full overflow-hidden">
         <div className="sticky top-0 z-0 flex h-12 w-full items-center border-b border-gray-50/[0.06] bg-transparent pl-6 text-sm text-gray-400 lg:hidden">
           <button

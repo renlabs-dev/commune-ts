@@ -1,7 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
 
@@ -11,20 +11,18 @@ import { toast } from "@commune-ts/providers/use-toast";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Loading } from "@commune-ts/ui/loading";
 
-const daoSchema = z.object({
-  applicationKey: z.string().min(1, "Application Key is required"),
-  discordId: z.string().min(16, "Discord ID is required"),
+const transferDaoTreasuryProposalSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
 });
 
-export function CreateDao(): JSX.Element {
+export function CreateTransferDaoTreasuryProposal(): JSX.Element {
   const router = useRouter();
-  const { isConnected, addDaoApplication, balance } = useCommune();
+  const { isConnected, addTransferDaoTreasuryProposal, balance } = useCommune();
 
-  const [applicationKey, setApplicationKey] = useState("");
+  const [dest, setDest] = useState("");
+  const [value, setValue] = useState("");
 
-  const [discordId, setDiscordId] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
@@ -67,26 +65,28 @@ export function CreateDao(): JSX.Element {
       const daoApplicationCost = 1000;
 
       if (Number(balance) > daoApplicationCost) {
-        void addDaoApplication({
-          applicationKey,
+        void addTransferDaoTreasuryProposal({
+          dest,
+          value,
           IpfsHash: `ipfs://${ipfs.IpfsHash}`,
           callback: handleCallback,
         });
       } else {
         toast.error(
-          `Insufficient balance to create S2 Application. Required: ${daoApplicationCost} but got ${balance}`,
+          `Insufficient balance to create a transfer dao treasury proposal. Required: ${daoApplicationCost} but got ${balance}`,
         );
         setTransactionStatus({
           status: "ERROR",
           finalized: true,
-          message: "Insufficient balance to create S2 Application",
+          message:
+            "Insufficient balance to a create transfer dao treasury proposal",
         });
       }
       router.refresh();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setUploading(false);
-      toast.error("Error uploading S2 Application");
+      toast.error("Error uploading transfer dao treasury proposal");
     }
   }
 
@@ -95,14 +95,12 @@ export function CreateDao(): JSX.Element {
     setTransactionStatus({
       status: "STARTING",
       finalized: false,
-      message: "Starting S2 Application creation...",
+      message: "Starting transfer dao treasury proposal creation...",
     });
 
-    const result = daoSchema.safeParse({
+    const result = transferDaoTreasuryProposalSchema.safeParse({
       title,
       body,
-      applicationKey,
-      discordId,
     });
 
     if (!result.success) {
@@ -110,13 +108,12 @@ export function CreateDao(): JSX.Element {
       setTransactionStatus({
         status: "ERROR",
         finalized: true,
-        message: "Error creating S2 Application",
+        message: "Error creating transfer dao treasury proposal",
       });
       return;
     }
 
     const daoData = JSON.stringify({
-      discord_id: discordId,
       title,
       body,
     });
@@ -152,20 +149,20 @@ export function CreateDao(): JSX.Element {
               <input
                 className="w-full bg-white/10 p-3 text-white"
                 onChange={(e) => {
-                  setApplicationKey(e.target.value);
+                  setDest(e.target.value);
                 }}
-                placeholder="Application Key (ss58)"
+                placeholder="Destination"
                 type="text"
-                value={applicationKey}
+                value={dest}
               />
               <input
                 className="w-full bg-white/10 p-3 text-white"
                 onChange={(e) => {
-                  setDiscordId(e.target.value);
+                  setValue(e.target.value);
                 }}
-                placeholder="Discord ID"
+                placeholder="Value"
                 type="text"
-                value={discordId}
+                value={value}
               />
               <input
                 className="w-full bg-white/10 p-3 text-white"
@@ -208,20 +205,22 @@ export function CreateDao(): JSX.Element {
             disabled={!isConnected}
             type="submit"
           >
-            {uploading ? "Uploading..." : "Submit S2 Application"}
+            {uploading
+              ? "Uploading..."
+              : "Submit transfer dao treasury proposal"}
           </button>
         </div>
         {transactionStatus.status ? (
-          <p
-            className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"} ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex text-left text-base`}
+          <span
+            className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"} ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex items-center justify-start text-left text-base`}
           >
             {transactionStatus.status === "PENDING" ||
               (transactionStatus.status === "STARTING" && <Loading />)}
             {transactionStatus.message}
-          </p>
+          </span>
         ) : null}
 
-        <div className="mt-1 flex items-start gap-1 text-white">
+        {/* <div className="mt-1 flex items-start gap-1 text-white">
           <InformationCircleIcon className="mt-0.5 h-4 w-4 fill-green-500 text-sm" />
           <span className="text-sm">
             Please make sure, that your application meets all of the criteria
@@ -235,7 +234,7 @@ export function CreateDao(): JSX.Element {
             </Link>
             , or you are at risk of getting denied by the Module Curation DAO.
           </span>
-        </div>
+        </div> */}
       </div>
     </form>
   );
