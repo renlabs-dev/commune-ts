@@ -7,7 +7,7 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton } from "@commune-ts/wallet/button";
+import { WalletButton, Wallet } from "@commune-ts/wallet/components";
 
 import { MobileHeaderContent } from "./components/mobile-header-content";
 
@@ -30,6 +30,7 @@ export default function RootLayout({
         className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
+
           <Header
             logoSrc="/logo.svg"
             title="Community Governance"
@@ -39,6 +40,7 @@ export default function RootLayout({
               { name: "Homepage", href: links.landing_page, external: true },
             ]}
           />
+          <Wallet />
           {children}
           <Footer shouldBeFixed />
         </Providers>
