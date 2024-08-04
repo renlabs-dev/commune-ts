@@ -1,4 +1,4 @@
-import { asc, eq, sql } from "drizzle-orm";
+import { asc, eq, is, sql } from "drizzle-orm";
 import {
   bigint,
   integer,
@@ -10,7 +10,7 @@ import {
   varchar,
   uuid,
   index,
-  pgMaterializedView
+  pgView
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -161,7 +161,7 @@ export const commentInteractionSchema = createTable("comment_interaction", {
  * This view computes the number of upvotes and downvotes for each comment at write time. 
  * so that we can query the data more efficiently.
  */
-export const proposalCommentDigestView = pgMaterializedView("comment_digest").as(
+export const proposalCommentDigestView = pgView("comment_digest").as(
   qb => qb
     .select({
       id: proposalCommentSchema.id,
@@ -188,7 +188,7 @@ export const proposalCommentDigestView = pgMaterializedView("comment_digest").as
 /**
  * A report made by a user about comment.
  */
-export const commentReport = createTable("comment_report", {
+export const commentReportSchema = createTable("comment_report", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key"),
   commentId: uuid("comment_id")
