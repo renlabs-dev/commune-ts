@@ -43,7 +43,7 @@ export default function RootLayout({
           />
           <Wallet />
           {children}
-          <Footer shouldBeFixed />
+          <Footer />
         </Providers>
       </body>
     </html>

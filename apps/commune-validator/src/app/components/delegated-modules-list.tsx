@@ -24,7 +24,7 @@ export function DelegatedModulesList() {
   const { selectedAccount } = useCommune();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { data: userModuleData, error } = api.module.byUserModuleData.useQuery(
     { userKey: selectedAccount?.address ?? "" },
@@ -121,7 +121,7 @@ export function DelegatedModulesList() {
 
   return (
     <>
-      {selectedAccount?.address && delegatedModules.length > 0 && (
+      {selectedAccount?.address && (
         <div className="fixed bottom-0 right-0 mt-8 w-full min-w-96 animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md md:bottom-14 md:mr-4 md:w-fit">
           <button
             onClick={() => setIsOpen(!isOpen)}
