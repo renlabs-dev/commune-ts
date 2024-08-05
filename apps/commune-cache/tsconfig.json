@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "types": ["node"],
     "noEmit": false,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": false
   },
   "include": ["*.ts", "src"],
   "exclude": ["node_modules"]

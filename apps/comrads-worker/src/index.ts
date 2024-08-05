@@ -1,6 +1,7 @@
 import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
+import express from "express";
 
 import type { SQL, Table } from "@commune-ts/db";
 import type { LastBlock, SubspaceModule } from "@commune-ts/types";
@@ -12,8 +13,6 @@ import {
   queryLastBlock,
   queryRegisteredModulesInfo,
 } from "@commune-ts/subspace/queries";
-
-import express from "express";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -132,7 +131,7 @@ const app = express();
 
 app.get("/api/health", (_, res) => {
   res.send("OK");
-})
+});
 
 const port = process.env.PORT || 3000;
 
