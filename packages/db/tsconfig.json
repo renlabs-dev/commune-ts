@@ -13,7 +13,7 @@
     "types": ["node"],
     "noEmit": false,
     "rootDir": "./src",
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": false
   },
   "include": ["*.ts", "src"],
   "exclude": ["node_modules"]
