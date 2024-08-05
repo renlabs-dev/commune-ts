@@ -56,7 +56,7 @@ export function ModuleCard(props: ModuleCardProps) {
   const title = customMetadata?.Ok?.title ?? "No Metadata";
 
   return (
-    <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md">
+    <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400">
       <h2 className="text-xl font-semibold text-white">{title}</h2>
       <p>{props.name ?? ""}</p>
       <div className="flex items-center justify-between gap-2">

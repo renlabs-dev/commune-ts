@@ -1,12 +1,15 @@
-import { sql } from "drizzle-orm";
+import { asc, eq, is, sql } from "drizzle-orm";
 import {
   bigint,
+  index,
   integer,
   pgTableCreator,
+  pgView,
   serial,
   text,
   timestamp,
   unique,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -121,4 +124,94 @@ export const moduleReportPostSchema = createInsertSchema(moduleReport, {
   reason: z.string(),
 }).omit({
   id: true,
+});
+
+export const proposalCommentSchema = createTable(
+  "proposal_comment",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    proposalId: integer("proposal_id").notNull(),
+    userKey: ss58Address("user_key").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
+  },
+  (t) => ({
+    proposalIdIndex: index("proposal_id_index").on(t.proposalId),
+  }),
+);
+
+export enum VoteType {
+  UP = "UP",
+  DOWN = "DOWN",
+}
+
+export const commentInteractionSchema = createTable(
+  "comment_interaction",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    commentId: uuid("comment_id")
+      .references(() => proposalCommentSchema.id)
+      .notNull(),
+    userKey: ss58Address("user_key").notNull(),
+    voteType: varchar("vote_type", { length: 4 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    unq: unique().on(t.commentId, t.userKey),
+    commentIdIndex: index("comment_id_index").on(t.commentId),
+    commentVoteIndex: index("comment_vote_index").on(t.commentId, t.voteType),
+  }),
+);
+
+/**
+ * A view that aggregates votes on comments.
+ * This view computes the number of upvotes and downvotes for each comment at write time.
+ * so that we can query the data more efficiently.
+ */
+export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
+  qb
+    .select({
+      id: proposalCommentSchema.id,
+      proposalId: proposalCommentSchema.proposalId,
+      userKey: proposalCommentSchema.userKey,
+      content: proposalCommentSchema.content,
+      createdAt: proposalCommentSchema.createdAt,
+      upvotes:
+        sql<number>`SUM(CASE WHEN ${commentInteractionSchema.voteType} = "UP" THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("upvotes"),
+      downvotes:
+        sql<number>`SUM(CASE WHEN ${commentInteractionSchema.voteType} = ${VoteType.DOWN} THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("downvotes"),
+    })
+    .from(proposalCommentSchema)
+    .where(sql`${proposalCommentSchema.deletedAt} IS NULL`)
+    .leftJoin(
+      commentInteractionSchema,
+      eq(proposalCommentSchema.id, commentInteractionSchema.commentId),
+    )
+    .groupBy(
+      proposalCommentSchema.id,
+      proposalCommentSchema.proposalId,
+      proposalCommentSchema.userKey,
+      proposalCommentSchema.content,
+      proposalCommentSchema.createdAt,
+    )
+    .orderBy(asc(proposalCommentSchema.createdAt)),
+);
+
+/**
+ * A report made by a user about comment.
+ */
+export const commentReportSchema = createTable("comment_report", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key"),
+  commentId: uuid("comment_id")
+    .references(() => proposalCommentSchema.id)
+    .notNull(),
+  content: text("content"),
+  reason: varchar("reason", { length: 16 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
