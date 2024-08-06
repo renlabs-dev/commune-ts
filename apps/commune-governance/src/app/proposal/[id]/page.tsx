@@ -25,7 +25,7 @@ export default function CardView({
         <ArrowLeftIcon className="h-6 text-green-500" />
         Go Back to Proposals List
       </Link>
-      <div className="mb-6 flex w-full flex-col justify-between divide-gray-500 text-white md:mb-96 lg:h-[calc(100svh-245px)] lg:flex-row">
+      <div className="mb-6 flex h-full w-full flex-col justify-between divide-gray-500 text-white md:mb-12 lg:flex-row">
         <ProposalExpandedView paramId={Number(params.id)} />
       </div>
     </div>

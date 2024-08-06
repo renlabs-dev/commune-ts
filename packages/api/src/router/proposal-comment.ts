@@ -18,7 +18,7 @@ import { publicProcedure } from "../trpc";
 
 export const proposalCommentRouter = {
   // GET
-  byProposalId: publicProcedure
+  byId: publicProcedure
     .input(z.object({ proposalId: z.number() }))
     .query(({ ctx, input }) => {
       return ctx.db
