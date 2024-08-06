@@ -7,6 +7,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
+import { ProposalComment } from "~/app/components/proposal-comments";
 import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
 import { VoterList } from "~/app/components/voter-list";
 import {
@@ -158,12 +159,17 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
   return (
     <div className="flex w-full flex-col md:flex-row">
-      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[77.5vh] md:min-h-[77.5vh] lg:w-2/3">
-        <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
-          <h2 className="text-lg font-semibold">{content.title}</h2>
+      <div className="flex w-full flex-col lg:w-2/3">
+        <div className="m-2 flex animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[50vh] md:min-h-[50vh]">
+          <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
+            <h2 className="text-lg font-semibold">{content.title}</h2>
+          </div>
+          <div className="h-full lg:overflow-auto">
+            <MarkdownView source={(content.body as string | undefined) ?? ""} />
+          </div>
         </div>
-        <div className="h-full lg:overflow-auto">
-          <MarkdownView source={(content.body as string | undefined) ?? ""} />
+        <div className="w-full">
+          <ProposalComment proposalId={content.id} />
         </div>
       </div>
 
