@@ -7,7 +7,6 @@ import {
 import { smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
-import { CreateComment } from "./create-comments";
 
 export function ProposalComment({ proposalId }: { proposalId: number }) {
   const {
@@ -34,8 +33,13 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
   return (
     <div className="flex w-full flex-col">
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white  backdrop-blur-md animate-delay-200">
+        <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-500">
+          <h2 className="text-start text-lg font-semibold">
+            Community Comments
+          </h2>
+        </div>
         {proposalComments?.length ? (
-          <div className="flex w-full flex-col gap-3 pb-3">
+          <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 pr-2">
             {proposalComments.map((comment) => (
               <div
                 key={comment.id}
@@ -61,9 +65,6 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
         ) : (
           <p>No comments yet</p>
         )}
-      </div>
-      <div className="m-2 flex h-fit min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white  backdrop-blur-md animate-delay-200">
-        <CreateComment proposalId={proposalId} />
       </div>
     </div>
   );
