@@ -35,7 +35,7 @@ COPY --from=pruner /build/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Install dependencies using only package.json files to reduce changes
 COPY --from=pruner /build/out/json/ .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store  pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build the app
 COPY --from=pruner /build/out/full/ .
@@ -46,6 +46,8 @@ RUN pnpm turbo run build --filter=${APP_NAME}
 FROM base AS runner
 
 ARG APP_NAME
+
+ENV PORT=8000
 
 WORKDIR /app
 
