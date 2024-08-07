@@ -5,6 +5,7 @@ import {
   ArrowPathIcon,
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
+  UserIcon,
 } from "@heroicons/react/20/solid";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
@@ -20,6 +21,9 @@ export enum VoteType {
 export function ProposalComment({ proposalId }: { proposalId: number }) {
   const { selectedAccount } = useCommune();
   const [votingCommentId, setVotingCommentId] = useState<string | null>(null);
+  const [localVotes, setLocalVotes] = useState<Record<string, VoteType | null>>(
+    {},
+  );
 
   const {
     data: proposalComments,
@@ -65,19 +69,21 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
       const comment = proposalComments?.find((c) => c.id === commentId);
       if (!comment) return;
 
-      const currentVote = userVotes?.[commentId];
+      const currentVote = localVotes[commentId] ?? userVotes?.[commentId];
 
       if (currentVote === voteType) {
         await deleteVoteMutation.mutateAsync({
           commentId,
           userKey: selectedAccount.address,
         });
+        setLocalVotes((prev) => ({ ...prev, [commentId]: null }));
       } else {
         await castVoteMutation.mutateAsync({
           commentId,
           userKey: selectedAccount.address,
           voteType,
         });
+        setLocalVotes((prev) => ({ ...prev, [commentId]: voteType }));
       }
     } catch (err) {
       console.error("Error voting:", err);
@@ -85,6 +91,7 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
       setVotingCommentId(null);
     }
   };
+
   return (
     <div className="flex w-full flex-col">
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
@@ -98,16 +105,20 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
             {proposalComments.map((comment) => (
               <div
                 key={comment.id}
-                className="flex w-full flex-col gap-2 border border-white/20 bg-white/5"
+                className="flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2"
               >
-                <div className="flex justify-between border-b border-white/20 px-2 py-1">
-                  <p>{smallAddress(comment.userKey)}</p>
-                  <div className="flex">
+                <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
+                  <span className="flex items-center gap-1">
+                    <UserIcon className="h-4 w-4" />{" "}
+                    {smallAddress(comment.userKey)}
+                  </span>
+                  <div className="flex gap-1">
                     <button
                       onClick={() => handleVote(comment.id, VoteType.UP)}
                       disabled={votingCommentId === comment.id}
                       className={`flex items-center ${
-                        userVotes?.[comment.id] === VoteType.UP
+                        (localVotes[comment.id] ?? userVotes?.[comment.id]) ===
+                        VoteType.UP
                           ? "text-green-500"
                           : ""
                       }`}
@@ -119,7 +130,8 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
                       onClick={() => handleVote(comment.id, VoteType.DOWN)}
                       disabled={votingCommentId === comment.id}
                       className={`flex items-center ${
-                        userVotes?.[comment.id] === VoteType.DOWN
+                        (localVotes[comment.id] ?? userVotes?.[comment.id]) ===
+                        VoteType.DOWN
                           ? "text-red-500"
                           : ""
                       }`}

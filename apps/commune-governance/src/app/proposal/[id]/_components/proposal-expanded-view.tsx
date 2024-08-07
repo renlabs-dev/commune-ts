@@ -7,7 +7,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
-import { CreateComment } from "~/app/components/create-comments";
+import { CreateComment } from "~/app/components/create-comment";
 import { ProposalComment } from "~/app/components/proposal-comments";
 import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
 import { VoterList } from "~/app/components/voter-list";
