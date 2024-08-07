@@ -1,22 +1,48 @@
+"use client";
+
+import { useState } from "react";
 import {
   ArrowPathIcon,
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
 } from "@heroicons/react/20/solid";
 
+import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
 
+export enum VoteType {
+  UP = "UP",
+  DOWN = "DOWN",
+}
+
 export function ProposalComment({ proposalId }: { proposalId: number }) {
+  const { selectedAccount } = useCommune();
+  const [votingCommentId, setVotingCommentId] = useState<string | null>(null);
+
   const {
     data: proposalComments,
     error,
     isLoading,
+    refetch,
   } = api.proposalComment.byId.useQuery(
     { proposalId },
     { enabled: !!proposalId },
   );
+
+  const { data: userVotes } = api.proposalComment.byUserId.useQuery(
+    { proposalId, userKey: selectedAccount?.address ?? "" },
+    { enabled: !!selectedAccount?.address && !!proposalId },
+  );
+
+  const castVoteMutation = api.proposalComment.castVote.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const deleteVoteMutation = api.proposalComment.deleteVote.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   if (error) {
     console.error("Error fetching proposal comments:", error);
@@ -30,9 +56,38 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
       </div>
     );
 
+  const handleVote = async (commentId: string, voteType: VoteType) => {
+    if (!selectedAccount?.address) return;
+
+    setVotingCommentId(commentId);
+
+    try {
+      const comment = proposalComments?.find((c) => c.id === commentId);
+      if (!comment) return;
+
+      const currentVote = userVotes?.[commentId];
+
+      if (currentVote === voteType) {
+        await deleteVoteMutation.mutateAsync({
+          commentId,
+          userKey: selectedAccount.address,
+        });
+      } else {
+        await castVoteMutation.mutateAsync({
+          commentId,
+          userKey: selectedAccount.address,
+          voteType,
+        });
+      }
+    } catch (err) {
+      console.error("Error voting:", err);
+    } finally {
+      setVotingCommentId(null);
+    }
+  };
   return (
     <div className="flex w-full flex-col">
-      <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white  backdrop-blur-md animate-delay-200">
+      <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
         <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-500">
           <h2 className="text-start text-lg font-semibold">
             Community Comments
@@ -47,15 +102,31 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
               >
                 <div className="flex justify-between border-b border-white/20 px-2 py-1">
                   <p>{smallAddress(comment.userKey)}</p>
-                  <div className="fl flex">
-                    <span className="mr-2 flex items-center text-green-500">
-                      <ChevronDoubleUpIcon className="h-5 w-5" />{" "}
-                      {comment.upvotes}
-                    </span>
-                    <span className="flex items-center text-red-500">
+                  <div className="flex">
+                    <button
+                      onClick={() => handleVote(comment.id, VoteType.UP)}
+                      disabled={votingCommentId === comment.id}
+                      className={`flex items-center ${
+                        userVotes?.[comment.id] === VoteType.UP
+                          ? "text-green-500"
+                          : ""
+                      }`}
+                    >
+                      <ChevronDoubleUpIcon className="h-5 w-5" />
+                      <span>{comment.upvotes}</span>
+                    </button>
+                    <button
+                      onClick={() => handleVote(comment.id, VoteType.DOWN)}
+                      disabled={votingCommentId === comment.id}
+                      className={`flex items-center ${
+                        userVotes?.[comment.id] === VoteType.DOWN
+                          ? "text-red-500"
+                          : ""
+                      }`}
+                    >
                       <ChevronDoubleDownIcon className="h-5 w-5" />
-                      {comment.downvotes}
-                    </span>
+                      <span>{comment.downvotes}</span>
+                    </button>
                   </div>
                 </div>
                 <p className="p-2">{comment.content}</p>

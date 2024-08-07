@@ -2,10 +2,10 @@
 CREATE VIEW comment_digest AS
 SELECT
   pc.id,
-  pc.proposal_id AS "proposalId",
-  pc.user_key AS "userKey",
+  pc.proposal_id,
+  pc.user_key,
   pc.content,
-  pc.created_at AS "createdAt",
+  pc.created_at,
   COALESCE(SUM(CASE WHEN ci.vote_type = 'UP' THEN 1 ELSE 0 END), 0) AS upvotes,
   COALESCE(SUM(CASE WHEN ci.vote_type = 'DOWN' THEN 1 ELSE 0 END), 0) AS downvotes
 FROM
