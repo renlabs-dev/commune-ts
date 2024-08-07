@@ -8,8 +8,9 @@ import {
   UserIcon,
 } from "@heroicons/react/20/solid";
 
+import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
 
@@ -18,12 +19,35 @@ export enum VoteType {
   DOWN = "DOWN",
 }
 
-export function ProposalComment({ proposalId }: { proposalId: number }) {
+export function ProposalComment({
+  proposalId,
+  proposalStatus,
+}: {
+  proposalId: number;
+  proposalStatus: ProposalStatus;
+}) {
   const { selectedAccount } = useCommune();
   const [votingCommentId, setVotingCommentId] = useState<string | null>(null);
   const [localVotes, setLocalVotes] = useState<Record<string, VoteType | null>>(
     {},
   );
+
+  function getVoterStake(address: SS58Address) {
+    if (!selectedAccount?.address) return null;
+    if ("open" in proposalStatus) {
+      const { votesFor, votesAgainst, stakeFor, stakeAgainst } =
+        proposalStatus.open;
+
+      if (votesFor.includes(address)) {
+        return stakeFor / BigInt(votesFor.length);
+      }
+
+      if (votesAgainst.includes(address)) {
+        return stakeAgainst / BigInt(votesAgainst.length);
+      }
+    }
+    return BigInt(0);
+  }
 
   const {
     data: proposalComments,
@@ -95,7 +119,7 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
   return (
     <div className="flex w-full flex-col">
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
-        <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-500">
+        <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-400">
           <h2 className="text-start text-lg font-semibold">
             Community Comments
           </h2>
@@ -111,6 +135,12 @@ export function ProposalComment({ proposalId }: { proposalId: number }) {
                   <span className="flex items-center gap-1">
                     <UserIcon className="h-4 w-4" />{" "}
                     {smallAddress(comment.userKey)}
+                    <span className="ml-2 text-sm text-gray-400">
+                      {formatToken(
+                        Number(getVoterStake(comment.userKey as SS58Address)),
+                      )}{" "}
+                      COMAI
+                    </span>
                   </span>
                   <div className="flex gap-1">
                     <button

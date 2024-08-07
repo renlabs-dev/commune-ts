@@ -46,7 +46,9 @@ export function VoteCard(props: {
     return (
       <Card.Root>
         <Card.Header>
-          <h3 className="text-base font-semibold">Cast your vote</h3>
+          <h3 className="text-base font-semibold text-gray-400">
+            Cast your vote
+          </h3>
         </Card.Header>
         <Card.Body className="flex w-full flex-col space-y-4 p-6">
           <span>You already voted!</span>

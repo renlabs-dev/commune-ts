@@ -97,7 +97,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
-      <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-500">
+      <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-400">
         <h2 className="text-start text-lg font-semibold">Submit a Comment</h2>
       </div>
       <div className="relative">
