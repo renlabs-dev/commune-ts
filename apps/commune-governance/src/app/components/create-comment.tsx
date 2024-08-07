@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { formatToken } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
 
 const MAX_CHARACTERS = 300;
+const MIN_STAKE_REQUIRED = 5000;
 
 const CommentSchema = z.object({
   content: z
@@ -31,7 +33,9 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
   const [error, setError] = useState<string | null>(null);
   const [remainingChars, setRemainingChars] = useState(MAX_CHARACTERS);
 
-  const { selectedAccount } = useCommune();
+  let userStakeWeight: bigint | null = null;
+
+  const { selectedAccount, stakeOut } = useCommune();
 
   const CreateComment = api.proposalComment.createComment.useMutation({
     onSuccess: () => {
@@ -49,20 +53,47 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
     e.preventDefault();
     setError(null);
 
+    if (!selectedAccount?.address) {
+      setError("Please connect your wallet to submit a comment.");
+      return;
+    }
+
+    if (
+      !userStakeWeight ||
+      Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED
+    ) {
+      setError(
+        `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`,
+      );
+      return;
+    }
+
     try {
       CommentSchema.parse({ content });
       CreateComment.mutate({
         content,
         proposalId,
-        userKey: String(selectedAccount?.address),
+        userKey: String(selectedAccount.address),
       });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setError(err.errors[0]!.message);
+        setError(err.errors[0]?.message ?? "Invalid input");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
       }
     }
   };
+
+  if (stakeOut != null && selectedAccount != null) {
+    const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
+    userStakeWeight = userStakeEntry ?? 0n;
+  }
+
+  const isSubmitDisabled =
+    CreateComment.isPending ||
+    !selectedAccount?.address ||
+    !userStakeWeight ||
+    Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED;
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
@@ -84,11 +115,18 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       {error && <p className="text-sm text-red-500">{error}</p>}
       <button
         type="submit"
-        className="bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20"
-        disabled={CreateComment.isPending || !selectedAccount?.address}
+        className="bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={isSubmitDisabled}
       >
         {CreateComment.isPending ? "Submitting..." : "Submit"}
       </button>
+      {isSubmitDisabled && !error && (
+        <p className="text-sm text-yellow-500">
+          {!selectedAccount?.address
+            ? "Please connect your wallet to submit a comment."
+            : `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`}
+        </p>
+      )}
     </form>
   );
 }
