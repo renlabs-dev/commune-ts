@@ -170,7 +170,10 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           </div>
         </div>
         <div className="fit w-full">
-          <ProposalComment proposalId={content.id} />
+          <ProposalComment
+            proposalId={content.id}
+            proposalStatus={content.status}
+          />
         </div>
         <div className="fit m-2 flex min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white  backdrop-blur-md animate-delay-200">
           <CreateComment proposalId={content.id} />
