@@ -27,6 +27,28 @@ export const proposalCommentRouter = {
         .where(eq(proposalCommentDigestView.proposalId, input.proposalId))
         .execute();
     }),
+  byUserId: publicProcedure
+    .input(z.object({ proposalId: z.number(), userKey: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const votes = await ctx.db
+        .select({
+          commentId: commentInteractionSchema.commentId,
+          voteType: commentInteractionSchema.voteType,
+        })
+        .from(commentInteractionSchema)
+        .where(
+          sql`${commentInteractionSchema.userKey} = ${input.userKey} AND ${commentInteractionSchema.commentId} IN (
+          SELECT id FROM ${proposalCommentSchema} WHERE ${proposalCommentSchema.proposalId} = ${input.proposalId}
+        )`,
+        );
+      return votes.reduce(
+        (acc, vote) => {
+          acc[vote.commentId] = vote.voteType;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+    }),
   // POST
   createComment: publicProcedure
     .input(PROPOSAL_COMMENT_INSERT_SCHEMA)
