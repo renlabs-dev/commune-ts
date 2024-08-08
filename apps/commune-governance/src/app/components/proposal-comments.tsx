@@ -9,6 +9,7 @@ import {
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
 import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
@@ -46,7 +47,7 @@ export function ProposalComment({
         return stakeAgainst / BigInt(votesAgainst.length);
       }
     }
-    return BigInt(0);
+    return null;
   }
 
   const {
@@ -97,7 +98,9 @@ export function ProposalComment({
   }
 
   const handleVote = async (commentId: string, voteType: VoteType) => {
-    if (!selectedAccount?.address) return;
+    if (!selectedAccount?.address) {
+      return toast.error("Please connect your wallet to vote");
+    }
 
     setVotingCommentId(commentId);
 
