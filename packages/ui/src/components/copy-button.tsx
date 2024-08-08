@@ -27,7 +27,7 @@ export function CopyButton(props: CodeComponentProps): JSX.Element {
   return (
     <button
       className={cn(
-        `flex w-auto max-w-28 items-center tw-px-4 justify-center border border-gray-500 py-2 text-gray-400 hover:border-green-600 hover:text-green-600 ${copied && "cursor-not-allowed border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500"}`,
+        `tw-px-4 flex w-auto max-w-28 items-center justify-center border border-gray-500 py-2 text-gray-400 hover:border-green-600 hover:text-green-600 ${copied && "cursor-not-allowed border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500"}`,
       )}
       onClick={() => void copyTextToClipboard(code)}
       type="button"
