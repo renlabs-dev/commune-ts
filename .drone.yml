@@ -1,0 +1,156 @@
+kind: pipeline
+type: docker
+name: commune-page
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      username: ${DRONE_COMMIT_AUTHOR}
+      password:
+        from_secret: DOCKER_TOKEN
+      repo: ghcr.io/agicommies/commune-page
+      tags:
+        - latest
+        - main
+        - ${DRONE_COMMIT_SHA:0:7}
+      dockerfile: docker/Dockerfile
+      build_args: APP_NAME=commune-page
+
+  - name: deploy
+    image: digitalocean/doctl:latest
+    environment:
+      DO_CTL_TOKEN:
+        from_secret: DO_CTL_TOKEN
+    commands:
+      - export PATH=$PATH:/app
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-page | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+
+trigger:
+  branch:
+    - drone
+    - main
+  event:
+    - push
+  paths:
+    exclude:
+      - apps/commune-governance/**
+      - apps/commune-validator/**
+      - apps/communex-page/**
+      - apps/comrads-worker/**
+      - apps/sample-app/**
+---
+kind: pipeline
+type: docker
+name: community-validator and worker
+
+steps:
+  - name: app-build
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      username: ${DRONE_COMMIT_AUTHOR}
+      password:
+        from_secret: DOCKER_TOKEN
+      repo: ghcr.io/agicommies/community-validator
+      tags:
+        - latest
+        - main
+        - ${DRONE_COMMIT_SHA:0:7}
+      dockerfile: docker/Dockerfile
+      build_args: APP_NAME=commune-validator
+    when:
+      paths:
+        exclude:
+          - apps/comrads-worker/**
+
+  - name: worker-build
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      username: ${DRONE_COMMIT_AUTHOR}
+      password:
+        from_secret: DOCKER_TOKEN
+      repo: ghcr.io/agicommies/comrads-worker
+      tags:
+        - latest
+        - main
+        - ${DRONE_COMMIT_SHA:0:7}
+      dockerfile: docker/Dockerfile
+      build_args: APP_NAME=comrads-worker
+    when:
+      paths:
+        exclude:
+          - apps/commune-validator/**
+
+  - name: deploy
+    image: digitalocean/doctl:latest
+    environment:
+      DO_CTL_TOKEN:
+        from_secret: DO_CTL_TOKEN
+    commands:
+      - export PATH=$PATH:/app
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep community-validator | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+    depends_on:
+      - app-build
+      - worker-build
+
+trigger:
+  branch:
+    - drone
+    - main
+  event:
+    - push
+  paths:
+    exclude:
+      - apps/commune-governance/**
+      - apps/commune-page/**
+      - apps/communex-page/**
+      - apps/sample-app/**
+---
+kind: pipeline
+type: docker
+name: commune-governance
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      username: ${DRONE_COMMIT_AUTHOR}
+      password:
+        from_secret: DOCKER_TOKEN
+      repo: ghcr.io/agicommies/commune-governance
+      tags:
+        - latest
+        - main
+        - ${DRONE_COMMIT_SHA:0:7}
+      dockerfile: docker/Dockerfile
+      build_args: APP_NAME=commune-governance
+
+  - name: deploy
+    image: digitalocean/doctl:latest
+    environment:
+      DO_CTL_TOKEN:
+        from_secret: DO_CTL_TOKEN
+    commands:
+      - export PATH=$PATH:/app
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-governance | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+
+trigger:
+  branch:
+    - drone
+    - main
+  event:
+    - push
+  paths:
+    exclude:
+      - apps/commune-page/**
+      - apps/commune-validator/**
+      - apps/communex-page/**
+      - apps/comrads-worker/**
+      - apps/sample-app/**

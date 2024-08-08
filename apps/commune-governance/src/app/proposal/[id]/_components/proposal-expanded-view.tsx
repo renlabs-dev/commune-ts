@@ -7,6 +7,8 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
+import { CreateComment } from "~/app/components/create-comment";
+import { ProposalComment } from "~/app/components/proposal-comments";
 import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
 import { VoterList } from "~/app/components/voter-list";
 import {
@@ -150,7 +152,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
   if (isProposalsLoading || !content)
     return (
-      <div className="flex w-full items-center justify-center lg:h-auto">
+      <div className="flex min-h-screen w-full items-center justify-center lg:h-auto">
         <h1 className="text-2xl text-white">Loading...</h1>
         <ArrowPathIcon className="ml-2 animate-spin" color="#FFF" width={20} />
       </div>
@@ -158,12 +160,23 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
   return (
     <div className="flex w-full flex-col md:flex-row">
-      <div className="m-2 flex h-fit animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[77.5vh] md:min-h-[77.5vh] lg:w-2/3">
-        <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
-          <h2 className="text-lg font-semibold">{content.title}</h2>
+      <div className="flex h-full w-full flex-col lg:w-2/3">
+        <div className="m-2 flex h-full animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[50vh] md:min-h-[50vh]">
+          <div className="mb-8 border-b border-gray-500 border-white/20 pb-2">
+            <h2 className="text-lg font-semibold">{content.title}</h2>
+          </div>
+          <div className="h-full lg:overflow-auto">
+            <MarkdownView source={(content.body as string | undefined) ?? ""} />
+          </div>
         </div>
-        <div className="h-full lg:overflow-auto">
-          <MarkdownView source={(content.body as string | undefined) ?? ""} />
+        <div className="fit w-full">
+          <ProposalComment
+            proposalId={content.id}
+            proposalStatus={content.status}
+          />
+        </div>
+        <div className="fit m-2 flex min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white  backdrop-blur-md animate-delay-200">
+          <CreateComment proposalId={content.id} />
         </div>
       </div>
 
