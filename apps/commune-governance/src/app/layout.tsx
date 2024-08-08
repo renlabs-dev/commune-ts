@@ -9,6 +9,7 @@ import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 import { Wallet, WalletButton } from "@commune-ts/wallet";
 
+import { TRPCReactProvider } from "~/trpc/react";
 import { MobileHeaderContent } from "./components/mobile-header-content";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
@@ -30,19 +31,20 @@ export default function RootLayout({
         className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
-          <Wallet />
-
-          <Header
-            logoSrc="/logo.svg"
-            title="Community Governance"
-            wallet={<WalletButton />}
-            mobileContent={<MobileHeaderContent />}
-            navigationLinks={[
-              { name: "Homepage", href: links.landing_page, external: true },
-            ]}
-          />
-          {children}
-          <Footer />
+          <TRPCReactProvider>
+            <Wallet />
+            <Header
+              logoSrc="/logo.svg"
+              title="Community Governance"
+              wallet={<WalletButton />}
+              mobileContent={<MobileHeaderContent />}
+              navigationLinks={[
+                { name: "Homepage", href: links.landing_page, external: true },
+              ]}
+            />
+            {children}
+            <Footer />
+          </TRPCReactProvider>
         </Providers>
       </body>
     </html>
