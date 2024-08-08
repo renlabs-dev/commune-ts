@@ -17,7 +17,7 @@
     "tailwind:watch": "tailwindcss -i ./src/style.css -o ./src/output.css --watch"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^18.3.1"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
@@ -25,12 +25,12 @@
     "@commune-ts/tsconfig": "workspace:*",
     "@types/react": "^18.2.61",
     "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35",
-    "react": "^18.2.0",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
     "eslint": "^8.0.0",
     "prettier": "^3.3.1",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
   },
   "prettier": "@commune-ts/prettier-config"
 }
