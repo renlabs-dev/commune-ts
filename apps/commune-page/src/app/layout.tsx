@@ -7,7 +7,7 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton } from "@commune-ts/wallet/button";
+import { WalletButton, Wallet } from "@commune-ts/wallet";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -27,6 +27,7 @@ export default function RootLayout({
         className={`relative bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
+          <Wallet />
           <Header
             logoSrc="/logo.svg"
             navigationLinks={[

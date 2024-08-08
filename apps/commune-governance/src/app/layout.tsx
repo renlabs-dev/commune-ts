@@ -9,7 +9,6 @@ import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 import { Wallet, WalletButton } from "@commune-ts/wallet";
 
-
 import { MobileHeaderContent } from "./components/mobile-header-content";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
@@ -31,6 +30,7 @@ export default function RootLayout({
         className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
+          <Wallet />
 
           <Header
             logoSrc="/logo.svg"
@@ -41,7 +41,6 @@ export default function RootLayout({
               { name: "Homepage", href: links.landing_page, external: true },
             ]}
           />
-          <Wallet />
           {children}
           <Footer />
         </Providers>

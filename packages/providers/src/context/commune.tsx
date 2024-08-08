@@ -50,11 +50,13 @@ interface CommuneApiState {
 interface CommuneContextType {
   api: ApiPromise | null;
   isConnected: boolean;
+  setIsConnected: (arg: boolean) => void;
   isInitialized: boolean;
 
-  handleConnect: () => void;
-  accounts: InjectedAccountWithMeta[];
+  handleGetWallets: () => void;
+  accounts: InjectedAccountWithMeta[] | undefined;
   selectedAccount: InjectedAccountWithMeta | null;
+  setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
 
   handleWalletModal(state?: boolean): void;
   openWalletModal: boolean;
@@ -117,7 +119,7 @@ export function CommuneProvider({
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
-  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
+  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | undefined>([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
 
@@ -132,7 +134,7 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider(wsEndpoint);
+    const provider = new WsProvider("wss://commune.api.onfinality.io/public-ws");
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);
@@ -147,25 +149,6 @@ export function CommuneProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsEndpoint]);
 
-  async function fetchWallets(favoriteWalletAddress: string): Promise<void> {
-    const walletList = await getWallets();
-    const accountExist = walletList?.find(
-      (wallet) => wallet.address === favoriteWalletAddress,
-    );
-    if (accountExist) {
-      setSelectedAccount(accountExist);
-      setIsConnected(true);
-    }
-  }
-
-  useEffect(() => {
-    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
-    if (favoriteWalletAddress) {
-      void fetchWallets(favoriteWalletAddress);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitialized]);
-
   async function getWallets(): Promise<InjectedAccountWithMeta[] | undefined> {
     if (!communeApi.web3Enable || !communeApi.web3Accounts) return;
     await communeApi.web3Enable("Commune AI");
@@ -177,13 +160,34 @@ export function CommuneProvider({
     }
   }
 
-  async function handleConnect(): Promise<void> {
+  async function fetchWallets(): Promise<void> {
+    const walletList = await getWallets();
+    setAccounts(walletList)
+
+    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
+    if (!favoriteWalletAddress) return
+
+    const accountExist = walletList?.find(
+      (wallet) => wallet.address === favoriteWalletAddress,
+    );
+    if (!accountExist) return
+
+    setSelectedAccount(accountExist);
+    setIsConnected(true);
+  }
+
+  useEffect(() => {
+    void fetchWallets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInitialized]);
+
+
+  async function handleGetWallets(): Promise<void> {
     try {
       const allAccounts = await getWallets();
       if (allAccounts) {
         setAccounts(allAccounts);
       }
-      setOpenWalletModal(true);
     } catch (error) {
       return undefined;
     }
@@ -191,10 +195,6 @@ export function CommuneProvider({
 
   function handleWalletModal(state?: boolean): void {
     setOpenWalletModal(state || !openWalletModal);
-  }
-
-  function handleConnectWrapper(): void {
-    handleConnect();
   }
 
   // == Transaction Handler ==
@@ -477,11 +477,13 @@ export function CommuneProvider({
       value={{
         api,
         isConnected,
+        setIsConnected,
         isInitialized,
 
         accounts,
         selectedAccount,
-        handleConnect: handleConnectWrapper,
+        setSelectedAccount,
+        handleGetWallets,
 
         handleWalletModal,
         openWalletModal,
