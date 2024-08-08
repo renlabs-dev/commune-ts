@@ -1,16 +1,10 @@
 {
-  "extends": "@commune-ts/tsconfig/base.json",
+  "extends": "@commune-ts/tsconfig/internal-package.json",
   "compilerOptions": {
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "lib": ["dom", "dom.iterable", "ES2022"],
     "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"], "tailwind.config.ts backup"
-    },
-    "plugins": [{ "name": "next" }],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "module": "esnext"
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": [".", ".next/types/**/*.ts"],
+  "include": ["*.ts", "src"],
   "exclude": ["node_modules"]
 }

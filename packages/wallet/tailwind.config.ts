@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+
 import baseConfig from "@commune-ts/tailwind-config/web";
 
 const config: Config = {
