@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  ArrowPathIcon,
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
   UserIcon,
@@ -76,14 +75,6 @@ export function ProposalComment({
     console.error("Error fetching proposal comments:", error);
   }
 
-  if (isLoading)
-    return (
-      <div className="flex w-full items-center justify-center lg:h-auto">
-        <h1 className="text-2xl text-white">Loading...</h1>
-        <ArrowPathIcon className="ml-2 animate-spin" color="#FFF" width={20} />
-      </div>
-    );
-
   const handleVote = async (commentId: string, voteType: VoteType) => {
     if (!selectedAccount?.address) return;
 
@@ -124,59 +115,92 @@ export function ProposalComment({
             Community Comments
           </h2>
         </div>
-        {proposalComments?.length ? (
-          <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 pr-2">
-            {proposalComments.map((comment) => (
-              <div
-                key={comment.id}
-                className="flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2"
-              >
-                <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
-                  <span className="flex items-center gap-1">
-                    <UserIcon className="h-4 w-4" />{" "}
-                    {smallAddress(comment.userKey)}
-                    <span className="ml-2 text-sm text-gray-400">
-                      {formatToken(
-                        Number(getVoterStake(comment.userKey as SS58Address)),
-                      )}{" "}
-                      COMAI
-                    </span>
-                  </span>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => handleVote(comment.id, VoteType.UP)}
-                      disabled={votingCommentId === comment.id}
-                      className={`flex items-center ${
-                        (localVotes[comment.id] ?? userVotes?.[comment.id]) ===
-                        VoteType.UP
-                          ? "text-green-500"
-                          : ""
-                      }`}
-                    >
-                      <ChevronDoubleUpIcon className="h-5 w-5" />
-                      <span>{comment.upvotes}</span>
-                    </button>
-                    <button
-                      onClick={() => handleVote(comment.id, VoteType.DOWN)}
-                      disabled={votingCommentId === comment.id}
-                      className={`flex items-center ${
-                        (localVotes[comment.id] ?? userVotes?.[comment.id]) ===
-                        VoteType.DOWN
-                          ? "text-red-500"
-                          : ""
-                      }`}
-                    >
-                      <ChevronDoubleDownIcon className="h-5 w-5" />
-                      <span>{comment.downvotes}</span>
-                    </button>
-                  </div>
+        {isLoading ? (
+          <>
+            <div className="flex w-full animate-pulse flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2">
+              <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
+                <span className="flex items-center gap-1">
+                  <UserIcon className="h-4 w-4" /> Loading user address...
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    disabled={true}
+                    className={`flex items-center text-gray-300`}
+                  >
+                    <ChevronDoubleUpIcon className="h-5 w-5" />
+                    <span>-</span>
+                  </button>
+                  <button
+                    disabled={true}
+                    className={`flex items-center text-gray-300`}
+                  >
+                    <ChevronDoubleDownIcon className="h-5 w-5" />
+                    <span>-</span>
+                  </button>
                 </div>
-                <p className="p-2">{comment.content}</p>
               </div>
-            ))}
-          </div>
+              <p className="p-2">Loading...</p>
+            </div>
+          </>
         ) : (
-          <p>No comments yet</p>
+          <>
+            {proposalComments?.length ? (
+              <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 pr-2">
+                {proposalComments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2"
+                  >
+                    <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
+                      <span className="flex items-center gap-1">
+                        <UserIcon className="h-4 w-4" />{" "}
+                        {smallAddress(comment.userKey)}
+                        <span className="ml-2 text-sm text-gray-400">
+                          {formatToken(
+                            Number(
+                              getVoterStake(comment.userKey as SS58Address),
+                            ),
+                          )}{" "}
+                          COMAI
+                        </span>
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleVote(comment.id, VoteType.UP)}
+                          disabled={votingCommentId === comment.id}
+                          className={`flex items-center ${
+                            (localVotes[comment.id] ??
+                              userVotes?.[comment.id]) === VoteType.UP
+                              ? "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          <ChevronDoubleUpIcon className="h-5 w-5" />
+                          <span>{comment.upvotes}</span>
+                        </button>
+                        <button
+                          onClick={() => handleVote(comment.id, VoteType.DOWN)}
+                          disabled={votingCommentId === comment.id}
+                          className={`flex items-center ${
+                            (localVotes[comment.id] ??
+                              userVotes?.[comment.id]) === VoteType.DOWN
+                              ? "text-red-500"
+                              : ""
+                          }`}
+                        >
+                          <ChevronDoubleDownIcon className="h-5 w-5" />
+                          <span>{comment.downvotes}</span>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="p-2">{comment.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No comments yet</p>
+            )}
+          </>
         )}
       </div>
     </div>
