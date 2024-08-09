@@ -13,7 +13,7 @@ steps:
       repo: ghcr.io/agicommies/commune-page
       tags:
         - latest
-        - main
+        - ${DRONE_BRANCH}
         - ${DRONE_COMMIT_SHA:0:7}
       dockerfile: docker/Dockerfile
       build_args: APP_NAME=commune-page
@@ -25,13 +25,15 @@ steps:
         from_secret: DO_CTL_TOKEN
     commands:
       - export PATH=$PATH:/app
-      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-page | awk '{print $1}')
-      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
+      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-page" || echo "dev-commune-page" )
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
 
 trigger:
   branch:
     - drone
     - main
+    - dev
   event:
     - push
   paths:
@@ -57,7 +59,7 @@ steps:
       repo: ghcr.io/agicommies/community-validator
       tags:
         - latest
-        - main
+        - ${DRONE_BRANCH}
         - ${DRONE_COMMIT_SHA:0:7}
       dockerfile: docker/Dockerfile
       build_args: APP_NAME=commune-validator
@@ -76,7 +78,7 @@ steps:
       repo: ghcr.io/agicommies/comrads-worker
       tags:
         - latest
-        - main
+        - ${DRONE_BRANCH}
         - ${DRONE_COMMIT_SHA:0:7}
       dockerfile: docker/Dockerfile
       build_args: APP_NAME=comrads-worker
@@ -92,8 +94,9 @@ steps:
         from_secret: DO_CTL_TOKEN
     commands:
       - export PATH=$PATH:/app
-      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep community-validator | awk '{print $1}')
-      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
+      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "community-validator" || echo "dev-community-validator" )
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
     depends_on:
       - app-build
       - worker-build
@@ -102,6 +105,7 @@ trigger:
   branch:
     - drone
     - main
+    - dev
   event:
     - push
   paths:
@@ -126,7 +130,7 @@ steps:
       repo: ghcr.io/agicommies/commune-governance
       tags:
         - latest
-        - main
+        - ${DRONE_BRANCH}
         - ${DRONE_COMMIT_SHA:0:7}
       dockerfile: docker/Dockerfile
       build_args: APP_NAME=commune-governance
@@ -138,13 +142,15 @@ steps:
         from_secret: DO_CTL_TOKEN
     commands:
       - export PATH=$PATH:/app
-      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-governance | awk '{print $1}')
-      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
+      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-governance" || echo "dev-commune-governance" )
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
+      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
 
 trigger:
   branch:
     - drone
     - main
+    - dev
   event:
     - push
   paths:
