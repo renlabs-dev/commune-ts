@@ -58,6 +58,26 @@ export function ProposalComment({
     { enabled: !!proposalId },
   );
 
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "mostUpvotes">(
+    "oldest",
+  );
+
+  const sortedComments = proposalComments
+    ? [...proposalComments].sort((a, b) => {
+        if (sortBy === "newest") {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        } else if (sortBy === "oldest") {
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        } else {
+          return b.upvotes - a.upvotes;
+        }
+      })
+    : [];
+
   const { data: userVotes } = api.proposalComment.byUserId.useQuery(
     { proposalId, userKey: selectedAccount?.address ?? "" },
     { enabled: !!selectedAccount?.address && !!proposalId },
@@ -110,11 +130,29 @@ export function ProposalComment({
   return (
     <div className="flex w-full flex-col">
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
-        <div className="mb-4 w-full border-b border-gray-500 border-white/20 pb-2 text-gray-400">
-          <h2 className="text-start text-lg font-semibold">
-            Community Comments
-          </h2>
+        <div className="mb-4 flex w-full flex-col items-center justify-between gap-1 border-b border-gray-500 border-white/20 pb-2 text-gray-400 md:flex-row">
+          <h2 className="w-full text-lg font-semibold">Community Comments</h2>
+          <div className="flex w-full space-x-2 md:justify-end">
+            {["oldest", "newest", "mostUpvotes"].map((option) => (
+              <button
+                key={option}
+                onClick={() => setSortBy(option as typeof sortBy)}
+                className={`px-3 py-1 text-sm ${
+                  sortBy === option
+                    ? "border border-green-500 bg-green-500/20 text-white"
+                    : "border border-white/20 bg-[#898989]/5 text-gray-300 hover:bg-gray-600/50"
+                }`}
+              >
+                {option === "newest"
+                  ? "Newest"
+                  : option === "oldest"
+                    ? "Oldest"
+                    : "Most Upvotes"}
+              </button>
+            ))}
+          </div>
         </div>
+
         {isLoading ? (
           <>
             <div className="flex w-full animate-pulse flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2">
@@ -144,9 +182,9 @@ export function ProposalComment({
           </>
         ) : (
           <>
-            {proposalComments?.length ? (
+            {sortedComments.length ? (
               <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 pr-2">
-                {proposalComments.map((comment) => (
+                {sortedComments.map((comment) => (
                   <div
                     key={comment.id}
                     className="flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2"
