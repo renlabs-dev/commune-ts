@@ -52,7 +52,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
   return (
     <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
       <h3 className="mb-2 text-lg font-semibold">Voters List</h3>
-      <div className="max-h-60 overflow-y-auto">
+      <div className="h-fit overflow-y-auto md:max-h-[16.5vh] lg:max-h-[18.5vh] xl:max-h-[25vh] 2xl:max-h-[28vh]">
         {voters.map(({ address, status, stake }, index) => (
           <div key={index} className="mb-2 flex items-end justify-between">
             <span className="text-white">{smallAddress(address)}</span>
