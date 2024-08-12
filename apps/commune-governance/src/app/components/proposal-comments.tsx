@@ -12,6 +12,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
+import { ReportComment } from "./report-comment";
 
 export enum VoteType {
   UP = "UP",
@@ -187,7 +188,7 @@ export function ProposalComment({
                 {sortedComments.map((comment) => (
                   <div
                     key={comment.id}
-                    className="flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2"
+                    className="relative flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2 pb-4"
                   >
                     <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
                       <span className="flex items-center gap-1">
@@ -202,7 +203,7 @@ export function ProposalComment({
                           COMAI
                         </span>
                       </span>
-                      <div className="flex gap-1">
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleVote(comment.id, VoteType.UP)}
                           disabled={votingCommentId === comment.id}
@@ -232,6 +233,9 @@ export function ProposalComment({
                       </div>
                     </div>
                     <p className="p-2">{comment.content}</p>
+                    <div className="absolute bottom-2 right-2">
+                      <ReportComment commentId={comment.id} />
+                    </div>
                   </div>
                 ))}
               </div>
