@@ -11,11 +11,14 @@ export function CardSkeleton(): JSX.Element {
           Loading Title...
         </p>
         <div className="mb-2 flex w-full flex-row-reverse justify-end gap-2 md:mb-0 md:ml-auto md:flex-row lg:w-4/12 lg:justify-end">
-          <span className="w-6/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+          <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Type
           </span>
           <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Subnet
+          </span>
+          <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+            Reward
           </span>
           <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Status
