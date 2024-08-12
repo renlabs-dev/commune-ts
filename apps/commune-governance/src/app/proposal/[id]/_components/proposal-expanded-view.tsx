@@ -10,6 +10,7 @@ import type { Vote } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";
 import { ProposalComment } from "~/app/components/proposal-comments";
 import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
+import { RewardLabel } from "~/app/components/reward-label";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { VoterList } from "~/app/components/voter-list";
 import {
@@ -209,13 +210,14 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
         </div>
 
         <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-300">
-          <SectionHeaderText text="Subnet / Status / Type" />
+          <SectionHeaderText text="Subnet / Status / Reward Status / Type" />
           <div className="flex items-center gap-3">
             <VoteLabel vote={content.voted} />
             <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
               <span>{content.netuid}</span>
             </span>
             <StatusLabel result={content.status} />
+            <RewardLabel proposalId={content.id} result={content.status} />
             <ProposalTypeLabel result={content.data} />
           </div>
         </div>
