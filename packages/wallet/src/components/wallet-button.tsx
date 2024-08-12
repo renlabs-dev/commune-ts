@@ -9,10 +9,11 @@ import { smallAddress } from "@commune-ts/providers/utils";
 
 interface TWalletButtonProps {
   customHandler?: () => void;
+  className?: string;
 }
 
 export function WalletButton(props: TWalletButtonProps) {
-  const { customHandler } = props;
+  const { customHandler, className } = props;
   const { selectedAccount, handleWalletModal, accounts } = useCommune();
 
   if (Boolean(!accounts?.length)) {
@@ -33,7 +34,7 @@ export function WalletButton(props: TWalletButtonProps) {
   return (
     <button
       className={`tw-relative tw-w-auto tw-z-50 tw-flex tw-items-center tw-justify-center tw-gap-3 tw-border tw-border-white/20 tw-bg-[#898989]/5 tw-px-4 tw-py-2 tw-text-gray-400 tw-backdrop-blur-md hover:tw-border-green-600 hover:tw-bg-green-600/5 hover:tw-text-green-600
-        ${selectedAccount && "tw-border-green-500 tw-bg-green-500/5 tw-text-green-500"}`}
+        ${selectedAccount && "tw-border-green-500 tw-bg-green-500/5 tw-text-green-500"} ${className}`}
       onClick={customHandler || handleWalletModal}
       disabled={!accounts}
       type="button"

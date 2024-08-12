@@ -12,7 +12,7 @@
     "build": "tailwindcss -i ./src/style.css -o ./dist/index.css --minify",
     "lint": "eslint",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev": "tailwindcss -i ./src/style.css -o ./src/output.css --minify --watch",
     "type-check": "tsc --noEmit",
     "tailwind:watch": "tailwindcss -i ./src/style.css -o ./src/output.css --watch"
   },
