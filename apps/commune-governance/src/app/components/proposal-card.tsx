@@ -109,7 +109,6 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
               style={{ backgroundColor: "transparent", color: "white" }}
             />
           ) : null}
-          {/* TODO: skeleton for markdown body */}
         </div>
 
         <div className="flex flex-col items-start justify-between border-t border-white/20 bg-[#898989]/5 p-2 backdrop-blur-md lg:flex-row lg:items-center lg:p-4">
