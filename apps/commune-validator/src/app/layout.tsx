@@ -9,7 +9,7 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton } from "@commune-ts/wallet";
+import { WalletButton, Wallet } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { DelegatedModulesList } from "./components/delegated-modules-list";
@@ -45,6 +45,7 @@ export default function RootLayout({
               </p>
             </div>
           </div>
+          <Wallet />
           <Header
             logoSrc="/logo.svg"
             navigationLinks={[
