@@ -24,7 +24,6 @@ export function Wallet() {
     addStake,
     removeStake,
     transfer,
-    transferStake,
     stakeOut,
     balance,
     accounts,
@@ -227,7 +226,7 @@ export function Wallet() {
               className={`tw-text-md tw-flex tw-cursor-pointer tw-items-center tw-gap-x-3 tw-overflow-auto tw-border tw-px-4 tw-py-2 ${
                 selectedAccount?.address === item.address
                   ? "tw-border-green-500"
-                  : "tw-border-gray-500"
+                  : "tw-border-white/20"
               }`}
               key={item.address}
               onClick={() => handleWalletSelection(item)}
@@ -266,20 +265,20 @@ export function Wallet() {
         }}
       />
       <div className="tw-max-w-screen-2xl tw-mx-auto tw-w-full tw-fixed tw-z-[100]">
-        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-gray-500 tw-bg-black">
+        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-black/90">
           <SelectWalletModal />
 
           {!isWalletSelectionView && (
             <>
-              <div className="tw-flex tw-gap-2 tw-justify-between tw-border-b tw-border-gray-500 tw-p-4">
+              <div className="tw-flex tw-gap-2 tw-justify-between tw-border-b tw-border-white/20 tw-p-4">
                 <WalletButton
                   customHandler={handleOpenSelectWallet}
                   className="tw-w-full"
                 />
                 <CopyButton code={selectedAccount?.address || ""} />
               </div>
-              <div className="tw-flex tw-flex-col tw-gap-4 tw-border-b tw-border-gray-500 tw-p-4 tw-text-white">
-                <div className="tw-border tw-border-gray-500 tw-p-4">
+              <div className="tw-flex tw-flex-col tw-gap-4 tw-border-b tw-border-white/20 tw-p-4 tw-text-white">
+                <div className="tw-border tw-border-white/20 tw-p-4">
                   <div className="tw-flex tw-w-full tw-justify-between gap-6">
                     <div>
                       <p className="tw-text-xl tw-text-green-500">
@@ -314,11 +313,11 @@ export function Wallet() {
                 </div>
               </div>
               <div className="tw-flex tw-p-4">
-                <div className="tw-flex tw-border tw-border-gray-500 tw-w-full">
+                <div className="tw-flex tw-border tw-border-white/20 tw-w-full">
                   {walletActions.map((action) => {
                     return (
                       <button
-                        className={`tw-flex tw-w-full tw-flex-col tw-items-center tw-border-gray-500 tw-px-3.5 tw-py-3 tw-text-gray-400 tw-transition tw-duration-200 hover:tw-bg-white/5 ${
+                        className={`tw-flex tw-w-full tw-flex-col tw-items-center tw-border-white/20 tw-px-3.5 tw-py-3 tw-text-gray-400 tw-transition tw-duration-200 hover:tw-bg-white/5 ${
                           activeMenu == action.name.toLocaleLowerCase()
                             ? action.bgColor
                             : ""
@@ -347,7 +346,7 @@ export function Wallet() {
                 </div>
               </div>
               <div
-                className={`tw-flex tw-flex-col tw-gap-4 tw-border-t tw-border-gray-500 tw-p-4 tw-text-white ${
+                className={`tw-flex tw-flex-col tw-gap-4 tw-border-t tw-border-white/20 tw-p-4 tw-text-white ${
                   activeMenu ? "tw-flex" : "tw-hidden"
                 }`}
               >
@@ -375,7 +374,7 @@ export function Wallet() {
                       )}
                     </span>
                     <input
-                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
+                      className="tw-w-full tw-border tw-border-white/20 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setValidator(e.target.value);
@@ -399,7 +398,7 @@ export function Wallet() {
                   <div className="tw-w-full">
                     <p className="tw-text-base">Value</p>
                     <input
-                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
+                      className="tw-w-full tw-border tw-border-white/20 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setAmount(e.target.value);
