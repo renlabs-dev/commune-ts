@@ -29,8 +29,6 @@ steps:
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
       - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
 
-depends_on: []
-
 trigger:
   branch:
     - drone
@@ -103,8 +101,6 @@ steps:
       - app-build
       - worker-build
 
-depends_on: []
-
 trigger:
   branch:
     - drone
@@ -149,8 +145,6 @@ steps:
       - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-governance" || echo "dev-commune-governance" )
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
       - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
-
-depends_on: []
 
 trigger:
   branch:
