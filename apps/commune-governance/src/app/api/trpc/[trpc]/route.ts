@@ -1,4 +1,4 @@
-export const runtime = "edge";
+// export const runtime = "edge";
 
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
