@@ -14,7 +14,6 @@ import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 
 import { api } from "~/trpc/react";
 import { ReportComment } from "./report-comment";
-import { SectionHeaderText } from "./section-header-text";
 
 export enum VoteType {
   UP = "UP",
@@ -137,7 +136,9 @@ export function ProposalComment({
     <div className="flex w-full flex-col">
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
         <div className="mb-4 flex w-full flex-col items-center justify-between gap-1 border-b border-gray-500 border-white/20 pb-2 text-gray-400 md:flex-row">
-          <SectionHeaderText text="Community Comments" />
+          <h2 className="w-full text-start font-semibold">
+            Community Comments
+          </h2>
           <div className="flex w-full space-x-2 md:justify-end">
             {["oldest", "newest", "mostUpvotes"].map((option) => (
               <button
@@ -189,7 +190,7 @@ export function ProposalComment({
         ) : (
           <>
             {sortedComments.length ? (
-              <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 pr-2">
+              <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3">
                 {sortedComments.map((comment) => (
                   <div
                     key={comment.id}
