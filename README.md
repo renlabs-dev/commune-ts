@@ -98,7 +98,7 @@ PROD: https://communex.ai/ , https://communex-page-xw7rh.ondigitalocean.app/
 DEV: https://dev.communex.ai/ , https://dev-communex-page-8aoym.ondigitalocean.app/
 
 ### commune-governance (Drone CI for docker image) (not gone live yet)
-PROD: https://prod.governance.communeai.org/ , https://commune-governance-q32fh.ondigitalocean.app/ 
+PROD: https://governance.communeai.org/ , https://commune-governance-q32fh.ondigitalocean.app/ 
 DEV: https://dev.governance.communeai.org/ , https://dev-commune-governance-4goke.ondigitalocean.app/
 
 ### community validator (Drone CI for docker image)
