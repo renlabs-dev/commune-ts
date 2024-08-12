@@ -29,6 +29,8 @@ RUN turbo prune ${APP_NAME} --docker
 FROM base AS builder
 ARG APP_NAME
 
+ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://commune.api.onfinality.io/public-ws"
+
 WORKDIR /app
 
 COPY --from=pruner /build/out/pnpm-lock.yaml ./pnpm-lock.yaml
