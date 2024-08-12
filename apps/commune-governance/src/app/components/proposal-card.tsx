@@ -20,6 +20,7 @@ import {
 import { Card } from "./card";
 import { Label } from "./label";
 import { ProposalTypeLabel } from "./proposal-type-label";
+import { RewardLabel } from "./reward-label";
 import { StatusLabel } from "./status-label";
 import { VoteLabel } from "./vote-label";
 
@@ -96,6 +97,12 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
               {netuid !== "GLOBAL" ? `Subnet ${netuid}` : "Global"}
             </span>
           </div>
+
+          <RewardLabel
+            result={proposalState.status}
+            proposalId={proposalState.id}
+          />
+
           <StatusLabel result={proposalState.status} />
         </div>
       </Card.Header>
