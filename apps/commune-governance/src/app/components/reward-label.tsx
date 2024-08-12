@@ -15,6 +15,7 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
   const { result, proposalId, className = "" } = props;
   const { unrewardedProposals } = useCommune();
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   const isUnrewarded = unrewardedProposals?.includes(proposalId);
 
   return match(result)({
@@ -23,7 +24,7 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
         <Label
           className={`w-auto border border-purple-500 bg-purple-500/10 py-1.5 text-center text-purple-500 lg:text-left ${className}`}
         >
-          To Be Rewarded
+          Unrewarded
         </Label>
       );
     },
@@ -36,7 +37,7 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
               : "border-green-500 bg-green-500/10 text-green-500"
           } py-1.5 text-center lg:text-left ${className}`}
         >
-          {isUnrewarded ? "To Be Rewarded" : "Rewarded"}
+          {isUnrewarded ? "Unrewarded" : "Rewarded"}
         </Label>
       );
     },
@@ -49,7 +50,7 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
               : "border-green-500 bg-green-500/10 text-green-500"
           } py-1.5 text-center lg:text-left ${className}`}
         >
-          {isUnrewarded ? "To Be Rewarded" : "Rewarded"}
+          {isUnrewarded ? "Unrewarded" : "Rewarded"}
         </Label>
       );
     },
@@ -62,7 +63,7 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
               : "border-green-500 bg-green-500/10 text-green-500"
           } py-1.5 text-center lg:text-left ${className}`}
         >
-          {isUnrewarded ? "To Be Rewarded" : "Rewarded"}
+          {isUnrewarded ? "Unrewarded" : "Rewarded"}
         </Label>
       );
     },
