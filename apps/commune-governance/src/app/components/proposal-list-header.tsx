@@ -62,7 +62,7 @@ export function ProposalListHeader(
           View mode:
         </p>
         <select
-          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 text-white outline-none outline-1 outline-white/25 backdrop-blur-md transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
+          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 pb-[17px] text-white outline-none outline-1 outline-white/25 backdrop-blur-md transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
           value={viewMode}
           onChange={handleViewChange}
         >
