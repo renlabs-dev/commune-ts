@@ -26,7 +26,7 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-page | awk '{print $1}')
-      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
 
 trigger:
   branch:
@@ -93,7 +93,7 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep community-validator | awk '{print $1}')
-      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
     depends_on:
       - app-build
       - worker-build
@@ -139,7 +139,7 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep commune-governance | awk '{print $1}')
-      - doctl apps create-deployment --wait -t $DO_CTL_TOKEN $app_id
+      - doctl apps create-deployment --wait --force-rebuild -t $DO_CTL_TOKEN $app_id
 
 trigger:
   branch:
