@@ -144,7 +144,7 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider(wsEndpoint);
+    const provider = new WsProvider('wss://commune.api.onfinality.io/public-ws');
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);
