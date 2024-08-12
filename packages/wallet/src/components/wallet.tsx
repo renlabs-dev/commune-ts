@@ -12,7 +12,9 @@ import { CopyButton, InjectedAccountWithMeta, Loading } from "@commune-ts/ui";
 
 import { NoWalletExtensionDisplay, WalletButton } from "./";
 
-type MenuType = "send" | "stake" | "unstake" | "transfer" | null;
+// type MenuType = "send" | "stake" | "unstake" | "transfer" | null;
+type MenuType = "transfer" | "stake" | "unstake" | null;
+
 
 export function Wallet() {
   const {
@@ -119,16 +121,18 @@ export function Wallet() {
         callback: handleCallback,
       });
     }
-    if (activeMenu === "transfer") {
-      transferStake({
-        fromValidator: selectedAccount.address,
-        toValidator: validator,
-        amount,
+    // if (activeMenu === "transfer") {
+    //   transferStake({
+    //     fromValidator: selectedAccount.address,
+    //     toValidator: validator,
+    //     amount,
 
-        callback: handleCallback,
-      });
-    }
-    if (activeMenu === "send") {
+    //     callback: handleCallback,
+    //   });
+    // }
+
+    if (activeMenu === "transfer") {
+      // ORIGINAL SEND
       transfer({
         to: validator,
         amount,
@@ -139,13 +143,15 @@ export function Wallet() {
 
   const walletActions = [
     {
+      // Honza asked me to change this WalletAction name from 'Send' to 'Transfer'
       icon: "send-icon.svg",
-      name: "Send",
+      // name: "Send",
+      name: "Transfer",
       handleMenuClick: (menuType: MenuType) => {
         handleMenuClick(menuType);
       },
       textColor: "tw-text-red-500",
-      bgColor: "tw-bg-red-500/15",
+      bgColor: "tw-bg-red-500/25",
     },
     {
       icon: "stake-icon.svg",
@@ -154,7 +160,7 @@ export function Wallet() {
         handleMenuClick(menuType);
       },
       textColor: "tw-text-yellow-500",
-      bgColor: "tw-bg-yellow-500/15",
+      bgColor: "tw-bg-yellow-500/25",
     },
     {
       icon: "unstake-icon.svg",
@@ -163,8 +169,9 @@ export function Wallet() {
         handleMenuClick(menuType);
       },
       textColor: "tw-text-purple-500",
-      bgColor: "tw-bg-purple-500/15",
+      bgColor: "tw-bg-purple-500/25",
     },
+    // ORIGINAL TRANSFER
     // {
     //   icon: "transfer-icon.svg",
     //   name: "Transfer",
@@ -182,8 +189,8 @@ export function Wallet() {
     userStakeWeight = userStakeEntry ?? 0n;
   }
 
-  const freeBalancePercentage =
-    100 - (Number(userStakeWeight) / Number(balance)) * 100;
+  const [freeBalancePercentage, setFreeBalancePercentage] = useState(0)
+
 
   function handleWalletSelection(wallet: InjectedAccountWithMeta): void {
     localStorage.setItem("favoriteWalletAddress", wallet.address);
@@ -201,6 +208,16 @@ export function Wallet() {
     setIsWalletSelectionView(Boolean(!selectedAccount));
   }, [selectedAccount]);
 
+  useEffect(() => {
+
+    const freeBalance = Number(formatToken(balance || 0))
+    const stakedBalance = Number(formatToken(userStakeWeight || 0))
+    const availablePercentage = (freeBalance * 100) / (stakedBalance + freeBalance)
+
+    setFreeBalancePercentage(availablePercentage)
+
+  }, [balance, userStakeWeight])
+
   const SelectWalletModal = () => {
     if (!accounts?.length && isWalletSelectionView)
       return <NoWalletExtensionDisplay />;
@@ -211,8 +228,8 @@ export function Wallet() {
           {accounts?.map((item) => (
             <button
               className={`tw-text-md tw-flex tw-cursor-pointer tw-items-center tw-gap-x-3 tw-overflow-auto tw-border tw-px-4 tw-py-2 ${selectedAccount?.address === item.address
-                  ? "tw-border-green-500"
-                  : "tw-border-gray-500"
+                ? "tw-border-green-500"
+                : "tw-border-gray-500"
                 }`}
               key={item.address}
               onClick={() => handleWalletSelection(item)}
@@ -236,7 +253,7 @@ export function Wallet() {
   };
 
   return (
-    <div className={openWalletModal ? "" : "tw-hidden"}>
+    <div className={openWalletModal ? "tw-flex tw-items-center tw-justify-center" : "tw-hidden"}>
       <div
         className="tw-w-full tw-h-screen tw-absolute tw-z-[100]"
         onClick={() => {
@@ -244,19 +261,19 @@ export function Wallet() {
           setIsWalletSelectionView(false);
         }}
       />
-      <div className="tw-max-w-screen-2xl tw-relative tw-mx-auto">
-        <div className="tw-fixed tw-top-16 tw-right-0 tw-w-auto !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-gray-500 tw-bg-black tw-absolute">
+      <div className="tw-max-w-screen-2xl tw-mx-auto tw-w-full tw-fixed tw-z-[100]">
+        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-gray-500 tw-bg-black">
           <SelectWalletModal />
 
           {!isWalletSelectionView && (
             <>
-              <div className="tw-flex tw-gap-2 tw-border-b tw-border-gray-500 tw-p-4">
-                <WalletButton customHandler={handleOpenSelectWallet} />
+              <div className="tw-flex tw-gap-2 tw-justify-between tw-border-b tw-border-gray-500 tw-p-4">
+                <WalletButton customHandler={handleOpenSelectWallet} className="tw-w-full" />
                 <CopyButton code={selectedAccount?.address || ""} />
               </div>
               <div className="tw-flex tw-flex-col tw-gap-4 tw-border-b tw-border-gray-500 tw-p-4 tw-text-white">
                 <div className="tw-border tw-border-gray-500 tw-p-4">
-                  <div className="tw-flex tw-w-full tw-justify-between">
+                  <div className="tw-flex tw-w-full tw-justify-between gap-6">
                     <div>
                       <p className="tw-text-xl tw-text-green-500">
                         {formatToken(balance || 0)}
@@ -295,8 +312,8 @@ export function Wallet() {
                     return (
                       <button
                         className={`tw-flex tw-w-full tw-flex-col tw-items-center tw-border-gray-500 tw-px-3.5 tw-py-3 tw-text-gray-400 tw-transition tw-duration-200 hover:tw-bg-white/5 ${activeMenu == action.name.toLocaleLowerCase()
-                            ? action.bgColor
-                            : ""
+                          ? action.bgColor
+                          : ""
                           }`}
                         key={action.name}
                         onClick={() => {
@@ -332,7 +349,7 @@ export function Wallet() {
                   <div className="tw-w-full">
                     <span className="tw-text-base">
                       {activeMenu === "stake" ||
-                        activeMenu === "transfer" ||
+                        // activeMenu === "transfer" ||
                         activeMenu === "unstake" ? (
                         <div className="tw-flex tw-flex-col tw-items-end tw-gap-3 md:tw-flex-row">
                           <p>Validator Address</p>
@@ -349,17 +366,17 @@ export function Wallet() {
                       )}
                     </span>
                     <input
-                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-400"
+                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setValidator(e.target.value);
                       }}
                       placeholder={
                         activeMenu === "stake" ||
-                          activeMenu === "transfer" ||
+                          // activeMenu === "transfer" ||
                           activeMenu === "unstake"
-                          ? "The full address of the validator"
-                          : "The full address of the recipient"
+                          ? "Enter the full address of the validator"
+                          : "Enter full address of the recipient"
                       }
                       type="text"
                       value={validator}
@@ -373,12 +390,12 @@ export function Wallet() {
                   <div className="tw-w-full">
                     <p className="tw-text-base">Value</p>
                     <input
-                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-400"
+                      className="tw-w-full tw-border tw-border-gray-500 tw-bg-black tw-p-2 tw-text-gray-200 placeholder:tw-text-gray-400"
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setAmount(e.target.value);
                       }}
-                      placeholder="The amount of COMAI to use in the transaction"
+                      placeholder="Enter the amount of COMAI"
                       type="text"
                       value={amount}
                     />
