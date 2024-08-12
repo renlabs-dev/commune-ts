@@ -96,11 +96,11 @@ export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
 });
 
 export enum ReportReason {
-  Spam = "Spam",
-  HarassmentOrBullying = "HarassmentOrBullying",
-  HateSpeech = "HateSpeech",
-  ViolenceOrHarm = "ViolenceOrHarm",
-  SexualContent = "SexualContent",
+  spam = "spam",
+  harassment = "harassment",
+  hateSpeech = "hateSpeech",
+  violence = "violence",
+  sexualContent = "sexualContent",
 }
 
 /**
