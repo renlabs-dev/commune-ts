@@ -265,7 +265,7 @@ export function Wallet() {
         }}
       />
       <div className="tw-max-w-screen-2xl tw-mx-auto tw-w-full tw-fixed tw-z-[100]">
-        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-black/90">
+        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-stone-950/70 tw-backdrop-blur-md">
           <SelectWalletModal />
 
           {!isWalletSelectionView && (
