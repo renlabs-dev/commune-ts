@@ -5,10 +5,10 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { TransactionResult } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 
 import type { Vote } from "./vote-label";
 import { Card } from "./card";
+import { WalletButton } from "@commune-ts/wallet";
 import { SectionHeaderText } from "./section-header-text";
 
 export function VoteCard(props: {
@@ -84,7 +84,7 @@ export function VoteCard(props: {
         </div>
       ) : null}
 
-      {!isConnected && <WalletButtonWithHook />}
+      {!isConnected && <WalletButton />}
 
       {isConnected ? (
         <button
