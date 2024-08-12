@@ -13,7 +13,6 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { MobileHeaderContent } from "./components/mobile-header-content";
 import ProposalRewardCard from "./components/proposal-reward-card";
 
-// TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
   robots: "all",
   title: "Community Governance",
