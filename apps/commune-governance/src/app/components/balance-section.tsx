@@ -11,7 +11,6 @@ export function BalanceSection({
 }: {
   className?: string;
 }): JSX.Element {
-
   const {
     isInitialized,
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -60,13 +59,6 @@ export function BalanceSection({
 
         <div className="flex animate-fade-down flex-row items-center justify-between border-t !border-white/20 bg-[#898989]/5 p-6 pr-6 backdrop-blur-md animate-delay-100 lg:w-1/3 lg:border lg:pr-10">
           <div className="flex flex-col items-start gap-1">
-            {!isInitialized && (
-              <p className="animate-pulse text-gray-400">
-                Loading...
-                <span className="text-lg text-white"> COMAI</span>
-              </p>
-            )}
-
             {isInitialized && !selectedAccount?.meta.name && (
               <button
                 className="inline-flex items-center justify-center text-gray-300 hover:text-green-600"
@@ -79,13 +71,18 @@ export function BalanceSection({
             )}
 
             {isInitialized &&
-              selectedAccount?.meta.name &&
-              typeof balance !== "undefined" && (
-                <p>
-                  {formatToken(balance)}
-                  <span className="text-lg text-white"> COMAI</span>
-                </p>
-              )}
+            selectedAccount?.meta.name &&
+            typeof balance !== "undefined" ? (
+              <p>
+                {formatToken(balance)}
+                <span className="text-lg text-white"> COMAI</span>
+              </p>
+            ) : (
+              <p className="text-gray-400">
+                Loading...
+                <span className="text-lg text-white"> COMAI</span>
+              </p>
+            )}
 
             <span className="text-base font-light text-gray-200">
               Your total free balance
@@ -102,7 +99,7 @@ export function BalanceSection({
         <div className="flex animate-fade-down flex-row items-center justify-between border-t !border-white/20 bg-[#898989]/5 p-6 pr-6 backdrop-blur-md animate-delay-200 lg:w-1/3 lg:border lg:pr-10">
           <div className="flex flex-col items-start gap-1">
             {!isInitialized ||
-              (selectedAccount?.meta.name && userStakeWeight == null) ? (
+            (selectedAccount?.meta.name && userStakeWeight == null) ? (
               <p className="animate-pulse text-gray-400">
                 Loading...
                 <span className="text-lg text-white"> COMAI</span>
