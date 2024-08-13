@@ -29,7 +29,7 @@ RUN turbo prune ${APP_NAME} --docker
 FROM base AS builder
 ARG APP_NAME
 
-ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://commune.api.onfinality.io/public-ws"
+ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://commune-api-node-10.communeai.net"
 
 WORKDIR /app
 
