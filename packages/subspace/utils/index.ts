@@ -132,7 +132,7 @@ export function getExpirationTime(
 
   // Check if the expiration time has passed
   if (expirationDate <= currentDate) {
-    return `${formattedDate} ${shouldReturnRemainingTime ? "(Expired)" : ""}`;
+    return `${formattedDate} ${shouldReturnRemainingTime ? "(Matured)" : ""}`;
   }
 
   // Calculate hours remaining
