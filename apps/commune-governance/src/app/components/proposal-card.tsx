@@ -89,15 +89,12 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
           </h2>
         )}
 
-        <div className="mb-2 flex w-full flex-row justify-center gap-2 lg:mb-0 lg:ml-auto lg:w-auto lg:flex-row lg:justify-end lg:pl-4">
+        <div className="mb-2 flex w-full flex-col justify-center gap-2 md:flex-row lg:mb-0 lg:ml-auto lg:w-auto lg:flex-row lg:justify-end lg:pl-4">
           <VoteLabel vote={voted} />
           <ProposalTypeLabel result={proposalState.data} />
-          <div className="flex items-center">
-            <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
-              {netuid !== "GLOBAL" ? `Subnet ${netuid}` : "Global"}
-            </span>
-          </div>
-
+          <Label className="border border-gray-200 bg-white/5 text-gray-200">
+            {netuid !== "GLOBAL" ? `Subnet ${netuid}` : "Global"}
+          </Label>
           <RewardLabel
             result={proposalState.status}
             proposalId={proposalState.id}
@@ -122,7 +119,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
           <div className="flex w-full flex-col-reverse lg:flex-row lg:items-center">
             <div className="mr-3 w-full py-2 lg:w-auto lg:min-w-fit lg:py-0">
               <Link
-                className="min-w-auto flex w-full items-center border border-white/10 px-2 py-4 text-sm text-white hover:border-green-500 hover:bg-green-500/5 hover:text-green-500 lg:w-auto lg:px-4"
+                className="min-w-auto flex w-full items-center border border-white/10 px-2 py-4 text-sm text-white transition duration-200 hover:border-green-500 hover:bg-green-500/5 hover:text-green-500 lg:w-auto lg:px-4"
                 href={`/proposal/${proposalState.id}`}
               >
                 View full proposal
@@ -145,7 +142,7 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
             </div>
 
             {stakeOut?.total ? (
-              <Label className="flex w-full justify-center border border-white/10 px-2 py-4 text-center font-medium text-gray-300 lg:w-auto lg:px-4">
+              <div className="flex w-full justify-center gap-1 border border-white/10 px-2 py-4 text-center text-sm font-medium text-gray-300 lg:w-auto lg:px-4">
                 Stake Voted:
                 <span className="font-bold text-green-500">
                   {handleProposalStakeVoted(proposalState.status)}
@@ -154,13 +151,13 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
                   proposalState.status,
                   stakeOut.total,
                 )}
-              </Label>
+              </div>
             ) : (
-              <Label className="flex w-full animate-pulse justify-center border border-white/10 px-2 py-4 text-center font-medium text-gray-300 lg:w-auto lg:px-4">
+              <div className="flex w-full animate-pulse justify-center gap-1 border border-white/10 px-2 py-4 text-center text-sm font-medium text-gray-300 lg:w-auto lg:px-4">
                 Stake Voted:
                 <span className="font-bold text-green-500">Loading...</span>
                 <span className="font-bold text-yellow-500">(-%)</span>
-              </Label>
+              </div>
             )}
           </div>
         </div>

@@ -37,7 +37,10 @@ export function fromNano(nano: number | bigint): number {
 
 export function formatToken(nano: number | bigint): string {
   const amount = fromNano(nano);
-  return amount.toFixed(2);
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export function calculateAmount(amount: string): number {

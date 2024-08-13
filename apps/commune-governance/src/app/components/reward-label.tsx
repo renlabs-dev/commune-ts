@@ -15,7 +15,6 @@ export function RewardLabel(props: RewardLabelProps): JSX.Element {
   const { result, proposalId, className = "" } = props;
   const { unrewardedProposals } = useCommune();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   const isUnrewarded = unrewardedProposals?.includes(proposalId);
 
   return match(result)({

@@ -8,10 +8,12 @@ import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
 
 import type { Vote } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";
+import { Label } from "~/app/components/label";
 import { ProposalComment } from "~/app/components/proposal-comments";
 import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
 import { RewardLabel } from "~/app/components/reward-label";
 import { SectionHeaderText } from "~/app/components/section-header-text";
+import { VoteText } from "~/app/components/vote-text";
 import { VoterList } from "~/app/components/voter-list";
 import {
   calcProposalFavorablePercent,
@@ -22,7 +24,6 @@ import {
 import { MarkdownView } from "../../../components/markdown-view";
 import { StatusLabel } from "../../../components/status-label";
 import { VoteCard } from "../../../components/vote-card";
-import { VoteLabel } from "../../../components/vote-label";
 import { VotingPowerButton } from "../../../components/voting-power-button";
 
 interface CustomContent {
@@ -189,7 +190,12 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
               <span>ID</span>
               <span className="flex items-center text-white">{content.id}</span>
             </div>
-
+            <div>
+              <span>Vote Status</span>
+              <span className="flex items-center text-white">
+                <VoteText vote={content.voted} />
+              </span>
+            </div>
             <div>
               <span>Author</span>
               <span className="flex items-center text-white">
@@ -211,11 +217,10 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
 
         <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-300">
           <SectionHeaderText text="Subnet / Status / Reward Status / Type" />
-          <div className="flex items-center gap-3">
-            <VoteLabel vote={content.voted} />
-            <span className="border border-white px-4 py-1.5 text-center text-sm font-medium text-white">
-              <span>{content.netuid}</span>
-            </span>
+          <div className="flex w-full flex-col items-center gap-2 md:flex-row">
+            <Label className="border border-white bg-white/5 text-white">
+              {content.netuid}
+            </Label>
             <StatusLabel result={content.status} />
             <RewardLabel proposalId={content.id} result={content.status} />
             <ProposalTypeLabel result={content.data} />
@@ -223,7 +228,11 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
         </div>
 
         <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-500 md:block">
-          <VoteCard proposalId={content.id} voted="UNVOTED" />
+          <VoteCard
+            proposalId={content.id}
+            proposalStatus={content.status}
+            voted="UNVOTED"
+          />
         </div>
 
         <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-700 md:block">
