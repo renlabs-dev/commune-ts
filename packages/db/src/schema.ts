@@ -132,6 +132,7 @@ export const proposalCommentSchema = createTable(
     id: uuid("id").primaryKey().defaultRandom(),
     proposalId: integer("proposal_id").notNull(),
     userKey: ss58Address("user_key").notNull(),
+    userName: text("user_name"),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
@@ -175,6 +176,7 @@ export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
       id: proposalCommentSchema.id,
       proposalId: proposalCommentSchema.proposalId,
       userKey: proposalCommentSchema.userKey,
+      userName: proposalCommentSchema.userName,
       content: proposalCommentSchema.content,
       createdAt: proposalCommentSchema.createdAt,
       upvotes:
