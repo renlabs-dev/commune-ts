@@ -37,13 +37,13 @@ function handlePercentages(
   const againstPercent = 100 - favorablePercent;
   if (Number.isNaN(favorablePercent)) {
     return (
-      <Label className="w-full border border-white/10 py-4 text-center text-yellow-500 lg:w-auto">
+      <div className="w-full border border-white/10 p-4 text-center text-sm text-yellow-500 lg:w-auto">
         – %
-      </Label>
+      </div>
     );
   }
   return (
-    <Label className="flex w-full items-center justify-center space-x-0 divide-x divide-white/10 border border-white/10 py-4 text-center lg:w-auto">
+    <div className="flex w-full items-center justify-center space-x-0 divide-x divide-white/10 border border-white/10 p-4 text-center text-sm lg:w-auto">
       <div className="flex gap-1 pr-1.5">
         <span className="text-green-500">{favorablePercent.toFixed(0)}%</span>
         <Image
@@ -63,7 +63,7 @@ function handlePercentages(
           width={10}
         />
       </div>
-    </Label>
+    </div>
   );
 }
 
