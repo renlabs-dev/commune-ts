@@ -68,7 +68,7 @@ export function BalanceSection({
               </p>
             )}
 
-            {isInitialized && !balanceLoaded && (
+            {isInitialized && !balanceLoaded && selectedAccount?.meta.name && (
               <p className="animate-pulse text-gray-400">
                 Loading...
                 <span className="text-lg text-white"> COMAI</span>
