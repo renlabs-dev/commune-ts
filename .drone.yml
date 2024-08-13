@@ -26,7 +26,9 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
-      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-page" || echo "dev-commune-page" )
+      - echo "DRONE_BRANCH=$DRONE_BRANCH"
+      - printf "DRONE_BRANCH='%s'\n" "$DRONE_BRANCH"
+      - app_name=$( [ "$DRONE_BRANCH" == "main" ] && echo "commune-page" || echo "dev-commune-page" )
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
       - doctl apps spec get $app_id -t $DO_CTL_TOKEN > spec.yaml
       - sed -i "s/\(tag:*\).*/\1 $COMMIT_SHORT_SHA/" spec.yaml
@@ -99,7 +101,9 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
-      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "community-validator" || echo "dev-community-validator" )
+      - echo "DRONE_BRANCH=$DRONE_BRANCH"
+      - printf "DRONE_BRANCH='%s'\n" "$DRONE_BRANCH"
+      - app_name=$( [ "$DRONE_BRANCH" == "main" ] && echo "community-validator" || echo "dev-community-validator" )
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
       - doctl apps spec get $app_id -t $DO_CTL_TOKEN > spec.yaml
       - sed -i "s/\(tag:*\).*/\1 $COMMIT_SHORT_SHA/" spec.yaml
@@ -151,7 +155,9 @@ steps:
     commands:
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
-      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-governance" || echo "dev-commune-governance" )
+      - echo "DRONE_BRANCH=$DRONE_BRANCH"
+      - printf "DRONE_BRANCH='%s'\n" "$DRONE_BRANCH"
+      - app_name=$( [ "$DRONE_BRANCH" == "main" ] && echo "commune-governance" || echo "dev-commune-governance" )
       - app_id=$(doctl apps list -t $DO_CTL_TOKEN | grep $app_name | awk '{print $1}')
       - doctl apps spec get $app_id -t $DO_CTL_TOKEN > spec.yaml
       - sed -i "s/\(tag:*\).*/\1 $COMMIT_SHORT_SHA/" spec.yaml
