@@ -190,7 +190,9 @@ export function ProposalComment({
         ) : (
           <>
             {sortedComments.length ? (
-              <div className="flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3">
+              <div
+                className={`flex max-h-[25vh] w-full flex-col gap-3 overflow-auto pb-3 ${sortedComments.length >= 3 && "pr-2"}`}
+              >
                 {sortedComments.map((comment) => (
                   <div
                     key={comment.id}

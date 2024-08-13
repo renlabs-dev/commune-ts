@@ -202,7 +202,7 @@ export function handleProposalQuorumPercent(
     refused: ({ stakeFor, stakeAgainst }) =>
       quorumPercent(stakeFor, stakeAgainst),
     expired: () => {
-      return <span className="text-yellow-600">{` (Expired)`}</span>;
+      return <span className="text-yellow-600">{` (Matured)`}</span>;
     },
   });
 }
