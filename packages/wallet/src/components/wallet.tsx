@@ -4,6 +4,7 @@ import "../output.css";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import type { TransactionResult } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
@@ -38,6 +39,8 @@ export function Wallet() {
   const [isWalletSelectionView, setIsWalletSelectionView] = useState(
     Boolean(!selectedAccount?.address),
   );
+
+  console.log("selectedAccount", selectedAccount?.address);
 
   const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
     {
@@ -141,9 +144,7 @@ export function Wallet() {
 
   const walletActions = [
     {
-      // Honza asked me to change this WalletAction name from 'Send' to 'Transfer'
       icon: "send-icon.svg",
-      // name: "Send",
       name: "Transfer",
       handleMenuClick: (menuType: MenuType) => {
         handleMenuClick(menuType);
@@ -169,10 +170,9 @@ export function Wallet() {
       textColor: "tw-text-purple-500",
       bgColor: "tw-bg-purple-500/25",
     },
-    // ORIGINAL TRANSFER
     // {
     //   icon: "transfer-icon.svg",
-    //   name: "Transfer",
+    //   name: "Transfer Stake",
     //   handleMenuClick: (menuType: MenuType) => {
     //     handleMenuClick(menuType);
     //   },
@@ -181,19 +181,31 @@ export function Wallet() {
     // },
   ];
 
-  let userStakeWeight: bigint | null = null;
-  if (stakeOut != null && selectedAccount != null) {
-    const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
-    userStakeWeight = userStakeEntry ?? 0n;
-  }
+  const [userStakeWeight, setUserStakeWeight] = useState<bigint | null>(null);
+
+  const calculateUserStakeWeight = () => {
+    if (stakeOut != null && selectedAccount != null) {
+      const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
+      return userStakeEntry ?? 0n;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    setUserStakeWeight(calculateUserStakeWeight());
+  }, [selectedAccount, stakeOut]);
 
   const [freeBalancePercentage, setFreeBalancePercentage] = useState(0);
+
+  const router = useRouter();
 
   function handleWalletSelection(wallet: InjectedAccountWithMeta): void {
     localStorage.setItem("favoriteWalletAddress", wallet.address);
     setSelectedAccount(wallet);
     setIsConnected(true);
     setIsWalletSelectionView(false);
+    setUserStakeWeight(calculateUserStakeWeight());
+    router.refresh();
   }
 
   const handleOpenSelectWallet = () => {
@@ -265,19 +277,19 @@ export function Wallet() {
         }}
       />
       <div className="tw-max-w-screen-2xl tw-mx-auto tw-w-full tw-fixed tw-z-[100]">
-        <div className="tw-absolute tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-stone-950/70 tw-backdrop-blur-md">
+        <div className="tw-absolute tw-animate-fade-down tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-stone-950/70 tw-backdrop-blur-md">
           <SelectWalletModal />
 
           {!isWalletSelectionView && (
             <>
-              <div className="tw-flex tw-gap-2 tw-justify-between tw-border-b tw-border-white/20 tw-p-4">
+              <div className="tw-flex tw-gap-2 tw-animate-fade tw-animate-delay-300 tw-justify-between tw-border-b tw-border-white/20 tw-p-4">
                 <WalletButton
                   customHandler={handleOpenSelectWallet}
                   className="tw-w-full"
                 />
                 <CopyButton code={selectedAccount?.address || ""} />
               </div>
-              <div className="tw-flex tw-flex-col tw-gap-4 tw-border-b tw-border-white/20 tw-p-4 tw-text-white">
+              <div className="tw-flex tw-flex-col tw-animate-fade tw-animate-delay-500 tw-gap-4 tw-border-b tw-border-white/20 tw-p-4 tw-text-white">
                 <div className="tw-border tw-border-white/20 tw-p-4">
                   <div className="tw-flex tw-w-full tw-justify-between gap-6">
                     <div>
@@ -293,7 +305,9 @@ export function Wallet() {
                     </div>
                     <div className="tw-text-right">
                       <p className="tw-text-xl tw-text-red-500">
-                        {formatToken(userStakeWeight || 0)}
+                        {stakeOut
+                          ? formatToken(userStakeWeight || 0)
+                          : "Loading..."}
                         <span className="tw-ml-1 tw-text-sm tw-font-light tw-text-gray-400">
                           COMAI
                         </span>
@@ -303,17 +317,31 @@ export function Wallet() {
                       </p>
                     </div>
                   </div>
-                  <div className="tw-relative tw-flex tw-h-2 tw-w-full tw-pt-1">
-                    <span
-                      className="tw-absolute tw-h-2 tw-bg-green-500"
-                      style={{ width: `${freeBalancePercentage.toFixed(2)}%` }}
-                    />
-                    <span className="tw-h-2 tw-w-full tw-bg-red-500" />
-                  </div>
+                  {stakeOut ? (
+                    <div className="tw-relative tw-flex tw-h-2 tw-w-full tw-pt-1">
+                      <span
+                        className="tw-absolute tw-h-2 tw-bg-green-500"
+                        style={{
+                          width: `${freeBalancePercentage.toFixed(2)}%`,
+                        }}
+                      />
+                      <span className="tw-h-2 tw-w-full tw-bg-red-500" />
+                    </div>
+                  ) : (
+                    <div className="tw-relative tw-flex tw-animate-pulse tw-h-2 tw-w-full tw-pt-1">
+                      <span
+                        className="tw-absolute tw-h-2 tw-bg-green-500/20"
+                        style={{
+                          width: `50%`,
+                        }}
+                      />
+                      <span className="tw-h-2 tw-w-full tw-bg-red-500/20" />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="tw-flex tw-p-4">
-                <div className="tw-flex tw-border tw-border-white/20 tw-w-full">
+                <div className="tw-flex tw-border tw-border-white/20 tw-w-full tw-animate-fade tw-animate-delay-700">
                   {walletActions.map((action) => {
                     return (
                       <button
@@ -346,7 +374,7 @@ export function Wallet() {
                 </div>
               </div>
               <div
-                className={`tw-flex tw-flex-col tw-gap-4 tw-border-t tw-border-white/20 tw-p-4 tw-text-white ${
+                className={`tw-flex tw-flex-col tw-gap-4 tw-border-t tw-animate-fade-down tw-border-white/20 tw-p-4 tw-text-white ${
                   activeMenu ? "tw-flex" : "tw-hidden"
                 }`}
               >
@@ -414,7 +442,7 @@ export function Wallet() {
                     </p>
                   ) : null}
                   <button
-                    className="tw-w-full tw-border tw-border-green-500 tw-py-2 tw-text-green-500"
+                    className="tw-w-full tw-border tw-border-green-500 tw-py-2 tw-text-green-500 hover:tw-bg-green-500/10 tw-transition tw-duration-100"
                     disabled={transactionStatus.status === "PENDING"}
                     type="submit"
                   >

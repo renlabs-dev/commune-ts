@@ -127,7 +127,9 @@ export function CommuneProvider({
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
-  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | undefined>([]);
+  const [accounts, setAccounts] = useState<
+    InjectedAccountWithMeta[] | undefined
+  >([]);
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta | null>(null);
 
@@ -170,15 +172,15 @@ export function CommuneProvider({
 
   async function fetchWallets(): Promise<void> {
     const walletList = await getWallets();
-    setAccounts(walletList)
+    setAccounts(walletList);
 
     const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
-    if (!favoriteWalletAddress) return
+    if (!favoriteWalletAddress) return;
 
     const accountExist = walletList?.find(
       (wallet) => wallet.address === favoriteWalletAddress,
     );
-    if (!accountExist) return
+    if (!accountExist) return;
 
     setSelectedAccount(accountExist);
     setIsConnected(true);
@@ -188,7 +190,6 @@ export function CommuneProvider({
     void fetchWallets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized]);
-
 
   async function handleGetWallets(): Promise<void> {
     try {

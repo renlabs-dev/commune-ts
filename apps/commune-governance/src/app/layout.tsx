@@ -40,7 +40,6 @@ export default function RootLayout({
               wallet={<WalletButton />}
               mobileContent={<MobileHeaderContent />}
               navigationLinks={[
-                { name: "Scan", href: links.explorer, external: true },
                 { name: "Homepage", href: links.landing_page, external: true },
                 { name: "Join Community", href: links.discord, external: true },
               ]}

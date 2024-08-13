@@ -2,7 +2,7 @@ import "../output.css";
 
 export function NoWalletExtensionDisplay() {
   return (
-    <div className="tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-4 tw-text-center tw-text-sm tw-text-gray-300">
+    <div className="tw-flex tw-h-full tw-flex-col tw-items-center tw-p-6 tw-justify-center tw-gap-4 tw-text-center tw-text-sm tw-text-gray-300">
       <div className="tw-flex tw-flex-col tw-gap-2">
         <p>
           <b className="tw-text-red-500">No wallet found</b>. Please install a
