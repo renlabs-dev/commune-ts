@@ -18,7 +18,7 @@ export function CreateModal() {
   return (
     <>
       <button
-        className="min-w-auto h-full w-full animate-fade-down border  border-white/20 bg-[#898989]/5 p-5 text-white animate-delay-700 hover:border-green-600 hover:text-green-600"
+        className="min-w-auto h-full w-full animate-fade-down border border-white/20 bg-[#898989]/5 p-5 text-white animate-delay-700 hover:border-green-600 hover:text-green-600"
         onClick={toggleModalMenu}
         type="button"
       >

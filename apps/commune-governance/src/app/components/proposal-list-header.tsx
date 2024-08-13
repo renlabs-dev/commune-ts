@@ -41,7 +41,7 @@ export function ProposalListHeader(
           DAO treasury address:
         </p>
         <button
-          className="flex h-full w-full items-center justify-center border border-white/20 bg-[#898989]/5 p-5 text-white backdrop-blur-md hover:border-green-500 lg:flex-col xl:flex-row"
+          className="flex h-full w-full items-center justify-center border border-white/20 bg-[#898989]/5 p-5 text-white hover:border-green-500 lg:flex-col xl:flex-row"
           onClick={handleCopyClick}
         >
           {daoTreasury ? (
@@ -62,7 +62,7 @@ export function ProposalListHeader(
           View mode:
         </p>
         <select
-          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 pb-[17px] text-white outline-none outline-1 outline-white/25 backdrop-blur-md transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
+          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 pb-[17px] text-white outline-none outline-1 outline-white/25 transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
           value={viewMode}
           onChange={handleViewChange}
         >
