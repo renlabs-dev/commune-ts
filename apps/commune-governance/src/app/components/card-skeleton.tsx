@@ -1,7 +1,6 @@
 import ArrowRightIcon from "@heroicons/react/16/solid/ArrowRightIcon";
 
 import { Card } from "./card";
-import { Label } from "./label";
 
 export function CardSkeleton(): JSX.Element {
   return (
@@ -48,11 +47,11 @@ export function CardSkeleton(): JSX.Element {
           </span>
         </div>
 
-        <Label className="flex w-full justify-center border border-white/10 px-2 py-4 text-center font-medium text-gray-300 lg:w-auto lg:px-4">
+        <div className="flex w-full justify-center gap-1 border border-white/10 px-2 py-4 text-center text-sm font-medium text-gray-300 lg:w-auto lg:px-4">
           Stake Voted:
           <span className="font-bold text-green-500">Loading...</span>
           <span className="font-bold text-yellow-500">(-%)</span>
-        </Label>
+        </div>
       </div>
     </Card.Root>
   );

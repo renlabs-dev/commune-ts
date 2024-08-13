@@ -40,8 +40,6 @@ export function Wallet() {
     Boolean(!selectedAccount?.address),
   );
 
-  console.log("selectedAccount", selectedAccount?.address);
-
   const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
     {
       status: null,

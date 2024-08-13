@@ -32,8 +32,6 @@ export function BalanceSection({
 
   const balanceLoaded = typeof balance !== "undefined";
 
-  console.log(balanceLoaded);
-
   return (
     <div
       className={`flex w-full flex-col items-center justify-center lg:mt-10 ${className ?? ""}`}
@@ -88,14 +86,12 @@ export function BalanceSection({
               </button>
             )}
 
-            {isInitialized &&
-              selectedAccount?.meta.name &&
-              typeof balance !== "undefined" && (
-                <p>
-                  {formatToken(balance)}
-                  <span className="text-lg text-white"> COMAI</span>
-                </p>
-              )}
+            {isInitialized && selectedAccount?.meta.name && balanceLoaded && (
+              <p>
+                {formatToken(balance)}
+                <span className="text-lg text-white"> COMAI</span>
+              </p>
+            )}
 
             <span className="text-base font-light text-gray-200">
               Your total free balance

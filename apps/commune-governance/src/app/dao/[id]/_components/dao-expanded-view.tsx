@@ -44,7 +44,6 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
         <ArrowPathIcon className="ml-2 animate-spin" color="#FFF" width={20} />
       </div>
     );
-  console.log(content);
 
   return (
     <div className="flex w-full flex-col md:flex-row">
