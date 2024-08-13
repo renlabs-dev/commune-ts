@@ -24,6 +24,7 @@ steps:
       DO_CTL_TOKEN:
         from_secret: DO_CTL_TOKEN
     commands:
+      - apk add jq
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-page" || echo "dev-commune-page" )
@@ -97,6 +98,7 @@ steps:
       DO_CTL_TOKEN:
         from_secret: DO_CTL_TOKEN
     commands:
+      - apk add jq
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "community-validator" || echo "dev-community-validator" )
@@ -149,6 +151,7 @@ steps:
       DO_CTL_TOKEN:
         from_secret: DO_CTL_TOKEN
     commands:
+      - apk add jq
       - export PATH=$PATH:/app
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-governance" || echo "dev-commune-governance" )
