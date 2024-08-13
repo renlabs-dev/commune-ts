@@ -184,10 +184,10 @@ export function CreateTransferDaoTreasuryProposal(): JSX.Element {
               />
             </div>
           ) : (
-            <div className="p-4 py-10">
+            <div className="p-4">
               {body ? (
                 <MarkdownPreview
-                  className={`line-clamp-4 ${cairo.className}`}
+                  className={`${cairo.className} max-h-[40vh] overflow-auto`}
                   source={`# ${title}\n${body}`}
                   style={{
                     backgroundColor: "transparent",
