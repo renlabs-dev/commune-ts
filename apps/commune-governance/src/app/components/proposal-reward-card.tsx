@@ -6,7 +6,13 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { formatToken } from "@commune-ts/utils";
 
 export default function ProposalRewardCard() {
-  const { rewardAllocation } = useCommune();
+  const { rewardAllocation, globalGovernanceConfig, lastBlock } = useCommune();
+
+  console.log(
+    "proposalRewardInterval",
+    globalGovernanceConfig?.proposalRewardInterval,
+  );
+  console.log("lastBlock", lastBlock?.blockNumber);
 
   return (
     <div className="flex w-full animate-fade-down border-b border-white/20 py-2.5">

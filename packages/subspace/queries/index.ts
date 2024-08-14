@@ -104,7 +104,7 @@ enum VoteMode {
   Vote,
 }
 
-interface GovernanceConfiguration {
+export interface GovernanceConfiguration {
   proposalCost?: bigint;
   proposalExpiration?: number;
   voteMode?: VoteMode;
