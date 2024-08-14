@@ -235,6 +235,10 @@ export function Wallet() {
     const availablePercentage =
       (freeBalance * 100) / (stakedBalance + freeBalance);
 
+    if (isNaN(availablePercentage) || !availablePercentage) {
+      setFreeBalancePercentage(0);
+      return;
+    }
     setFreeBalancePercentage(availablePercentage);
   }, [balance, userStakeWeight]);
 
