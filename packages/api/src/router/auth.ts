@@ -16,11 +16,11 @@ export const SignedEndpointDataSchema = {
   [SignedEndpoint.StartSession]: SessionDataSchema,
 };
 
-export const moduleRouter = {
+export const authRouter = {
   startSession: publicProcedure
     .input(SignedDataSchema)
     .mutation(async ({ ctx, input }) => {
-      const token = createSessionToken(input);
+      const token = await createSessionToken(input);
       // TODO: somehow check that the userKey is an valid commune/substrate address
 
       return { token, authenticationType: "Bearer" };

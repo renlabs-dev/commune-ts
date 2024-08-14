@@ -17,7 +17,7 @@ const jwtOptions = (): jwt.SignOptions => ({
   expiresIn: "6h",
 });
 
-export const createSessionToken = async (signedSessionData: SignedPayload) => {
+export const createSessionToken = (signedSessionData: SignedPayload) => {
   const { address, data } = verifySignedData(signedSessionData, SessionDataSchema);
 
   // check if the sessionData is not older than 10 minutes
