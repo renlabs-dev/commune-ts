@@ -209,12 +209,7 @@ export function ProposalComment({
                         </span>
                         {smallAddress(comment.userKey)}{" "}
                         <span className="ml-2 text-sm text-gray-400">
-                          {formatToken(
-                            Number(
-                              getVoterStake(comment.userKey as SS58Address),
-                            ),
-                          )}{" "}
-                          COMAI
+                          {getVoterStake(comment.userKey as SS58Address)}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
