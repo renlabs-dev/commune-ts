@@ -7,7 +7,7 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton } from "@commune-ts/wallet/button";
+import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -28,6 +28,7 @@ export default function RootLayout({
         className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
+          <Wallet />
           <Header
             logoSrc="/logo.svg"
             navigationLinks={[

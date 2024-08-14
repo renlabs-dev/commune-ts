@@ -9,7 +9,11 @@ import { useRouter } from "next/navigation";
 import type { TransactionResult } from "@commune-ts/providers/types";
 import { isSS58 } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+import {
+  formatToken,
+  fromNano,
+  smallAddress,
+} from "@commune-ts/providers/utils";
 import { CopyButton, InjectedAccountWithMeta, Loading } from "@commune-ts/ui";
 
 import { NoWalletExtensionDisplay, WalletButton } from "./";
@@ -66,11 +70,6 @@ export function Wallet() {
 
   const handleCheckInput = () => {
     setInputError({ validator: null, value: null });
-    // if (!validator)
-    //   setInputError((prev) => ({
-    //     ...prev,
-    //     validator: "Validator Address cannot be empty",
-    //   }));
 
     const isAddressValid = isSS58(validator);
     if (!isAddressValid)
@@ -231,8 +230,8 @@ export function Wallet() {
   }, [selectedAccount]);
 
   useEffect(() => {
-    const freeBalance = Number(formatToken(balance || 0));
-    const stakedBalance = Number(formatToken(userStakeWeight || 0));
+    const freeBalance = fromNano(balance || 0);
+    const stakedBalance = fromNano(userStakeWeight || 0);
     const availablePercentage =
       (freeBalance * 100) / (stakedBalance + freeBalance);
 
