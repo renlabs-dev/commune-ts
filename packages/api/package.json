@@ -23,6 +23,7 @@
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@trpc/server": "11.0.0-rc.364",
+    "jsonwebtoken": "^9.0.2",
     "superjson": "2.2.1",
     "zod": "^3.23.8"
   },
@@ -30,6 +31,7 @@
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.6",
     "eslint": "^8.0.0",
     "prettier": "^3.3.1",
     "typescript": "^5.4.5"

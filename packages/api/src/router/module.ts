@@ -10,7 +10,7 @@ import {
   userModuleDataPostSchema,
 } from "@commune-ts/db/schema";
 
-import { publicProcedure } from "../trpc";
+import { authenticatedProcedure, publicProcedure } from "../trpc";
 
 export const moduleRouter = {
   // GET
@@ -86,30 +86,33 @@ export const moduleRouter = {
       };
     }),
   // POST
-  deleteUserModuleData: publicProcedure
-    .input(z.object({ userKey: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+  deleteUserModuleData: authenticatedProcedure
+    .mutation(async ({ ctx }) => {
+      const userKey = ctx.user!.userKey;
       await ctx.db
         .delete(userModuleData)
-        .where(eq(userModuleData.userKey, input.userKey));
+        .where(eq(userModuleData.userKey, userKey));
     }),
-  createUserModuleData: publicProcedure
-    .input(userModuleDataPostSchema)
+  createUserModuleData: authenticatedProcedure
+    .input(userModuleDataPostSchema.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
+      const userKey = ctx.user!.userKey;
+
       await ctx.db.insert(userModuleData).values({
         moduleId: input.moduleId,
-        userKey: input.userKey,
         weight: input.weight,
+        userKey,
       });
     }),
-  createModuleReport: publicProcedure
-    .input(moduleReportPostSchema)
+  createModuleReport: authenticatedProcedure
+    .input(moduleReportPostSchema.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
+      const userKey = ctx.user!.userKey;
       await ctx.db.insert(moduleReport).values({
         moduleId: input.moduleId,
-        userKey: input.userKey,
         content: input.content,
         reason: input.reason,
+        userKey,
       });
     }),
 } satisfies TRPCRouterRecord;
