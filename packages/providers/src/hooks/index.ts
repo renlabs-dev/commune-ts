@@ -9,6 +9,7 @@ import {
   queryBalance,
   queryDaosEntries,
   queryDaoTreasuryAddress,
+  queryGlobalGovernanceConfig,
   queryLastBlock,
   queryNotDelegatingVotingPower,
   queryProposalsEntries,
@@ -120,6 +121,16 @@ export function useRewardAllocation(api: Api | Nullish) {
     queryKey: ["reward_allocation"],
     enabled: api != null,
     queryFn: () => queryRewardAllocation(api!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useGlobalGovernanceConfig(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["global_governance_config"],
+    enabled: api != null,
+    queryFn: () => queryGlobalGovernanceConfig(api!),
     staleTime: LAST_BLOCK_STALE_TIME,
     refetchOnWindowFocus: false,
   });
