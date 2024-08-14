@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import type { TransactionResult } from "@commune-ts/providers/types";
+import { isSS58 } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 import { CopyButton, InjectedAccountWithMeta, Loading } from "@commune-ts/ui";
@@ -65,14 +66,28 @@ export function Wallet() {
 
   const handleCheckInput = () => {
     setInputError({ validator: null, value: null });
-    if (!validator)
+    // if (!validator)
+    //   setInputError((prev) => ({
+    //     ...prev,
+    //     validator: "Validator Address cannot be empty",
+    //   }));
+
+    const isAddressValid = isSS58(validator);
+    if (!isAddressValid)
       setInputError((prev) => ({
         ...prev,
-        validator: "Validator Address cannot be empty",
+        validator: "Invalid address. Please correct it and try again.",
       }));
-    if (!amount)
-      setInputError((prev) => ({ ...prev, value: "Value cannot be empty" }));
-    return Boolean(amount && validator);
+
+    const isAmountValid = !(Number(amount) <= 0 || isNaN(Number(amount)));
+    if (!isAmountValid) {
+      setInputError((prev) => ({
+        ...prev,
+        value: "Invalid value. Please correct it and try again.",
+      }));
+    }
+
+    return Boolean(isAmountValid && isAddressValid);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -87,22 +102,22 @@ export function Wallet() {
       return;
     }
 
+    const isValidInput = handleCheckInput();
+
+    if (!isValidInput) {
+      // setTransactionStatus({
+      //   status: "ERROR",
+      //   finalized: true,
+      //   message: "Please correct the input error and try again.",
+      // });
+      return;
+    }
+
     setTransactionStatus({
       status: "STARTING",
       finalized: false,
       message: "Starting transaction...",
     });
-
-    const isValidInput = handleCheckInput();
-
-    if (!isValidInput) {
-      setTransactionStatus({
-        status: "ERROR",
-        finalized: true,
-        message: "Input error...",
-      });
-      return;
-    }
 
     if (activeMenu === "stake") {
       addStake({
@@ -275,7 +290,7 @@ export function Wallet() {
         }}
       />
       <div className="tw-max-w-screen-2xl tw-mx-auto tw-w-full tw-fixed tw-z-[100]">
-        <div className="tw-absolute tw-animate-fade-down tw-top-16 tw-w-auto 2xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-stone-950/70 tw-backdrop-blur-md">
+        <div className="tw-absolute tw-animate-fade-down tw-top-16 tw-w-auto xl:tw-w-1/4 tw-right-0 !tw-z-[150] tw-m-3 tw-flex-col tw-border tw-border-white/20 tw-bg-stone-950/70 tw-backdrop-blur-md">
           <SelectWalletModal />
 
           {!isWalletSelectionView && (
@@ -404,6 +419,10 @@ export function Wallet() {
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setValidator(e.target.value);
+                        setInputError((prev) => ({
+                          ...prev,
+                          validator: null,
+                        }));
                       }}
                       placeholder={
                         activeMenu === "stake" ||
@@ -417,7 +436,7 @@ export function Wallet() {
                     />
                   </div>
                   {inputError.validator ? (
-                    <p className="--tw-mt-2 tw-mb-1 tw-flex tw-text-left tw-text-base tw-text-red-400">
+                    <p className="--tw-mt-2 tw-mb-1 tw-flex tw-text-left tw-text-sm tw-text-red-400">
                       {inputError.validator}
                     </p>
                   ) : null}
@@ -428,6 +447,10 @@ export function Wallet() {
                       disabled={transactionStatus.status === "PENDING"}
                       onChange={(e) => {
                         setAmount(e.target.value);
+                        setInputError((prev) => ({
+                          ...prev,
+                          value: null,
+                        }));
                       }}
                       placeholder="Enter the amount of COMAI"
                       type="text"
@@ -435,13 +458,19 @@ export function Wallet() {
                     />
                   </div>
                   {inputError.value ? (
-                    <p className="--tw-mt-2 tw-mb-1 tw-flex tw-text-left tw-text-base tw-text-red-400">
+                    <p className="--tw-mt-2 tw-mb-1 tw-flex tw-text-left tw-text-sm tw-text-red-400">
                       {inputError.value}
                     </p>
                   ) : null}
                   <button
-                    className="tw-w-full tw-border tw-border-green-500 tw-py-2 tw-text-green-500 hover:tw-bg-green-500/10 tw-transition tw-duration-100"
-                    disabled={transactionStatus.status === "PENDING"}
+                    className="tw-w-full tw-border tw-border-green-500 tw-py-2 tw-text-green-500 hover:tw-bg-green-500/10 disabled:hover:tw-bg-400/10 disabled:tw-cursor-not-allowed disabled:tw-border-gray-400/70 disabled:tw-bg-gray-400/10 disabled:tw-text-gray-400/70 tw-transition tw-duration-100"
+                    disabled={
+                      transactionStatus.status === "PENDING" ||
+                      !validator ||
+                      !amount ||
+                      inputError.validator ||
+                      inputError.value
+                    }
                     type="submit"
                   >
                     Submit
@@ -449,11 +478,11 @@ export function Wallet() {
                 </form>
                 {transactionStatus.status ? (
                   <p
-                    className={`tw-items-center tw-gap-3 tw-pt-6 ${
+                    className={`tw-items-center tw-gap-3 tw-pt-3 ${
                       transactionStatus.status === "PENDING" &&
                       "tw-text-yellow-400"
                     } ${
-                      transactionStatus.status === "ERROR" && "tw-text-red-400"
+                      transactionStatus.status === "ERROR" && "tw-text-red-400 "
                     } ${
                       transactionStatus.status === "SUCCESS" &&
                       "tw-text-green-400"

@@ -297,9 +297,8 @@ export function CommuneProvider({
   }
 
   async function transfer({ to, amount, callback }: Transfer): Promise<void> {
-    if (!api?.tx.balances.transfer) return;
-
-    const transaction = api.tx.balances.transfer(to, calculateAmount(amount));
+    if (!api?.tx.balances.transferAllowDeath) return;
+    const transaction = api.tx.balances.transferAllowDeath(to, calculateAmount(amount));
     await sendTransaction("Transfer", transaction, callback);
   }
 
