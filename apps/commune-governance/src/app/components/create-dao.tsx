@@ -59,6 +59,11 @@ export function CreateDao(): JSX.Element {
       const ipfs = (await res.json()) as { IpfsHash: string };
       setUploading(false);
 
+      if (ipfs.IpfsHash === "undefined" || !ipfs.IpfsHash) {
+        toast.error("Error uploading transfer dao treasury proposal");
+        return;
+      }
+
       if (!balance) {
         toast.error("Balance is still loading");
         return;
@@ -181,7 +186,7 @@ export function CreateDao(): JSX.Element {
                 onChange={(e) => {
                   setBody(e.target.value);
                 }}
-                placeholder="Application body... (Markdown supported)"
+                placeholder="Application body... (Markdown supported) / HTML tags are not supported)"
                 rows={5}
                 value={body}
               />
