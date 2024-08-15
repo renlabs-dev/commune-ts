@@ -53,6 +53,11 @@ export function CreateProposal(): JSX.Element {
       const ipfs = (await res.json()) as { IpfsHash: string };
       setUploading(false);
 
+      if (ipfs.IpfsHash === "undefined" || !ipfs.IpfsHash) {
+        toast.error("Error uploading transfer dao treasury proposal");
+        return;
+      }
+
       if (!balance) {
         toast.error("Balance is still loading");
         return;
@@ -153,7 +158,7 @@ export function CreateProposal(): JSX.Element {
                 onChange={(e) => {
                   setBody(e.target.value);
                 }}
-                placeholder="Your proposal here... (Markdown supported)"
+                placeholder="here... (Markdown supported / HTML tags are not supported)"
                 rows={5}
                 value={body}
               />
