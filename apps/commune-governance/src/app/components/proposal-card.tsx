@@ -3,12 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import MarkdownPreview from "@uiw/react-markdown-preview";
 
 import type { ProposalState } from "@commune-ts/providers/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/providers/utils";
-import { cairo } from "@commune-ts/ui/fonts";
 
 import type { Vote } from "./vote-label";
 import {
@@ -19,6 +17,7 @@ import {
 } from "../../utils";
 import { Card } from "./card";
 import { Label } from "./label";
+import { MarkdownView } from "./markdown-view";
 import { ProposalTypeLabel } from "./proposal-type-label";
 import { RewardLabel } from "./reward-label";
 import { StatusLabel } from "./status-label";
@@ -105,14 +104,11 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
       </Card.Header>
 
       <Card.Body className="px-0 py-0">
-        <div className="bg-black/[50%] p-4 py-10 backdrop-blur-md">
-          {body ? (
-            <MarkdownPreview
-              className={`line-clamp-4 ${cairo.className}`}
-              source={body}
-              style={{ backgroundColor: "transparent", color: "white" }}
-            />
-          ) : null}
+        <div className="relative bg-black/[50%] px-6 pt-6 backdrop-blur-md">
+          <div className="max-h-[250px] min-h-[100px] overflow-hidden">
+            <MarkdownView className="markdown-content" source={body ?? ""} />
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/90 to-transparent"></div>
         </div>
 
         <div className="flex flex-col items-start justify-between border-t border-white/20 bg-[#898989]/5 p-2 backdrop-blur-md lg:flex-row lg:items-center lg:p-4">
