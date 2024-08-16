@@ -35,8 +35,11 @@ export function DaoCard(props: DaoCardProps): JSX.Element {
         </div>
       </Card.Header>
       <Card.Body className="px-0 py-0">
-        <div className="bg-black/[50%] p-4 py-10 backdrop-blur-md">
-          <MarkdownView className="line-clamp-4" source={body ?? ""} />
+        <div className="relative bg-black/[50%] px-6 pt-6 backdrop-blur-md">
+          <div className="max-h-[250px] min-h-[100px] overflow-hidden">
+            <MarkdownView className="markdown-content" source={body ?? ""} />
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/90 to-transparent"></div>
         </div>
         <div className="flex flex-col items-start justify-between border-t border-white/20 bg-[#898989]/5 p-2 backdrop-blur-md lg:flex-row lg:items-center lg:p-4">
           <div className="flex w-full flex-col-reverse lg:flex-row lg:items-center">
