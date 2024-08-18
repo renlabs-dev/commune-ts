@@ -341,6 +341,73 @@ importers:
         specifier: ^5.4.5
         version: 5.5.4
 
+  apps/commune-wallet:
+    dependencies:
+      "@commune-ts/providers":
+        specifier: workspace:*
+        version: link:../../packages/providers
+      "@commune-ts/ui":
+        specifier: workspace:*
+        version: link:../../packages/ui
+      "@heroicons/react":
+        specifier: ^2.1.3
+        version: 2.1.5(react@18.3.1)
+      "@t3-oss/env-nextjs":
+        specifier: ^0.10.1
+        version: 0.10.1(typescript@5.5.4)(zod@3.23.8)
+      next:
+        specifier: ^14.2.3
+        version: 14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      "@commune-ts/eslint-config":
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      "@commune-ts/tailwind-config":
+        specifier: workspace:*
+        version: link:../../tooling/tailwind
+      "@commune-ts/tsconfig":
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      "@next/eslint-plugin-next":
+        specifier: ^14.2.3
+        version: 14.2.5
+      "@tailwindcss/typography":
+        specifier: ^0.5.10
+        version: 0.5.13(tailwindcss@3.4.7(ts-node@10.9.2(@types/node@20.14.13)(typescript@5.5.4)))
+      "@types/node":
+        specifier: ^20.11.24
+        version: 20.14.13
+      "@types/react":
+        specifier: ^18.2.61
+        version: 18.3.3
+      "@types/react-dom":
+        specifier: ^18.2.19
+        version: 18.3.0
+      autoprefixer:
+        specifier: ^10.4.18
+        version: 10.4.19(postcss@8.4.40)
+      jiti:
+        specifier: ^1.21.0
+        version: 1.21.6
+      postcss:
+        specifier: ^8.4.38
+        version: 8.4.40
+      tailwindcss:
+        specifier: ^3.4.3
+        version: 3.4.7(ts-node@10.9.2(@types/node@20.14.13)(typescript@5.5.4))
+      typescript:
+        specifier: ^5.4.5
+        version: 5.5.4
+
   apps/communex-page:
     dependencies:
       "@commune-ts/providers":
@@ -739,6 +806,16 @@ importers:
         version: 5.5.4
 
   packages/wallet:
+    dependencies:
+      "@commune-ts/providers":
+        specifier: workspace:*
+        version: link:../providers
+      "@commune-ts/ui":
+        specifier: workspace:*
+        version: link:../ui
+      next:
+        specifier: ^14.2.3
+        version: 14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       "@commune-ts/eslint-config":
         specifier: workspace:*
@@ -11843,13 +11920,13 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
   agent-base@7.1.1:
     dependencies:
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -12117,7 +12194,7 @@ snapshots:
 
   capnp-ts@0.7.0:
     dependencies:
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
       tslib: 2.6.3
     transitivePeerDependencies:
       - supports-color
@@ -12331,10 +12408,6 @@ snapshots:
   debug@4.1.1:
     dependencies:
       ms: 2.1.3
-
-  debug@4.3.6:
-    dependencies:
-      ms: 2.1.2
 
   debug@4.3.6(supports-color@5.5.0):
     dependencies:
@@ -13408,7 +13481,7 @@ snapshots:
     dependencies:
       basic-ftp: 5.0.5
       data-uri-to-buffer: 6.0.2
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
       fs-extra: 11.2.0
     transitivePeerDependencies:
       - supports-color
@@ -13705,21 +13778,21 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@7.0.5:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -14897,7 +14970,7 @@ snapshots:
     dependencies:
       "@tootallnate/quickjs-emscripten": 0.23.0
       agent-base: 7.1.1
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
       get-uri: 6.0.3
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.5
@@ -15092,7 +15165,7 @@ snapshots:
   proxy-agent@6.4.0:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.5
       lru-cache: 7.18.3
@@ -15530,7 +15603,7 @@ snapshots:
   socks-proxy-agent@8.0.4:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6
+      debug: 4.3.6(supports-color@5.5.0)
       socks: 2.8.3
     transitivePeerDependencies:
       - supports-color
