@@ -56,6 +56,7 @@ interface CommuneContextType {
   isInitialized: boolean;
 
   handleGetWallets: () => void;
+  handleConnect: () => Promise<void>;
   accounts: InjectedAccountWithMeta[] | undefined;
   selectedAccount: InjectedAccountWithMeta | null;
   setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
@@ -161,7 +162,10 @@ export function CommuneProvider({
 
   async function getWallets(): Promise<InjectedAccountWithMeta[] | undefined> {
     if (!communeApi.web3Enable || !communeApi.web3Accounts) return;
-    await communeApi.web3Enable("Commune AI");
+    const extensions = await communeApi.web3Enable("Commune Ai");
+    if (!extensions) {
+      toast.error("No account selected");
+    }
     try {
       const response = await communeApi.web3Accounts();
       return response;
@@ -184,6 +188,17 @@ export function CommuneProvider({
 
     setSelectedAccount(accountExist);
     setIsConnected(true);
+  }
+
+  async function handleConnect() {
+    try {
+      const allAccounts = await getWallets();
+      if (allAccounts) {
+        setAccounts(allAccounts);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
   }
 
   useEffect(() => {
@@ -298,7 +313,10 @@ export function CommuneProvider({
 
   async function transfer({ to, amount, callback }: Transfer): Promise<void> {
     if (!api?.tx.balances.transferAllowDeath) return;
-    const transaction = api.tx.balances.transferAllowDeath(to, calculateAmount(amount));
+    const transaction = api.tx.balances.transferAllowDeath(
+      to,
+      calculateAmount(amount),
+    );
     await sendTransaction("Transfer", transaction, callback);
   }
 
@@ -504,6 +522,7 @@ export function CommuneProvider({
         selectedAccount,
         setSelectedAccount,
         handleGetWallets,
+        handleConnect,
 
         handleWalletModal,
         openWalletModal,
