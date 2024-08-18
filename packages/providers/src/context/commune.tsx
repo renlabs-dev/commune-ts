@@ -174,22 +174,6 @@ export function CommuneProvider({
     }
   }
 
-  async function fetchWallets(): Promise<void> {
-    const walletList = await getWallets();
-    setAccounts(walletList);
-
-    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
-    if (!favoriteWalletAddress) return;
-
-    const accountExist = walletList?.find(
-      (wallet) => wallet.address === favoriteWalletAddress,
-    );
-    if (!accountExist) return;
-
-    setSelectedAccount(accountExist);
-    setIsConnected(true);
-  }
-
   async function handleConnect() {
     try {
       const allAccounts = await getWallets();
@@ -202,7 +186,20 @@ export function CommuneProvider({
   }
 
   useEffect(() => {
-    void fetchWallets();
+    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
+    if (favoriteWalletAddress) {
+      const fetchWallets = async () => {
+        const walletList = await getWallets();
+        const accountExist = walletList?.find(
+          (wallet) => wallet.address === favoriteWalletAddress,
+        );
+        if (accountExist) {
+          setSelectedAccount(accountExist);
+          setIsConnected(true);
+        }
+      };
+      fetchWallets().catch(console.error);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized]);
 
