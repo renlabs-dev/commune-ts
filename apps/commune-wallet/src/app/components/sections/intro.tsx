@@ -13,7 +13,6 @@ export const IntroSection = () => {
   const [showWallets, setShowWallets] = useState(false);
 
   const handleConnectWallet = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await handleConnect();
     setShowWallets(true);
   };
