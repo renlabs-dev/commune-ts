@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 
 import type { InjectedAccountWithMeta } from "@commune-ts/ui";
 import { useCommune } from "@commune-ts/providers/use-commune";
@@ -30,22 +31,25 @@ export const IntroSection = () => {
     <>
       {showWallets ? (
         <div className="flex w-full max-w-screen-lg animate-fade-up flex-col items-center justify-center divide-y divide-white/20 border border-white/20 bg-[#898989]/5 p-6 backdrop-blur-md">
-          <div className="flex w-full animate-fade-up items-center justify-between pb-6">
+          <div className="flex w-full animate-fade-up items-center justify-between pb-4">
             <button
               onClick={handleBack}
               className="text-green-500 hover:text-green-400"
             >
-              ← Back
+              <span className="flex items-center">
+                <ChevronLeftIcon className="h-6 w-6" />{" "}
+                <p className="text-lg">BACK</p>
+              </span>
             </button>
-            <h2 className={`${oxanium.className} text-2xl`}>Select Wallet</h2>
+            <h2 className={`${oxanium.className} text-xl`}>Select Wallet</h2>
           </div>
-          <div className="w-full pt-6">
+          <div className="flex w-full animate-fade-up flex-col gap-2 pt-6 animate-delay-300">
             {accounts && accounts.length > 0 ? (
               accounts.map((account, index) => (
                 <button
                   key={index}
                   onClick={() => handleSelectWallet(account)}
-                  className="mb-2 w-full border border-white/20 p-4 text-left transition duration-200 hover:bg-white/10"
+                  className="w-full border border-white/20 p-4 text-left transition duration-200 hover:bg-white/10"
                 >
                   <p className="font-semibold">{account.meta.name}</p>
                   <p className="text-sm text-gray-400">{account.address}</p>

@@ -371,6 +371,9 @@ importers:
       "@commune-ts/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
+      "@commune-ts/subspace":
+        specifier: workspace:*
+        version: link:../../packages/subspace
       "@commune-ts/tailwind-config":
         specifier: workspace:*
         version: link:../../tooling/tailwind
