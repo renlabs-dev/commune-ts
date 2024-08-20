@@ -40,6 +40,7 @@ import {
   useProposals,
   useRewardAllocation,
   useUnrewardedProposals,
+  useUserTotalStaked,
 } from "../hooks";
 import { calculateAmount } from "../utils";
 
@@ -100,6 +101,9 @@ interface CommuneContextType {
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
+
+  userTotalStaked: { address: string; stake: string }[] | undefined;
+  isUserTotalStakedLoading: boolean;
 
   proposalsWithMeta: ProposalState[] | undefined;
   isProposalsLoading: boolean;
@@ -446,6 +450,10 @@ export function CommuneProvider({
     lastBlock?.apiAtBlock,
   );
 
+  // User Total Staked
+  const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
+    useUserTotalStaked(lastBlock?.apiAtBlock, selectedAccount?.address);
+
   // Proposals
   const { data: proposalQuery, isLoading: isProposalsLoading } = useProposals(
     lastBlock?.apiAtBlock,
@@ -556,6 +564,9 @@ export function CommuneProvider({
 
         stakeOut,
         isStakeOutLoading,
+
+        userTotalStaked,
+        isUserTotalStakedLoading,
 
         proposalsWithMeta,
         isProposalsLoading,

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { useCommune } from "@commune-ts/providers/use-commune";
 
 import { IntroSection } from "./intro";
@@ -11,7 +13,6 @@ export function MainSection() {
     balance,
     stakeOut,
     // Connections
-    handleConnect,
     selectedAccount,
     // Transactions
     addStake,
@@ -20,28 +21,63 @@ export function MainSection() {
     transferStake,
   } = useCommune();
 
+  const [showWallets, setShowWallets] = useState(false);
+  const [userStakeWeight, setUserStakeWeight] = useState<bigint | null>(null);
+
+  function calculateUserStakeWeight() {
+    if (stakeOut != null && selectedAccount != null) {
+      const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
+      return userStakeEntry ?? 0n;
+    }
+    return null;
+  }
+
+  const refreshUserStakeWeight = () => {
+    const newUserStakeWeight = calculateUserStakeWeight();
+    setUserStakeWeight(newUserStakeWeight);
+  };
+
+  useEffect(() => {
+    refreshUserStakeWeight();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccount, stakeOut]);
+
+  const handleSwitchWallet = () => {
+    setShowWallets(true);
+  };
+
   return (
     <main className="flex min-h-[86dvh] flex-col items-center justify-center gap-3 text-white">
-      {selectedAccount ? (
-        <Wallet.Root>
-          <Wallet.Header
-            handleConnect={handleConnect}
-            selectedAccount={selectedAccount}
-          />
-          <Wallet.Balance
-            balance={balance ? balance : 0n}
-            stakeOut={stakeOut}
-            selectedAccount={selectedAccount}
-          />
-          <Wallet.Actions
-            addStake={addStake}
-            removeStake={removeStake}
-            transfer={transfer}
-            transferStake={transferStake}
-          />
-        </Wallet.Root>
+      {selectedAccount && !showWallets ? (
+        <>
+          <p className="animate-fade text-gray-400 animate-delay-700">
+            MAIN NET
+          </p>
+          <Wallet.Root>
+            <Wallet.Header
+              selectedAccount={selectedAccount}
+              onSwitchWallet={handleSwitchWallet}
+            />
+            <Wallet.Balance
+              balance={balance ? balance : 0n}
+              userStakeWeight={userStakeWeight}
+              selectedAccount={selectedAccount}
+            />
+            <Wallet.Actions
+              addStake={addStake}
+              removeStake={removeStake}
+              transfer={transfer}
+              transferStake={transferStake}
+              selectedAccount={selectedAccount}
+            />
+          </Wallet.Root>
+        </>
       ) : (
-        <IntroSection />
+        <IntroSection
+          showWallets={showWallets}
+          setShowWallets={setShowWallets}
+          onWalletSwitch={refreshUserStakeWeight}
+        />
       )}
     </main>
   );
