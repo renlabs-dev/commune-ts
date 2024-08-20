@@ -2,14 +2,7 @@ import "@polkadot/api-augment";
 
 import { ApiPromise, WsProvider } from "@polkadot/api";
 
-import {
-  getRewardAllocation,
-  queryBalance,
-  queryDaoTreasuryAddress,
-  queryGlobalGovernanceConfig,
-  queryUnrewardedProposals,
-} from "./queries";
-import { SS58Address } from "./types";
+// import { something } from "./queries";
 
 // == To run this file: npx tsx index.ts ==
 
@@ -28,15 +21,4 @@ if (!api.isConnected) {
 
 console.log("API connected");
 
-const balance = await queryDaoTreasuryAddress(api).then((result) =>
-  queryBalance(api, result as SS58Address),
-);
-
-const governanceConfig = await queryGlobalGovernanceConfig(api);
-
-console.log(
-  "getRewardAllocation",
-  getRewardAllocation(balance, governanceConfig),
-);
-
-console.log("queryUnrewardedProposals", await queryUnrewardedProposals(api));
+// test something here
