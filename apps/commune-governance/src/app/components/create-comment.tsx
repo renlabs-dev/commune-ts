@@ -11,6 +11,7 @@ import { formatToken } from "@commune-ts/providers/utils";
 import { api } from "~/trpc/react";
 
 const MAX_CHARACTERS = 300;
+const MAX_NAME_CHARACTERS = 300;
 const MIN_STAKE_REQUIRED = 5000;
 
 const CommentSchema = z.object({
@@ -26,11 +27,23 @@ const CommentSchema = z.object({
       (value) => !/[<>{}[\]\\/]/g.test(value),
       "Special characters are not allowed",
     ),
+  name: z
+    .string()
+    .max(
+      MAX_NAME_CHARACTERS,
+      `Name must be ${MAX_NAME_CHARACTERS} characters or less`,
+    )
+    .optional()
+    .refine(
+      (value) => !value || !/[<>{}[\]\\/]/g.test(value),
+      "Special characters are not allowed in the name",
+    ),
 });
 
 export function CreateComment({ proposalId }: { proposalId: number }) {
   const router = useRouter();
   const [content, setContent] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [remainingChars, setRemainingChars] = useState(MAX_CHARACTERS);
 
@@ -70,10 +83,11 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
     }
 
     try {
-      CommentSchema.parse({ content });
+      CommentSchema.parse({ content, name });
       CreateComment.mutate({
         content,
         proposalId,
+        userName: name || undefined,
         userKey: String(selectedAccount.address),
       });
       toast.success("Comment submitted successfully!, Reloading page...");
@@ -107,7 +121,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       </div>
       <div className="relative">
         <textarea
-          placeholder={`Your comment here`}
+          placeholder="Your comment here"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="h-24 w-full resize-none bg-gray-600/10 p-3 text-white"
@@ -117,6 +131,14 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
           {remainingChars} characters left
         </span>
       </div>
+      <input
+        type="text"
+        placeholder="Your name here (optional)"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="mb-2 w-full bg-gray-600/10 p-3 text-white"
+        maxLength={MAX_NAME_CHARACTERS}
+      />
       {error && <p className="text-sm text-red-500">{error}</p>}
       <button
         type="submit"

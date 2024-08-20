@@ -57,6 +57,11 @@ export function CreateTransferDaoTreasuryProposal(): JSX.Element {
       const ipfs = (await res.json()) as { IpfsHash: string };
       setUploading(false);
 
+      if (ipfs.IpfsHash === "undefined" || !ipfs.IpfsHash) {
+        toast.error("Error uploading transfer dao treasury proposal");
+        return;
+      }
+
       if (!balance) {
         toast.error("Balance is still loading");
         return;
@@ -178,16 +183,16 @@ export function CreateTransferDaoTreasuryProposal(): JSX.Element {
                 onChange={(e) => {
                   setBody(e.target.value);
                 }}
-                placeholder="Application body... (Markdown supported)"
+                placeholder="Application body... (Markdown supported) / HTML tags are not supported)"
                 rows={5}
                 value={body}
               />
             </div>
           ) : (
-            <div className="p-4 py-10">
+            <div className="p-4">
               {body ? (
                 <MarkdownPreview
-                  className={`line-clamp-4 ${cairo.className}`}
+                  className={`${cairo.className} max-h-[40vh] overflow-auto`}
                   source={`# ${title}\n${body}`}
                   style={{
                     backgroundColor: "transparent",

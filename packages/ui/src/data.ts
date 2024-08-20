@@ -25,11 +25,11 @@ export const landingPageButtons = [
     name: "DOCS",
     icon: "/docs-icon.svg",
   },
-  {
-    href: links.explorer,
-    name: "SCAN",
-    icon: "/view-more-icon.svg",
-  },
+  // {
+  //   href: links.explorer,
+  //   name: "SCAN",
+  //   icon: "/view-more-icon.svg",
+  // },
   {
     href: links.about,
     name: "ABOUT",

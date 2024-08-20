@@ -40,6 +40,7 @@ import {
   useProposals,
   useRewardAllocation,
   useUnrewardedProposals,
+  useUserTotalStaked,
 } from "../hooks";
 import { calculateAmount } from "../utils";
 
@@ -56,6 +57,7 @@ interface CommuneContextType {
   isInitialized: boolean;
 
   handleGetWallets: () => void;
+  handleConnect: () => Promise<void>;
   accounts: InjectedAccountWithMeta[] | undefined;
   selectedAccount: InjectedAccountWithMeta | null;
   setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
@@ -99,6 +101,9 @@ interface CommuneContextType {
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
+
+  userTotalStaked: { address: string; stake: string }[] | undefined;
+  isUserTotalStakedLoading: boolean;
 
   proposalsWithMeta: ProposalState[] | undefined;
   isProposalsLoading: boolean;
@@ -161,7 +166,10 @@ export function CommuneProvider({
 
   async function getWallets(): Promise<InjectedAccountWithMeta[] | undefined> {
     if (!communeApi.web3Enable || !communeApi.web3Accounts) return;
-    await communeApi.web3Enable("Commune AI");
+    const extensions = await communeApi.web3Enable("Commune Ai");
+    if (!extensions) {
+      toast.error("No account selected");
+    }
     try {
       const response = await communeApi.web3Accounts();
       return response;
@@ -170,24 +178,32 @@ export function CommuneProvider({
     }
   }
 
-  async function fetchWallets(): Promise<void> {
-    const walletList = await getWallets();
-    setAccounts(walletList);
-
-    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
-    if (!favoriteWalletAddress) return;
-
-    const accountExist = walletList?.find(
-      (wallet) => wallet.address === favoriteWalletAddress,
-    );
-    if (!accountExist) return;
-
-    setSelectedAccount(accountExist);
-    setIsConnected(true);
+  async function handleConnect() {
+    try {
+      const allAccounts = await getWallets();
+      if (allAccounts) {
+        setAccounts(allAccounts);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
   }
 
   useEffect(() => {
-    void fetchWallets();
+    const favoriteWalletAddress = localStorage.getItem("favoriteWalletAddress");
+    if (favoriteWalletAddress) {
+      const fetchWallets = async () => {
+        const walletList = await getWallets();
+        const accountExist = walletList?.find(
+          (wallet) => wallet.address === favoriteWalletAddress,
+        );
+        if (accountExist) {
+          setSelectedAccount(accountExist);
+          setIsConnected(true);
+        }
+      };
+      fetchWallets().catch(console.error);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized]);
 
@@ -297,9 +313,11 @@ export function CommuneProvider({
   }
 
   async function transfer({ to, amount, callback }: Transfer): Promise<void> {
-    if (!api?.tx.balances.transfer) return;
-
-    const transaction = api.tx.balances.transfer(to, calculateAmount(amount));
+    if (!api?.tx.balances.transferAllowDeath) return;
+    const transaction = api.tx.balances.transferAllowDeath(
+      to,
+      calculateAmount(amount),
+    );
     await sendTransaction("Transfer", transaction, callback);
   }
 
@@ -432,6 +450,10 @@ export function CommuneProvider({
     lastBlock?.apiAtBlock,
   );
 
+  // User Total Staked
+  const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
+    useUserTotalStaked(lastBlock?.apiAtBlock, selectedAccount?.address);
+
   // Proposals
   const { data: proposalQuery, isLoading: isProposalsLoading } = useProposals(
     lastBlock?.apiAtBlock,
@@ -505,6 +527,7 @@ export function CommuneProvider({
         selectedAccount,
         setSelectedAccount,
         handleGetWallets,
+        handleConnect,
 
         handleWalletModal,
         openWalletModal,
@@ -541,6 +564,9 @@ export function CommuneProvider({
 
         stakeOut,
         isStakeOutLoading,
+
+        userTotalStaked,
+        isUserTotalStakedLoading,
 
         proposalsWithMeta,
         isProposalsLoading,

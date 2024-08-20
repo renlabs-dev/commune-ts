@@ -165,7 +165,10 @@ export function ProposalComment({
             <div className="flex w-full animate-pulse flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2">
               <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
                 <span className="flex items-center gap-1">
-                  <UserIcon className="h-4 w-4" /> Loading user address...
+                  <span className="flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm">
+                    <UserIcon className="h-4 w-4" />
+                  </span>{" "}
+                  Loading user address...
                 </span>
                 <div className="flex gap-1">
                   <button
@@ -199,18 +202,16 @@ export function ProposalComment({
                     className="relative flex w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-2 pb-4"
                   >
                     <div className="flex justify-between border-b border-white/20 px-2 py-1 pb-2">
-                      <span className="flex items-center gap-1">
-                        <UserIcon className="h-4 w-4" />{" "}
-                        {smallAddress(comment.userKey)}
-                        <span className="ml-2 text-sm text-gray-400">
-                          {formatToken(
-                            Number(
-                              getVoterStake(comment.userKey as SS58Address),
-                            ),
-                          )}{" "}
-                          COMAI
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm">
+                          <UserIcon className="h-4 w-4" />{" "}
+                          {comment.userName && comment.userName}
                         </span>
-                      </span>
+                        {smallAddress(comment.userKey)}{" "}
+                        <span className="ml-2 text-sm text-gray-400">
+                          {getVoterStake(comment.userKey as SS58Address)}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleVote(comment.id, VoteType.UP)}
