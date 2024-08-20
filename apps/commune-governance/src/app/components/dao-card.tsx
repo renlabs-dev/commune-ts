@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
-import type { DaoState } from "@commune-ts/providers/types";
-import { smallAddress } from "@commune-ts/providers/utils";
+import type { DaoState } from "@commune-ts/types";
+import { smallAddress } from "@commune-ts/utils";
 
 import { handleCustomDaos } from "../../utils";
 import { Card } from "./card";

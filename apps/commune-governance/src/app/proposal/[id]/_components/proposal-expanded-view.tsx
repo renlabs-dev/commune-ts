@@ -2,9 +2,9 @@
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
+import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { getExpirationTime, smallAddress } from "@commune-ts/providers/utils";
+import { getExpirationTime, smallAddress } from "@commune-ts/utils";
 
 import type { Vote } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";

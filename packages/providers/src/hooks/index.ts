@@ -26,13 +26,14 @@ import type {
   Result,
   SS58Address,
 } from "../types";
+import { CUSTOM_METADATA_SCHEMA } from "../types";
 import {
-  CUSTOM_METADATA_SCHEMA,
+  buildIpfsGatewayUrl,
   LAST_BLOCK_STALE_TIME,
+  parseIpfsUri,
   PROPOSALS_STALE_TIME,
   STAKE_STALE_TIME,
-} from "../types";
-import { buildIpfsGatewayUrl, parseIpfsUri } from "../utils";
+} from "../utils";
 
 // == chain ==
 

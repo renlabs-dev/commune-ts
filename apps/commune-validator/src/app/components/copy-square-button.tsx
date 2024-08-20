@@ -3,7 +3,7 @@
 import { Square2StackIcon } from "@heroicons/react/24/outline";
 
 import { toast } from "@commune-ts/providers/use-toast";
-import { copyToClipboard } from "@commune-ts/providers/utils";
+import { copyToClipboard } from "@commune-ts/utils";
 
 interface CopySquareButtonProps {
   address: string;

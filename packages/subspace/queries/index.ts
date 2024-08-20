@@ -7,14 +7,18 @@ import {
   isSS58,
   LastBlock,
   modulePropResolvers,
-  newSubstrateModule,
   OptionalProperties,
   SS58Address,
-  StorageEntry,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
 } from "../types";
-import { assertOrThrow, handleDaos, handleProposals } from "../utils";
+import {
+  assertOrThrow,
+  handleDaos,
+  handleProposals,
+  newSubstrateModule,
+  StorageEntry,
+} from "../utils";
 
 export { ApiPromise };
 

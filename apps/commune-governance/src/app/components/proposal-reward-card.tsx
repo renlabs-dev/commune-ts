@@ -3,7 +3,7 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { formatToken } from "@commune-ts/providers/utils";
+import { formatToken } from "@commune-ts/utils";
 
 export default function ProposalRewardCard() {
   const { rewardAllocation } = useCommune();
