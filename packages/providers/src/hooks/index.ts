@@ -15,6 +15,7 @@ import {
   queryRewardAllocation,
   queryStakeOut,
   queryUnrewardedProposals,
+  queryUserTotalStaked,
 } from "@commune-ts/subspace/queries";
 
 import type {
@@ -130,6 +131,19 @@ export function useAllStakeOut(api: Api | Nullish) {
     queryKey: ["stake_out"],
     enabled: api != null,
     queryFn: () => queryStakeOut(api!),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useUserTotalStaked(
+  api: Api | Nullish,
+  address: SS58Address | string | Nullish,
+) {
+  return useQuery({
+    queryKey: ["user_total_staked", address],
+    enabled: api != null,
+    queryFn: () => queryUserTotalStaked(api!, address!),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });
