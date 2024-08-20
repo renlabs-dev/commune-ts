@@ -6,15 +6,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import type { TransactionResult } from "@commune-ts/providers/types";
-import { isSS58 } from "@commune-ts/providers/types";
+import type {
+  InjectedAccountWithMeta,
+  TransactionResult,
+} from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import {
-  formatToken,
-  fromNano,
-  smallAddress,
-} from "@commune-ts/providers/utils";
-import { CopyButton, InjectedAccountWithMeta, Loading } from "@commune-ts/ui";
+import { isSS58 } from "@commune-ts/types";
+import { CopyButton, Loading } from "@commune-ts/ui";
+import { formatToken, fromNano, smallAddress } from "@commune-ts/utils";
 
 import { NoWalletExtensionDisplay, WalletButton } from "./";
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
 import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { CopySquareButton } from "./copy-square-button";
 import { DelegateModuleWeight } from "./delegate-module-weight";

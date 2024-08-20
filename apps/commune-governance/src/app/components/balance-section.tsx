@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { useBalance } from "@commune-ts/providers/hooks";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { formatToken } from "@commune-ts/providers/utils";
+import { formatToken } from "@commune-ts/utils";
 
 export function BalanceSection({
   className,

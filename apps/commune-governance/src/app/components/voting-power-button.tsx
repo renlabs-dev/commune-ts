@@ -6,7 +6,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/20/solid";
 
-import type { TransactionResult } from "@commune-ts/providers/types";
+import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 
 import { SectionHeaderText } from "./section-header-text";
