@@ -19,6 +19,7 @@ export function MainSection() {
     transfer,
     transferStake,
   } = useCommune();
+
   return (
     <main className="flex min-h-[86dvh] flex-col items-center justify-center gap-3 text-white">
       {selectedAccount ? (
