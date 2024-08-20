@@ -19,6 +19,7 @@ export const PROPOSAL_COMMENT_INSERT_SCHEMA = createInsertSchema(
       .transform((v) => v.trim())
       .refine((s) => s.length, "Comment should not be blank"),
     userKey: z.string().min(1),
+    userName: z.string().optional(),
     proposalId: z.number().int(),
   },
 ).omit({
