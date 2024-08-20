@@ -1,33 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 
 import type {
   Stake,
-  StakeOutData,
   TransactionResult,
   Transfer,
   TransferStake,
 } from "@commune-ts/subspace/types";
 import type { InjectedAccountWithMeta } from "@commune-ts/ui";
-import { formatToken } from "@commune-ts/subspace/utils";
-import { CopyButton } from "@commune-ts/ui";
+import { toast } from "@commune-ts/providers/use-toast";
+import {
+  copyToClipboard,
+  formatToken,
+  fromNano,
+  smallAddress,
+} from "@commune-ts/subspace/utils";
 import { Loading } from "@commune-ts/ui/loading";
 
 import type { ColorType, MenuType } from "~/utils/types";
 import { Icon } from "../icon";
 import { IconButton } from "../icon-button";
+import { ValidatorsList } from "../validators-list";
 
 interface WalletProps {
   root: {
     children: React.ReactNode;
   };
   header: {
-    handleConnect: () => void;
+    onSwitchWallet: () => void;
     selectedAccount: InjectedAccountWithMeta;
   };
   actions: {
+    selectedAccount: InjectedAccountWithMeta;
     addStake: (stake: Stake) => Promise<void>;
     removeStake: (stake: Stake) => Promise<void>;
     transfer: (transfer: Transfer) => Promise<void>;
@@ -35,37 +41,51 @@ interface WalletProps {
   };
   balance: {
     balance: bigint;
-    stakeOut: StakeOutData | undefined;
+    userStakeWeight: bigint | null;
     selectedAccount: InjectedAccountWithMeta;
   };
 }
 
 function WalletRoot(props: WalletProps["root"]) {
   return (
-    <div className="flex w-full max-w-screen-lg animate-fade-up flex-col items-center justify-center divide-y divide-white/20 border border-white/20 bg-[#898989]/5 p-6 backdrop-blur-md">
-      {props.children}
-    </div>
+    <>
+      <div className="flex w-full max-w-4xl animate-fade-up flex-col items-center justify-center divide-y divide-white/20 border border-white/20 bg-[#898989]/5 p-6 backdrop-blur-md">
+        {props.children}
+      </div>
+    </>
   );
 }
 
 function WalletHeader(props: WalletProps["header"]) {
+  function handleCopy() {
+    copyToClipboard(props.selectedAccount.address);
+    toast.success("Address copied to clipboard");
+  }
+
   return (
-    <div className="flex w-full flex-col items-center justify-center text-lg text-gray-300">
-      <p className="py-2">MAIN NET</p>
+    <div className="flex w-full animate-fade-up flex-col items-center justify-center text-lg text-gray-300 animate-delay-100">
       <div className="flex w-full flex-col gap-4 pb-4 md:flex-row">
-        <div className="flex w-full items-center justify-center gap-2 text-nowrap border border-white/20 bg-[#898989]/5 px-4 py-2.5 font-semibold">
-          <Icon src="wallet-icon.svg" className="h-7 w-7" />
+        <button
+          onClick={handleCopy}
+          className="flex w-full items-center justify-center gap-2 text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+        >
+          <Icon src="wallet-icon.svg" className="h-6 w-6" />
           <span className="flex gap-1">
             <p className="text-green-500">
               {props.selectedAccount.meta.name?.toUpperCase()}
             </p>
-            <p>/ {props.selectedAccount.address}</p>
+            <p>
+              /{" "}
+              {props.selectedAccount.meta.name &&
+              props.selectedAccount.meta.name.length > 10
+                ? smallAddress(props.selectedAccount.address)
+                : props.selectedAccount.address}
+            </p>
           </span>
-        </div>
-        <CopyButton code={props.selectedAccount.address} />
+        </button>
         <button
-          onClick={props.handleConnect}
-          className="flex w-fit items-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15"
+          onClick={props.onSwitchWallet}
+          className="flex w-fit items-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
         >
           <ChevronLeftIcon className="h-6 w-6" /> Switch Wallet
         </button>
@@ -75,15 +95,21 @@ function WalletHeader(props: WalletProps["header"]) {
 }
 
 function WalletBalance(props: WalletProps["balance"]) {
-  let userStakeWeight: bigint | null = null;
-  if (props.stakeOut != null) {
-    const userStakeEntry = props.stakeOut.perAddr.get(
-      props.selectedAccount.address,
-    );
-    userStakeWeight = userStakeEntry ?? 0n;
-  }
+  const [freeBalancePercentage, setFreeBalancePercentage] = useState(0);
+  useEffect(() => {
+    const freeBalance = fromNano(props.balance || 0);
+    const stakedBalance = fromNano(props.userStakeWeight ?? 0);
+    const availablePercentage =
+      (freeBalance * 100) / (stakedBalance + freeBalance);
+
+    if (isNaN(availablePercentage) || !availablePercentage) {
+      setFreeBalancePercentage(0);
+      return;
+    }
+    setFreeBalancePercentage(availablePercentage);
+  }, [props.balance, props.userStakeWeight]);
   return (
-    <div className="flex w-full animate-fade flex-col gap-4 border-white/20 py-4 text-white animate-delay-500">
+    <div className="flex w-full animate-fade-up flex-col gap-4 border-white/20 py-4 text-white animate-delay-200">
       <div className="border border-white/20 p-4">
         <div className="flex w-full justify-between gap-6">
           <div>
@@ -97,8 +123,8 @@ function WalletBalance(props: WalletProps["balance"]) {
           </div>
           <div className="text-right">
             <p className="text-xl text-red-500">
-              {props.stakeOut
-                ? formatToken(Number(userStakeWeight))
+              {props.userStakeWeight !== null
+                ? formatToken(props.userStakeWeight)
                 : "Loading..."}
               <span className="ml-1 text-sm font-light text-gray-400">
                 COMAI
@@ -107,12 +133,12 @@ function WalletBalance(props: WalletProps["balance"]) {
             <p className="text-xs text-gray-500">Staked Balance</p>
           </div>
         </div>
-        {userStakeWeight ? (
+        {props.userStakeWeight !== null ? (
           <div className="relative flex h-2 w-full pt-1">
             <span
               className="absolute h-2 bg-green-500"
               style={{
-                width: `${Number(formatToken(Number(userStakeWeight))).toFixed(2)}%`,
+                width: `${freeBalancePercentage.toFixed(2)}%`,
               }}
             />
             <span className="h-2 w-full bg-red-500" />
@@ -244,9 +270,18 @@ function WalletActions(props: WalletProps["actions"]) {
     }
   };
 
+  const [currentView, setCurrentView] = useState<
+    "wallet" | "validators" | "stakedValidators"
+  >("wallet");
+
+  const handleSelectValidator = (validator: { address: string }) => {
+    setValidator(validator.address);
+    setCurrentView("wallet");
+  };
+
   return (
     <>
-      <div className="grid w-full grid-cols-1 gap-4 py-4 md:grid-cols-4">
+      <div className="grid w-full animate-fade-up grid-cols-1 gap-4 pt-4 animate-delay-300 md:grid-cols-4">
         {buttons.map((button) => (
           <IconButton
             key={button.src}
@@ -259,125 +294,148 @@ function WalletActions(props: WalletProps["actions"]) {
         ))}
       </div>
       {activeMenu && (
-        <div className="animate-zoom-in w-full">
-          <form
-            onSubmit={handleSubmit}
-            className="flex w-full flex-col gap-4 pt-4"
-          >
-            {activeMenu === "Transfer Stake" && (
-              <div className="w-full">
-                <p className="text-base">From Validator</p>
-                <input
-                  type="text"
-                  value={fromValidator}
-                  disabled={transactionStatus.status === "PENDING"}
-                  onChange={(e) => setFromValidator(e.target.value)}
-                  placeholder="The full address of the validator"
-                  className="w-full border border-white/20 bg-[#898989]/5 p-2"
-                />
-              </div>
-            )}
-            <div className="w-full">
-              <span className="text-base">
-                {activeMenu === "Stake" ||
-                activeMenu === "Transfer Stake" ||
-                activeMenu === "Unstake" ? (
-                  <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                    <p>
-                      {activeMenu === "Transfer Stake"
-                        ? "To Validator"
-                        : "Validator Address"}
-                    </p>
-                  </div>
-                ) : (
-                  "To Address"
-                )}
-              </span>
-              <div className="flex flex-row gap-3">
-                <input
-                  type="text"
-                  value={validator}
-                  disabled={transactionStatus.status === "PENDING"}
-                  onChange={(e) => setValidator(e.target.value)}
-                  placeholder={
-                    activeMenu === "Stake" ||
-                    activeMenu === "Transfer Stake" ||
-                    activeMenu === "Unstake"
-                      ? "The full address of the validator"
-                      : "The full address of the recipient"
-                  }
-                  className="w-full border border-white/20 bg-[#898989]/5 p-2"
-                />
-                {activeMenu !== "Send" && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      activeMenu === "Unstake"
-                        ? setOpenStakedValidators(true)
-                        : setOpenValidators(true)
-                    }
-                    className="w-[40%] border bg-black/50 p-2 text-center text-green-500 transition hover:bg-green-500/10 hover:text-white"
-                  >
-                    {activeMenu === "Unstake"
-                      ? "List of Staked Validators"
-                      : "Validators"}
-                  </button>
-                )}
+        <>
+          {currentView === "validators" ||
+          currentView === "stakedValidators" ? (
+            <ValidatorsList
+              listType={currentView === "validators" ? "all" : "staked"}
+              onSelectValidator={handleSelectValidator}
+              onBack={() => setCurrentView("wallet")}
+              userAddress={props.selectedAccount.address}
+            />
+          ) : (
+            <div className="mt-4 w-full">
+              <form
+                onSubmit={handleSubmit}
+                className="flex w-full animate-fade-down flex-col gap-4 pt-4"
+              >
                 {activeMenu === "Transfer Stake" && (
-                  <button
-                    type="button"
-                    onClick={() => setOpenStakedValidators(true)}
-                    className="w-[40%] border bg-black/50 p-2 text-center text-green-500 transition hover:bg-green-500/10 hover:text-white"
-                  >
-                    List of Staked Validators
-                  </button>
+                  <div className="w-full">
+                    <p className="text-base">From Validator</p>
+                    <input
+                      type="text"
+                      value={fromValidator}
+                      disabled={transactionStatus.status === "PENDING"}
+                      onChange={(e) => setFromValidator(e.target.value)}
+                      placeholder="The full address of the validator"
+                      className="w-full border border-white/20 bg-[#898989]/5 p-2"
+                    />
+                  </div>
                 )}
-              </div>
+                <div className="w-full">
+                  <span className="text-base">
+                    {activeMenu === "Stake" ||
+                    activeMenu === "Transfer Stake" ||
+                    activeMenu === "Unstake" ? (
+                      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                        <p>
+                          {activeMenu === "Transfer Stake"
+                            ? "To Validator"
+                            : "Validator Address"}
+                        </p>
+                      </div>
+                    ) : (
+                      "To Address"
+                    )}
+                  </span>
+                  <div className="flex flex-row gap-3">
+                    <input
+                      type="text"
+                      value={validator}
+                      disabled={transactionStatus.status === "PENDING"}
+                      onChange={(e) => setValidator(e.target.value)}
+                      placeholder={
+                        activeMenu === "Stake" ||
+                        activeMenu === "Transfer Stake" ||
+                        activeMenu === "Unstake"
+                          ? "The full address of the validator"
+                          : "The full address of the recipient"
+                      }
+                      className="w-full border border-white/20 bg-[#898989]/5 p-2"
+                    />
+                    {activeMenu !== "Send" && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setCurrentView(
+                            activeMenu === "Unstake"
+                              ? "stakedValidators"
+                              : "validators",
+                          )
+                        }
+                        className="flex w-fit items-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+                      >
+                        {activeMenu === "Unstake"
+                          ? "List of Staked Validators"
+                          : "Validators"}
+                      </button>
+                    )}
+                    {activeMenu === "Transfer Stake" && (
+                      <button
+                        type="button"
+                        onClick={() => setCurrentView("stakedValidators")}
+                        className="flex w-fit items-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+                      >
+                        List of Staked Validators
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {inputError.validator && (
+                  <p
+                    className={`-mt-2 mb-1 flex text-left text-base text-red-400`}
+                  >
+                    {inputError.validator}
+                  </p>
+                )}
+                <div className="w-full">
+                  <p className="text-base">Value</p>
+                  <input
+                    type="text"
+                    disabled={transactionStatus.status === "PENDING"}
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="The amount of COMAI to use in the transaction"
+                    className="w-full border border-white/20 bg-[#898989]/5 p-2"
+                  />
+                </div>
+                {inputError.value && (
+                  <p
+                    className={`-mt-2 mb-1 flex text-left text-base text-red-400`}
+                  >
+                    {inputError.value}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={
+                    transactionStatus.status === "PENDING" ||
+                    !amount ||
+                    !validator ||
+                    (activeMenu === "Transfer Stake" && !fromValidator)
+                  }
+                  className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
+                >
+                  Start Transaction
+                </button>
+              </form>
+              {transactionStatus.status ? (
+                <p
+                  className={`items-center gap-1 pt-3 ${
+                    transactionStatus.status === "PENDING" && "text-yellow-400"
+                  } ${transactionStatus.status === "ERROR" && "text-red-400 "} ${
+                    transactionStatus.status === "SUCCESS" && "text-green-400"
+                  } ${
+                    transactionStatus.status === "STARTING" && "text-blue-400"
+                  } flex text-left text-base`}
+                >
+                  {transactionStatus.status === "PENDING" && <Loading />}
+                  {transactionStatus.message}
+                </p>
+              ) : null}
             </div>
-            {inputError.validator && (
-              <p className={`-mt-2 mb-1 flex text-left text-base text-red-400`}>
-                {inputError.validator}
-              </p>
-            )}
-            <div className="w-full">
-              <p className="text-base">Value</p>
-              <input
-                type="text"
-                disabled={transactionStatus.status === "PENDING"}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="The amount of COMAI to use in the transaction"
-                className="w-full border border-white/20 bg-[#898989]/5 p-2"
-              />
-            </div>
-            {inputError.value && (
-              <p className={`-mt-2 mb-1 flex text-left text-base text-red-400`}>
-                {inputError.value}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={transactionStatus.status === "PENDING"}
-              className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15"
-            >
-              Start Transaction
-            </button>
-          </form>
-          {transactionStatus.status ? (
-            <p
-              className={`items-center gap-3 pt-3 ${
-                transactionStatus.status === "PENDING" && "text-yellow-400"
-              } ${transactionStatus.status === "ERROR" && "text-red-400 "} ${
-                transactionStatus.status === "SUCCESS" && "text-green-400"
-              } ${
-                transactionStatus.status === "STARTING" && "text-blue-400"
-              } flex text-left text-base`}
-            >
-              {transactionStatus.status === "PENDING" && <Loading />}
-              {transactionStatus.message}
-            </p>
-          ) : null}
-        </div>
+          )}
+        </>
       )}
     </>
   );
