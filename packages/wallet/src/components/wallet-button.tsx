@@ -6,6 +6,7 @@ import Image from "next/image";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/providers/utils";
+import { WalletIcon } from "@commune-ts/public";
 
 interface TWalletButtonProps {
   customHandler?: () => void;
@@ -23,9 +24,10 @@ export function WalletButton(props: TWalletButtonProps) {
         <Image
           alt="Wallet Icon"
           className="tw-h-6 tw-w-6"
-          src="/wallet-icon.svg"
           width={40}
           height={40}
+          src={WalletIcon}
+          // src="/wallet-icon.svg"
         />
         <span>Loading Wallet Info...</span>
       </div>
@@ -45,7 +47,8 @@ export function WalletButton(props: TWalletButtonProps) {
         className="tw-w-6"
         height={40}
         width={40}
-        src="/wallet-icon.svg"
+        // src="/wallet-icon.svg"
+        src={WalletIcon}
       />
 
       {selectedAccount?.meta.name ? (
