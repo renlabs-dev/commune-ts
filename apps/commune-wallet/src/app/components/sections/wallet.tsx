@@ -20,8 +20,8 @@ import {
 import { Loading } from "@commune-ts/ui/loading";
 
 import type { ColorType, MenuType } from "~/utils/types";
-import { Icon } from "../icon";
 import { IconButton } from "../icon-button";
+import { ImageIcon } from "../image-icon";
 import { ValidatorsList } from "../validators-list";
 
 interface WalletProps {
@@ -69,7 +69,7 @@ function WalletHeader(props: WalletProps["header"]) {
           onClick={handleCopy}
           className="flex w-full items-center justify-center gap-2 text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
         >
-          <Icon src="wallet-icon.svg" className="h-6 w-6" />
+          <ImageIcon src="wallet-icon.svg" className="h-6 w-6" />
           <span className="flex gap-1">
             <p className="text-green-500">
               {props.selectedAccount.meta.name?.toUpperCase()}

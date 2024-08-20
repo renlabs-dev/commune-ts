@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
-interface IconProps {
+interface ImageIconProps {
   src: string;
   href?: string;
   className?: string;
 }
 
-export function Icon(props: IconProps) {
+export function ImageIcon(props: ImageIconProps) {
   return (
     <Link href={props.href ?? ""}>
       <Image

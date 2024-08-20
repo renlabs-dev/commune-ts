@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColorType, MenuType } from "~/utils/types";
-import { Icon } from "./icon";
+import { ImageIcon } from "./image-icon";
 
 interface IconButtonProps {
   src: string;
@@ -24,7 +24,7 @@ export function IconButton(props: IconButtonProps) {
       onClick={() => props.setActiveMenu(props.text as MenuType)}
       className={`flex w-full items-center justify-center gap-3 text-nowrap px-6 py-2.5 font-semibold transition duration-200 hover:bg-[#898989]/10 ${colorVariants[props.color]}`}
     >
-      <Icon src={props.src} className="h-5 w-5 md:h-6 md:w-6" />
+      <ImageIcon src={props.src} className="h-5 w-5 md:h-6 md:w-6" />
       <p className="text-lg">{props.text}</p>
     </button>
   );
