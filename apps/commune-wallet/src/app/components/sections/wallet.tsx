@@ -15,7 +15,7 @@ import { formatToken } from "@commune-ts/subspace/utils";
 import { CopyButton } from "@commune-ts/ui";
 import { Loading } from "@commune-ts/ui/loading";
 
-import type { MenuType } from "~/utils/types";
+import type { ColorType, MenuType } from "~/utils/types";
 import { Icon } from "../icon";
 import { IconButton } from "../icon-button";
 
@@ -213,21 +213,21 @@ function WalletActions(props: WalletProps["actions"]) {
 
     if (!isValidInput) return;
 
-    if (activeMenu === "stake") {
+    if (activeMenu === "Stake") {
       void props.addStake({
         validator,
         amount,
         callback: handleCallback,
       });
     }
-    if (activeMenu === "unstake") {
+    if (activeMenu === "Unstake") {
       void props.removeStake({
         validator,
         amount,
         callback: handleCallback,
       });
     }
-    if (activeMenu === "transfer stake") {
+    if (activeMenu === "Transfer Stake") {
       void props.transferStake({
         fromValidator: fromValidator,
         toValidator: validator,
@@ -235,7 +235,7 @@ function WalletActions(props: WalletProps["actions"]) {
         callback: handleCallback,
       });
     }
-    if (activeMenu === "send") {
+    if (activeMenu === "Send") {
       void props.transfer({
         to: validator,
         amount,
@@ -252,7 +252,7 @@ function WalletActions(props: WalletProps["actions"]) {
             key={button.src}
             src={button.src}
             text={button.text}
-            color={button.color}
+            color={button.color as ColorType}
             activeMenu={activeMenu}
             setActiveMenu={setActiveMenu}
           />
@@ -264,7 +264,7 @@ function WalletActions(props: WalletProps["actions"]) {
             onSubmit={handleSubmit}
             className="flex w-full flex-col gap-4 pt-4"
           >
-            {activeMenu === "transfer stake" && (
+            {activeMenu === "Transfer Stake" && (
               <div className="w-full">
                 <p className="text-base">From Validator</p>
                 <input
@@ -279,12 +279,12 @@ function WalletActions(props: WalletProps["actions"]) {
             )}
             <div className="w-full">
               <span className="text-base">
-                {activeMenu === "stake" ||
-                activeMenu === "transfer stake" ||
-                activeMenu === "unstake" ? (
+                {activeMenu === "Stake" ||
+                activeMenu === "Transfer Stake" ||
+                activeMenu === "Unstake" ? (
                   <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <p>
-                      {activeMenu === "transfer stake"
+                      {activeMenu === "Transfer Stake"
                         ? "To Validator"
                         : "Validator Address"}
                     </p>
@@ -300,30 +300,30 @@ function WalletActions(props: WalletProps["actions"]) {
                   disabled={transactionStatus.status === "PENDING"}
                   onChange={(e) => setValidator(e.target.value)}
                   placeholder={
-                    activeMenu === "stake" ||
-                    activeMenu === "transfer stake" ||
-                    activeMenu === "unstake"
+                    activeMenu === "Stake" ||
+                    activeMenu === "Transfer Stake" ||
+                    activeMenu === "Unstake"
                       ? "The full address of the validator"
                       : "The full address of the recipient"
                   }
                   className="w-full border border-white/20 bg-[#898989]/5 p-2"
                 />
-                {activeMenu !== "send" && (
+                {activeMenu !== "Send" && (
                   <button
                     type="button"
                     onClick={() =>
-                      activeMenu === "unstake"
+                      activeMenu === "Unstake"
                         ? setOpenStakedValidators(true)
                         : setOpenValidators(true)
                     }
                     className="w-[40%] border bg-black/50 p-2 text-center text-green-500 transition hover:bg-green-500/10 hover:text-white"
                   >
-                    {activeMenu === "unstake"
+                    {activeMenu === "Unstake"
                       ? "List of Staked Validators"
                       : "Validators"}
                   </button>
                 )}
-                {activeMenu === "transfer stake" && (
+                {activeMenu === "Transfer Stake" && (
                   <button
                     type="button"
                     onClick={() => setOpenStakedValidators(true)}
