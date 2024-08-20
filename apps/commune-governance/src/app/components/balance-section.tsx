@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useBalance } from "@commune-ts/providers/hooks";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { formatToken } from "@commune-ts/providers/utils";
+import { WalletIcon } from "@commune-ts/public";
 
 export function BalanceSection({
   className,
@@ -100,7 +101,8 @@ export function BalanceSection({
           <Image
             alt="Wallet Icon"
             height={40}
-            src="/wallet-icon.svg"
+            // src="/wallet-icon.svg"
+            src={WalletIcon as string}
             width={40}
           />
         </div>
