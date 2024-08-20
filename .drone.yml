@@ -48,6 +48,7 @@ trigger:
       - apps/communex-page/**
       - apps/comrads-worker/**
       - apps/sample-app/**
+      - apps/commune-wallet/**
 ---
 kind: pipeline
 type: docker
@@ -124,6 +125,7 @@ trigger:
       - apps/commune-page/**
       - apps/communex-page/**
       - apps/sample-app/**
+      - apps/commune-wallet/**
 ---
 kind: pipeline
 type: docker
@@ -175,3 +177,57 @@ trigger:
       - apps/communex-page/**
       - apps/comrads-worker/**
       - apps/sample-app/**
+      - apps/commune-wallet/**
+---
+kind: pipeline
+type: docker
+name: commune-wallet
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      username: ${DRONE_COMMIT_AUTHOR}
+      password:
+        from_secret: DOCKER_TOKEN
+      repo: ghcr.io/agicommies/commune-wallet
+      tags:
+        - latest
+        - ${DRONE_BRANCH}
+        - ${DRONE_COMMIT_SHA:0:7}
+      dockerfile: docker/Dockerfile
+      build_args: APP_NAME=commune-wallet
+
+  - name: deploy
+    image: digitalocean/doctl:latest
+    environment:
+      DO_CTL_TOKEN:
+        from_secret: DO_CTL_TOKEN
+    commands:
+      - apk add jq
+      - export PATH=$PATH:/app
+      - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
+      - app_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "commune-wallet" || echo "dev-commune-wallet" )
+      - app_id=$(doctl apps list -t $DO_CTL_TOKEN -o json | jq --arg name "$app_name" '.[] | select(.spec.name == $name) | .id' | tr -d '"')
+      - doctl apps spec get $app_id -t $DO_CTL_TOKEN > spec.yaml
+      - sed -i "s/\(tag:*\).*/\1 $COMMIT_SHORT_SHA/" spec.yaml
+      - doctl apps spec validate spec.yaml -t $DO_CTL_TOKEN --schema-only > /dev/null
+      - doctl apps update $app_id -t $DO_CTL_TOKEN --wait --spec spec.yaml
+
+trigger:
+  branch:
+    - drone
+    - main
+    - dev
+  event:
+    - push
+  paths:
+    exclude:
+      - apps/commune-page/**
+      - apps/commune-validator/**
+      - apps/communex-page/**
+      - apps/comrads-worker/**
+      - apps/sample-app/**
+      - apps/commune-governance/**
+      
