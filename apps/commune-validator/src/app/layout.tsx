@@ -9,7 +9,7 @@ import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
-import { WalletButton, Wallet } from "@commune-ts/wallet";
+import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { DelegatedModulesList } from "./components/delegated-modules-list";
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`bg-[#111713] bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
           <Wallet />
