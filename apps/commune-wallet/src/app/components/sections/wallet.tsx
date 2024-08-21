@@ -17,7 +17,7 @@ import {
   fromNano,
   smallAddress,
 } from "@commune-ts/subspace/utils";
-import { Loading } from "@commune-ts/ui/loading";
+import { TransactionStatus } from "@commune-ts/ui";
 
 import type { ColorType, MenuType } from "~/utils/types";
 import { IconButton } from "../icon-button";
@@ -391,7 +391,7 @@ function WalletActions(props: WalletProps["actions"]) {
                 <div className="w-full">
                   <p className="text-base">Value</p>
                   <input
-                    type="text"
+                    type="number"
                     disabled={transactionStatus.status === "PENDING"}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
@@ -419,20 +419,12 @@ function WalletActions(props: WalletProps["actions"]) {
                   Start Transaction
                 </button>
               </form>
-              {transactionStatus.status ? (
-                <p
-                  className={`items-center gap-1 pt-3 ${
-                    transactionStatus.status === "PENDING" && "text-yellow-400"
-                  } ${transactionStatus.status === "ERROR" && "text-red-400 "} ${
-                    transactionStatus.status === "SUCCESS" && "text-green-400"
-                  } ${
-                    transactionStatus.status === "STARTING" && "text-blue-400"
-                  } flex text-left text-base`}
-                >
-                  {transactionStatus.status === "PENDING" && <Loading />}
-                  {transactionStatus.message}
-                </p>
-              ) : null}
+              {transactionStatus.status && (
+                <TransactionStatus
+                  status={transactionStatus.status}
+                  message={transactionStatus.message}
+                />
+              )}
             </div>
           )}
         </>
