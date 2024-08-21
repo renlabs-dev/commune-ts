@@ -33,6 +33,7 @@ interface WalletProps {
     selectedAccount: InjectedAccountWithMeta;
   };
   actions: {
+    balance: bigint;
     selectedAccount: InjectedAccountWithMeta;
     addStake: (stake: Stake) => Promise<void>;
     removeStake: (stake: Stake) => Promise<void>;
@@ -390,14 +391,24 @@ function WalletActions(props: WalletProps["actions"]) {
                 )}
                 <div className="w-full">
                   <p className="text-base">Value</p>
-                  <input
-                    type="number"
-                    disabled={transactionStatus.status === "PENDING"}
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="The amount of COMAI to use in the transaction"
-                    className="w-full border border-white/20 bg-[#898989]/5 p-2"
-                  />
+                  <div className="flex w-full gap-1">
+                    <input
+                      type="number"
+                      disabled={transactionStatus.status === "PENDING"}
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="The amount of COMAI to use in the transaction"
+                      className="w-full border border-white/20 bg-[#898989]/5 p-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAmount(String(props.balance))}
+                      disabled={transactionStatus.status === "PENDING"}
+                      className="ml-2 whitespace-nowrap border border-blue-500 bg-blue-600/5 px-4 py-2 font-semibold text-blue-500 transition duration-200 hover:border-blue-400 hover:bg-blue-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
+                    >
+                      Max
+                    </button>
+                  </div>
                 </div>
                 {inputError.value && (
                   <p
@@ -406,18 +417,20 @@ function WalletActions(props: WalletProps["actions"]) {
                     {inputError.value}
                   </p>
                 )}
-                <button
-                  type="submit"
-                  disabled={
-                    transactionStatus.status === "PENDING" ||
-                    !amount ||
-                    !validator ||
-                    (activeMenu === "Transfer Stake" && !fromValidator)
-                  }
-                  className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
-                >
-                  Start Transaction
-                </button>
+                <div className="border-t border-white/20 pt-4">
+                  <button
+                    type="submit"
+                    disabled={
+                      transactionStatus.status === "PENDING" ||
+                      !amount ||
+                      !validator ||
+                      (activeMenu === "Transfer Stake" && !fromValidator)
+                    }
+                    className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
+                  >
+                    Start Transaction
+                  </button>
+                </div>
               </form>
               {transactionStatus.status && (
                 <TransactionStatus
