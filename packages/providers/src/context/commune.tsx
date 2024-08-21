@@ -252,8 +252,11 @@ export function CommuneProvider({
               callback?.({
                 finalized: true,
                 status: "SUCCESS",
-                message: `${transactionType} successful`,
+                message: `${transactionType} successful, reload in 2 seconds`,
               });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
             } else if (failed) {
               const [dispatchError] = failed.event.data as unknown as [
                 DispatchError,
