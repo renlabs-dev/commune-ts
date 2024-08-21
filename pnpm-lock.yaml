@@ -37,9 +37,15 @@ importers:
       "@commune-ts/providers":
         specifier: workspace:*
         version: link:../../packages/providers
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../../packages/types
       "@commune-ts/ui":
         specifier: workspace:*
         version: link:../../packages/ui
+      "@commune-ts/utils":
+        specifier: workspace:*
+        version: link:../../packages/utils
       "@commune-ts/wallet":
         specifier: workspace:*
         version: link:../../packages/wallet
@@ -261,6 +267,9 @@ importers:
       "@commune-ts/ui":
         specifier: workspace:*
         version: link:../../packages/ui
+      "@commune-ts/utils":
+        specifier: workspace:*
+        version: link:../../packages/utils
       "@commune-ts/wallet":
         specifier: workspace:*
         version: link:../../packages/wallet
@@ -483,6 +492,9 @@ importers:
 
   apps/comrads-worker:
     dependencies:
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../../packages/types
       "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
@@ -642,9 +654,15 @@ importers:
       "@commune-ts/subspace":
         specifier: workspace:*
         version: link:../subspace
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../types
       "@commune-ts/ui":
         specifier: workspace:*
         version: link:../ui
+      "@commune-ts/utils":
+        specifier: workspace:*
+        version: link:../utils
       "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
@@ -715,6 +733,12 @@ importers:
 
   packages/subspace:
     dependencies:
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../types
+      "@commune-ts/utils":
+        specifier: workspace:*
+        version: link:../utils
       "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
@@ -755,6 +779,40 @@ importers:
       tsx:
         specifier: ^4.15.6
         version: 4.17.0
+
+  packages/types:
+    dependencies:
+      "@polkadot/api":
+        specifier: ^11.1.1
+        version: 11.3.1
+      "@polkadot/extension-inject":
+        specifier: ^0.47.5
+        version: 0.47.6(@polkadot/api@11.3.1)(@polkadot/util@12.6.2)
+      "@polkadot/types":
+        specifier: ^11.1.1
+        version: 11.3.1
+      "@polkadot/util-crypto":
+        specifier: ^12.6.2
+        version: 12.6.2(@polkadot/util@12.6.2)
+      rustie:
+        specifier: ^0.2.0
+        version: 0.2.0
+      tsafe:
+        specifier: ^1.6.6
+        version: 1.7.2
+      types:
+        specifier: link:@polkadot/types/types
+        version: link:@polkadot/types/types
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      "@commune-ts/eslint-config":
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      "@commune-ts/tsconfig":
+        specifier: workspace:*
+        version: link:../../tooling/typescript
 
   packages/ui:
     dependencies:
@@ -808,14 +866,39 @@ importers:
         specifier: ^5.4.5
         version: 5.5.4
 
+  packages/utils:
+    dependencies:
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../types
+      multiformats:
+        specifier: ^13.1.0
+        version: 13.2.2
+      tsafe:
+        specifier: ^1.6.6
+        version: 1.7.2
+    devDependencies:
+      "@commune-ts/eslint-config":
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      "@commune-ts/tsconfig":
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+
   packages/wallet:
     dependencies:
       "@commune-ts/providers":
         specifier: workspace:*
         version: link:../providers
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../types
       "@commune-ts/ui":
         specifier: workspace:*
         version: link:../ui
+      "@commune-ts/utils":
+        specifier: workspace:*
+        version: link:../utils
       next:
         specifier: ^14.2.3
         version: 14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -12436,7 +12519,7 @@ snapshots:
 
   debug@4.1.1:
     dependencies:
-      ms: 2.1.1
+      ms: 2.1.3
 
   debug@4.3.6(supports-color@5.5.0):
     dependencies:

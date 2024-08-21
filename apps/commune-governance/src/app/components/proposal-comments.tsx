@@ -7,10 +7,10 @@ import {
   UserIcon,
 } from "@heroicons/react/20/solid";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
+import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
-import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { api } from "~/trpc/react";
 import { ReportComment } from "./report-comment";

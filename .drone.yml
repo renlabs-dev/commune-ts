@@ -230,4 +230,3 @@ trigger:
       - apps/comrads-worker/**
       - apps/sample-app/**
       - apps/commune-governance/**
-      

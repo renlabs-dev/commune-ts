@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
-import type { ProposalState } from "@commune-ts/providers/types";
+import type { ProposalState } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import type { Vote } from "./vote-label";
 import {

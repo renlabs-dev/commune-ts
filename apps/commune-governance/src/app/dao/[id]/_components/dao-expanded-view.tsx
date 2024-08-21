@@ -2,9 +2,9 @@
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-import type { DaoStatus } from "@commune-ts/providers/types";
+import type { DaoStatus } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";

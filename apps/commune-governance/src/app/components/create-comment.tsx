@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
-import { formatToken } from "@commune-ts/providers/utils";
+import { formatToken } from "@commune-ts/utils";
 
 import { api } from "~/trpc/react";
 

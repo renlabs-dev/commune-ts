@@ -7,15 +7,18 @@ import {
   isSS58,
   LastBlock,
   modulePropResolvers,
-  newSubstrateModule,
-  Nullish,
   OptionalProperties,
   SS58Address,
-  StorageEntry,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
-} from "../types";
-import { assertOrThrow, handleDaos, handleProposals } from "../utils";
+} from "@commune-ts/types";
+import {
+  assertOrThrow,
+  handleDaos,
+  handleProposals,
+  newSubstrateModule,
+  StorageEntry,
+} from "@commune-ts/utils";
 
 export { ApiPromise };
 

@@ -4,10 +4,7 @@ import { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { match } from "rustie";
 
-import type {
-  ProposalStatus,
-  TransactionResult,
-} from "@commune-ts/providers/types";
+import type { ProposalStatus, TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { WalletButton } from "@commune-ts/wallet";
 
