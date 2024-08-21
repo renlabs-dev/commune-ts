@@ -11,14 +11,14 @@ import {
   SS58Address,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
-} from "../types";
+} from "@commune-ts/types";
 import {
   assertOrThrow,
   handleDaos,
   handleProposals,
   newSubstrateModule,
   StorageEntry,
-} from "../utils";
+} from "@commune-ts/utils";
 
 export { ApiPromise };
 
@@ -236,6 +236,28 @@ export async function queryStakeOut(api: Api) {
     perAddrPerNet,
   };
 }
+
+export async function queryUserTotalStaked(
+  api: Api,
+  address: SS58Address | string,
+) {
+  const stakeEntries =
+    await api.query.subspaceModule?.stakeTo?.entries(address);
+
+  const stakes = stakeEntries?.map(([key, value]) => {
+    const [, stakeToAddress] = key.args;
+    const stake = value.toString();
+
+    return {
+      address: stakeToAddress!.toString(),
+      stake,
+    };
+  });
+
+  // Filter out any entries with zero stake
+  return stakes?.filter((stake) => stake.stake !== "0");
+}
+
 // === modules ===
 
 /**

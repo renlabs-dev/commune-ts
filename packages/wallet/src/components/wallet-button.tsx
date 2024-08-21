@@ -14,8 +14,13 @@ interface TWalletButtonProps {
 
 export function WalletButton(props: TWalletButtonProps) {
   const { customHandler, className } = props;
-  const { selectedAccount, handleWalletModal, accounts, isInitialized } =
-    useCommune();
+  const {
+    selectedAccount,
+    handleWalletModal,
+    accounts,
+    isInitialized,
+    handleConnect,
+  } = useCommune();
 
   if (!isInitialized) {
     return (
@@ -32,11 +37,16 @@ export function WalletButton(props: TWalletButtonProps) {
     );
   }
 
+  const handleConnectWallet = async () => {
+    await handleConnect();
+    handleWalletModal();
+  };
+
   return (
     <button
       className={`tw-relative tw-w-auto tw-z-50 tw-flex tw-items-center tw-justify-center tw-gap-3 tw-border tw-border-white/20 tw-px-4 tw-py-2 tw-text-gray-400 tw-transition tw-duration-200 tw-backdrop-blur-md hover:tw-border-green-500 hover:tw-bg-green-500/10 hover:tw-text-green-500
         ${selectedAccount && "tw-border-green-500 tw-text-green-500"} ${className}`}
-      onClick={customHandler || handleWalletModal}
+      onClick={customHandler ? customHandler : handleConnectWallet}
       disabled={!accounts}
       type="button"
     >

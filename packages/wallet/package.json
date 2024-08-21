@@ -17,7 +17,10 @@
     "tailwind:watch": "tailwindcss -i ./src/style.css -o ./src/output.css --watch"
   },
   "peerDependencies": {
-    "react": "^18.3.1"
+    "react": "^18.3.1",
+    "next": "^14.2.3",
+    "@commune-ts/ui": "workspace:*",
+    "@commune-ts/providers": "workspace:*"
   },
   "dependencies": {
     "@commune-ts/types": "workspace:*",
