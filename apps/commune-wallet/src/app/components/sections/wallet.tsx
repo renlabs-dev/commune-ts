@@ -33,7 +33,7 @@ interface WalletProps {
     selectedAccount: InjectedAccountWithMeta;
   };
   actions: {
-    balance: bigint;
+    balance: bigint | undefined;
     selectedAccount: InjectedAccountWithMeta;
     addStake: (stake: Stake) => Promise<void>;
     removeStake: (stake: Stake) => Promise<void>;
@@ -41,7 +41,7 @@ interface WalletProps {
     transferStake: (transfer: TransferStake) => Promise<void>;
   };
   balance: {
-    balance: bigint;
+    balance: bigint | undefined;
     userStakeWeight: bigint | null;
     selectedAccount: InjectedAccountWithMeta;
   };
@@ -98,7 +98,7 @@ function WalletHeader(props: WalletProps["header"]) {
 function WalletBalance(props: WalletProps["balance"]) {
   const [freeBalancePercentage, setFreeBalancePercentage] = useState(0);
   useEffect(() => {
-    const freeBalance = fromNano(props.balance || 0);
+    const freeBalance = fromNano(props.balance ?? 0);
     const stakedBalance = fromNano(props.userStakeWeight ?? 0);
     const availablePercentage =
       (freeBalance * 100) / (stakedBalance + freeBalance);
@@ -109,24 +109,35 @@ function WalletBalance(props: WalletProps["balance"]) {
     }
     setFreeBalancePercentage(availablePercentage);
   }, [props.balance, props.userStakeWeight]);
+
   return (
     <div className="flex w-full animate-fade-up flex-col gap-4 border-white/20 py-4 text-white animate-delay-200">
       <div className="border border-white/20 p-4">
         <div className="flex w-full justify-between gap-6">
           <div>
-            <p className="text-xl text-green-500">
-              {formatToken(props.balance)}
-              <span className="ml-1 text-sm font-light text-gray-400">
-                COMAI
-              </span>
-            </p>
+            {props.balance === undefined ? (
+              <p className="animate-pulse text-xl text-green-700">
+                ---
+                <span className="ml-1 text-sm font-light text-gray-400">
+                  COMAI
+                </span>
+              </p>
+            ) : (
+              <p className="text-xl text-green-500">
+                {formatToken(props.balance)}
+                <span className="ml-1 text-sm font-light text-gray-400">
+                  COMAI
+                </span>
+              </p>
+            )}
+
             <p className="text-xs text-gray-500">Free Balance</p>
           </div>
           <div className="text-right">
             <p className="text-xl text-red-500">
               {props.userStakeWeight !== null
                 ? formatToken(props.userStakeWeight)
-                : "Loading..."}
+                : "---"}
               <span className="ml-1 text-sm font-light text-gray-400">
                 COMAI
               </span>
@@ -280,6 +291,12 @@ function WalletActions(props: WalletProps["actions"]) {
     setCurrentView("wallet");
   };
 
+  const handleMaxClick = () => {
+    if (props.balance !== undefined) {
+      setAmount(fromNano(props.balance).toFixed(2));
+    }
+  };
+
   return (
     <>
       <div className="grid w-full animate-fade-up grid-cols-1 gap-4 pt-4 animate-delay-300 md:grid-cols-4">
@@ -402,8 +419,10 @@ function WalletActions(props: WalletProps["actions"]) {
                     />
                     <button
                       type="button"
-                      onClick={() => setAmount(String(props.balance))}
-                      disabled={transactionStatus.status === "PENDING"}
+                      onClick={handleMaxClick}
+                      disabled={
+                        transactionStatus.status === "PENDING" || !props.balance
+                      }
                       className="ml-2 whitespace-nowrap border border-blue-500 bg-blue-600/5 px-4 py-2 font-semibold text-blue-500 transition duration-200 hover:border-blue-400 hover:bg-blue-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
                     >
                       Max
@@ -417,7 +436,7 @@ function WalletActions(props: WalletProps["actions"]) {
                     {inputError.value}
                   </p>
                 )}
-                <div className="border-t border-white/20 pt-4">
+                <div className="mt-4 border-t border-white/20 pt-4">
                   <button
                     type="submit"
                     disabled={

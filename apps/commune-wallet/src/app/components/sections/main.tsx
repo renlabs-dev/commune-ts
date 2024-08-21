@@ -61,17 +61,17 @@ export function MainSection() {
               onSwitchWallet={handleSwitchWallet}
             />
             <Wallet.Balance
-              balance={balance ? balance : 0n}
+              balance={balance}
               userStakeWeight={userStakeWeight}
               selectedAccount={selectedAccount}
             />
             <Wallet.Actions
+              balance={balance}
               addStake={addStake}
               removeStake={removeStake}
               transfer={transfer}
               transferStake={transferStake}
               selectedAccount={selectedAccount}
-              balance={balance ? balance : 0n}
             />
           </Wallet.Root>
         </>
