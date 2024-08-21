@@ -29,14 +29,9 @@ export function ValidatorsList(props: ValidatorsListProps) {
 
   const validatorsList = [
     {
-      name: "vali::comsci",
-      description: "Validator of Comsci platform. ",
-      address: "5EFBeJXnFcSVUDiKdRjo35MqX6hBpuyMnnGV9UaYuAhqRV4Z",
-    },
-    {
-      name: "vali::smart",
-      description: "Validator of Comchat platform.",
-      address: "5D4o6H19z6ctWjS9HzxBpMxqhuzCCCsgXk49AqXGPUqZEpRt",
+      name: "communex",
+      description: "Validator of Communex platform.",
+      address: "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp",
     },
     {
       name: "vali::comstats",
@@ -44,24 +39,14 @@ export function ValidatorsList(props: ValidatorsListProps) {
       address: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX",
     },
     {
-      name: "vali::Synthia",
-      description: "Validator by Synthia subnet founders.",
-      address: "5Cih7zYysiFBNv8XcSKxfivegS2o8gZLthoZZTVPzzKpfUJB",
+      name: "vali::SolBridge",
+      description: "Validator of SolBridge platform.",
+      address: "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
     },
     {
-      name: "vali::Openscope",
-      description: "Validator by Openscope subnet founders.",
-      address: "5GTLWXb5w7436M65D7HEzCLANXC18fqeM1AGkinyuMsPgHUs",
-    },
-    {
-      name: "vali::Eden",
-      description: "Validator by Eden subnet founders.",
-      address: "5FjyW3vcB8MkDh19JV88dVLGP6wQEftJC6nXUEobQmdZc6PY",
-    },
-    {
-      name: "vali::Mosaic",
-      description: "Validator by Mosaic subnet founders.",
-      address: "5DofQSnXnWjF1VUzYVzTQV658GeBExrVFEQ5B4k8Tr1LcBzb",
+      name: "market-compass::vali",
+      description: "Validator of Market Compass platform.",
+      address: "5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw",
     },
   ];
 
