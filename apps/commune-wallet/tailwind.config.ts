@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
 import baseConfig from "@commune-ts/tailwind-config/web";
-import typography from "@tailwindcss/typography";
 
 export default {
   // We need to append the path to the UI package to the content array so that

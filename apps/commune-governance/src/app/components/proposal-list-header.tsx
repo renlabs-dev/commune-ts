@@ -1,8 +1,8 @@
 import { LinkIcon } from "@heroicons/react/20/solid";
 
-import type { SS58Address } from "@commune-ts/providers/types";
+import type { SS58Address } from "@commune-ts/types";
 import { toast } from "@commune-ts/providers/use-toast";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { CreateModal } from "./modal";
 

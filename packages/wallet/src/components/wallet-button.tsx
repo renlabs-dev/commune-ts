@@ -5,7 +5,7 @@ import "../output.css";
 import Image from "next/image";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 interface TWalletButtonProps {
   customHandler?: () => void;

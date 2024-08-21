@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
 
-import type { TransactionResult } from "@commune-ts/providers/types";
+import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { cairo } from "@commune-ts/ui/fonts";

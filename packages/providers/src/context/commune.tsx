@@ -5,10 +5,6 @@ import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import type { DispatchError } from "@polkadot/types/interfaces";
 import { createContext, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import {
-  type InjectedAccountWithMeta,
-  type InjectedExtension,
-} from "@polkadot/extension-inject/types";
 import { toast } from "react-toastify";
 
 import type {
@@ -18,6 +14,8 @@ import type {
   BaseDao,
   BaseProposal,
   DaoState,
+  InjectedAccountWithMeta,
+  InjectedExtension,
   LastBlock,
   ProposalState,
   SS58Address,

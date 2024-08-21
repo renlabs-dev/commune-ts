@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
+import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 
 import type { Vote } from "./components/vote-label";
@@ -113,9 +113,9 @@ export default function HomePage(): JSX.Element {
           />
           <div className="w-full space-y-10 py-10">
             {isLoading ||
-              !isInitialized ||
-              !proposalsWithMeta ||
-              !daosWithMeta ? (
+            !isInitialized ||
+            !proposalsWithMeta ||
+            !daosWithMeta ? (
               <div className="flex flex-col gap-10">
                 <div className="animate-fade-up animate-delay-200">
                   <CardSkeleton />

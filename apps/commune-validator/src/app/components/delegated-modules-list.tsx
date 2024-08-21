@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronUpIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { useDelegateStore } from "~/stores/delegateStore";
 import { api } from "~/trpc/react";

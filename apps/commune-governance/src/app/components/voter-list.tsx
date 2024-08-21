@@ -1,7 +1,7 @@
 import React from "react";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
-import { formatToken, smallAddress } from "@commune-ts/providers/utils";
+import type { ProposalStatus, SS58Address } from "@commune-ts/types";
+import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { SectionHeaderText } from "./section-header-text";
 

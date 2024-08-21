@@ -22,6 +22,10 @@
     "@commune-ts/ui": "workspace:*",
     "@commune-ts/providers": "workspace:*"
   },
+  "dependencies": {
+    "@commune-ts/types": "workspace:*",
+    "@commune-ts/utils": "workspace:*"
+  },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/tailwind-config": "workspace:*",
