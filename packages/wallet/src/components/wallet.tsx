@@ -470,8 +470,7 @@ export function Wallet() {
                       transactionStatus.status === "PENDING" ||
                       !validator ||
                       !amount ||
-                      inputError.validator ||
-                      inputError.value
+                      inputError.value === null
                     }
                     type="submit"
                   >
