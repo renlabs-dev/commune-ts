@@ -463,14 +463,6 @@ export function CommuneProvider({
     lastBlock,
     proposalQuery,
   );
-  for (const entry of customProposalMetadataQueryMap.entries()) {
-    const [id, query] = entry;
-    const { data } = query;
-    if (data == null) {
-      // eslint-disable-next-line no-console
-      console.info(`Missing custom proposal metadata for proposal ${id}`);
-    }
-  }
 
   const proposalsWithMeta = proposalQuery?.map((proposal) => {
     const id = proposal.id;
@@ -493,14 +485,6 @@ export function CommuneProvider({
     lastBlock,
     daosQuery,
   );
-  for (const entry of customDaoMetadataQueryMap.entries()) {
-    const [id, query] = entry;
-    const { data } = query;
-    if (data == null) {
-      // eslint-disable-next-line no-console
-      console.info(`Missing custom dao metadata for dao ${id}`);
-    }
-  }
 
   const daosWithMeta = daosQuery?.map((dao) => {
     const id = dao.id;
