@@ -12,10 +12,10 @@ import type {
 } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { isSS58 } from "@commune-ts/types";
-import { CopyButton, Loading } from "@commune-ts/ui";
+import { CopyButton, Loading, NoWalletExtensionDisplay } from "@commune-ts/ui";
 import { formatToken, fromNano, smallAddress } from "@commune-ts/utils";
 
-import { NoWalletExtensionDisplay, WalletButton } from "./";
+import { WalletButton } from "./";
 
 // type MenuType = "send" | "stake" | "unstake" | "transfer" | null;
 type MenuType = "transfer" | "stake" | "unstake" | null;
