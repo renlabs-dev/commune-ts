@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`relative bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`relative bg-[#111713] bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
           <Header

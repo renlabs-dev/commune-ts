@@ -28,6 +28,11 @@ export default {
           },
         },
       },
+      boxShadow: {
+        "custom-green": "0px 0px 12px 0 rgba(34, 197, 94, 0.90)",
+        "custom-white": "0px 0px 12px 0 rgba(255, 255, 255, 0.90)",
+        "custom-gray": "0px 0px 12px 0 rgba(156, 163, 175, 0.90)",
+      },
     },
   },
   plugins: [animate, typography],
