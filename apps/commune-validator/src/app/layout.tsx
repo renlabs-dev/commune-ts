@@ -39,14 +39,16 @@ export default function RootLayout({
               <p className="text-gray-400">
                 To assign weights to modules, you need to stake on our
                 validator. Click{" "}
-                <Link href="" className="text-green-500 hover:underline">
+                <Link
+                  href="/tutorial"
+                  className="text-green-500 hover:underline"
+                >
                   here
                 </Link>{" "}
                 to get started.
               </p>
             </div>
           </div>
-          <Wallet />
           <Header
             logoSrc="/logo.svg"
             navigationLinks={[
