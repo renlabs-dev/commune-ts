@@ -735,6 +735,10 @@ importers:
         version: 5.5.4
 
   packages/public:
+    dependencies:
+      tsx:
+        specifier: ^4.15.6
+        version: 4.17.0
     devDependencies:
       "@commune-ts/eslint-config":
         specifier: workspace:*
@@ -745,9 +749,6 @@ importers:
       "@types/node":
         specifier: ^20.11.24
         version: 20.16.1
-      tsx:
-        specifier: ^4.15.6
-        version: 4.17.0
 
   packages/subspace:
     dependencies:

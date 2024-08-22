@@ -17,11 +17,12 @@
     "target": "ESNext",
     "esModuleInterop": true
   },
-  "dependencies": {},
+  "dependencies": {
+    "tsx": "^4.15.6"
+  },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
-    "@types/node": "^20.11.24",
-    "tsx": "^4.15.6"
+    "@types/node": "^20.11.24"
   }
 }
