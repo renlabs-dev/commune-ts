@@ -30,7 +30,6 @@ export default function RootLayout({
             logoSrc="/logo.svg"
             navigationLinks={[
               { name: "Governance", href: links.governance, external: true },
-              { name: "Docs", href: links.docs, external: false },
               { name: "Blog", href: links.blog, external: true },
               { name: "Join Community", href: links.discord, external: true },
             ]}
