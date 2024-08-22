@@ -19,6 +19,7 @@ export function MainSection() {
     removeStake,
     transfer,
     transferStake,
+    handleGetWallets,
   } = useCommune();
 
   const [showWallets, setShowWallets] = useState(false);
@@ -43,6 +44,7 @@ export function MainSection() {
   }, [selectedAccount, stakeOut]);
 
   const handleSwitchWallet = () => {
+    handleGetWallets();
     setShowWallets(true);
   };
 
@@ -59,11 +61,12 @@ export function MainSection() {
               onSwitchWallet={handleSwitchWallet}
             />
             <Wallet.Balance
-              balance={balance ? balance : 0n}
+              balance={balance}
               userStakeWeight={userStakeWeight}
               selectedAccount={selectedAccount}
             />
             <Wallet.Actions
+              balance={balance}
               addStake={addStake}
               removeStake={removeStake}
               transfer={transfer}

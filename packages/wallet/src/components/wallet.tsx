@@ -12,10 +12,14 @@ import type {
 } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { isSS58 } from "@commune-ts/types";
-import { CopyButton, Loading } from "@commune-ts/ui";
+import {
+  CopyButton,
+  NoWalletExtensionDisplay,
+  TransactionStatus,
+} from "@commune-ts/ui";
 import { formatToken, fromNano, smallAddress } from "@commune-ts/utils";
 
-import { NoWalletExtensionDisplay, WalletButton } from "./";
+import { WalletButton } from "./";
 
 // type MenuType = "send" | "stake" | "unstake" | "transfer" | null;
 type MenuType = "transfer" | "stake" | "unstake" | null;
@@ -477,22 +481,12 @@ export function Wallet() {
                     Submit
                   </button>
                 </form>
-                {transactionStatus.status ? (
-                  <p
-                    className={`tw-items-center tw-gap-3 tw-pt-3 ${
-                      transactionStatus.status === "PENDING" &&
-                      "tw-text-yellow-400"
-                    } ${
-                      transactionStatus.status === "ERROR" && "tw-text-red-400 "
-                    } ${
-                      transactionStatus.status === "SUCCESS" &&
-                      "tw-text-green-400"
-                    } tw-flex tw-text-left tw-text-base`}
-                  >
-                    {transactionStatus.status === "PENDING" && <Loading />}
-                    {transactionStatus.message}
-                  </p>
-                ) : null}
+                {transactionStatus.status && (
+                  <TransactionStatus
+                    status={transactionStatus.status}
+                    message={transactionStatus.message}
+                  />
+                )}
               </div>
             </>
           )}

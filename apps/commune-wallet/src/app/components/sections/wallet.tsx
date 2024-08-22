@@ -17,7 +17,7 @@ import {
   fromNano,
   smallAddress,
 } from "@commune-ts/subspace/utils";
-import { Loading } from "@commune-ts/ui/loading";
+import { TransactionStatus } from "@commune-ts/ui";
 
 import type { ColorType, MenuType } from "~/utils/types";
 import { IconButton } from "../icon-button";
@@ -33,6 +33,7 @@ interface WalletProps {
     selectedAccount: InjectedAccountWithMeta;
   };
   actions: {
+    balance: bigint | undefined;
     selectedAccount: InjectedAccountWithMeta;
     addStake: (stake: Stake) => Promise<void>;
     removeStake: (stake: Stake) => Promise<void>;
@@ -40,7 +41,7 @@ interface WalletProps {
     transferStake: (transfer: TransferStake) => Promise<void>;
   };
   balance: {
-    balance: bigint;
+    balance: bigint | undefined;
     userStakeWeight: bigint | null;
     selectedAccount: InjectedAccountWithMeta;
   };
@@ -97,7 +98,7 @@ function WalletHeader(props: WalletProps["header"]) {
 function WalletBalance(props: WalletProps["balance"]) {
   const [freeBalancePercentage, setFreeBalancePercentage] = useState(0);
   useEffect(() => {
-    const freeBalance = fromNano(props.balance || 0);
+    const freeBalance = fromNano(props.balance ?? 0);
     const stakedBalance = fromNano(props.userStakeWeight ?? 0);
     const availablePercentage =
       (freeBalance * 100) / (stakedBalance + freeBalance);
@@ -108,24 +109,35 @@ function WalletBalance(props: WalletProps["balance"]) {
     }
     setFreeBalancePercentage(availablePercentage);
   }, [props.balance, props.userStakeWeight]);
+
   return (
     <div className="flex w-full animate-fade-up flex-col gap-4 border-white/20 py-4 text-white animate-delay-200">
       <div className="border border-white/20 p-4">
         <div className="flex w-full justify-between gap-6">
           <div>
-            <p className="text-xl text-green-500">
-              {formatToken(props.balance)}
-              <span className="ml-1 text-sm font-light text-gray-400">
-                COMAI
-              </span>
-            </p>
+            {props.balance === undefined ? (
+              <p className="animate-pulse text-xl text-green-700">
+                ---
+                <span className="ml-1 text-sm font-light text-gray-400">
+                  COMAI
+                </span>
+              </p>
+            ) : (
+              <p className="text-xl text-green-500">
+                {formatToken(props.balance)}
+                <span className="ml-1 text-sm font-light text-gray-400">
+                  COMAI
+                </span>
+              </p>
+            )}
+
             <p className="text-xs text-gray-500">Free Balance</p>
           </div>
           <div className="text-right">
             <p className="text-xl text-red-500">
               {props.userStakeWeight !== null
                 ? formatToken(props.userStakeWeight)
-                : "Loading..."}
+                : "---"}
               <span className="ml-1 text-sm font-light text-gray-400">
                 COMAI
               </span>
@@ -279,6 +291,12 @@ function WalletActions(props: WalletProps["actions"]) {
     setCurrentView("wallet");
   };
 
+  const handleMaxClick = () => {
+    if (props.balance !== undefined) {
+      setAmount(fromNano(props.balance).toFixed(2));
+    }
+  };
+
   return (
     <>
       <div className="grid w-full animate-fade-up grid-cols-1 gap-4 pt-4 animate-delay-300 md:grid-cols-4">
@@ -390,14 +408,26 @@ function WalletActions(props: WalletProps["actions"]) {
                 )}
                 <div className="w-full">
                   <p className="text-base">Value</p>
-                  <input
-                    type="text"
-                    disabled={transactionStatus.status === "PENDING"}
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="The amount of COMAI to use in the transaction"
-                    className="w-full border border-white/20 bg-[#898989]/5 p-2"
-                  />
+                  <div className="flex w-full gap-1">
+                    <input
+                      type="number"
+                      disabled={transactionStatus.status === "PENDING"}
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="The amount of COMAI to use in the transaction"
+                      className="w-full border border-white/20 bg-[#898989]/5 p-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleMaxClick}
+                      disabled={
+                        transactionStatus.status === "PENDING" || !props.balance
+                      }
+                      className="ml-2 whitespace-nowrap border border-blue-500 bg-blue-600/5 px-4 py-2 font-semibold text-blue-500 transition duration-200 hover:border-blue-400 hover:bg-blue-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
+                    >
+                      Max
+                    </button>
+                  </div>
                 </div>
                 {inputError.value && (
                   <p
@@ -406,33 +436,27 @@ function WalletActions(props: WalletProps["actions"]) {
                     {inputError.value}
                   </p>
                 )}
-                <button
-                  type="submit"
-                  disabled={
-                    transactionStatus.status === "PENDING" ||
-                    !amount ||
-                    !validator ||
-                    (activeMenu === "Transfer Stake" && !fromValidator)
-                  }
-                  className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
-                >
-                  Start Transaction
-                </button>
+                <div className="mt-4 border-t border-white/20 pt-4">
+                  <button
+                    type="submit"
+                    disabled={
+                      transactionStatus.status === "PENDING" ||
+                      !amount ||
+                      !validator ||
+                      (activeMenu === "Transfer Stake" && !fromValidator)
+                    }
+                    className="flex w-full justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 disabled:border-gray-500 disabled:bg-[#898989]/5 disabled:text-gray-500"
+                  >
+                    Start Transaction
+                  </button>
+                </div>
               </form>
-              {transactionStatus.status ? (
-                <p
-                  className={`items-center gap-1 pt-3 ${
-                    transactionStatus.status === "PENDING" && "text-yellow-400"
-                  } ${transactionStatus.status === "ERROR" && "text-red-400 "} ${
-                    transactionStatus.status === "SUCCESS" && "text-green-400"
-                  } ${
-                    transactionStatus.status === "STARTING" && "text-blue-400"
-                  } flex text-left text-base`}
-                >
-                  {transactionStatus.status === "PENDING" && <Loading />}
-                  {transactionStatus.message}
-                </p>
-              ) : null}
+              {transactionStatus.status && (
+                <TransactionStatus
+                  status={transactionStatus.status}
+                  message={transactionStatus.message}
+                />
+              )}
             </div>
           )}
         </>

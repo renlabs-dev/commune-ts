@@ -252,8 +252,11 @@ export function CommuneProvider({
               callback?.({
                 finalized: true,
                 status: "SUCCESS",
-                message: `${transactionType} successful`,
+                message: `${transactionType} successful, reload in 2 seconds`,
               });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
             } else if (failed) {
               const [dispatchError] = failed.event.data as unknown as [
                 DispatchError,
@@ -463,14 +466,6 @@ export function CommuneProvider({
     lastBlock,
     proposalQuery,
   );
-  for (const entry of customProposalMetadataQueryMap.entries()) {
-    const [id, query] = entry;
-    const { data } = query;
-    if (data == null) {
-      // eslint-disable-next-line no-console
-      console.info(`Missing custom proposal metadata for proposal ${id}`);
-    }
-  }
 
   const proposalsWithMeta = proposalQuery?.map((proposal) => {
     const id = proposal.id;
@@ -493,14 +488,6 @@ export function CommuneProvider({
     lastBlock,
     daosQuery,
   );
-  for (const entry of customDaoMetadataQueryMap.entries()) {
-    const [id, query] = entry;
-    const { data } = query;
-    if (data == null) {
-      // eslint-disable-next-line no-console
-      console.info(`Missing custom dao metadata for dao ${id}`);
-    }
-  }
 
   const daosWithMeta = daosQuery?.map((dao) => {
     const id = dao.id;

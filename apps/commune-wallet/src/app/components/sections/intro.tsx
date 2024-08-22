@@ -6,10 +6,9 @@ import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 
 import type { InjectedAccountWithMeta } from "@commune-ts/ui";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { Loading } from "@commune-ts/ui";
+import { Loading, NoWalletExtensionDisplay } from "@commune-ts/ui";
 import { oxanium } from "@commune-ts/ui/fonts";
 
-import { NoWalletExtensionDisplay } from "../no-wallet-extension-display";
 import { Wallet } from "./wallet";
 
 interface IntroSectionProps {
@@ -38,6 +37,7 @@ export function IntroSection(props: IntroSectionProps) {
   };
 
   const handleSelectWallet = (account: InjectedAccountWithMeta) => {
+    localStorage.setItem("favoriteWalletAddress", account.address);
     setSelectedAccount(account);
     setIsConnected(true);
     props.setShowWallets(false);
