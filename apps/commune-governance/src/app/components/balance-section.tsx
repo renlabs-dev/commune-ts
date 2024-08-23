@@ -100,7 +100,8 @@ export function BalanceSection({
           <Image
             alt="Wallet Icon"
             height={40}
-            src="/wallet-icon.svg"
+            // src="/wallet-icon.svg"
+            src={WalletIcon as string}
             width={40}
           />
         </div>
