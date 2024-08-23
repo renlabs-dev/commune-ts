@@ -912,6 +912,9 @@ importers:
       "@commune-ts/providers":
         specifier: workspace:*
         version: link:../providers
+      "@commune-ts/public":
+        specifier: workspace:*
+        version: link:../public
       "@commune-ts/types":
         specifier: workspace:*
         version: link:../types
