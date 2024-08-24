@@ -4,7 +4,11 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { getExpirationTime, smallAddress } from "@commune-ts/utils";
+import {
+  getExpirationTime,
+  removeEmojis,
+  smallAddress,
+} from "@commune-ts/utils";
 
 import type { Vote } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";
@@ -169,7 +173,9 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
             text={content.title ?? "No Custom Metadata Title"}
           />
           <div className="h-full lg:overflow-auto">
-            <MarkdownView source={(content.body as string | undefined) ?? ""} />
+            <MarkdownView
+              source={removeEmojis((content.body as string) ?? "")}
+            />
           </div>
         </div>
         <div className="w-full">

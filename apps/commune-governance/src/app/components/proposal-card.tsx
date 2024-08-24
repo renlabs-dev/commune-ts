@@ -6,7 +6,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
 import type { ProposalState } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/utils";
+import { removeEmojis, smallAddress } from "@commune-ts/utils";
 
 import type { Vote } from "./vote-label";
 import {
@@ -108,7 +108,10 @@ export function ProposalCard(props: ProposalCardProps): JSX.Element {
           <Card.Body className="px-0 py-0">
             <div className="relative bg-black/[50%] px-6 pt-6 backdrop-blur-md">
               <div className="max-h-[250px] min-h-[100px] overflow-hidden">
-                <MarkdownView className="markdown-content" source={body} />
+                <MarkdownView
+                  className="markdown-content"
+                  source={removeEmojis(body)}
+                />
               </div>
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/90 to-transparent"></div>
             </div>
