@@ -177,15 +177,12 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/api/health/details", (req, res) => {
-  res
-    .status(200)
-    .send({
-      status: "ok",
-      lastBlock: Number(stakeOutData.atBlock),
-      atTime: stakeOutData.atTime,
-      deltaSeconds:
-        (new Date().getTime() - stakeOutData.atTime.getTime()) / 1000,
-    });
+  res.status(200).send({
+    status: "ok",
+    lastBlock: Number(stakeOutData.atBlock),
+    atTime: stakeOutData.atTime,
+    deltaSeconds: (new Date().getTime() - stakeOutData.atTime.getTime()) / 1000,
+  });
 });
 
 const port = process.env.PORT || 3000;

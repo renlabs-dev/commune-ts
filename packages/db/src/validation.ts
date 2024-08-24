@@ -7,7 +7,7 @@ import {
   proposalCommentSchema,
   ReportReason,
   VoteType,
-} from "./schema";
+} from "./schema.js";
 
 export const PROPOSAL_COMMENT_INSERT_SCHEMA = createInsertSchema(
   proposalCommentSchema,
