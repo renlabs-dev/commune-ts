@@ -7,6 +7,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { toast } from "react-toastify";
 
+import { GovernanceConfiguration } from "@commune-ts/subspace/queries";
+
 import type {
   AddCustomProposal,
   AddDaoApplication,
@@ -34,6 +36,7 @@ import {
   useCustomMetadata,
   useDaos,
   useDaoTreasury,
+  useGlobalGovernanceConfig,
   useLastBlock,
   useNotDelegatingVoting,
   useProposals,
@@ -98,6 +101,9 @@ interface CommuneContextType {
 
   rewardAllocation: bigint | null | undefined;
   isRewardAllocationLoading: boolean;
+
+  globalGovernanceConfig: GovernanceConfiguration | undefined;
+  isGlobalGovernanceConfigLoading: boolean;
 
   stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
@@ -458,6 +464,12 @@ export function CommuneProvider({
   const { data: rewardAllocation, isLoading: isRewardAllocationLoading } =
     useRewardAllocation(lastBlock?.apiAtBlock);
 
+  // Reward Allocation
+  const {
+    data: globalGovernanceConfig,
+    isLoading: isGlobalGovernanceConfigLoading,
+  } = useGlobalGovernanceConfig(lastBlock?.apiAtBlock);
+
   // Stake Out
   const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
     lastBlock?.apiAtBlock,
@@ -553,6 +565,9 @@ export function CommuneProvider({
 
         notDelegatingVoting,
         isNotDelegatingVotingLoading,
+
+        globalGovernanceConfig,
+        isGlobalGovernanceConfigLoading,
 
         unrewardedProposals,
         isUnrewardedProposalsLoading,

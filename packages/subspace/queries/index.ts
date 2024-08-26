@@ -86,6 +86,8 @@ export async function queryUnrewardedProposals(api: Api): Promise<number[]> {
   const unrewardedProposals =
     await api.query.governanceModule?.unrewardedProposals?.entries();
 
+  console.log("unrewardedProposals", unrewardedProposals);
+
   if (!unrewardedProposals) {
     throw new Error("unrewardedProposals is falsey");
   }
@@ -100,11 +102,18 @@ export async function queryUnrewardedProposals(api: Api): Promise<number[]> {
     .filter((id): id is number => !isNaN(id));
 }
 
+export async function queryUnrewardedProposalsN(api: Api, n: number) {
+  const unrewardedProposals =
+    await api.query.governanceModule?.unrewardedProposals?.();
+
+  return unrewardedProposals;
+}
+
 enum VoteMode {
   Vote,
 }
 
-interface GovernanceConfiguration {
+export interface GovernanceConfiguration {
   proposalCost?: bigint;
   proposalExpiration?: number;
   voteMode?: VoteMode;
