@@ -8,7 +8,7 @@ import type { ProposalState } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { removeEmojis, smallAddress } from "@commune-ts/utils";
 
-import type { Vote } from "./vote-label";
+import type { VoteStatus } from "./vote-label";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
@@ -25,7 +25,7 @@ import { VoteLabel } from "./vote-label";
 
 export interface ProposalCardProps {
   proposalState: ProposalState;
-  voted: Vote;
+  voted: VoteStatus;
 }
 
 function handlePercentages(
