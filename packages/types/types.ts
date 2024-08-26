@@ -122,7 +122,7 @@ export interface TransferStake {
 
 export interface Vote {
   proposalId: number;
-  vote: string;
+  vote: boolean;
   callback?: (status: TransactionResult) => void;
 }
 
