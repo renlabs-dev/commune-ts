@@ -7,8 +7,7 @@
     "./context": "./src/index.tsx",
     "./utils": "./src/utils/index.ts",
     "./types": "./src/types/index.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./wallet-button-with-hook": "./src/components/wallet-button-with-hook.tsx"
+    "./hooks": "./src/hooks/index.ts"
   },
   "license": "MIT",
   "dependencies": {
@@ -19,6 +18,8 @@
     "@polkadot/types": "^11.1.1",
     "@polkadot/util-crypto": "^12.6.2",
     "@commune-ts/ui": "workspace:*",
+    "@commune-ts/utils": "workspace:*",
+    "@commune-ts/types": "workspace:*",
     "@commune-ts/subspace": "workspace:*",
     "@tanstack/react-query": "^5.45.0",
     "multiformats": "^13.1.0",

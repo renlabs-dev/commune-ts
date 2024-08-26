@@ -27,19 +27,18 @@ export function CopyButton(props: CodeComponentProps): JSX.Element {
   return (
     <button
       className={cn(
-        `flex w-full max-w-28 items-center justify-center border border-gray-500 py-2 text-gray-400 hover:border-green-600 hover:text-green-600 ${copied && "cursor-not-allowed border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500"}`,
+        `flex w-fit items-center text-nowrap border border-white/20 px-3 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 ${copied && "cursor-not-allowed border-green-500 text-green-500 hover:!border-green-500 hover:!text-green-500"}`,
       )}
       onClick={() => void copyTextToClipboard(code)}
       type="button"
     >
       <span className={cn(`flex items-center ${copied ? "text-green-" : ""}`)}>
-        {!copied ? "Copy" : "Copied"}{" "}
         <Image
           alt=""
-          className="ml-1"
-          height={20}
+          className="ml-0.5"
+          height={30}
           src="docs-icon.svg"
-          width={20}
+          width={30}
         />
       </span>
     </button>

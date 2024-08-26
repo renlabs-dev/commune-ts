@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/providers/types";
+import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { Container } from "@commune-ts/ui";
 
 import type { Vote } from "./components/vote-label";
 import { BalanceSection } from "./components/balance-section";
 import { CardSkeleton } from "./components/card-skeleton";
-import { Container } from "./components/container";
 import { DaoCard } from "./components/dao-card";
 import { FooterDivider } from "./components/footer-divider";
 import { ProposalCard } from "./components/proposal-card";

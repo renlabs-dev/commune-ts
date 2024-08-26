@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Container } from "@commune-ts/ui";
+
 export default function RootLayout({
   children,
 }: {
@@ -10,8 +12,8 @@ export default function RootLayout({
 }): JSX.Element {
   const pathname = usePathname();
   return (
-    <main className="mx-auto flex w-full max-w-screen-2xl flex-col items-start justify-center px-4 text-white">
-      <div className="my-20 flex w-full flex-col gap-3 pb-4">
+    <Container>
+      <div className="my-20 flex w-full flex-col gap-3 pb-4 text-gray-100">
         <h3 className="inline-flex w-fit animate-fade-down border border-white/20 bg-[#898989]/5 px-2 py-0.5 animate-delay-100 md:text-xl">
           Welcome to the Community Validator
         </h3>
@@ -35,6 +37,6 @@ export default function RootLayout({
         </Link>
       </div>
       {children}
-    </main>
+    </Container>
   );
 }

@@ -7,9 +7,12 @@ import type {
   ProposalCardFields,
   ProposalState,
   ProposalStatus,
-} from "@commune-ts/providers/types";
-import { paramNameToDisplayName } from "@commune-ts/providers/types";
-import { bigintDivision, formatToken } from "@commune-ts/providers/utils";
+} from "@commune-ts/types";
+import {
+  bigintDivision,
+  formatToken,
+  paramNameToDisplayName,
+} from "@commune-ts/utils";
 
 const paramsToMarkdown = (params: Record<string, unknown>): string => {
   const items = [];
@@ -202,7 +205,7 @@ export function handleProposalQuorumPercent(
     refused: ({ stakeFor, stakeAgainst }) =>
       quorumPercent(stakeFor, stakeAgainst),
     expired: () => {
-      return <span className="text-yellow-600">{` (Expired)`}</span>;
+      return <span className="text-yellow-600">{` (Matured)`}</span>;
     },
   });
 }

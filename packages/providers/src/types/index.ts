@@ -1,1 +1,1 @@
-export * from "@commune-ts/subspace/types";
+export * from "@commune-ts/types";

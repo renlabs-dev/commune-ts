@@ -38,6 +38,7 @@
   "prettier": "@commune-ts/prettier-config",
   "dependencies": {
     "@polkadot/api": "^11.1.1",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "@commune-ts/types": "workspace:*"
   }
 }

@@ -1,40 +1,35 @@
 {
-    "name": "@commune-ts/subspace",
-    "type": "module",
-    "version": "0.0.1",
-    "private": true,
-    "exports": {
-        "./utils": {
-            "types": "./dist/utils/index.d.ts",
-            "default": "./dist/utils/index.js"
-        },
-        "./types": {
-            "types": "./dist/types/index.d.ts",
-            "default": "./dist/types/index.js"
-        },
-        "./queries": {
-            "types": "./dist/queries/index.d.ts",
-            "default": "./dist/queries/index.js"
-        }
-    },
-    "scripts": {
-        "build": "tsc"
-    },
-    "devDependencies": {
-        "@commune-ts/eslint-config": "workspace:*",
-        "@commune-ts/tsconfig": "workspace:*",
-        "@types/node": "^20.11.24"
-    },
-    "dependencies": {
-        "@polkadot/api": "^11.1.1",
-        "@polkadot/api-augment": "^11.1.1",
-        "@polkadot/types": "^11.1.1",
-        "@polkadot/util-crypto": "^12.6.2",
-        "multiformats": "^13.1.0",
-        "rustie": "^0.2.0",
-        "tsafe": "^1.6.6",
-        "types": "link:@polkadot/types/types",
-        "yarn": "^1.22.22",
-        "zod": "^3.23.8"
-    }
+  "name": "@commune-ts/subspace",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./utils": "./utils/index.ts",
+    "./types": "./types/index.ts",
+    "./queries": "./queries/index.ts"
+  },
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "esModuleInterop": true
+  },
+  "dependencies": {
+    "@commune-ts/utils": "workspace:*",
+    "@commune-ts/types": "workspace:*",
+    "@polkadot/api": "^11.1.1",
+    "@polkadot/api-augment": "^11.1.1",
+    "@polkadot/types": "^11.1.1",
+    "@polkadot/util-crypto": "^12.6.2",
+    "multiformats": "^13.1.0",
+    "rustie": "^0.2.0",
+    "tsafe": "^1.6.6",
+    "types": "link:@polkadot/types/types",
+    "yarn": "^1.22.22",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@commune-ts/eslint-config": "workspace:*",
+    "@commune-ts/tsconfig": "workspace:*",
+    "tsx": "^4.15.6"
+  }
 }

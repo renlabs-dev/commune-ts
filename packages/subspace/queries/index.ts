@@ -6,12 +6,19 @@ import {
   Api,
   isSS58,
   LastBlock,
-  SS58Address,
-  SubspaceModule,
-  SUBSPACE_MODULE_SCHEMA,
+  modulePropResolvers,
   OptionalProperties,
-  modulePropResolvers, StorageEntry, newSubstrateModule } from "@commune-ts/subspace/types";
-import { assertOrThrow, handleDaos, handleProposals } from "@commune-ts/subspace/utils";
+  SS58Address,
+  SUBSPACE_MODULE_SCHEMA,
+  SubspaceModule,
+} from "@commune-ts/types";
+import {
+  assertOrThrow,
+  handleDaos,
+  handleProposals,
+  newSubstrateModule,
+  StorageEntry,
+} from "@commune-ts/utils";
 
 export { ApiPromise };
 
@@ -33,7 +40,6 @@ export async function queryLastBlock(api: ApiPromise): Promise<LastBlock> {
 }
 
 // == system ==
-
 export async function queryBalance(api: Api, address: SS58Address | string) {
   if (!isSS58(address)) {
     throw new Error("Invalid address format, expected SS58");
@@ -75,9 +81,121 @@ export async function queryDaoTreasuryAddress(api: Api) {
     .then((address) => address.toHuman() as SS58Address);
 }
 
-export async function queryNotDelegatingVotingPower(
+export async function queryUnrewardedProposals(api: Api): Promise<number[]> {
+  const unrewardedProposals =
+    await api.query.governanceModule?.unrewardedProposals?.entries();
+
+  if (!unrewardedProposals) {
+    throw new Error("unrewardedProposals is falsey");
+  }
+
+  return unrewardedProposals
+    .map(([key]) => {
+      // The key is a StorageKey, which contains the proposal ID
+      // We need to extract the proposal ID from this key and convert it to a number
+      const proposalId = key.args[0]?.toString();
+      return proposalId ? parseInt(proposalId, 10) : NaN;
+    })
+    .filter((id): id is number => !isNaN(id));
+}
+
+enum VoteMode {
+  Vote,
+}
+
+interface GovernanceConfiguration {
+  proposalCost?: bigint;
+  proposalExpiration?: number;
+  voteMode?: VoteMode;
+  proposalRewardTreasuryAllocation?: number;
+  maxProposalRewardTreasuryAllocation?: bigint;
+  proposalRewardInterval?: bigint;
+}
+
+export async function queryGlobalGovernanceConfig(
   api: Api,
-): Promise<string[] | undefined> {
+): Promise<GovernanceConfiguration> {
+  const globalGovernanceConfig =
+    api.query.governanceModule?.globalGovernanceConfig;
+
+  if (!globalGovernanceConfig) {
+    throw new Error("globalGovernanceConfig is falsey");
+  }
+
+  const config = await globalGovernanceConfig();
+
+  if (!config) {
+    throw new Error("Failed to fetch global governance config");
+  }
+
+  const parsedConfig: GovernanceConfiguration = {};
+
+  // Safely parse each field
+  if ("proposalCost" in config) {
+    parsedConfig.proposalCost = BigInt((config as any).proposalCost.toString());
+  }
+  if ("proposalExpiration" in config) {
+    parsedConfig.proposalExpiration = (
+      config as any
+    ).proposalExpiration.toNumber();
+  }
+  if ("voteMode" in config) {
+    parsedConfig.voteMode = (config as any).voteMode.type as VoteMode;
+  }
+  if ("proposalRewardTreasuryAllocation" in config) {
+    parsedConfig.proposalRewardTreasuryAllocation = (
+      config as any
+    ).proposalRewardTreasuryAllocation.toNumber();
+  }
+  if ("maxProposalRewardTreasuryAllocation" in config) {
+    parsedConfig.maxProposalRewardTreasuryAllocation = BigInt(
+      (config as any).maxProposalRewardTreasuryAllocation.toString(),
+    );
+  }
+  if ("proposalRewardInterval" in config) {
+    parsedConfig.proposalRewardInterval = BigInt(
+      (config as any).proposalRewardInterval.toString(),
+    );
+  }
+
+  return parsedConfig;
+}
+
+export function getRewardAllocation(
+  treasuryBalance: bigint,
+  governanceConfig: GovernanceConfiguration,
+) {
+  if (governanceConfig.proposalRewardTreasuryAllocation == null) return null;
+  if (governanceConfig.maxProposalRewardTreasuryAllocation == null) return null;
+
+  const allocationPercentage = BigInt(
+    governanceConfig.proposalRewardTreasuryAllocation,
+  );
+  const maxAllocation = BigInt(
+    governanceConfig.maxProposalRewardTreasuryAllocation,
+  );
+
+  let allocation = (treasuryBalance * allocationPercentage) / 100n;
+
+  if (allocation > maxAllocation) allocation = maxAllocation;
+
+  // Here there is a "decay" calculation for the n-th proposal reward that
+  // we are ignoring, as we want only the first.
+
+  return allocation;
+}
+
+export async function queryRewardAllocation(api: Api) {
+  const balance = await queryDaoTreasuryAddress(api).then((result) =>
+    queryBalance(api, result as SS58Address),
+  );
+
+  const governanceConfig = await queryGlobalGovernanceConfig(api);
+
+  return getRewardAllocation(balance, governanceConfig);
+}
+
+export async function queryNotDelegatingVotingPower(api: Api) {
   return api.query.governanceModule
     ?.notDelegatingVotingPower?.()
     .then((power) => power.toHuman() as SS58Address[]);
@@ -117,6 +235,28 @@ export async function queryStakeOut(api: Api) {
     perAddrPerNet,
   };
 }
+
+export async function queryUserTotalStaked(
+  api: Api,
+  address: SS58Address | string,
+) {
+  const stakeEntries =
+    await api.query.subspaceModule?.stakeTo?.entries(address);
+
+  const stakes = stakeEntries?.map(([key, value]) => {
+    const [, stakeToAddress] = key.args;
+    const stake = value.toString();
+
+    return {
+      address: stakeToAddress!.toString(),
+      stake,
+    };
+  });
+
+  // Filter out any entries with zero stake
+  return stakes?.filter((stake) => stake.stake !== "0");
+}
+
 // === modules ===
 
 /**
