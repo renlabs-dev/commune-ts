@@ -2,6 +2,10 @@ import "@polkadot/api-augment";
 
 import { ApiPromise, WsProvider } from "@polkadot/api";
 
+// import { something } from "./queries";
+
+// == To run this file: npx tsx index.ts ==
+
 console.log("Hello from Subspace!");
 
 // == Start API ==
@@ -16,3 +20,5 @@ if (!api.isConnected) {
 }
 
 console.log("API connected");
+
+// test something here

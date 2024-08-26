@@ -1,8 +1,8 @@
 import { LinkIcon } from "@heroicons/react/20/solid";
 
-import type { SS58Address } from "@commune-ts/providers/types";
+import type { SS58Address } from "@commune-ts/types";
 import { toast } from "@commune-ts/providers/use-toast";
-import { smallAddress } from "@commune-ts/providers/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { CreateModal } from "./modal";
 
@@ -41,16 +41,16 @@ export function ProposalListHeader(
           DAO treasury address:
         </p>
         <button
-          className="flex h-full w-full items-center justify-center border border-white/20 bg-[#898989]/5 p-5 text-white backdrop-blur-md hover:border-green-500 lg:flex-col xl:flex-row"
+          className="hover:bg-green/20 flex h-full w-full items-center justify-center border border-white/20 bg-[#898989]/5 p-5 text-white transition duration-200 hover:border-green-500 hover:bg-green-500/10 hover:text-green-500 lg:flex-col xl:flex-row"
           onClick={handleCopyClick}
         >
           {daoTreasury ? (
-            <span className="flex text-pretty text-white hover:text-green-500">
+            <span className="flex text-pretty">
               <LinkIcon className="mr-2 h-5 w-5" />
               {smallAddress(daoTreasury)}
             </span>
           ) : (
-            <span className="flex animate-pulse text-pretty text-white hover:text-green-500">
+            <span className="flex animate-pulse text-pretty">
               <LinkIcon className="mr-2 h-5 w-5" />
               Loading address...
             </span>
@@ -62,7 +62,7 @@ export function ProposalListHeader(
           View mode:
         </p>
         <select
-          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 p-[14px] px-6 text-white outline-none outline-1 outline-white/25 backdrop-blur-md transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
+          className="w-full border-r-[16px] border-transparent bg-[#898989]/5 py-[14px] pl-4 text-white outline-none outline-1 outline-white/20 transition duration-300 hover:bg-green-500/5 hover:text-green-500 hover:outline-green-500"
           value={viewMode}
           onChange={handleViewChange}
         >

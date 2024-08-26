@@ -47,34 +47,6 @@ export const faqData = [
       "COMAI Validator Stake controls the incentive landscape of miners. Stake is essentially ownership over the workforce of miners, making them compete around serving the demands of Stakeholders with supply. Giving Stake access to an ever changing and growing array of digital commodities like AI.",
   },
   {
-    question: "How to buy $COMAI?",
-    answer: (
-      <span>
-        Currently you can buy COMAI on{" "}
-        <Hyperlink href="https://app.uniswap.org/explore/tokens/ethereum/0xc78b628b060258300218740b1a7a5b3c82b3bd9f">
-          uniswap (WCOMAI)
-        </Hyperlink>
-        , <Hyperlink href="https://comswap.io/">Comswap</Hyperlink>, and{" "}
-        <Hyperlink href="https://www.mexc.com/price/COMAI?calculatorTab=trade">
-          MEXC
-        </Hyperlink>
-        .
-      </span>
-    ),
-  },
-  {
-    question: "How to set up a wallet, stake and unstake COM Tokens?",
-    answer: (
-      <span>
-        Please refer to{" "}
-        <Hyperlink href="https://www.youtube.com/watch?v=JrQKG7ko14M&t=2s">
-          Omnipotent Labs&apos; Tutorial
-        </Hyperlink>
-        .
-      </span>
-    ),
-  },
-  {
     question: "What are the tokenomics of $COMAI?",
     answer:
       "COMAI launched fairly without pre-mine, meaning the founder mines in the open network like everyone else. Emissions are split 50/50 between validators and miners. validators earn dividends on stake for producing evaluations of miners, while miners earn incentive by receiving good evaluations from validators.",
@@ -89,7 +61,7 @@ export const faqData = [
     answer: `It's 250k tokens/daily.`,
   },
   {
-    question: "What is the total supply of COM tokens?",
+    question: "What is the total supply of COMAI tokens?",
     answer: `It's 1 billion.`,
   },
   {
@@ -101,18 +73,6 @@ export const faqData = [
           introduction page
         </Hyperlink>{" "}
         where you can find all details.
-      </span>
-    ),
-  },
-  {
-    question: "Are there YouTube videos about Commune?",
-    answer: (
-      <span>
-        Yes!{" "}
-        <Hyperlink href="https://www.youtube.com/@omnipotentlabs">
-          Omnipotent Labs
-        </Hyperlink>{" "}
-        produces regular Commune content to stay up to date.
       </span>
     ),
   },

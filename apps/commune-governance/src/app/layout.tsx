@@ -3,15 +3,16 @@ import "../styles/globals.css";
 import type { Metadata } from "next";
 
 import { Providers } from "@commune-ts/providers/context";
-import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
+import { Wallet, WalletButton } from "@commune-ts/wallet";
 
+import { TRPCReactProvider } from "~/trpc/react";
 import { MobileHeaderContent } from "./components/mobile-header-content";
+import ProposalRewardCard from "./components/proposal-reward-card";
 
-// TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
   robots: "all",
   title: "Community Governance",
@@ -27,20 +28,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
+        className={`bg-[#111713] bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in h-full`}
       >
         <Providers>
-          <Header
-            logoSrc="/logo.svg"
-            title="Community Governance"
-            wallet={<WalletButtonWithHook />}
-            mobileContent={<MobileHeaderContent />}
-            navigationLinks={[
-              { name: "Homepage", href: links.landing_page, external: true },
-            ]}
-          />
-          {children}
-          <Footer />
+          <ProposalRewardCard />
+          <TRPCReactProvider>
+            <Wallet />
+            <Header
+              logoSrc="/logo.svg"
+              title="Community Governance"
+              wallet={<WalletButton />}
+              mobileContent={<MobileHeaderContent />}
+              navigationLinks={[
+                { name: "Homepage", href: links.landing_page, external: true },
+                { name: "Join Community", href: links.discord, external: true },
+              ]}
+            />
+            {children}
+            <Footer />
+          </TRPCReactProvider>
         </Providers>
       </body>
     </html>

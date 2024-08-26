@@ -29,23 +29,28 @@ RUN turbo prune ${APP_NAME} --docker
 FROM base AS builder
 ARG APP_NAME
 
+ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://commune-api-node-10.communeai.net"
+
 WORKDIR /app
 
 COPY --from=pruner /build/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Install dependencies using only package.json files to reduce changes
 COPY --from=pruner /build/out/json/ .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store  pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build the app
 COPY --from=pruner /build/out/full/ .
-RUN pnpm turbo run build --filter=${APP_NAME}
+RUN POSTGRES_URL="postgres://postgres:password@localhost:5432/database" \
+    pnpm turbo run build --filter=${APP_NAME}
 
 
 # ======== runner layer ======== #
 FROM base AS runner
 
 ARG APP_NAME
+
+ENV PORT=8000
 
 WORKDIR /app
 

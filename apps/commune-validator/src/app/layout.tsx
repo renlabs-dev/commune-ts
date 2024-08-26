@@ -5,11 +5,11 @@ import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import { Providers } from "@commune-ts/providers/context";
-import { WalletButtonWithHook } from "@commune-ts/providers/wallet-button-with-hook";
 import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
+import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { DelegatedModulesList } from "./components/delegated-modules-list";
@@ -29,16 +29,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-950 bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`bg-[#111713] bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
       >
         <Providers>
+          <Wallet />
           <div className="flex w-full animate-fade-down border-b border-white/20 py-2.5">
             <div className="mx-auto flex max-w-screen-md items-center gap-1 px-2">
               <InformationCircleIcon className="h-10 w-10 text-green-500 md:h-5 md:w-5" />
               <p className="text-gray-400">
                 To assign weights to modules, you need to stake on our
                 validator. Click{" "}
-                <Link href="" className="text-green-500 hover:underline">
+                <Link
+                  href="/tutorial"
+                  className="text-green-500 hover:underline"
+                >
                   here
                 </Link>{" "}
                 to get started.
@@ -54,7 +58,7 @@ export default function RootLayout({
               { name: "Join Community", href: links.discord, external: true },
             ]}
             title="Commune AI"
-            wallet={<WalletButtonWithHook />}
+            wallet={<WalletButton />}
           />
           <TRPCReactProvider>
             {children} <DelegatedModulesList />

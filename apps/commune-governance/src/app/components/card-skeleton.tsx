@@ -1,23 +1,28 @@
 import ArrowRightIcon from "@heroicons/react/16/solid/ArrowRightIcon";
 
 import { Card } from "./card";
-import { Label } from "./label";
 
 export function CardSkeleton(): JSX.Element {
   return (
     <Card.Root>
-      <Card.Header className="flex-col md:flex-col-reverse">
-        <p className="w-3/5 animate-pulse text-center text-gray-300 md:text-left">
+      <Card.Header className="w-full flex-col md:flex-col-reverse">
+        <p className="w-fit animate-pulse pb-2 text-center text-gray-300 md:pb-0 md:text-left">
           Loading Title...
         </p>
-        <div className="mb-2 flex w-full flex-row-reverse justify-end gap-2 md:mb-0 md:ml-auto md:flex-row lg:w-4/12 lg:justify-end">
-          <span className="w-6/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+        <div className="mb-2 flex w-full flex-col justify-end gap-2 md:mb-0 md:ml-auto md:flex-row lg:w-6/12 lg:justify-end">
+          <span className="w-full animate-pulse rounded-full border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+            Vote
+          </span>
+          <span className="w-full animate-pulse rounded-full border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Type
           </span>
-          <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+          <span className="w-full animate-pulse rounded-full border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Subnet
           </span>
-          <span className="w-3/12 animate-pulse border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+          <span className="w-full animate-pulse rounded-full border border-white/20 bg-white/5 py-1 text-center text-gray-300">
+            Reward
+          </span>
+          <span className="w-full animate-pulse rounded-full border border-white/20 bg-white/5 py-1 text-center text-gray-300">
             Status
           </span>
         </div>
@@ -45,11 +50,11 @@ export function CardSkeleton(): JSX.Element {
           </span>
         </div>
 
-        <Label className="flex w-full justify-center border border-white/10 px-2 py-4 text-center font-medium text-gray-300 lg:w-auto lg:px-4">
+        <div className="flex w-full justify-center gap-1 border border-white/10 px-2 py-4 text-center text-sm font-medium text-gray-300 lg:w-auto lg:px-4">
           Stake Voted:
           <span className="font-bold text-green-500">Loading...</span>
           <span className="font-bold text-yellow-500">(-%)</span>
-        </Label>
+        </div>
       </div>
     </Card.Root>
   );

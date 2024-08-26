@@ -4,7 +4,7 @@ import { WsProvider } from "@polkadot/api";
 import express from "express";
 
 import type { SQL, Table } from "@commune-ts/db";
-import type { LastBlock, SubspaceModule } from "@commune-ts/subspace/types";
+import type { LastBlock, SubspaceModule } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import { moduleData } from "@commune-ts/db/schema";

@@ -1,6 +1,6 @@
 import { match } from "rustie";
 
-import type { ProposalData } from "@commune-ts/providers/types";
+import type { ProposalData } from "@commune-ts/types";
 
 import { Label } from "./label";
 

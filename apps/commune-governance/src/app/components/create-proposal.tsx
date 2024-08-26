@@ -5,11 +5,11 @@ import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
 
-import type { TransactionResult } from "@commune-ts/providers/types";
+import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
+import { TransactionStatus } from "@commune-ts/ui";
 import { cairo } from "@commune-ts/ui/fonts";
-import { Loading } from "@commune-ts/ui/loading";
 
 const proposalSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -52,6 +52,11 @@ export function CreateProposal(): JSX.Element {
       });
       const ipfs = (await res.json()) as { IpfsHash: string };
       setUploading(false);
+
+      if (ipfs.IpfsHash === "undefined" || !ipfs.IpfsHash) {
+        toast.error("Error uploading transfer dao treasury proposal");
+        return;
+      }
 
       if (!balance) {
         toast.error("Balance is still loading");
@@ -153,16 +158,16 @@ export function CreateProposal(): JSX.Element {
                 onChange={(e) => {
                   setBody(e.target.value);
                 }}
-                placeholder="Your proposal here... (Markdown supported)"
+                placeholder="here... (Markdown supported / HTML tags are not supported)"
                 rows={5}
                 value={body}
               />
             </div>
           ) : (
-            <div className="p-4 py-10">
+            <div className="p-4">
               {body ? (
                 <MarkdownPreview
-                  className={`line-clamp-4 ${cairo.className}`}
+                  className={`${cairo.className} max-h-[40vh] overflow-auto`}
                   source={`# ${title}\n${body}`}
                   style={{
                     backgroundColor: "transparent",
@@ -183,15 +188,12 @@ export function CreateProposal(): JSX.Element {
             {uploading ? "Uploading..." : "Submit Proposal"}
           </button>
         </div>
-        {transactionStatus.status ? (
-          <p
-            className={`pt-2 ${transactionStatus.status === "PENDING" && "text-yellow-400"} ${transactionStatus.status === "ERROR" && "text-red-400"} ${transactionStatus.status === "SUCCESS" && "text-green-400"} ${transactionStatus.status === "STARTING" && "text-blue-400"} flex items-center gap-2 text-left text-base`}
-          >
-            {transactionStatus.status === "PENDING" ||
-              (transactionStatus.status === "STARTING" && <Loading />)}
-            {transactionStatus.message}
-          </p>
-        ) : null}
+        {transactionStatus.status && (
+          <TransactionStatus
+            status={transactionStatus.status}
+            message={transactionStatus.message}
+          />
+        )}
         <div className="flex flex-wrap items-center gap-1 pt-2 text-sm text-white">
           <div className="flex items-center gap-1">
             <InformationCircleIcon className="h-4 w-4 fill-green-500" />

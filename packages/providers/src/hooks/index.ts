@@ -12,7 +12,10 @@ import {
   queryLastBlock,
   queryNotDelegatingVotingPower,
   queryProposalsEntries,
+  queryRewardAllocation,
   queryStakeOut,
+  queryUnrewardedProposals,
+  queryUserTotalStaked,
 } from "@commune-ts/subspace/queries";
 
 import type {
@@ -24,13 +27,14 @@ import type {
   Result,
   SS58Address,
 } from "../types";
+import { CUSTOM_METADATA_SCHEMA } from "../types";
 import {
-  CUSTOM_METADATA_SCHEMA,
+  buildIpfsGatewayUrl,
   LAST_BLOCK_STALE_TIME,
+  parseIpfsUri,
   PROPOSALS_STALE_TIME,
   STAKE_STALE_TIME,
-} from "../types";
-import { buildIpfsGatewayUrl, parseIpfsUri } from "../utils";
+} from "../utils";
 
 // == chain ==
 
@@ -101,6 +105,26 @@ export function useNotDelegatingVoting(api: Api | Nullish) {
   });
 }
 
+export function useUnrewardedProposals(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["unrewarded_proposals"],
+    enabled: api != null,
+    queryFn: () => queryUnrewardedProposals(api!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useRewardAllocation(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["reward_allocation"],
+    enabled: api != null,
+    queryFn: () => queryRewardAllocation(api!),
+    staleTime: LAST_BLOCK_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
 // == subspaceModule ==
 
 export function useAllStakeOut(api: Api | Nullish) {
@@ -108,6 +132,19 @@ export function useAllStakeOut(api: Api | Nullish) {
     queryKey: ["stake_out"],
     enabled: api != null,
     queryFn: () => queryStakeOut(api!),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useUserTotalStaked(
+  api: Api | Nullish,
+  address: SS58Address | string | Nullish,
+) {
+  return useQuery({
+    queryKey: ["user_total_staked", address],
+    enabled: api != null,
+    queryFn: () => queryUserTotalStaked(api!, address!),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });
