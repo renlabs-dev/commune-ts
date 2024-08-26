@@ -6,7 +6,7 @@ import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { Container } from "@commune-ts/ui";
 
-import type { Vote } from "./components/vote-label";
+import type { VoteStatus } from "./components/vote-label";
 import { BalanceSection } from "./components/balance-section";
 import { CardSkeleton } from "./components/card-skeleton";
 import { DaoCard } from "./components/dao-card";
@@ -46,7 +46,7 @@ export default function HomePage(): JSX.Element {
   }: {
     proposalStatus: ProposalStatus;
     selectedAccountAddress: SS58Address;
-  }): Vote => {
+  }): VoteStatus => {
     if (!Object.prototype.hasOwnProperty.call(proposalStatus, "open"))
       return "UNVOTED";
 

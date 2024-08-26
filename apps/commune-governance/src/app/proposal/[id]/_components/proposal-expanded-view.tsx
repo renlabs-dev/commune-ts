@@ -10,7 +10,7 @@ import {
   smallAddress,
 } from "@commune-ts/utils";
 
-import type { Vote } from "../../../components/vote-label";
+import type { VoteStatus } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";
 import { Label } from "~/app/components/label";
 import { ProposalComment } from "~/app/components/proposal-comments";
@@ -99,7 +99,7 @@ const handleUserVotes = ({
 }: {
   proposalStatus: ProposalStatus;
   selectedAccountAddress: SS58Address;
-}): Vote => {
+}): VoteStatus => {
   if (!Object.prototype.hasOwnProperty.call(proposalStatus, "open"))
     return "UNVOTED";
 
@@ -173,9 +173,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
             text={content.title ?? "No Custom Metadata Title"}
           />
           <div className="h-full lg:overflow-auto">
-            <MarkdownView
-              source={removeEmojis((content.body as string) ?? "")}
-            />
+            <MarkdownView source={removeEmojis(content.body ?? "")} />
           </div>
         </div>
         <div className="w-full">
