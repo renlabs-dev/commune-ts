@@ -42,8 +42,6 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
 
   const voters = getVoters();
 
-  console.log(voters);
-
   if (voters.length === 0) {
     return (
       <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
