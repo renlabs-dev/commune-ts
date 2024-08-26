@@ -8,14 +8,14 @@ import type { ProposalStatus, TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { WalletButton } from "@commune-ts/wallet";
 
-import type { Vote } from "./vote-label";
+import type { VoteStatus } from "./vote-label";
 import { Card } from "./card";
 import { SectionHeaderText } from "./section-header-text";
 
 export function VoteCard(props: {
   proposalStatus: ProposalStatus;
   proposalId: number;
-  voted: Vote;
+  voted: VoteStatus;
 }): JSX.Element {
   const { proposalId, voted = "UNVOTED", proposalStatus } = props;
   const { isConnected, voteProposal } = useCommune();
@@ -27,7 +27,7 @@ export function VoteCard(props: {
     message: null,
   });
 
-  function handleVotePreference(value: Vote): void {
+  function handleVotePreference(value: VoteStatus): void {
     if (vote === "UNVOTED" || vote !== value) {
       setVote(value);
       return;
@@ -42,7 +42,12 @@ export function VoteCard(props: {
   }
 
   function handleVote(): void {
-    void voteProposal({ proposalId, vote, callback: handleCallback });
+    const voteBoolean = vote === "FAVORABLE" ? true : false;
+    void voteProposal({
+      proposalId,
+      vote: voteBoolean,
+      callback: handleCallback,
+    });
   }
 
   if (voted !== "UNVOTED") {
