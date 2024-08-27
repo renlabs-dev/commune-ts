@@ -25,6 +25,7 @@ import type {
   TransactionResult,
   Transfer,
   TransferStake,
+  TStakeOut,
   UpdateDelegatingVotingPower,
   Vote,
 } from "../types";
@@ -99,7 +100,7 @@ interface CommuneContextType {
   rewardAllocation: bigint | null | undefined;
   isRewardAllocationLoading: boolean;
 
-  stakeOut: StakeOutData | undefined;
+  stakeOut: TStakeOut | undefined;
   isStakeOutLoading: boolean;
 
   userTotalStaked: { address: string; stake: string }[] | undefined;
@@ -149,7 +150,9 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider(wsEndpoint);
+    const provider = new WsProvider(
+      "wss://commune.api.onfinality.io/public-ws",
+    );
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);

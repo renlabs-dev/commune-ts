@@ -1,14 +1,15 @@
 import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
+import cors from "cors";
 import express from "express";
 import JSONBigInt from "json-bigint";
 
 import type { LastBlock } from "@commune-ts/types";
 import {
   ApiPromise,
+  queryCalculateStakeOut,
   queryLastBlock,
-  queryStakeOut,
 } from "@commune-ts/subspace/queries";
 
 const JSONBig = JSONBigInt({
@@ -53,7 +54,8 @@ const getStakeOutDataStringfied = () => {
 };
 
 async function setup(): Promise<ApiPromise> {
-  const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
+  const wsEndpoint = "wss://commune.api.onfinality.io/public-ws";
+  // const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
 
   log("Connecting to ", wsEndpoint);
 
@@ -81,7 +83,7 @@ async function stakeOutLoop() {
 
       log(`Block ${lastBlock.blockNumber}: processing`);
 
-      const data = await queryStakeOut(lastBlock.apiAtBlock);
+      const data = await queryCalculateStakeOut(lastBlock.apiAtBlock);
 
       const total = data.total;
       const perAddr = mapToObj(data.perAddr);
@@ -117,6 +119,13 @@ function mapToObj<K extends string | number, V>(
 stakeOutLoop().catch(console.error);
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 type Ms = number;
 

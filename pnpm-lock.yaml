@@ -37,6 +37,9 @@ importers:
       "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
+      cors:
+        specifier: 2.8.5
+        version: 2.8.5
       express:
         specifier: ^4.19.2
         version: 4.19.2
@@ -59,6 +62,9 @@ importers:
       "@polkadot/api-augment":
         specifier: ^11.1.1
         version: 11.3.1
+      "@types/cors":
+        specifier: ^2.8.17
+        version: 2.8.17
       "@types/express":
         specifier: ^4.17.21
         version: 4.17.21
@@ -3227,6 +3233,12 @@ packages:
         integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==,
       }
 
+  "@types/cors@2.8.17":
+    resolution:
+      {
+        integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==,
+      }
+
   "@types/debug@4.1.12":
     resolution:
       {
@@ -4683,6 +4695,13 @@ packages:
       {
         integrity: sha512-BY8Etc1FZqdw1glX0XNOq2FDwfrg/VGqoZOZCdaL+UmdaqDwQwYXkMJT4t6In+zfEfOJDcM9T0KdbBeJg8KKCQ==,
       }
+
+  cors@2.8.5:
+    resolution:
+      {
+        integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==,
+      }
+    engines: { node: ">= 0.10" }
 
   countup.js@2.8.0:
     resolution:
@@ -12013,6 +12032,10 @@ snapshots:
     dependencies:
       "@types/node": 20.16.1
 
+  "@types/cors@2.8.17":
+    dependencies:
+      "@types/node": 20.16.1
+
   "@types/debug@4.1.12":
     dependencies:
       "@types/ms": 0.7.34
@@ -13010,6 +13033,11 @@ snapshots:
       is-what: 4.1.16
 
   core-js-pure@3.38.1: {}
+
+  cors@2.8.5:
+    dependencies:
+      object-assign: 4.1.1
+      vary: 1.1.2
 
   countup.js@2.8.0: {}
 

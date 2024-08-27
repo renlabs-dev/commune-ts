@@ -70,7 +70,11 @@ export type WithMetadataState<T> = T & { customData?: CustomMetadataState };
 export interface StakeOutData {
   total: bigint;
   perAddr: Map<string, bigint>;
-  perAddrPerNet: Map<string, Map<string, bigint>>;
+}
+
+export interface TStakeOut {
+  total: bigint;
+  perAddr: Record<string, bigint>;
 }
 
 export interface LastBlock {
