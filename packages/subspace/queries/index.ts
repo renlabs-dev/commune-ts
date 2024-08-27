@@ -11,6 +11,7 @@ import {
   SS58Address,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
+  VoteWithStake,
 } from "@commune-ts/types";
 import {
   assertOrThrow,
@@ -203,6 +204,7 @@ export async function queryNotDelegatingVotingPower(api: Api) {
 
 // == subspaceModule ==
 
+// StakeTo is the list of keys that have staked to that key.
 export async function queryStakeOut(api: Api) {
   const stakeToQuery = await api.query.subspaceModule?.stakeTo?.entries();
 
@@ -234,6 +236,65 @@ export async function queryStakeOut(api: Api) {
     perAddr,
     perAddrPerNet,
   };
+}
+
+// Stake From is the list of keys that the key has staked to.
+export async function queryStakeFrom(api: Api) {
+  const stakeFromQuery = await api.query.subspaceModule?.stakeFrom?.entries();
+
+  if (!stakeFromQuery) {
+    throw new Error("stakeFrom is probably undefined");
+  }
+
+  let total = 0n;
+  const perAddr = new Map<string, bigint>();
+
+  for (const [keyRaw, valueRaw] of stakeFromQuery) {
+    const [, toAddrRaw] = keyRaw.args;
+    const toAddr = toAddrRaw!.toString();
+    const staked = BigInt(valueRaw.toString());
+
+    total += staked;
+    perAddr.set(toAddr, (perAddr.get(toAddr) ?? 0n) + staked);
+  }
+
+  return {
+    total,
+    perAddr,
+  };
+}
+
+export async function processVotesAndStakes(
+  api: Api,
+  votesFor: SS58Address[],
+  votesAgainst: SS58Address[],
+): Promise<VoteWithStake[]> {
+  // Get addresses not delegating voting power
+  const notDelegatingAddresses = await queryNotDelegatingVotingPower(api);
+
+  // Get stake information
+  const { perAddr } = await queryStakeFrom(api);
+
+  // Process votes for
+  const processedVotesFor = votesFor
+    .filter((address) => notDelegatingAddresses?.includes(address))
+    .map((address) => ({
+      address,
+      stake: perAddr.get(address) ?? 0n,
+      vote: "In Favor" as const,
+    }));
+
+  // Process votes against
+  const processedVotesAgainst = votesAgainst
+    .filter((address) => notDelegatingAddresses?.includes(address))
+    .map((address) => ({
+      address,
+      stake: perAddr.get(address) ?? 0n,
+      vote: "Against" as const,
+    }));
+
+  // Combine processed votes
+  return [...processedVotesFor, ...processedVotesAgainst];
 }
 
 export async function queryUserTotalStaked(
