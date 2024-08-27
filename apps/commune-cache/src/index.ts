@@ -29,13 +29,11 @@ function log(msg: unknown, ...args: unknown[]) {
 const stakeOutData: {
   total: bigint;
   perAddr: Record<string, bigint>;
-  perAddrPerNet: Record<number, Record<string, bigint>>;
   atBlock: bigint;
   atTime: Date;
 } = {
   total: -1n,
   perAddr: {},
-  perAddrPerNet: {},
   atBlock: -1n,
   atTime: new Date(),
 };
@@ -86,16 +84,10 @@ async function stakeOutLoop() {
       const data = await queryStakeOut(lastBlock.apiAtBlock);
 
       const total = data.total;
-      const perAddrPerNet: Record<string, Record<string, bigint>> = {};
-
-      for (const [from, toMany] of data.perAddrPerNet.entries()) {
-        perAddrPerNet[from] = mapToObj(toMany);
-      }
       const perAddr = mapToObj(data.perAddr);
 
       stakeOutData.total = total;
       stakeOutData.perAddr = perAddr;
-      stakeOutData.perAddrPerNet = perAddrPerNet;
       stakeOutData.atBlock = BigInt(lastBlock.blockNumber);
       stakeOutData.atTime = new Date();
 
