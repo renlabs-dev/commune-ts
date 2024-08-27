@@ -54,8 +54,7 @@ const getStakeOutDataStringfied = () => {
 };
 
 async function setup(): Promise<ApiPromise> {
-  const wsEndpoint = "wss://commune.api.onfinality.io/public-ws";
-  // const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
+  const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
 
   log("Connecting to ", wsEndpoint);
 
