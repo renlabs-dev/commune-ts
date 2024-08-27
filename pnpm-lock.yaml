@@ -34,9 +34,6 @@ importers:
       "@commune-ts/subspace":
         specifier: workspace:*
         version: link:../../packages/subspace
-      "@commune-ts/types":
-        specifier: workspace:*
-        version: link:../../packages/types
       "@polkadot/api":
         specifier: ^11.1.1
         version: 11.3.1
@@ -56,6 +53,9 @@ importers:
       "@commune-ts/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
+      "@commune-ts/types":
+        specifier: workspace:*
+        version: link:../../packages/types
       "@polkadot/api-augment":
         specifier: ^11.1.1
         version: 11.3.1
