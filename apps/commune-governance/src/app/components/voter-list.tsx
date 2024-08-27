@@ -28,7 +28,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     return (
       <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
         <SectionHeaderText text="Voters List" />
-        <p>Loading voters...</p>
+        <p className="animate-pulse">Loading voters...</p>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
                 {vote}
               </span>
               <span className="text-sm text-gray-400">
-                {formatToken(Number(stake))}
+                {stake === 0n ? "Delegated" : formatToken(Number(stake))}
               </span>
             </div>
           </div>

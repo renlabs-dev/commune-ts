@@ -276,22 +276,22 @@ export async function processVotesAndStakes(
   const { perAddr } = await queryStakeFrom(api);
 
   // Process votes for
-  const processedVotesFor = votesFor
-    .filter((address) => notDelegatingAddresses?.includes(address))
-    .map((address) => ({
-      address,
-      stake: perAddr.get(address) ?? 0n,
-      vote: "In Favor" as const,
-    }));
+  const processedVotesFor = votesFor.map((address) => ({
+    address,
+    stake: notDelegatingAddresses?.includes(address)
+      ? (perAddr.get(address) ?? 0n)
+      : 0n,
+    vote: "In Favor" as const,
+  }));
 
   // Process votes against
-  const processedVotesAgainst = votesAgainst
-    .filter((address) => notDelegatingAddresses?.includes(address))
-    .map((address) => ({
-      address,
-      stake: perAddr.get(address) ?? 0n,
-      vote: "Against" as const,
-    }));
+  const processedVotesAgainst = votesAgainst.map((address) => ({
+    address,
+    stake: notDelegatingAddresses?.includes(address)
+      ? (perAddr.get(address) ?? 0n)
+      : 0n,
+    vote: "Against" as const,
+  }));
 
   // Combine processed votes
   return [...processedVotesFor, ...processedVotesAgainst];
