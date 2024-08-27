@@ -133,7 +133,7 @@ app.get("/api/health", (_, res) => {
   res.send("OK");
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT ?? 3000;
 
 app.listen(port, () => {
   log(`/helth listening on port ${port}`);
