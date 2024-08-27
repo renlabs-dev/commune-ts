@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/types";
-import { formatToken, smallAddress } from "@commune-ts/utils";
+import { smallAddress } from "@commune-ts/utils";
 
 import { SectionHeaderText } from "./section-header-text";
 
@@ -55,7 +55,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
       <SectionHeaderText text="Voters List" />
       <div className="max-h-72 overflow-y-auto">
-        {voters.map(({ address, status, stake }, index) => (
+        {voters.map(({ address, status }, index) => (
           <div key={index} className="mb-2 flex items-end justify-between pr-2">
             <span className="text-white">{smallAddress(address)}</span>
             <div className="flex flex-col items-end">
@@ -66,11 +66,11 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
               >
                 {status}
               </span>
-              <span className="text-sm text-gray-400">
+              {/* <span className="text-sm text-gray-400">
                 {Number(stake) === 0
                   ? "Registering Stake"
                   : formatToken(Number(stake))}
-              </span>
+              </span> */}
             </div>
           </div>
         ))}

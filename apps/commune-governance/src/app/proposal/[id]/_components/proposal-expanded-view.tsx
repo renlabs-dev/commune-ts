@@ -235,7 +235,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           <VoteCard
             proposalId={content.id}
             proposalStatus={content.status}
-            voted="UNVOTED"
+            voted={content.voted}
           />
         </div>
 
