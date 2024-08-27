@@ -203,7 +203,20 @@ export async function queryNotDelegatingVotingPower(api: Api) {
 
 // == subspaceModule ==
 
-export async function queryStakeOut(api: Api) {
+export async function queryStakeOut(api?: Api) {
+  const response = await fetch("http://localhost:3000/api/stake-out", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return response.json();
+}
+
+export async function queryCalculateStakeOut(api: Api) {
   const stakeToQuery = await api.query.subspaceModule?.stakeTo?.entries();
 
   if (!stakeToQuery) {
@@ -212,7 +225,6 @@ export async function queryStakeOut(api: Api) {
 
   let total = 0n;
   const perAddr = new Map<string, bigint>();
-  const perAddrPerNet = new Map<string, Map<string, bigint>>();
 
   for (const [keyRaw, valueRaw] of stakeToQuery) {
     const [fromAddrRaw, toAddrRaw] = keyRaw.args;
@@ -223,16 +235,11 @@ export async function queryStakeOut(api: Api) {
 
     total += staked;
     perAddr.set(fromAddr, (perAddr.get(fromAddr) ?? 0n) + staked);
-
-    const mapTo = perAddrPerNet.get(fromAddr) ?? new Map<string, bigint>();
-    mapTo.set(toAddr, (mapTo.get(toAddr) ?? 0n) + staked);
-    perAddrPerNet.set(fromAddr, mapTo);
   }
 
   return {
     total,
     perAddr,
-    perAddrPerNet,
   };
 }
 
