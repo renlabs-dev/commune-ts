@@ -29,6 +29,7 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
+    "docker:build:commune-cache:digitalocean": "docker build -f ./tooling/dockerfile/backend-service.Dockerfile -t commune-cache:latest --build-arg PORT=8080 --build-arg PROJECT=commune-cache --platform linux/amd64,linux/arm64 . && docker tag commune-cache:latest ghcr.io/agicommies/commune-cache:latest  && docker push ghcr.io/agicommies/commune-cache:latest",
     "prepare": "husky"
   },
   "devDependencies": {
