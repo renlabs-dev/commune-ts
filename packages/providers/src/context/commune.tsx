@@ -18,6 +18,7 @@ import type {
   InjectedExtension,
   LastBlock,
   ProposalState,
+  RemoveVote,
   SS58Address,
   Stake,
   StakeOutData,
@@ -68,6 +69,7 @@ interface CommuneContextType {
   transfer: (transfer: Transfer) => Promise<void>;
   transferStake: (transfer: TransferStake) => Promise<void>;
   voteProposal: (vote: Vote) => Promise<void>;
+  removeVoteProposal: (removeVote: RemoveVote) => Promise<void>;
 
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
@@ -351,6 +353,16 @@ export function CommuneProvider({
     await sendTransaction("Vote", transaction, callback);
   }
 
+  async function removeVoteProposal({
+    proposalId,
+    callback,
+  }: RemoveVote): Promise<void> {
+    if (!api?.tx.governanceModule?.removeVoteProposal) return;
+
+    const transaction = api.tx.governanceModule.removeVoteProposal(proposalId);
+    await sendTransaction("Remove Vote Proposal", transaction, callback);
+  }
+
   async function addCustomProposal({
     IpfsHash,
     callback,
@@ -526,6 +538,7 @@ export function CommuneProvider({
         transferStake,
 
         voteProposal,
+        removeVoteProposal,
         addCustomProposal,
         addDaoApplication,
         addTransferDaoTreasuryProposal,

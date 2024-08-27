@@ -126,6 +126,11 @@ export interface Vote {
   callback?: (status: TransactionResult) => void;
 }
 
+export interface RemoveVote {
+  proposalId: number;
+  callback?: (status: TransactionResult) => void;
+}
+
 export interface AddCustomProposal {
   IpfsHash: string;
   callback?: (status: TransactionResult) => void;
