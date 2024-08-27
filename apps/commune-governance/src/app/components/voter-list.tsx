@@ -71,7 +71,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
                 {vote}
               </span>
               <span className="text-sm text-gray-400">
-                {stake === 0n ? "Delegated" : formatToken(Number(stake))}
+                {stake === 0n ? "No Stake Info" : formatToken(Number(stake))}
               </span>
             </div>
           </div>
