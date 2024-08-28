@@ -4,8 +4,10 @@ import { z } from "zod";
 import {
   commentInteractionSchema,
   commentReportSchema,
+  moduleReport,
   proposalCommentSchema,
   ReportReason,
+  userModuleData,
   VoteType,
 } from "./schema";
 
@@ -56,4 +58,30 @@ export const COMMENT_REPORT_INSERT_SCHEMA = createInsertSchema(
 ).omit({
   id: true,
   createdAt: true,
+});
+
+export const MODULE_REPORT_INSERT_SCHEMA = createInsertSchema(moduleReport, {
+  userKey: z.string(),
+  moduleId: z.number().int(),
+  content: z
+    .string()
+    .min(1)
+    .max(512)
+    .transform((v) => v.trim())
+    .refine((s) => s.length, "Comment should not be blank"),
+  reason: z.nativeEnum(ReportReason),
+}).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
+  userModuleData,
+  {
+    userKey: z.string(),
+    moduleId: z.number().int(),
+    weight: z.number().positive(),
+  },
+).omit({
+  id: true,
 });
