@@ -6,6 +6,7 @@ import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
 import { MarkdownView } from "@commune-ts/ui/markdown-view";
 import { smallAddress } from "@commune-ts/utils";
 
+import { ReportModule } from "~/app/components/report-module";
 import { api } from "~/trpc/server";
 
 // export const runtime = "edge";
@@ -65,6 +66,9 @@ export default async function ModulePage({ params }: Params) {
         <h1 className="flex-grow animate-fade-right text-center text-3xl font-semibold">
           {title}
         </h1>
+        <div className="">
+          <ReportModule moduleId={mdl.id} />
+        </div>
       </div>
       <div className="flex flex-col-reverse gap-6 md:flex-row">
         <div className="animate-fade-down animate-delay-300 md:w-[60%] xl:w-[70%]">
