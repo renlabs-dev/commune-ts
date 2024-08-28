@@ -1,6 +1,7 @@
 import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
+import cors from "cors";
 import express from "express";
 import JSONBigInt from "json-bigint";
 
@@ -117,6 +118,13 @@ function mapToObj<K extends string | number, V>(
 stakeOutLoop().catch(console.error);
 
 const app = express();
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 type Ms = number;
 
