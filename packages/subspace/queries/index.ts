@@ -9,9 +9,9 @@ import {
   modulePropResolvers,
   OptionalProperties,
   SS58Address,
+  StakeOutData,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
-  TStakeOut,
   VoteWithStake,
 } from "@commune-ts/types";
 import {
@@ -205,8 +205,10 @@ export async function queryNotDelegatingVotingPower(api: Api) {
 
 // == subspaceModule ==
 
-export async function queryStakeOut(api: string): Promise<TStakeOut> {
-  const response = await fetch(`${api}/api/stake-out`, {
+export async function queryStakeOut(
+  communeCacheUrl: string,
+): Promise<StakeOutData> {
+  const response = await fetch(`${communeCacheUrl}/api/stake-out`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -215,7 +217,7 @@ export async function queryStakeOut(api: string): Promise<TStakeOut> {
   if (!response.ok) {
     throw new Error("Failed to fetch data");
   }
-  const stakeOutData = response.json() as unknown as TStakeOut;
+  const stakeOutData = response.json() as unknown as StakeOutData;
   return stakeOutData;
 }
 
@@ -275,6 +277,7 @@ export async function queryStakeFrom(api: Api) {
 
 export async function processVotesAndStakes(
   api: Api,
+  communeCacheUrl: string,
   votesFor: SS58Address[],
   votesAgainst: SS58Address[],
 ): Promise<VoteWithStake[]> {
@@ -283,7 +286,7 @@ export async function processVotesAndStakes(
 
   // Get stake information
   const { perAddr: stakeFromPerAddr } = await queryStakeFrom(api);
-  const { perAddr: stakeOutPerAddr } = await queryStakeOut(api);
+  const { perAddr: stakeOutPerAddr } = await queryStakeOut(communeCacheUrl);
 
   // Function to calculate total stake for an address
   const getTotalStake = (address: SS58Address) => {

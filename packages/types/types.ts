@@ -69,11 +69,6 @@ export type WithMetadataState<T> = T & { customData?: CustomMetadataState };
 
 export interface StakeOutData {
   total: bigint;
-  perAddr: Map<string, bigint>;
-}
-
-export interface TStakeOut {
-  total: bigint;
   perAddr: Record<string, bigint>;
   atBlock: bigint;
   atTime: Date;

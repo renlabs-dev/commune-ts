@@ -5,7 +5,7 @@ import cors from "cors";
 import express from "express";
 import JSONBigInt from "json-bigint";
 
-import type { LastBlock } from "@commune-ts/types";
+import type { LastBlock, StakeOutData } from "@commune-ts/types";
 import {
   ApiPromise,
   queryCalculateStakeOut,
@@ -27,12 +27,7 @@ function log(msg: unknown, ...args: unknown[]) {
   console.log(`[${new Date().toISOString()}] ${msg}`, ...args);
 }
 
-const stakeOutData: {
-  total: bigint;
-  perAddr: Record<string, bigint>;
-  atBlock: bigint;
-  atTime: Date;
-} = {
+const stakeOutData: StakeOutData = {
   total: -1n,
   perAddr: {},
   atBlock: -1n,
