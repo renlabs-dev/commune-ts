@@ -13,12 +13,13 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
     "Package providers - Cache URL:",
     process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL,
   );
+
   return (
     <ReactQueryProvider>
       <ToastProvider>
         <CommuneProvider
           wsEndpoint={String(process.env.NEXT_PUBLIC_WS_PROVIDER_URL)}
-          communeCacheUrl={String(process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL)}
+          communeCacheUrl={"https://commune-cache-azn4r.ondigitalocean.app"}
         >
           {children}
         </CommuneProvider>

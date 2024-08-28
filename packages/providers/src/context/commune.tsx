@@ -519,7 +519,7 @@ export function CommuneProvider({
     <CommuneContext.Provider
       value={{
         api,
-        communeCacheUrl: communeCacheUrl,
+        communeCacheUrl,
         isConnected,
         setIsConnected,
         isInitialized,
