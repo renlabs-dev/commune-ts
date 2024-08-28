@@ -3,14 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "composite": false,
-    "declaration": true,
-    "declarationMap": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
     "noEmit": false,
     "emitDeclarationOnly": false
   },
-  "include": ["*.ts", "src"],
-  "exclude": ["node_modules"]
+  "include": ["*.ts", "src"]
 }
