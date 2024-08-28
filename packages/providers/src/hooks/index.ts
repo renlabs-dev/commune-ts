@@ -129,11 +129,11 @@ export function useRewardAllocation(api: Api | Nullish) {
 
 // == subspaceModule ==
 
-export function useAllStakeOut(api: string) {
+export function useAllStakeOut(communeCacheUrl: string) {
   return useQuery({
     queryKey: ["stake_out"],
-    enabled: api != null,
-    queryFn: () => queryStakeOut(api),
+    enabled: communeCacheUrl != null,
+    queryFn: () => queryStakeOut(communeCacheUrl),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });

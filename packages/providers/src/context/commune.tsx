@@ -21,10 +21,10 @@ import type {
   RemoveVote,
   SS58Address,
   Stake,
+  StakeOutData,
   TransactionResult,
   Transfer,
   TransferStake,
-  StakeOutData,
   UpdateDelegatingVotingPower,
   Vote,
 } from "../types";
@@ -464,7 +464,7 @@ export function CommuneProvider({
 
   // Stake Out
   const { data: stakeOut, isLoading: isStakeOutLoading } =
-    useAllStakeOut(communeCacheEndpoint);
+    useAllStakeOut(communeCacheUrl);
 
   // User Total Staked
   const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
@@ -519,7 +519,7 @@ export function CommuneProvider({
     <CommuneContext.Provider
       value={{
         api,
-        communeCacheUrl: communeCacheEndpoint
+        communeCacheUrl: communeCacheUrl,
         isConnected,
         setIsConnected,
         isInitialized,
