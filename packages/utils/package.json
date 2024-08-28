@@ -13,7 +13,8 @@
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
-    "@commune-ts/tsconfig": "workspace:*"
+    "@commune-ts/tsconfig": "workspace:*",
+    "@commune-ts/types": "workspace:*"
   },
   "dependencies": {
     "@commune-ts/types": "workspace:*",

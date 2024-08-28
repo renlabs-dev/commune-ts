@@ -63,7 +63,7 @@ export default function RootLayout({
           <TRPCReactProvider>
             {children} <DelegatedModulesList />
           </TRPCReactProvider>
-          <Footer shouldBeFixed />
+          <Footer />
         </Providers>
       </body>
     </html>

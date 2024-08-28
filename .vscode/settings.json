@@ -4,5 +4,16 @@
     {
       "mode": "auto"
     }
+  ],
+  "conventionalCommits.scopes": [
+    "cache",
+    "governance",
+    "page",
+    "validator",
+    "wallet",
+    "comx-page",
+    "worker",
+    "package",
+    "tooling"
   ]
 }

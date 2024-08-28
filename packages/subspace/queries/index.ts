@@ -9,8 +9,10 @@ import {
   modulePropResolvers,
   OptionalProperties,
   SS58Address,
+  StakeOutData,
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
+  VoteWithStake,
 } from "@commune-ts/types";
 import {
   assertOrThrow,
@@ -40,7 +42,6 @@ export async function queryLastBlock(api: ApiPromise): Promise<LastBlock> {
 }
 
 // == system ==
-
 export async function queryBalance(api: Api, address: SS58Address | string) {
   if (!isSS58(address)) {
     throw new Error("Invalid address format, expected SS58");
@@ -204,7 +205,24 @@ export async function queryNotDelegatingVotingPower(api: Api) {
 
 // == subspaceModule ==
 
-export async function queryStakeOut(api: Api) {
+export async function queryStakeOut(
+  communeCacheUrl: string,
+): Promise<StakeOutData> {
+  const response = await fetch(`${communeCacheUrl}/api/stake-out`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const stakeOutData = response.json() as unknown as StakeOutData;
+  return stakeOutData;
+}
+
+export async function queryCalculateStakeOut(api: Api) {
+  // StakeTo is the list of keys that have staked to that key.
   const stakeToQuery = await api.query.subspaceModule?.stakeTo?.entries();
 
   if (!stakeToQuery) {
@@ -213,7 +231,6 @@ export async function queryStakeOut(api: Api) {
 
   let total = 0n;
   const perAddr = new Map<string, bigint>();
-  const perAddrPerNet = new Map<string, Map<string, bigint>>();
 
   for (const [keyRaw, valueRaw] of stakeToQuery) {
     const [fromAddrRaw, toAddrRaw] = keyRaw.args;
@@ -224,17 +241,82 @@ export async function queryStakeOut(api: Api) {
 
     total += staked;
     perAddr.set(fromAddr, (perAddr.get(fromAddr) ?? 0n) + staked);
-
-    const mapTo = perAddrPerNet.get(fromAddr) ?? new Map<string, bigint>();
-    mapTo.set(toAddr, (mapTo.get(toAddr) ?? 0n) + staked);
-    perAddrPerNet.set(fromAddr, mapTo);
   }
 
   return {
     total,
     perAddr,
-    perAddrPerNet,
   };
+}
+
+// Stake From is the list of keys that the key has staked to.
+export async function queryStakeFrom(api: Api) {
+  const stakeFromQuery = await api.query.subspaceModule?.stakeFrom?.entries();
+
+  if (!stakeFromQuery) {
+    throw new Error("stakeFrom is probably undefined");
+  }
+
+  let total = 0n;
+  const perAddr = new Map<string, bigint>();
+
+  for (const [storageKey, value] of stakeFromQuery) {
+    const addr = storageKey.toString();
+
+    const staked = BigInt(value.toString());
+
+    total += staked;
+    perAddr.set(addr, staked);
+  }
+
+  return {
+    total,
+    perAddr,
+  };
+}
+
+export async function processVotesAndStakes(
+  api: Api,
+  communeCacheUrl: string,
+  votesFor: SS58Address[],
+  votesAgainst: SS58Address[],
+): Promise<VoteWithStake[]> {
+  // Get addresses not delegating voting power
+  const notDelegatingAddresses = await queryNotDelegatingVotingPower(api);
+
+  // Get stake information
+  const { perAddr: stakeFromPerAddr } = await queryStakeFrom(api);
+  const { perAddr: stakeOutPerAddr } = await queryStakeOut(communeCacheUrl);
+
+  // Function to calculate total stake for an address
+  const getTotalStake = (address: SS58Address) => {
+    const stakeFrom = stakeFromPerAddr.get(address) ?? 0n;
+    const stakeOut = stakeOutPerAddr[address] ?? 0n;
+
+    // If the address is staking out to any address but not delegating, return 0
+    if (stakeOut > 0n && !notDelegatingAddresses?.includes(address)) {
+      return 0n;
+    }
+
+    return stakeFrom + stakeOut;
+  };
+
+  // Process votes for
+  const processedVotesFor = votesFor.map((address) => ({
+    address,
+    stake: getTotalStake(address),
+    vote: "In Favor" as const,
+  }));
+
+  // Process votes against
+  const processedVotesAgainst = votesAgainst.map((address) => ({
+    address,
+    stake: getTotalStake(address),
+    vote: "Against" as const,
+  }));
+
+  // Combine processed votes
+  return [...processedVotesFor, ...processedVotesAgainst];
 }
 
 export async function queryUserTotalStaked(

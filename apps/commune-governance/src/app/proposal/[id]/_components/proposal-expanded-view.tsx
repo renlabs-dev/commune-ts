@@ -4,9 +4,13 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { getExpirationTime, smallAddress } from "@commune-ts/utils";
+import {
+  getExpirationTime,
+  removeEmojis,
+  smallAddress,
+} from "@commune-ts/utils";
 
-import type { Vote } from "../../../components/vote-label";
+import type { VoteStatus } from "../../../components/vote-label";
 import { CreateComment } from "~/app/components/create-comment";
 import { Label } from "~/app/components/label";
 import { ProposalComment } from "~/app/components/proposal-comments";
@@ -95,7 +99,7 @@ const handleUserVotes = ({
 }: {
   proposalStatus: ProposalStatus;
   selectedAccountAddress: SS58Address;
-}): Vote => {
+}): VoteStatus => {
   if (!Object.prototype.hasOwnProperty.call(proposalStatus, "open"))
     return "UNVOTED";
 
@@ -169,7 +173,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
             text={content.title ?? "No Custom Metadata Title"}
           />
           <div className="h-full lg:overflow-auto">
-            <MarkdownView source={(content.body as string | undefined) ?? ""} />
+            <MarkdownView source={removeEmojis(content.body ?? "")} />
           </div>
         </div>
         <div className="w-full">
@@ -231,7 +235,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           <VoteCard
             proposalId={content.id}
             proposalStatus={content.status}
-            voted="UNVOTED"
+            voted={content.voted}
           />
         </div>
 
