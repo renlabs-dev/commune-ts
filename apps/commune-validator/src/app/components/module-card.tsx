@@ -7,6 +7,7 @@ import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
 import { smallAddress } from "@commune-ts/utils";
 
+import { useDelegateStore } from "~/stores/delegateStore";
 import { CopySquareButton } from "./copy-square-button";
 import { DelegateModuleWeight } from "./delegate-module-weight";
 
@@ -52,12 +53,20 @@ function useCustomMetadata(id: number, metadata: string | null) {
 
 export function ModuleCard(props: ModuleCardProps) {
   const customMetadata = useCustomMetadata(props.id, props.metadata);
+  const { delegatedModules } = useDelegateStore();
+  const isModuleDelegated = delegatedModules.some((m) => m.id === props.id);
 
   const title = customMetadata?.Ok?.title ?? "No Metadata";
 
   return (
-    <div className="flex min-w-full flex-col gap-2 border border-white/20 bg-[#898989]/5 p-6 text-gray-400">
-      <h2 className="text-xl font-semibold text-white">{title}</h2>
+    <div
+      className={`flex min-w-full flex-col gap-2 border p-6 text-gray-400 ${isModuleDelegated ? "border-green-500/80 bg-green-500/10" : "border-white/20 bg-[#898989]/5"}`}
+    >
+      <h2
+        className={`text-xl font-semibold ${isModuleDelegated ? "text-green-500" : "text-white"}`}
+      >
+        {title}
+      </h2>
       <p>{props.name ?? ""}</p>
       <div className="flex items-center justify-between gap-2">
         <span className="flex w-full items-center gap-1 border border-white/20 bg-[#898989]/5 py-2 pl-2 backdrop-blur-md  md:text-sm 2xl:text-base">
