@@ -5,11 +5,11 @@ import cors from "cors";
 import express from "express";
 import JSONBigInt from "json-bigint";
 
-import type { LastBlock } from "@commune-ts/types";
+import type { LastBlock, StakeOutData } from "@commune-ts/types";
 import {
   ApiPromise,
+  queryCalculateStakeOut,
   queryLastBlock,
-  queryStakeOut,
 } from "@commune-ts/subspace/queries";
 
 const JSONBig = JSONBigInt({
@@ -27,12 +27,7 @@ function log(msg: unknown, ...args: unknown[]) {
   console.log(`[${new Date().toISOString()}] ${msg}`, ...args);
 }
 
-const stakeOutData: {
-  total: bigint;
-  perAddr: Record<string, bigint>;
-  atBlock: bigint;
-  atTime: Date;
-} = {
+const stakeOutData: StakeOutData = {
   total: -1n,
   perAddr: {},
   atBlock: -1n,
@@ -82,7 +77,7 @@ async function stakeOutLoop() {
 
       log(`Block ${lastBlock.blockNumber}: processing`);
 
-      const data = await queryStakeOut(lastBlock.apiAtBlock);
+      const data = await queryCalculateStakeOut(lastBlock.apiAtBlock);
 
       const total = data.total;
       const perAddr = mapToObj(data.perAddr);
