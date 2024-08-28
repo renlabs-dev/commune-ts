@@ -101,7 +101,7 @@ export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
   if (b === 0n) return NaN;
   const base = 10n ** precision;
   const baseNum = Number(base);
-  return Number((a * base) / b) / baseNum;
+  return (Number(a) * Number(base)) / Number(b) / baseNum;
 }
 
 export function fromNano(nano: number | bigint): number {

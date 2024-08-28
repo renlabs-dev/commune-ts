@@ -10,6 +10,7 @@ function Providers({ children }: { children: ReactNode }): JSX.Element {
       <ToastProvider>
         <CommuneProvider
           wsEndpoint={String(process.env.NEXT_PUBLIC_WS_PROVIDER_URL)}
+          communeCacheUrl={String(process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL)}
         >
           {children}
         </CommuneProvider>
