@@ -21,11 +21,10 @@ import type {
   RemoveVote,
   SS58Address,
   Stake,
-  StakeOutData,
   TransactionResult,
   Transfer,
   TransferStake,
-  TStakeOut,
+  StakeOutData,
   UpdateDelegatingVotingPower,
   Vote,
 } from "../types";
@@ -52,6 +51,8 @@ interface CommuneApiState {
 
 interface CommuneContextType {
   api: ApiPromise | null;
+  communeCacheUrl: string;
+
   isConnected: boolean;
   setIsConnected: (arg: boolean) => void;
   isInitialized: boolean;
@@ -100,7 +101,7 @@ interface CommuneContextType {
   rewardAllocation: bigint | null | undefined;
   isRewardAllocationLoading: boolean;
 
-  stakeOut: TStakeOut | undefined;
+  stakeOut: StakeOutData | undefined;
   isStakeOutLoading: boolean;
 
   userTotalStaked: { address: string; stake: string }[] | undefined;
@@ -118,13 +119,13 @@ const CommuneContext = createContext<CommuneContextType | null>(null);
 interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
-  communeCacheEndpoint: string;
+  communeCacheUrl: string;
 }
 
 export function CommuneProvider({
   children,
   wsEndpoint,
-  communeCacheEndpoint,
+  communeCacheUrl,
 }: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [communeApi, setCommuneApi] = useState<CommuneApiState>({
@@ -518,6 +519,7 @@ export function CommuneProvider({
     <CommuneContext.Provider
       value={{
         api,
+        communeCacheUrl: communeCacheEndpoint
         isConnected,
         setIsConnected,
         isInitialized,
