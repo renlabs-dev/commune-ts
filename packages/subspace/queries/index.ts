@@ -249,13 +249,13 @@ export async function queryStakeFrom(api: Api) {
   let total = 0n;
   const perAddr = new Map<string, bigint>();
 
-  for (const [keyRaw, valueRaw] of stakeFromQuery) {
-    const [, toAddrRaw] = keyRaw.args;
-    const toAddr = toAddrRaw!.toString();
-    const staked = BigInt(valueRaw.toString());
+  for (const [storageKey, value] of stakeFromQuery) {
+    const addr = storageKey.toString();
+
+    const staked = BigInt(value.toString());
 
     total += staked;
-    perAddr.set(toAddr, (perAddr.get(toAddr) ?? 0n) + staked);
+    perAddr.set(addr, staked);
   }
 
   return {
