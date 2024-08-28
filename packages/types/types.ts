@@ -75,7 +75,20 @@ export interface StakeOutData {
 export interface TStakeOut {
   total: bigint;
   perAddr: Record<string, bigint>;
+  atBlock: bigint;
+  atTime: Date;
 }
+
+export interface StakeFromData {
+  total: bigint;
+  perAddr: Map<string, bigint>;
+}
+
+export type VoteWithStake = {
+  address: SS58Address;
+  stake: bigint;
+  vote: "In Favor" | "Against";
+};
 
 export interface LastBlock {
   blockHeader: Header;

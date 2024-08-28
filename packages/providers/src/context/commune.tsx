@@ -118,11 +118,13 @@ const CommuneContext = createContext<CommuneContextType | null>(null);
 interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
+  communeCacheEndpoint: string;
 }
 
 export function CommuneProvider({
   children,
   wsEndpoint,
+  communeCacheEndpoint,
 }: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [communeApi, setCommuneApi] = useState<CommuneApiState>({
@@ -150,9 +152,7 @@ export function CommuneProvider({
       web3Accounts,
       web3FromAddress,
     });
-    const provider = new WsProvider(
-      "wss://commune.api.onfinality.io/public-ws",
-    );
+    const provider = new WsProvider(wsEndpoint);
     const newApi = await ApiPromise.create({ provider });
     setApi(newApi);
     setIsInitialized(true);
@@ -462,9 +462,8 @@ export function CommuneProvider({
     useRewardAllocation(lastBlock?.apiAtBlock);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
-    lastBlock?.apiAtBlock,
-  );
+  const { data: stakeOut, isLoading: isStakeOutLoading } =
+    useAllStakeOut(communeCacheEndpoint);
 
   // User Total Staked
   const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
