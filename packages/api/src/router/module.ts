@@ -1,14 +1,16 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, InferSelectModel, sql } from "@commune-ts/db";
+import { eq, sql } from "@commune-ts/db";
 import {
   moduleData,
   moduleReport,
-  moduleReportPostSchema,
   userModuleData,
-  userModuleDataPostSchema,
 } from "@commune-ts/db/schema";
+import {
+  MODULE_REPORT_INSERT_SCHEMA,
+  USER_MODULE_DATA_INSERT_SCHEMA,
+} from "@commune-ts/db/validation";
 
 import { publicProcedure } from "../trpc";
 
@@ -94,7 +96,7 @@ export const moduleRouter = {
         .where(eq(userModuleData.userKey, input.userKey));
     }),
   createUserModuleData: publicProcedure
-    .input(userModuleDataPostSchema)
+    .input(USER_MODULE_DATA_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userModuleData).values({
         moduleId: input.moduleId,
@@ -103,7 +105,7 @@ export const moduleRouter = {
       });
     }),
   createModuleReport: publicProcedure
-    .input(moduleReportPostSchema)
+    .input(MODULE_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(moduleReport).values({
         moduleId: input.moduleId,
