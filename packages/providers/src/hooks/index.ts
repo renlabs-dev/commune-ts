@@ -6,6 +6,7 @@ import type { ApiPromise } from "@polkadot/api";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import {
+  processVotesAndStakes,
   queryBalance,
   queryDaosEntries,
   queryDaoTreasuryAddress,
@@ -13,6 +14,7 @@ import {
   queryNotDelegatingVotingPower,
   queryProposalsEntries,
   queryRewardAllocation,
+  queryStakeFrom,
   queryStakeOut,
   queryUnrewardedProposals,
   queryUserTotalStaked,
@@ -127,11 +129,35 @@ export function useRewardAllocation(api: Api | Nullish) {
 
 // == subspaceModule ==
 
-export function useAllStakeOut(api: Api | Nullish) {
+export function useAllStakeOut(api: string) {
   return useQuery({
     queryKey: ["stake_out"],
     enabled: api != null,
-    queryFn: () => queryStakeOut(api!),
+    queryFn: () => queryStakeOut(api),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useStakeFrom(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["stake_from"],
+    enabled: api != null,
+    queryFn: () => queryStakeFrom(api!),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useProcessVotesAndStakes(
+  api: Api | Nullish,
+  votesFor: SS58Address[],
+  votesAgainst: SS58Address[],
+) {
+  return useQuery({
+    queryKey: ["process_votes_and_stakes"],
+    enabled: api != null,
+    queryFn: () => processVotesAndStakes(api!, votesFor, votesAgainst),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });
