@@ -20,7 +20,6 @@
     "dev:api": "turbo watch dev -F @commune-ts/api",
     "dev:wallet-pkg": "turbo watch dev -F @commune-ts/wallet",
     "dev:wallet": "turbo watch dev -F commune-wallet",
-    "dev:public": "turbo dev -F @commune-ts/public",
     "dev:cache": "turbo dev -F commune-cache",
     "dev:db": "turbo watch dev -F @commune-ts/db",
     "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
