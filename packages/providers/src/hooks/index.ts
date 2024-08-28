@@ -163,6 +163,30 @@ export function useProcessVotesAndStakes(
   });
 }
 
+export function useStakeFrom(api: Api | Nullish) {
+  return useQuery({
+    queryKey: ["stake_from"],
+    enabled: api != null,
+    queryFn: () => queryStakeFrom(api!),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useProcessVotesAndStakes(
+  api: Api | Nullish,
+  votesFor: SS58Address[],
+  votesAgainst: SS58Address[],
+) {
+  return useQuery({
+    queryKey: ["process_votes_and_stakes"],
+    enabled: api != null,
+    queryFn: () => processVotesAndStakes(api!, votesFor, votesAgainst),
+    staleTime: STAKE_STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
+}
+
 export function useUserTotalStaked(
   api: Api | Nullish,
   address: SS58Address | string | Nullish,
