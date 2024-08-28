@@ -69,9 +69,21 @@ export type WithMetadataState<T> = T & { customData?: CustomMetadataState };
 
 export interface StakeOutData {
   total: bigint;
-  perAddr: Map<string, bigint>;
-  perAddrPerNet: Map<string, Map<string, bigint>>;
+  perAddr: Record<string, bigint>;
+  atBlock: bigint;
+  atTime: Date;
 }
+
+export interface StakeFromData {
+  total: bigint;
+  perAddr: Map<string, bigint>;
+}
+
+export type VoteWithStake = {
+  address: SS58Address;
+  stake: bigint;
+  vote: "In Favor" | "Against";
+};
 
 export interface LastBlock {
   blockHeader: Header;
@@ -122,7 +134,12 @@ export interface TransferStake {
 
 export interface Vote {
   proposalId: number;
-  vote: string;
+  vote: boolean;
+  callback?: (status: TransactionResult) => void;
+}
+
+export interface RemoveVote {
+  proposalId: number;
   callback?: (status: TransactionResult) => void;
 }
 

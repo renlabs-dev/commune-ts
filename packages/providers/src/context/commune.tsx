@@ -18,6 +18,7 @@ import type {
   InjectedExtension,
   LastBlock,
   ProposalState,
+  RemoveVote,
   SS58Address,
   Stake,
   StakeOutData,
@@ -50,6 +51,8 @@ interface CommuneApiState {
 
 interface CommuneContextType {
   api: ApiPromise | null;
+  communeCacheUrl: string;
+
   isConnected: boolean;
   setIsConnected: (arg: boolean) => void;
   isInitialized: boolean;
@@ -68,6 +71,7 @@ interface CommuneContextType {
   transfer: (transfer: Transfer) => Promise<void>;
   transferStake: (transfer: TransferStake) => Promise<void>;
   voteProposal: (vote: Vote) => Promise<void>;
+  removeVoteProposal: (removeVote: RemoveVote) => Promise<void>;
 
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
@@ -115,11 +119,13 @@ const CommuneContext = createContext<CommuneContextType | null>(null);
 interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
+  communeCacheUrl: string;
 }
 
 export function CommuneProvider({
   children,
   wsEndpoint,
+  communeCacheUrl,
 }: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [communeApi, setCommuneApi] = useState<CommuneApiState>({
@@ -351,6 +357,16 @@ export function CommuneProvider({
     await sendTransaction("Vote", transaction, callback);
   }
 
+  async function removeVoteProposal({
+    proposalId,
+    callback,
+  }: RemoveVote): Promise<void> {
+    if (!api?.tx.governanceModule?.removeVoteProposal) return;
+
+    const transaction = api.tx.governanceModule.removeVoteProposal(proposalId);
+    await sendTransaction("Remove Vote Proposal", transaction, callback);
+  }
+
   async function addCustomProposal({
     IpfsHash,
     callback,
@@ -447,9 +463,8 @@ export function CommuneProvider({
     useRewardAllocation(lastBlock?.apiAtBlock);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
-    lastBlock?.apiAtBlock,
-  );
+  const { data: stakeOut, isLoading: isStakeOutLoading } =
+    useAllStakeOut(communeCacheUrl);
 
   // User Total Staked
   const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
@@ -504,6 +519,7 @@ export function CommuneProvider({
     <CommuneContext.Provider
       value={{
         api,
+        communeCacheUrl: communeCacheUrl,
         isConnected,
         setIsConnected,
         isInitialized,
@@ -526,6 +542,7 @@ export function CommuneProvider({
         transferStake,
 
         voteProposal,
+        removeVoteProposal,
         addCustomProposal,
         addDaoApplication,
         addTransferDaoTreasuryProposal,

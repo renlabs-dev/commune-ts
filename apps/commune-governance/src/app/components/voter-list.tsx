@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
 
-import type { ProposalStatus, SS58Address } from "@commune-ts/types";
-import { formatToken, smallAddress } from "@commune-ts/utils";
+import type { ProposalStatus } from "@commune-ts/types";
+import { useProcessVotesAndStakes } from "@commune-ts/providers/hooks";
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
+import { copyToClipboard, formatToken, smallAddress } from "@commune-ts/utils";
 
 import { SectionHeaderText } from "./section-header-text";
 
@@ -9,40 +12,38 @@ interface VoterListProps {
   proposalStatus: ProposalStatus;
 }
 
-interface Voter {
-  address: SS58Address;
-  status: "In Favor" | "Against";
-  stake: bigint;
-}
-
 export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
-  const getVoters = (): Voter[] => {
-    if ("open" in proposalStatus) {
-      const { votesFor, votesAgainst, stakeFor, stakeAgainst } =
-        proposalStatus.open;
+  const { api, communeCacheUrl } = useCommune();
 
-      const forVoters: Voter[] = votesFor.map((address) => ({
-        address,
-        status: "In Favor",
-        stake: stakeFor / BigInt(votesFor.length),
-      }));
+  const votesFor = "open" in proposalStatus ? proposalStatus.open.votesFor : [];
+  const votesAgainst =
+    "open" in proposalStatus ? proposalStatus.open.votesAgainst : [];
 
-      const againstVoters: Voter[] = votesAgainst.map((address) => ({
-        address,
-        status: "Against",
-        stake: stakeAgainst / BigInt(votesAgainst.length),
-      }));
+  const {
+    data: voters,
+    isLoading,
+    isError,
+  } = useProcessVotesAndStakes(api, communeCacheUrl, votesFor, votesAgainst);
 
-      return [...forVoters, ...againstVoters].sort((a, b) =>
-        Number(b.stake - a.stake),
-      );
-    }
-    return [];
-  };
+  if (isLoading) {
+    return (
+      <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
+        <SectionHeaderText text="Voters List" />
+        <p className="animate-pulse">Loading voters...</p>
+      </div>
+    );
+  }
 
-  const voters = getVoters();
+  if (isError) {
+    return (
+      <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
+        <SectionHeaderText text="Voters List" />
+        <p>Error loading voters. Please try again later.</p>
+      </div>
+    );
+  }
 
-  if (voters.length === 0) {
+  if (!voters || voters.length === 0) {
     return (
       <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
         <SectionHeaderText text="Voters List" />
@@ -51,25 +52,35 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     );
   }
 
+  const sortedVoters = [...voters].sort((a, b) => Number(b.stake - a.stake));
+
+  const handleCopyAddress = (address: string) => {
+    copyToClipboard(address);
+    toast.success("Address copied to clipboard");
+  };
+
   return (
     <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
       <SectionHeaderText text="Voters List" />
       <div className="max-h-72 overflow-y-auto">
-        {voters.map(({ address, status, stake }, index) => (
+        {sortedVoters.map(({ address, vote, stake }, index) => (
           <div key={index} className="mb-2 flex items-end justify-between pr-2">
-            <span className="text-white">{smallAddress(address)}</span>
+            <button
+              className="text-white transition duration-300 hover:text-green-500"
+              onClick={() => handleCopyAddress(address as string)}
+            >
+              {smallAddress(address as string)}
+            </button>
             <div className="flex flex-col items-end">
               <span
                 className={
-                  status === "In Favor" ? "text-green-500" : "text-red-500"
+                  vote === "In Favor" ? "text-green-500" : "text-red-500"
                 }
               >
-                {status}
+                {vote}
               </span>
               <span className="text-sm text-gray-400">
-                {Number(stake) === 0
-                  ? "Registering Stake"
-                  : formatToken(Number(stake))}
+                {stake === 0n ? "No Stake Info" : formatToken(Number(stake))}
               </span>
             </div>
           </div>

@@ -29,7 +29,7 @@ export function TransactionStatus({
 
   return (
     <p
-      className={cn("flex items-center gap-1 pt-4 text-left text-base", color)}
+      className={cn("flex items-center gap-1 pt-2 text-left text-base", color)}
     >
       {status && status !== "SUCCESS" && status !== "ERROR" && (
         <LoadingSpinner color={color} />
