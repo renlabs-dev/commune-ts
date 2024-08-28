@@ -129,11 +129,11 @@ export function useRewardAllocation(api: Api | Nullish) {
 
 // == subspaceModule ==
 
-export function useAllStakeOut(api: Api | Nullish) {
+export function useAllStakeOut(communeCacheUrl: string) {
   return useQuery({
     queryKey: ["stake_out"],
-    enabled: api != null,
-    queryFn: () => queryStakeOut(api!),
+    enabled: communeCacheUrl != null,
+    queryFn: () => queryStakeOut(communeCacheUrl),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });
@@ -151,13 +151,15 @@ export function useStakeFrom(api: Api | Nullish) {
 
 export function useProcessVotesAndStakes(
   api: Api | Nullish,
+  communeCacheUrl: string,
   votesFor: SS58Address[],
   votesAgainst: SS58Address[],
 ) {
   return useQuery({
     queryKey: ["process_votes_and_stakes"],
     enabled: api != null,
-    queryFn: () => processVotesAndStakes(api!, votesFor, votesAgainst),
+    queryFn: () =>
+      processVotesAndStakes(api!, communeCacheUrl, votesFor, votesAgainst),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });

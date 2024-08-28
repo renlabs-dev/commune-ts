@@ -13,7 +13,7 @@ interface VoterListProps {
 }
 
 export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
-  const { api } = useCommune();
+  const { api, communeCacheUrl } = useCommune();
 
   const votesFor = "open" in proposalStatus ? proposalStatus.open.votesFor : [];
   const votesAgainst =
@@ -23,7 +23,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     data: voters,
     isLoading,
     isError,
-  } = useProcessVotesAndStakes(api, votesFor, votesAgainst);
+  } = useProcessVotesAndStakes(api, communeCacheUrl, votesFor, votesAgainst);
 
   if (isLoading) {
     return (

@@ -3,14 +3,10 @@
   "ui": "tui",
   "tasks": {
     "topo": {
-      "dependsOn": [
-        "^topo"
-      ]
+      "dependsOn": ["^topo"]
     },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -20,37 +16,23 @@
       ]
     },
     "start": {
-      "dependsOn": [
-        "^topo"
-      ]
+      "dependsOn": ["^topo"]
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "format": {
-      "outputs": [
-        "node_modules/.cache/.prettiercache"
-      ],
+      "outputs": ["node_modules/.cache/.prettiercache"],
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": [
-        "^topo",
-        "^build"
-      ],
-      "outputs": [
-        "node_modules/.cache/.eslintcache"
-      ]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "typecheck": {
-      "dependsOn": [
-        "^topo",
-        "^build"
-      ],
-      "outputs": [
-        "node_modules/.cache/tsbuildinfo.json"
-      ]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "clean": {
       "cache": false
@@ -78,7 +60,8 @@
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
     "PORT",
-    "NEXT_PUBLIC_WS_PROVIDER_URL"
+    "NEXT_PUBLIC_WS_PROVIDER_URL",
+    "NEXT_PUBLIC_CACHE_PROVIDER_URL"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
