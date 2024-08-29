@@ -281,42 +281,58 @@ export async function processVotesAndStakes(
   votesFor: SS58Address[],
   votesAgainst: SS58Address[],
 ): Promise<VoteWithStake[]> {
-  // Get addresses not delegating voting power
-  const notDelegatingAddresses = await queryNotDelegatingVotingPower(api);
+  // Get addresses not delegating voting power and get stake information
+  const [notDelegatingAddresses, StakeFrom, StakeOut] = await Promise.all([
+    queryNotDelegatingVotingPower(api),
+    queryStakeFrom(api),
+    queryStakeOut(communeCacheUrl),
+  ]);
 
-  // Get stake information
-  const { perAddr: stakeFromPerAddr } = await queryStakeFrom(api);
-  const { perAddr: stakeOutPerAddr } = await queryStakeOut(communeCacheUrl);
+  const notDelegatingSet = new Set(notDelegatingAddresses);
 
-  // Function to calculate total stake for an address
-  const getTotalStake = (address: SS58Address) => {
-    const stakeFrom = stakeFromPerAddr.get(address) ?? 0n;
-    const stakeOut = stakeOutPerAddr[address] ?? 0n;
+  const stakeOutMap = new Map(
+    Object.entries(StakeOut.perAddr).map(([key, value]) => [
+      key,
+      BigInt(value),
+    ]),
+  );
 
-    // If the address is staking out to any address but not delegating, return 0
-    if (stakeOut > 0n && !notDelegatingAddresses?.includes(address)) {
-      return 0n;
-    }
+  // Pre-calculate total stake for each address
+  const totalStakeMap = new Map<SS58Address, bigint>();
+  const allAddresses = new Set([...votesFor, ...votesAgainst]);
 
-    return stakeFrom + stakeOut;
-  };
+  for (const address of allAddresses) {
+    const stakeFrom = StakeFrom.perAddr.get(address) ?? 0n;
+    const stakeOut = stakeOutMap.get(address) ?? 0n;
 
-  // Process votes for
-  const processedVotesFor = votesFor.map((address) => ({
-    address,
-    stake: getTotalStake(address),
-    vote: "In Favor" as const,
-  }));
+    const totalStake =
+      stakeOut > 0n && !notDelegatingSet.has(address)
+        ? 0n
+        : stakeFrom + stakeOut;
+    totalStakeMap.set(address, totalStake);
+  }
 
-  // Process votes against
-  const processedVotesAgainst = votesAgainst.map((address) => ({
-    address,
-    stake: getTotalStake(address),
-    vote: "Against" as const,
-  }));
+  // Process all votes and push it to an array to avoid spreding
+  const processedVotes: VoteWithStake[] = [];
+  votesFor.map((address) => {
+    processedVotes.push({
+      address,
+      stake: totalStakeMap.get(address) ?? 0n,
+      vote: "In Favor" as const,
+    });
+  });
 
-  // Combine processed votes
-  return [...processedVotesFor, ...processedVotesAgainst];
+  votesAgainst.map((address) => {
+    processedVotes.push({
+      address,
+      stake: totalStakeMap.get(address) ?? 0n,
+      vote: "Against" as const,
+    });
+  });
+
+  // Sort the processed votes
+  const sortedVotes = processedVotes.sort((a, b) => Number(b.stake - a.stake));
+  return sortedVotes;
 }
 
 export async function queryUserTotalStaked(
