@@ -52,8 +52,6 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     );
   }
 
-  const sortedVoters = [...voters].sort((a, b) => Number(b.stake - a.stake));
-
   const handleCopyAddress = (address: string) => {
     copyToClipboard(address);
     toast.success("Address copied to clipboard");
@@ -63,7 +61,7 @@ export function VoterList({ proposalStatus }: VoterListProps): JSX.Element {
     <div className="m-2 h-full animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-[1200ms]">
       <SectionHeaderText text="Voters List" />
       <div className="max-h-72 overflow-y-auto">
-        {sortedVoters.map(({ address, vote, stake }, index) => (
+        {voters.map(({ address, vote, stake }, index) => (
           <div key={index} className="mb-2 flex items-end justify-between pr-2">
             <button
               className="text-white transition duration-300 hover:text-green-500"
