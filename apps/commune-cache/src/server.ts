@@ -6,10 +6,8 @@ import express from "express";
 import routes from "./routes";
 import { log } from "./utils";
 
-const wsEndpoint =
-  process.env.NEXT_PUBLIC_WS_PROVIDER_URL ??
-  "wss://commune.api.onfinality.io/public-ws";
-const port = process.env.PORT ?? 3000;
+const port = process.env.PORT;
+const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
 
 async function setup(): Promise<ApiPromise> {
   const provider = new WsProvider(wsEndpoint);
