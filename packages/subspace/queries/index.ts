@@ -235,7 +235,6 @@ export async function queryCalculateStakeOut(api: Api) {
   for (const [keyRaw, valueRaw] of stakeToQuery) {
     const [fromAddrRaw, toAddrRaw] = keyRaw.args;
     const fromAddr = fromAddrRaw!.toString();
-    const toAddr = toAddrRaw!.toString();
 
     const staked = BigInt(valueRaw.toString());
 
@@ -249,8 +248,25 @@ export async function queryCalculateStakeOut(api: Api) {
   };
 }
 
-// Stake From is the list of keys that the key has staked to.
-export async function queryStakeFrom(api: Api) {
+export async function queryStakeFrom(
+  communeCacheUrl: string,
+): Promise<StakeOutData> {
+  const response = await fetch(`${communeCacheUrl}/api/stake-from`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const stakeOutData = response.json() as unknown as StakeOutData;
+  return stakeOutData;
+}
+
+export async function queryCalculateStakeFrom(api: Api) {
+  // Stake From is the list of keys that the key has staked to.
+
   const stakeFromQuery = await api.query.subspaceModule?.stakeFrom?.entries();
 
   if (!stakeFromQuery) {
@@ -282,16 +298,23 @@ export async function processVotesAndStakes(
   votesAgainst: SS58Address[],
 ): Promise<VoteWithStake[]> {
   // Get addresses not delegating voting power and get stake information
-  const [notDelegatingAddresses, StakeFrom, StakeOut] = await Promise.all([
+  const [notDelegatingAddresses, stakeFrom, stakeOut] = await Promise.all([
     queryNotDelegatingVotingPower(api),
-    queryStakeFrom(api),
+    queryStakeFrom(communeCacheUrl),
     queryStakeOut(communeCacheUrl),
   ]);
 
   const notDelegatingSet = new Set(notDelegatingAddresses);
 
   const stakeOutMap = new Map(
-    Object.entries(StakeOut.perAddr).map(([key, value]) => [
+    Object.entries(stakeOut.perAddr).map(([key, value]) => [
+      key,
+      BigInt(value),
+    ]),
+  );
+
+  const stakeFromMap = new Map(
+    Object.entries(stakeFrom.perAddr).map(([key, value]) => [
       key,
       BigInt(value),
     ]),
@@ -302,7 +325,7 @@ export async function processVotesAndStakes(
   const allAddresses = new Set([...votesFor, ...votesAgainst]);
 
   for (const address of allAddresses) {
-    const stakeFrom = StakeFrom.perAddr.get(address) ?? 0n;
+    const stakeFrom = stakeFromMap.get(address) ?? 0n;
     const stakeOut = stakeOutMap.get(address) ?? 0n;
 
     const totalStake =
