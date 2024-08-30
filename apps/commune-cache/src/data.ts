@@ -1,6 +1,6 @@
 import JSONBigInt from "json-bigint";
 
-import type { LastBlock, StakeOutData } from "@commune-ts/types";
+import type { ApiPromise, LastBlock, StakeOutData } from "@commune-ts/types";
 import {
   queryCalculateStakeFrom,
   queryCalculateStakeOut,
@@ -57,6 +57,42 @@ export function getStakeFromDataStringified() {
   return stakeFromDataStringified.data;
 }
 
+const updateStakeFrom = async (api: ApiPromise, lastBlock: LastBlock) => {
+  try {
+    const stakeFrom = await queryCalculateStakeFrom(api);
+    stakeFromData = {
+      total: stakeFrom.total,
+      perAddr: Object.fromEntries(stakeFrom.perAddr),
+      atBlock: BigInt(lastBlock.blockNumber),
+      atTime: new Date(),
+    };
+    log(`StakeFrom data updated for block ${lastBlock.blockNumber}`);
+  } catch (error) {
+    log(
+      `Error updating StakeFrom data for block ${lastBlock.blockNumber}:`,
+      error,
+    );
+  }
+};
+
+const updateStakeOut = async (api: ApiPromise, lastBlock: LastBlock) => {
+  try {
+    const stakeOut = await queryCalculateStakeOut(api);
+    stakeOutData = {
+      total: stakeOut.total,
+      perAddr: Object.fromEntries(stakeOut.perAddr),
+      atBlock: BigInt(lastBlock.blockNumber),
+      atTime: new Date(),
+    };
+    log(`StakeOut data updated for block ${lastBlock.blockNumber}`);
+  } catch (error) {
+    log(
+      `Error updating StakeOut data for block ${lastBlock.blockNumber}:`,
+      error,
+    );
+  }
+};
+
 export async function updateStakeDataLoop() {
   try {
     let lastBlock: LastBlock;
@@ -76,24 +112,10 @@ export async function updateStakeDataLoop() {
 
       log(`Block ${lastBlock.blockNumber}: processing`);
 
-      const [stakeFrom, stakeOut] = await Promise.all([
-        queryCalculateStakeFrom(api),
-        queryCalculateStakeOut(api),
+      await Promise.allSettled([
+        updateStakeFrom(api, lastBlock),
+        updateStakeOut(api, lastBlock),
       ]);
-
-      stakeFromData = {
-        total: stakeFrom.total,
-        perAddr: Object.fromEntries(stakeFrom.perAddr),
-        atBlock: BigInt(lastBlock.blockNumber),
-        atTime: new Date(),
-      };
-
-      stakeOutData = {
-        total: stakeOut.total,
-        perAddr: Object.fromEntries(stakeOut.perAddr),
-        atBlock: BigInt(lastBlock.blockNumber),
-        atTime: new Date(),
-      };
 
       log(`Data updated for block ${lastBlock.blockNumber}`);
     }
