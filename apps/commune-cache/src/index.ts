@@ -1,16 +1,15 @@
-import "@polkadot/api-augment";
-
-import { WsProvider } from "@polkadot/api";
-import cors from "cors";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 import express from "express";
 import JSONBigInt from "json-bigint";
 
 import type { LastBlock, StakeOutData } from "@commune-ts/types";
 import {
-  ApiPromise,
   queryCalculateStakeOut,
   queryLastBlock,
+  queryStakeFrom,
 } from "@commune-ts/subspace/queries";
+
+import { log, sleep, waitFor } from "./utils";
 
 const JSONBig = JSONBigInt({
   useNativeBigInt: true,
@@ -18,58 +17,67 @@ const JSONBig = JSONBigInt({
   strict: true,
 });
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const app = express();
+const port = process.env.PORT ?? 3000;
 
-function log(msg: unknown, ...args: unknown[]) {
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  console.log(`[${new Date().toISOString()}] ${msg}`, ...args);
-}
-
-const stakeOutData: StakeOutData = {
+let api: ApiPromise;
+let stakeFromData: StakeOutData = {
+  total: -1n,
+  perAddr: {},
+  atBlock: -1n,
+  atTime: new Date(),
+};
+let stakeOutData: StakeOutData = {
   total: -1n,
   perAddr: {},
   atBlock: -1n,
   atTime: new Date(),
 };
 
-const stakeOutDataStringfied = {
+const stakeOutDataStringified = {
   data: JSONBig.stringify(stakeOutData),
-  atBlock: stakeOutData.atBlock,
+  atBlock: -1n,
 };
 
-// as stringify is expensive, we only update it when the block changes to avoid unnecessary work
-const getStakeOutDataStringfied = () => {
-  if (stakeOutDataStringfied.atBlock !== stakeOutData.atBlock) {
-    stakeOutDataStringfied.data = JSONBig.stringify(stakeOutData);
-    stakeOutDataStringfied.atBlock = stakeOutData.atBlock;
+const stakeFromDataStringified = {
+  data: JSONBig.stringify(stakeFromData),
+  atBlock: -1n,
+};
+
+const getStakeOutDataStringified = () => {
+  if (stakeOutDataStringified.atBlock !== stakeOutData.atBlock) {
+    stakeOutDataStringified.data = JSONBig.stringify(stakeOutData);
+    stakeOutDataStringified.atBlock = stakeOutData.atBlock;
   }
-  return stakeOutDataStringfied.data;
+  return stakeOutDataStringified.data;
 };
 
-async function setup(): Promise<ApiPromise> {
-  const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
+const getStakeFromDataStringified = () => {
+  if (stakeFromDataStringified.atBlock !== stakeFromData.atBlock) {
+    stakeFromDataStringified.data = JSONBig.stringify(stakeFromData);
+    stakeFromDataStringified.atBlock = stakeFromData.atBlock;
+  }
+  return stakeFromDataStringified.data;
+};
 
-  log("Connecting to ", wsEndpoint);
-
+async function setupApi() {
+  const wsEndpoint = "wss://commune.api.onfinality.io/public-ws";
   const provider = new WsProvider(wsEndpoint);
-  const api = await ApiPromise.create({ provider });
-
-  return api;
+  api = await ApiPromise.create({ provider });
+  console.log("API connected");
 }
 
-async function stakeOutLoop() {
+async function updateStakeDataLoop() {
   try {
-    const api = await setup();
-
     let lastBlock: LastBlock;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const currentTime = new Date();
       lastBlock = await queryLastBlock(api);
-      if (lastBlock.blockNumber <= stakeOutData.atBlock) {
+      if (
+        lastBlock.blockNumber <=
+        Math.max(Number(stakeFromData.atBlock), Number(stakeOutData.atBlock))
+      ) {
         log(`Block ${lastBlock.blockNumber} already processed, skipping`);
         await sleep(1000);
         continue;
@@ -77,71 +85,35 @@ async function stakeOutLoop() {
 
       log(`Block ${lastBlock.blockNumber}: processing`);
 
-      const data = await queryCalculateStakeOut(lastBlock.apiAtBlock);
+      const [stakeFrom, stakeOut] = await Promise.all([
+        queryStakeFrom(api),
+        queryCalculateStakeOut(api),
+      ]);
 
-      const total = data.total;
-      const perAddr = mapToObj(data.perAddr);
+      stakeFromData = {
+        total: stakeFrom.total,
+        perAddr: Object.fromEntries(stakeFrom.perAddr),
+        atBlock: BigInt(lastBlock.blockNumber),
+        atTime: new Date(),
+      };
 
-      stakeOutData.total = total;
-      stakeOutData.perAddr = perAddr;
-      stakeOutData.atBlock = BigInt(lastBlock.blockNumber);
-      stakeOutData.atTime = new Date();
+      stakeOutData = {
+        total: stakeOut.total,
+        perAddr: Object.fromEntries(stakeOut.perAddr),
+        atBlock: BigInt(lastBlock.blockNumber),
+        atTime: new Date(),
+      };
 
-      log(
-        `Block ${lastBlock.blockNumber}: queryStakeOut in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
-      );
+      log(`Data updated for block ${lastBlock.blockNumber}`);
     }
   } catch (e) {
     log("UNEXPECTED ERROR: ", e);
     log("Restarting loop in 5 seconds");
     await sleep(5000);
-    stakeOutLoop().catch(console.error);
+    updateStakeDataLoop().catch(console.error);
     return;
   }
 }
-
-function mapToObj<K extends string | number, V>(
-  map: Map<K, V>,
-): Record<string, V> {
-  const obj: Record<string, V> = {};
-  for (const [k, v] of map) {
-    obj[k as string] = v;
-  }
-  return obj;
-}
-
-stakeOutLoop().catch(console.error);
-
-const app = express();
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
-
-type Ms = number;
-
-// wait for something, checking if it's ready every interval ms, until maxTime ms have passed
-const waitFor = async (
-  awaiter: string,
-  resourceName: string,
-  interval: Ms,
-  maxTime: Ms,
-  isReady: () => boolean,
-  verbose: boolean,
-) => {
-  let totalTime = 0;
-  while (totalTime < maxTime && !isReady()) {
-    if (verbose)
-      console.log(
-        `${awaiter} is waiting for ${resourceName} for ${totalTime / 1000}s`,
-      );
-    await sleep(interval);
-    totalTime += interval;
-  }
-};
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.get("/api/stake-out", async (req, res) => {
@@ -161,10 +133,32 @@ app.get("/api/stake-out", async (req, res) => {
     res.status(503).send("StakeOut data not available yet");
     return;
   }
-
   res
     .header("Content-Type", "application/json")
-    .send(getStakeOutDataStringfied());
+    .send(getStakeOutDataStringified());
+});
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+app.get("/api/stake-from", async (req, res) => {
+  const hasData = () => stakeFromData.atBlock !== -1n;
+
+  // if we don't have data yet, wait for it for at most 50s
+  await waitFor(
+    `request ${req.ip}`,
+    "StakeOut data",
+    2000,
+    50_000,
+    hasData,
+    true,
+  );
+
+  if (!hasData()) {
+    res.status(503).send("StakeFrom data not available yet");
+    return;
+  }
+  res
+    .header("Content-Type", "application/json")
+    .send(getStakeFromDataStringified());
 });
 
 app.get("/api/health", (req, res) => {
@@ -172,7 +166,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/api/health/details", (req, res) => {
-  res.status(200).send({
+  res.json({
     status: "ok",
     lastBlock: Number(stakeOutData.atBlock),
     atTime: stakeOutData.atTime,
@@ -180,8 +174,17 @@ app.get("/api/health/details", (req, res) => {
   });
 });
 
-const port = process.env.PORT ?? 3000;
+async function startServer() {
+  try {
+    await setupApi();
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+      updateStakeDataLoop().catch(console.error);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+startServer().catch(console.error);
