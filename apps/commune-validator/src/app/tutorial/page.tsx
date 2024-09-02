@@ -26,7 +26,7 @@ export const tutorialData = {
     description: "Staking on the CommuneX Validator",
     steps: [
       "Navigate to the staking tab in your wallet",
-      "Add the validator address: 5Dw5xxnpgVAbBgXtxT1DEWKv3YJJxHGELZKHNCEWzRNKbXdL",
+      "Add one of those validator addresses: 5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp (CommuneX), 5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw (MarketCompass)",
       "Stake your desired amount (this determines your voting weight for modules)",
       "Note: Your staked balance remains untouched; it only represents your voting power",
     ],

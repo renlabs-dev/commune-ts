@@ -75,18 +75,21 @@ function WalletHeader(props: WalletProps["header"]) {
             <p className="text-green-500">
               {props.selectedAccount.meta.name?.toUpperCase()}
             </p>
-            <p>
+            <p className="hidden md:block">
               /{" "}
               {props.selectedAccount.meta.name &&
               props.selectedAccount.meta.name.length > 10
                 ? smallAddress(props.selectedAccount.address)
                 : props.selectedAccount.address}
             </p>
+            <p className="block md:hidden">
+              {smallAddress(props.selectedAccount.address)}
+            </p>
           </span>
         </button>
         <button
           onClick={props.onSwitchWallet}
-          className="flex w-fit items-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+          className="flex w-full items-center justify-center text-nowrap border border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50 md:w-fit"
         >
           <ChevronLeftIcon className="h-6 w-6" /> Switch Wallet
         </button>

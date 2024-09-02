@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/utils";
+import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { useDelegateStore } from "~/stores/delegateStore";
 import { api } from "~/trpc/react";
@@ -21,7 +21,7 @@ export function DelegatedModulesList() {
     hasUnsavedChanges,
   } = useDelegateStore();
   const totalPercentage = getTotalPercentage();
-  const { selectedAccount } = useCommune();
+  const { selectedAccount, userTotalStaked } = useCommune();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -30,6 +30,27 @@ export function DelegatedModulesList() {
     { userKey: selectedAccount?.address ?? "" },
     { enabled: !!selectedAccount?.address },
   );
+
+  const validatorAddresses = [
+    "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp",
+    "5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw",
+  ];
+
+  function userWeightPower(
+    userStakes: { address: string; stake: string }[] | undefined,
+    validatorAddresses: string[],
+  ) {
+    if (!userStakes) {
+      return BigInt(0);
+    }
+    const data = userStakes
+      .filter((stake) => validatorAddresses.includes(stake.address))
+      .reduce((sum, stake) => sum + BigInt(stake.stake), BigInt(0));
+
+    return formatToken(Number(data));
+  }
+
+  const userStakeWeight = userWeightPower(userTotalStaked, validatorAddresses);
 
   useEffect(() => {
     if (error) {
@@ -122,22 +143,63 @@ export function DelegatedModulesList() {
   return (
     <>
       {selectedAccount?.address && (
-        <div className="fixed bottom-0 right-0 mt-8 w-full min-w-96 animate-fade-up border border-white/20 bg-[#898989]/5 backdrop-blur-md md:bottom-14 md:mr-4 md:w-fit">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex w-full items-center justify-between p-2 text-xl font-semibold text-white"
-          >
-            <span>Your Module List</span>
-            <span>
-              <ChevronUpIcon
-                className={`h-6 w-6 transform transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
+        <div className="fixed bottom-0 right-0 z-50 mt-8 flex w-full flex-col-reverse text-sm md:bottom-4 md:mr-4 md:w-fit">
+          <div className="flex animate-fade-up items-center justify-between divide-white/20 rounded-full border border-white/20 bg-[#898989]/5 font-semibold text-white backdrop-blur-md">
+            <span className="flex">
+              <p className="border-r border-white/20 px-3 pl-5">
+                <b className="text-green-500">{delegatedModules.length}</b>{" "}
+                Modules
+              </p>
+              <span className="border-r border-white/20 px-3">
+                <b
+                  className={`${totalPercentage !== 100 ? "text-amber-500" : "text-green-500"}`}
+                >
+                  {totalPercentage}%
+                </b>{" "}
+                Weighted{" "}
+                {totalPercentage !== 100 && (
+                  <span className="text-amber-500">
+                    ({totalPercentage > 100 ? "Exceeds" : "Does not equal"}{" "}
+                    100%)
+                  </span>
+                )}
+              </span>
+              <span className="border-r border-white/20 px-3">
+                <div className="flex gap-1 text-white">
+                  <b className="text-amber-500">{userStakeWeight}</b> COMAI{" "}
+                  <p className="text-sm">(Weight Power)</p>
+                </div>
+              </span>
+              <span className="px-3">
+                {hasUnsavedChanges() ? (
+                  <span className="font-semibold text-red-500">
+                    Careful! You have unsaved changes
+                  </span>
+                ) : (
+                  <span className="font-semibold text-green-500">
+                    All changes saved!
+                  </span>
+                )}
+              </span>
             </span>
-          </button>
+            <span>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="relative flex w-fit items-center gap-1 text-nowrap rounded-full border border-green-500 bg-green-600/15 px-5 py-3 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+              >
+                <span>{isOpen ? "COLLAPSE VIEW" : "EXPAND VIEW"}</span>
+                <span>
+                  <ChevronUpIcon
+                    className={`h-5 w-5 transform transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </span>
+              </button>
+            </span>
+          </div>
           {isOpen && (
-            <div className="p-2 pt-2">
+            <div className="mb-2 flex animate-fade-up flex-col divide-white/20 rounded-3xl border border-white/20 bg-[#898989]/5 p-4 font-semibold text-white backdrop-blur-md">
               <div className="mb-2 grid grid-cols-3 gap-6 border-b border-white/20 pb-2 text-sm font-semibold text-gray-400 md:grid-cols-4">
                 <div>Module</div>
                 <div className="hidden md:block">Name</div>
@@ -166,32 +228,24 @@ export function DelegatedModulesList() {
                           Number(e.target.value),
                         )
                       }
-                      className="mr-2 w-16 bg-[#898989]/10 p-1 text-white"
+                      className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
                       min="0"
                       max="100"
                     />
                     <span className="mr-2 text-white">%</span>
                     <button
                       onClick={() => removeModule(module.id)}
-                      className="text-red-500 hover:text-red-400"
+                      className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
                     >
-                      ✕
+                      <XMarkIcon className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
               ))}
-              <div className="mt-4 animate-fade-up text-white animate-delay-200">
-                Total Percentage: {totalPercentage}%
-                {totalPercentage !== 100 && (
-                  <span className="ml-2 text-red-500">
-                    {totalPercentage > 100 ? "Exceeds" : "Does not equal"} 100%
-                  </span>
-                )}
-              </div>
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleSubmit}
-                  className={`mt-4 w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
+                  className={`mt-4 w-full animate-fade rounded-full border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
                     isSubmitting ||
                     totalPercentage !== 100 ||
                     (!selectedAccount.address &&
@@ -205,12 +259,6 @@ export function DelegatedModulesList() {
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
-                {hasUnsavedChanges() && (
-                  <div className="mb-4 bg-yellow-500/20 p-2 text-center text-yellow-500">
-                    You have unsaved changes. Please submit them before leaving
-                    the page.
-                  </div>
-                )}
               </div>
             </div>
           )}

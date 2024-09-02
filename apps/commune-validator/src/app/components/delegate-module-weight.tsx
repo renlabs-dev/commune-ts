@@ -33,7 +33,7 @@ export function DelegateModuleWeight(props: DelegateModuleWeightProps) {
       onClick={handleDelegateClick}
       className={`flex w-fit items-center gap-2 border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 ${
         isModuleDelegated
-          ? "border-red-500 bg-red-500/10 hover:bg-red-500/20"
+          ? "hover:border-red-500 hover:bg-red-500/20"
           : "hover:border-green-500 hover:bg-green-500/10"
       }`}
     >

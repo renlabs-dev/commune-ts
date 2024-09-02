@@ -27,7 +27,7 @@ export function MainSection() {
 
   function calculateUserStakeWeight() {
     if (stakeOut != null && selectedAccount != null) {
-      const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
+      const userStakeEntry = stakeOut.perAddr[selectedAccount.address];
       return userStakeEntry ?? 0n;
     }
     return null;

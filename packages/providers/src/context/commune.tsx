@@ -51,6 +51,8 @@ interface CommuneApiState {
 
 interface CommuneContextType {
   api: ApiPromise | null;
+  communeCacheUrl: string;
+
   isConnected: boolean;
   setIsConnected: (arg: boolean) => void;
   isInitialized: boolean;
@@ -111,8 +113,8 @@ interface CommuneContextType {
   daosWithMeta: DaoState[] | undefined;
   isDaosLoading: boolean;
   signHex: (msgHex: `0x${string}`) => Promise<{
-    signature: `0x${string}`,
-    address: string,
+    signature: `0x${string}`;
+    address: string;
   }>;
 }
 
@@ -121,11 +123,13 @@ const CommuneContext = createContext<CommuneContextType | null>(null);
 interface CommuneProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
+  communeCacheUrl: string;
 }
 
 export function CommuneProvider({
   children,
   wsEndpoint,
+  communeCacheUrl,
 }: CommuneProviderProps): JSX.Element {
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [communeApi, setCommuneApi] = useState<CommuneApiState>({
@@ -463,9 +467,8 @@ export function CommuneProvider({
     useRewardAllocation(lastBlock?.apiAtBlock);
 
   // Stake Out
-  const { data: stakeOut, isLoading: isStakeOutLoading } = useAllStakeOut(
-    lastBlock?.apiAtBlock,
-  );
+  const { data: stakeOut, isLoading: isStakeOutLoading } =
+    useAllStakeOut(communeCacheUrl);
 
   // User Total Staked
   const { data: userTotalStaked, isLoading: isUserTotalStakedLoading } =
@@ -520,7 +523,9 @@ export function CommuneProvider({
    * Sings a message in hex format
    * @param msgHex message in hex to sign
    */
-  async function signHex(msgHex: `0x${string}`): Promise<{ signature: `0x${string}`; address: string }> {
+  async function signHex(
+    msgHex: `0x${string}`,
+  ): Promise<{ signature: `0x${string}`; address: string }> {
     if (!selectedAccount || !communeApi.web3FromAddress) {
       throw new Error("No selected account");
     }
@@ -532,7 +537,7 @@ export function CommuneProvider({
     const result = await injector.signer.signRaw({
       address: selectedAccount.address,
       data: msgHex,
-      type: 'bytes'
+      type: "bytes",
     });
 
     return {
@@ -545,6 +550,7 @@ export function CommuneProvider({
     <CommuneContext.Provider
       value={{
         api,
+        communeCacheUrl,
         isConnected,
         setIsConnected,
         isInitialized,
@@ -600,7 +606,7 @@ export function CommuneProvider({
 
         daosWithMeta,
         isDaosLoading,
-        signHex
+        signHex,
       }}
     >
       {children}

@@ -12,8 +12,6 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const ss58Address = (name: string) => varchar(name, { length: 256 });
 
@@ -87,14 +85,6 @@ export const userModuleData = createTable(
   }),
 );
 
-export const userModuleDataPostSchema = createInsertSchema(userModuleData, {
-  userKey: z.string(),
-  moduleId: z.number().int(),
-  weight: z.number().positive(),
-}).omit({
-  id: true,
-});
-
 export enum ReportReason {
   spam = "spam",
   harassment = "harassment",
@@ -115,15 +105,6 @@ export const moduleReport = createTable("module_report", {
   content: text("content"),
   reason: varchar("reason", { length: 16 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const moduleReportPostSchema = createInsertSchema(moduleReport, {
-  userKey: z.string(),
-  moduleId: z.number().int(),
-  content: z.string(),
-  reason: z.string(),
-}).omit({
-  id: true,
 });
 
 export const proposalCommentSchema = createTable(

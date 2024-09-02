@@ -20,7 +20,7 @@
     "dev:api": "turbo watch dev -F @commune-ts/api",
     "dev:wallet-pkg": "turbo watch dev -F @commune-ts/wallet",
     "dev:wallet": "turbo watch dev -F commune-wallet",
-    "dev:public": "turbo dev -F @commune-ts/public",
+    "dev:cache": "turbo dev -F commune-cache",
     "dev:db": "turbo watch dev -F @commune-ts/db",
     "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
@@ -29,6 +29,7 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
+    "docker:build:commune-cache:digitalocean": "docker build -f ./tooling/dockerfile/backend-service.Dockerfile -t commune-cache:latest --build-arg PORT=8080 --build-arg PROJECT=commune-cache --platform linux/amd64,linux/arm64 . && docker tag commune-cache:latest ghcr.io/agicommies/commune-cache:latest  && docker push ghcr.io/agicommies/commune-cache:latest",
     "prepare": "husky"
   },
   "devDependencies": {
