@@ -4,6 +4,8 @@ import { z } from "zod";
 import {
   commentInteractionSchema,
   commentReportSchema,
+  daoVoteSchema,
+  DaoVoteType,
   moduleReport,
   proposalCommentSchema,
   ReportReason,
@@ -84,4 +86,15 @@ export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
   },
 ).omit({
   id: true,
+});
+
+export const DAO_VOTE_INSERT_SCHEMA = createInsertSchema(daoVoteSchema, {
+  daoId: z.number().int(),
+  votingKey: z.string(),
+  daoVoteType: z.nativeEnum(DaoVoteType),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true,
 });
