@@ -565,6 +565,12 @@ importers:
 
   apps/comrads-worker:
     dependencies:
+      "@commune-ts/db":
+        specifier: workspace:*
+        version: link:../../packages/db
+      "@commune-ts/subspace":
+        specifier: workspace:*
+        version: link:../../packages/subspace
       "@commune-ts/types":
         specifier: workspace:*
         version: link:../../packages/types
@@ -575,18 +581,12 @@ importers:
         specifier: ^4.19.2
         version: 4.19.2
     devDependencies:
-      "@commune-ts/db":
-        specifier: workspace:*
-        version: link:../../packages/db
       "@commune-ts/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
       "@commune-ts/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@commune-ts/subspace":
-        specifier: workspace:*
-        version: link:../../packages/subspace
       "@commune-ts/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
