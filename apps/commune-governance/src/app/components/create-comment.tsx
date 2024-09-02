@@ -14,6 +14,12 @@ const MAX_CHARACTERS = 300;
 const MAX_NAME_CHARACTERS = 300;
 const MIN_STAKE_REQUIRED = 5000;
 
+enum ModeType {
+  PROPOSAL = "PROPOSAL",
+  DAO = "DAO",
+  REMOVE = "REMOVE",
+}
+
 const CommentSchema = z.object({
   content: z
     .string()
@@ -87,6 +93,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       CreateComment.mutate({
         content,
         proposalId,
+        type: ModeType.PROPOSAL,
         userName: name || undefined,
         userKey: String(selectedAccount.address),
       });
