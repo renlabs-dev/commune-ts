@@ -10,13 +10,17 @@ export const SessionDataSchema = z.object({
   created: z.string().datetime(), // ISO date string
 });
 
-export type SessionData = z.infer<typeof SessionDataSchema>;  
+export type SessionData = z.infer<typeof SessionDataSchema>;
 
-export function createSessionData(window: { location: { origin: string }}): SessionData {
+export function createSessionData(window: {
+  location: { origin: string };
+}): SessionData {
   return {
-    statement: "Sign in with polkadot extension to authenticate your session at " + window.location.origin,
+    statement:
+      "Sign in with polkadot extension to authenticate your session at " +
+      window.location.origin,
     uri: window.location.origin || "unknown",
-    nonce: randomBytes(16).toString('base64'),
+    nonce: randomBytes(16).toString("base64"),
     created: new Date().toISOString(),
   };
 }
