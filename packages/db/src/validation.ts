@@ -6,6 +6,7 @@ import {
   commentReportSchema,
   daoVoteSchema,
   DaoVoteType,
+  ModeType,
   moduleReport,
   proposalCommentSchema,
   ReportReason,
@@ -25,6 +26,7 @@ export const PROPOSAL_COMMENT_INSERT_SCHEMA = createInsertSchema(
     userKey: z.string().min(1),
     userName: z.string().optional(),
     proposalId: z.number().int(),
+    type: z.nativeEnum(ModeType),
   },
 ).omit({
   id: true,
@@ -90,7 +92,7 @@ export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
 
 export const DAO_VOTE_INSERT_SCHEMA = createInsertSchema(daoVoteSchema, {
   daoId: z.number().int(),
-  votingKey: z.string(),
+  userKey: z.string(),
   daoVoteType: z.nativeEnum(DaoVoteType),
 }).omit({
   id: true,
