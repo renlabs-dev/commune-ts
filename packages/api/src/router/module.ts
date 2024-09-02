@@ -1,14 +1,16 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, InferSelectModel, sql } from "@commune-ts/db";
+import { eq, sql } from "@commune-ts/db";
 import {
   moduleData,
   moduleReport,
-  moduleReportPostSchema,
   userModuleData,
-  userModuleDataPostSchema,
 } from "@commune-ts/db/schema";
+import {
+  MODULE_REPORT_INSERT_SCHEMA,
+  USER_MODULE_DATA_INSERT_SCHEMA,
+} from "@commune-ts/db/validation";
 
 import { authenticatedProcedure, publicProcedure } from "../trpc";
 
@@ -86,15 +88,14 @@ export const moduleRouter = {
       };
     }),
   // POST
-  deleteUserModuleData: authenticatedProcedure
-    .mutation(async ({ ctx }) => {
-      const userKey = ctx.user!.userKey;
-      await ctx.db
-        .delete(userModuleData)
-        .where(eq(userModuleData.userKey, userKey));
-    }),
+  deleteUserModuleData: authenticatedProcedure.mutation(async ({ ctx }) => {
+    const userKey = ctx.user!.userKey;
+    await ctx.db
+      .delete(userModuleData)
+      .where(eq(userModuleData.userKey, userKey));
+  }),
   createUserModuleData: authenticatedProcedure
-    .input(userModuleDataPostSchema.omit({ userKey: true }))
+    .input(USER_MODULE_DATA_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       const userKey = ctx.user!.userKey;
 
@@ -105,7 +106,7 @@ export const moduleRouter = {
       });
     }),
   createModuleReport: authenticatedProcedure
-    .input(moduleReportPostSchema.omit({ userKey: true }))
+    .input(MODULE_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       const userKey = ctx.user!.userKey;
       await ctx.db.insert(moduleReport).values({

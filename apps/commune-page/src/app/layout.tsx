@@ -32,6 +32,7 @@ export default function RootLayout({
               { name: "Governance", href: links.governance, external: true },
               { name: "Docs", href: links.docs, external: false },
               { name: "Blog", href: links.blog, external: true },
+              { name: "Wallet", href: links.wallet, external: true },
               { name: "Join Community", href: links.discord, external: true },
             ]}
             title="Commune AI"

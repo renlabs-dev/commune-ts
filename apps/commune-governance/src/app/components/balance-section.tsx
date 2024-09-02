@@ -26,7 +26,7 @@ export function BalanceSection({
 
   let userStakeWeight: bigint | null = null;
   if (stakeOut != null && selectedAccount != null) {
-    const userStakeEntry = stakeOut.perAddr.get(selectedAccount.address);
+    const userStakeEntry = stakeOut.perAddr[selectedAccount.address];
     userStakeWeight = userStakeEntry ?? 0n;
   }
 

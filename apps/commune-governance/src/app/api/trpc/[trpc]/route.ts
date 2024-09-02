@@ -4,7 +4,6 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@commune-ts/api";
 
-
 /**
  * Configure basic CORS headers
  */
