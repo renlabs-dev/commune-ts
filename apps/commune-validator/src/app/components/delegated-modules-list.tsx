@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { smallAddress } from "@commune-ts/utils";
+import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { useDelegateStore } from "~/stores/delegateStore";
 import { api } from "~/trpc/react";
@@ -21,7 +21,7 @@ export function DelegatedModulesList() {
     hasUnsavedChanges,
   } = useDelegateStore();
   const totalPercentage = getTotalPercentage();
-  const { selectedAccount } = useCommune();
+  const { selectedAccount, userTotalStaked } = useCommune();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -30,6 +30,27 @@ export function DelegatedModulesList() {
     { userKey: selectedAccount?.address ?? "" },
     { enabled: !!selectedAccount?.address },
   );
+
+  const validatorAddresses = [
+    "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp",
+    "5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw",
+  ];
+
+  function userWeightPower(
+    userStakes: { address: string; stake: string }[] | undefined,
+    validatorAddresses: string[],
+  ) {
+    if (!userStakes) {
+      return BigInt(0);
+    }
+    const data = userStakes
+      .filter((stake) => validatorAddresses.includes(stake.address))
+      .reduce((sum, stake) => sum + BigInt(stake.stake), BigInt(0));
+
+    return formatToken(Number(data));
+  }
+
+  const userStakeWeight = userWeightPower(userTotalStaked, validatorAddresses);
 
   useEffect(() => {
     if (error) {
@@ -142,6 +163,12 @@ export function DelegatedModulesList() {
                     100%)
                   </span>
                 )}
+              </span>
+              <span className="border-r border-white/20 px-3">
+                <div className="flex gap-1 text-white">
+                  <b className="text-amber-500">{userStakeWeight}</b> COMAI{" "}
+                  <p className="text-sm">(Weight Power)</p>
+                </div>
               </span>
               <span className="px-3">
                 {hasUnsavedChanges() ? (
