@@ -1,22 +1,28 @@
 {
   "name": "comrads-worker",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
-  "license": "MIT",
   "scripts": {
-    "dev": "pnpm with-env tsx ./src/index.ts",
     "build": "tsc",
-    "start": "node ./dist/index.js",
-    "start:local": "pnpm with-env pnpm start",
     "clean": "rm -rf .turbo node_modules",
+    "dev": "pnpm with-env tsx ./src/index.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
+    "start": "node ./dist/index.js",
+    "start:local": "pnpm with-env pnpm start",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
+  },
+  "prettier": "@commune-ts/prettier-config",
+  "dependencies": {
+    "@commune-ts/types": "workspace:*",
+    "@polkadot/api": "^11.1.1",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@commune-ts/db": "workspace:*",
@@ -34,11 +40,5 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.15.6",
     "typescript": "^5.4.5"
-  },
-  "prettier": "@commune-ts/prettier-config",
-  "dependencies": {
-    "@polkadot/api": "^11.1.1",
-    "@commune-ts/types": "workspace:*",
-    "express": "^4.19.2"
   }
 }

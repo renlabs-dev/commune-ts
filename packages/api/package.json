@@ -2,6 +2,7 @@
   "name": "@commune-ts/api",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
@@ -9,15 +10,15 @@
       "default": "./src/index.ts"
     }
   },
-  "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules",
+    "dev": "tsc --watch",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
     "@commune-ts/db": "workspace:*",
     "@trpc/server": "11.0.0-rc.364",
@@ -31,6 +32,5 @@
     "eslint": "^8.0.0",
     "prettier": "^3.3.1",
     "typescript": "^5.4.5"
-  },
-  "prettier": "@commune-ts/prettier-config"
+  }
 }

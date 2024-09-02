@@ -4,10 +4,10 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3008",
     "build": "next build",
-    "start": "next start",
+    "dev": "next dev --port 3008",
     "lint": "eslint",
+    "start": "next start",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,9 +22,9 @@
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
+    "@commune-ts/subspace": "workspace:*",
     "@commune-ts/tailwind-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
-    "@commune-ts/subspace": "workspace:*",
     "@next/eslint-plugin-next": "^14.2.3",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20.11.24",
