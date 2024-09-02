@@ -1,6 +1,7 @@
+import * as jwt from "jsonwebtoken";
+
 import { SessionDataSchema } from "./client";
 import { SignedPayload, verifySignedData } from "./sign";
-import * as jwt from "jsonwebtoken";
 
 // Map<nonce, timestamp>
 const seenNonces = new Map<string, number>();
@@ -18,7 +19,10 @@ const jwtOptions = (): jwt.SignOptions => ({
 });
 
 export const createSessionToken = (signedSessionData: SignedPayload) => {
-  const { address, data } = verifySignedData(signedSessionData, SessionDataSchema);
+  const { address, data } = verifySignedData(
+    signedSessionData,
+    SessionDataSchema,
+  );
 
   // check if the sessionData is not older than 10 minutes
   if (new Date(data.created).getTime() + 10 * 60 * 1000 < Date.now()) {
@@ -49,10 +53,14 @@ export const createSessionToken = (signedSessionData: SignedPayload) => {
   const token = jwt.sign(tokenData, process.env.JWT_SECRET!, jwtOptions());
 
   return token;
-}
+};
 
 export const decodeJwtSessionToken = (token: string): { userKey: string } => {
-  const { userKey } = jwt.verify(token, process.env.JWT_SECRET!, jwtOptions()) as TokenData;
+  const { userKey } = jwt.verify(
+    token,
+    process.env.JWT_SECRET!,
+    jwtOptions(),
+  ) as TokenData;
 
   return { userKey };
-}
+};

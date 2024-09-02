@@ -54,14 +54,14 @@ export const proposalCommentRouter = {
     .input(PROPOSAL_COMMENT_INSERT_SCHEMA.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
       const userKey = ctx.user!.userKey;
-      await ctx.db.insert(proposalCommentSchema).values({...input, userKey});
+      await ctx.db.insert(proposalCommentSchema).values({ ...input, userKey });
     }),
 
   createCommentReport: authenticatedProcedure
     .input(COMMENT_REPORT_INSERT_SCHEMA.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
       const userKey = ctx.user!.userKey;
-      await ctx.db.insert(commentReportSchema).values({...input, userKey});
+      await ctx.db.insert(commentReportSchema).values({ ...input, userKey });
     }),
 
   castVote: authenticatedProcedure
@@ -70,7 +70,7 @@ export const proposalCommentRouter = {
       const userKey = ctx.user!.userKey;
       await ctx.db
         .insert(commentInteractionSchema)
-        .values({...input, userKey})
+        .values({ ...input, userKey })
         .onConflictDoUpdate({
           target: [
             commentInteractionSchema.commentId,
