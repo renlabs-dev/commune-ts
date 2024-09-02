@@ -1,10 +1,6 @@
 {
   "name": "commune-ts",
   "private": true,
-  "engines": {
-    "node": ">=18.17.1"
-  },
-  "packageManager": "pnpm@9.6.0+sha256.dae0f7e822c56b20979bb5965e3b73b8bdabb6b8b8ef121da6d857508599ca35",
   "scripts": {
     "build": "turbo run build",
     "clean": "git clean -xdf node_modules",
@@ -12,34 +8,40 @@
     "db:push": "turbo -F @commune-ts/db push",
     "db:studio": "turbo -F @commune-ts/db studio",
     "dev": "turbo watch dev",
-    "dev:governance": "turbo watch dev -F commune-governance",
-    "dev:page": "turbo watch dev -F commune-page",
-    "dev:validator": "turbo watch dev -F commune-validator",
-    "dev:worker": "turbo watch dev -F comrads-worker",
-    "dev:roadmap": "turbo watch dev -F communex-roadmap",
     "dev:api": "turbo watch dev -F @commune-ts/api",
-    "dev:wallet-pkg": "turbo watch dev -F @commune-ts/wallet",
-    "dev:wallet": "turbo watch dev -F commune-wallet",
     "dev:cache": "turbo dev -F commune-cache",
     "dev:db": "turbo watch dev -F @commune-ts/db",
+    "dev:governance": "turbo watch dev -F commune-governance",
+    "dev:page": "turbo watch dev -F commune-page",
+    "dev:roadmap": "turbo watch dev -F communex-roadmap",
+    "dev:validator": "turbo watch dev -F commune-validator",
+    "dev:wallet": "turbo watch dev -F commune-wallet",
+    "dev:wallet-pkg": "turbo watch dev -F @commune-ts/wallet",
+    "dev:worker": "turbo watch dev -F comrads-worker",
+    "docker:build:commune-cache:digitalocean": "docker build -f ./tooling/dockerfile/backend-service.Dockerfile -t commune-cache:latest --build-arg PORT=8080 --build-arg PROJECT=commune-cache --platform linux/amd64,linux/arm64 . && docker tag commune-cache:latest ghcr.io/agicommies/commune-cache:latest  && docker push ghcr.io/agicommies/commune-cache:latest",
     "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
+    "prepare": "husky",
+    "sort:package": "find . -name \"package.json\" -not -path \"**/node_modules/**\" -type f -print0 | xargs -0 -I {} pnpm sort-package-json \"{}\"",
     "typecheck": "turbo run typecheck",
-    "ui-add": "turbo run ui-add",
-    "docker:build:commune-cache:digitalocean": "docker build -f ./tooling/dockerfile/backend-service.Dockerfile -t commune-cache:latest --build-arg PORT=8080 --build-arg PROJECT=commune-cache --platform linux/amd64,linux/arm64 . && docker tag commune-cache:latest ghcr.io/agicommies/commune-cache:latest  && docker push ghcr.io/agicommies/commune-cache:latest",
-    "prepare": "husky"
+    "ui-add": "turbo run ui-add"
   },
+  "prettier": "@commune-ts/prettier-config",
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.12.0",
     "@commune-ts/prettier-config": "workspace:*",
     "@turbo/gen": "^2.0.3",
     "husky": "^9.1.4",
     "prettier": "^3.3.1",
+    "sort-package-json": "^2.10.1",
     "turbo": "^2.0.3",
     "typescript": "^5.4.5"
   },
-  "prettier": "@commune-ts/prettier-config"
+  "packageManager": "pnpm@9.6.0+sha256.dae0f7e822c56b20979bb5965e3b73b8bdabb6b8b8ef121da6d857508599ca35",
+  "engines": {
+    "node": ">=18.17.1"
+  }
 }

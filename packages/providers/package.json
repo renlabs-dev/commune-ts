@@ -1,6 +1,7 @@
 {
   "name": "@commune-ts/providers",
   "version": "0.0.0",
+  "license": "MIT",
   "exports": {
     "./use-commune": "./src/context/commune.tsx",
     "./use-toast": "./src/context/toast.tsx",
@@ -9,18 +10,17 @@
     "./types": "./src/types/index.ts",
     "./hooks": "./src/hooks/index.ts"
   },
-  "license": "MIT",
   "dependencies": {
+    "@commune-ts/subspace": "workspace:*",
+    "@commune-ts/types": "workspace:*",
+    "@commune-ts/ui": "workspace:*",
+    "@commune-ts/utils": "workspace:*",
     "@polkadot/api": "^11.1.1",
     "@polkadot/api-augment": "^11.1.1",
     "@polkadot/extension-dapp": "^0.47.5",
     "@polkadot/extension-inject": "^0.47.5",
     "@polkadot/types": "^11.1.1",
     "@polkadot/util-crypto": "^12.6.2",
-    "@commune-ts/ui": "workspace:*",
-    "@commune-ts/utils": "workspace:*",
-    "@commune-ts/types": "workspace:*",
-    "@commune-ts/subspace": "workspace:*",
     "@tanstack/react-query": "^5.45.0",
     "multiformats": "^13.1.0",
     "next": "^14.2.3",

@@ -1,27 +1,22 @@
 {
   "name": "@commune-ts/wallet",
   "version": "0.0.0",
+  "license": "MIT",
   "sideEffects": [
     "**/*.css"
   ],
   "exports": {
     ".": "./src/index.ts"
   },
-  "license": "MIT",
   "scripts": {
     "build": "tailwindcss -i ./src/style.css -o ./dist/index.css --minify",
-    "lint": "eslint",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
     "dev": "tailwindcss -i ./src/style.css -o ./src/output.css --watch",
-    "type-check": "tsc --noEmit",
-    "tailwind:watch": "tailwindcss -i ./src/style.css -o ./src/output.css --watch"
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "tailwind:watch": "tailwindcss -i ./src/style.css -o ./src/output.css --watch",
+    "type-check": "tsc --noEmit"
   },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "next": "^14.2.3",
-    "@commune-ts/ui": "workspace:*",
-    "@commune-ts/providers": "workspace:*"
-  },
+  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
     "@commune-ts/types": "workspace:*",
     "@commune-ts/utils": "workspace:*"
@@ -32,12 +27,17 @@
     "@commune-ts/tsconfig": "workspace:*",
     "@types/react": "^18.2.61",
     "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.38",
-    "react": "^18.3.1",
     "eslint": "^8.0.0",
+    "postcss": "^8.4.38",
     "prettier": "^3.3.1",
+    "react": "^18.3.1",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5"
   },
-  "prettier": "@commune-ts/prettier-config"
+  "peerDependencies": {
+    "@commune-ts/providers": "workspace:*",
+    "@commune-ts/ui": "workspace:*",
+    "next": "^14.2.3",
+    "react": "^18.3.1"
+  }
 }

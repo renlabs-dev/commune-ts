@@ -1,7 +1,7 @@
 {
   "name": "@commune-ts/eslint-config",
-  "private": true,
   "version": "0.3.0",
+  "private": true,
   "type": "module",
   "exports": {
     "./base": "./base.js",
@@ -13,6 +13,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
+  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
     "@next/eslint-plugin-next": "^14.2.3",
     "eslint-plugin-import": "^2.29.1",
@@ -28,6 +29,5 @@
     "eslint": "^8.0.0",
     "prettier": "^3.3.1",
     "typescript": "^5.4.5"
-  },
-  "prettier": "@commune-ts/prettier-config"
+  }
 }

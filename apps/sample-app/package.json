@@ -1,21 +1,22 @@
 {
   "name": "sample-app",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
-  "license": "MIT",
   "scripts": {
-    "dev": "tsx ./src/index.ts",
+    "build": "tsc",
     "clean": "rm -rf .turbo node_modules",
+    "dev": "tsx ./src/index.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "typecheck": "tsc --noEmit"
   },
+  "prettier": "@commune-ts/prettier-config",
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
@@ -27,6 +28,5 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.15.6",
     "typescript": "^5.4.5"
-  },
-  "prettier": "@commune-ts/prettier-config"
+  }
 }
