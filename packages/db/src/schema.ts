@@ -3,7 +3,6 @@ import {
   bigint,
   index,
   integer,
-  pgEnum,
   pgTableCreator,
   pgView,
   serial,
@@ -108,12 +107,18 @@ export const moduleReport = createTable("module_report", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export enum ModeType {
+  PROPOSAL = "PROPOSAL",
+  DAO = "DAO",
+  REMOVE = "REMOVE",
+}
+
 export const proposalCommentSchema = createTable(
   "proposal_comment",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     proposalId: integer("proposal_id").notNull(),
-    type: varchar("type", { length: 16 }),
+    type: text("type").$type<ModeType>(),
     userKey: ss58Address("user_key").notNull(),
     userName: text("user_name"),
     content: text("content").notNull(),
@@ -209,7 +214,7 @@ export enum DaoVoteType {
 
 export const cadreSchema = createTable("cadre", {
   id: serial("id").primaryKey(),
-  userKey: ss58Address("user_key"),
+  userKey: ss58Address("user_key").notNull().unique(),
   discordId: varchar("discord_id", { length: 64 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -220,14 +225,14 @@ export const daoVoteSchema = createTable(
   "dao_vote",
   {
     id: serial("id").primaryKey(),
-    daoId: integer("dao_id").notNull(), // Needs to validate the id
-    votingKey: ss58Address("voting_key").references(() => cadreSchema.userKey),
+    daoId: integer("dao_id").notNull(),
+    userKey: ss58Address("user_key").references(() => cadreSchema.userKey),
     daoVoteType: text("dao_vote_type").$type<DaoVoteType>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
   },
   (t) => ({
-    unq: unique().on(t.daoId, t.votingKey),
+    unq: unique().on(t.daoId, t.userKey),
   }),
 );
