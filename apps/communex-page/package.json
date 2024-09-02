@@ -1,13 +1,13 @@
 {
   "name": "communex-page",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev --port 3003",
     "build": "next build",
-    "start": "next start",
+    "dev": "next dev --port 3003",
     "lint": "eslint",
+    "start": "next start",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 {
   "name": "@commune-ts/prettier-config",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "exports": {
     ".": "./index.js"
@@ -11,6 +11,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
+  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "prettier": "^3.3.1",
@@ -19,6 +20,5 @@
   "devDependencies": {
     "@commune-ts/tsconfig": "workspace:*",
     "typescript": "^5.4.5"
-  },
-  "prettier": "@commune-ts/prettier-config"
+  }
 }
