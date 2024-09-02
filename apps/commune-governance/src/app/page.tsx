@@ -25,6 +25,15 @@ export default function HomePage(): JSX.Element {
     isInitialized,
   } = useCommune();
 
+  console.log(
+    "Governance App - WS Endpoint:",
+    process.env.NEXT_PUBLIC_WS_PROVIDER_URL,
+  );
+  console.log(
+    "Governance App - Cache URL:",
+    process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL,
+  );
+
   const [viewMode, setViewMode] = useState<"proposals" | "daos">("proposals");
 
   function handleIsLoading(type: "proposals" | "daos"): boolean {
