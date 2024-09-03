@@ -9,7 +9,7 @@ import {
 import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 
-import { SectionHeaderText } from "./section-header-text";
+import { SectionHeaderText } from "../section-header-text";
 
 export function VotingPowerButton(): JSX.Element | null {
   const { selectedAccount, updateDelegatingVotingPower, notDelegatingVoting } =

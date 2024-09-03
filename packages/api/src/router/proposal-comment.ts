@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, sql } from "@commune-ts/db";
+import { and, eq, sql } from "@commune-ts/db";
 import {
   commentInteractionSchema,
   commentReportSchema,
@@ -31,8 +31,10 @@ export const proposalCommentRouter = {
         .select()
         .from(proposalCommentDigestView)
         .where(
-          eq(proposalCommentDigestView.proposalId, input.proposalId) &&
+          and(
+            eq(proposalCommentDigestView.proposalId, input.proposalId),
             eq(proposalCommentDigestView.type, input.type),
+          ),
         )
         .execute();
     }),

@@ -8,20 +8,20 @@ import type { ProposalState } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { removeEmojis, smallAddress } from "@commune-ts/utils";
 
-import type { VoteStatus } from "./vote-label";
+import type { VoteStatus } from "../vote-label";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
   handleProposalQuorumPercent,
   handleProposalStakeVoted,
-} from "../../utils";
-import { Card } from "./card";
-import { Label } from "./label";
-import { MarkdownView } from "./markdown-view";
+} from "../../../utils";
+import { Card } from "../card";
+import { Label } from "../label";
+import { MarkdownView } from "../markdown-view";
+import { StatusLabel } from "../status-label";
+import { VoteLabel } from "../vote-label";
 import { ProposalTypeLabel } from "./proposal-type-label";
 import { RewardLabel } from "./reward-label";
-import { StatusLabel } from "./status-label";
-import { VoteLabel } from "./vote-label";
 
 export interface ProposalCardProps {
   proposalState: ProposalState;

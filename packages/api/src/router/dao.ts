@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq } from "@commune-ts/db";
+import { and, eq } from "@commune-ts/db";
 
 import "@commune-ts/db/schema";
 
@@ -41,8 +41,10 @@ export const daoRouter = {
           updatedAt: new Date(),
         })
         .where(
-          eq(daoVoteSchema.votingKey, input.votingKey) &&
+          and(
+            eq(daoVoteSchema.votingKey, input.votingKey),
             eq(daoVoteSchema.daoId, input.daoId),
+          ),
         );
     }),
 } satisfies TRPCRouterRecord;
