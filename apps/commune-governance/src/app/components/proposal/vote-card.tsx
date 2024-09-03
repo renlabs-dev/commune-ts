@@ -10,8 +10,8 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { TransactionStatus } from "@commune-ts/ui";
 import { WalletButton } from "@commune-ts/wallet";
 
-import type { VoteStatus } from "./vote-label";
-import { SectionHeaderText } from "./section-header-text";
+import type { VoteStatus } from "../vote-label";
+import { SectionHeaderText } from "../section-header-text";
 
 export function VoteCard(props: {
   proposalStatus: ProposalStatus;

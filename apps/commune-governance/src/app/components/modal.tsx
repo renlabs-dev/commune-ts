@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
-import { CreateTransferDaoTreasuryProposal } from "./add-transfer-dao-treasury-proposal";
-import { CreateDao } from "./create-dao";
-import { CreateProposal } from "./create-proposal";
+import { CreateDao } from "./dao/create-dao";
+import { CreateProposal } from "./proposal/create-proposal";
+import { CreateTransferDaoTreasuryProposal } from "./proposal/create-transfer-dao-treasury-proposal";
 
 export function CreateModal() {
   const [modalOpen, setModalOpen] = useState(false);

@@ -6,7 +6,7 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { copyToClipboard, formatToken, smallAddress } from "@commune-ts/utils";
 
-import { SectionHeaderText } from "./section-header-text";
+import { SectionHeaderText } from "../section-header-text";
 
 interface VoterListProps {
   proposalStatus: ProposalStatus;

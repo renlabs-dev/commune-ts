@@ -6,9 +6,11 @@ import type { DaoStatus } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/utils";
 
+import { CreateComment } from "~/app/components/comments/create-comment";
+import { ViewComment } from "~/app/components/comments/view-comment";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";
-import { DaoStatusLabel } from "../../../components/dao-status-label";
+import { DaoStatusLabel } from "../../../components/dao/dao-status-label";
 import { MarkdownView } from "../../../components/markdown-view";
 
 interface CustomContent {
@@ -49,13 +51,19 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
   return (
     <div className="flex w-full flex-col md:flex-row">
       <div className="flex h-full w-full flex-col lg:w-2/3">
-        <div className="m-2 flex h-full animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[80vh] md:min-h-[50vh]">
+        <div className="m-2 flex h-full animate-fade-down flex-col border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-100 md:max-h-[60vh] md:min-h-[50vh]">
           <SectionHeaderText
             text={content.title ?? "No Custom Metadata Title"}
           />
-          <div className="h-full pr-4 lg:overflow-auto">
+          <div className="h-full lg:overflow-auto">
             <MarkdownView source={(content.body as string | undefined) ?? ""} />
           </div>
+        </div>
+        <div className="w-full">
+          <ViewComment modeType="DAO" proposalId={content.id} />
+        </div>
+        <div className="m-2 hidden h-fit min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md  animate-delay-200 md:flex">
+          <CreateComment proposalId={content.id} />
         </div>
       </div>
 
