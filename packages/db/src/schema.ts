@@ -1,6 +1,7 @@
 import { asc, eq, is, sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -110,7 +111,6 @@ export const moduleReport = createTable("module_report", {
 export enum ModeType {
   PROPOSAL = "PROPOSAL",
   DAO = "DAO",
-  REMOVE = "REMOVE",
 }
 
 export const proposalCommentSchema = createTable(
@@ -164,6 +164,7 @@ export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
       id: proposalCommentSchema.id,
       proposalId: proposalCommentSchema.proposalId,
       userKey: proposalCommentSchema.userKey,
+      type: proposalCommentSchema.type,
       userName: proposalCommentSchema.userName,
       content: proposalCommentSchema.content,
       createdAt: proposalCommentSchema.createdAt,
@@ -186,6 +187,7 @@ export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
       proposalCommentSchema.id,
       proposalCommentSchema.proposalId,
       proposalCommentSchema.userKey,
+      proposalCommentSchema.type,
       proposalCommentSchema.content,
       proposalCommentSchema.createdAt,
     )
@@ -231,6 +233,7 @@ export const daoVoteSchema = createTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
+    isProcessed: boolean("is_processed").default(false),
   },
   (t) => ({
     unq: unique().on(t.daoId, t.userKey),

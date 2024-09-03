@@ -14,10 +14,9 @@ const MAX_CHARACTERS = 300;
 const MAX_NAME_CHARACTERS = 300;
 const MIN_STAKE_REQUIRED = 5000;
 
-enum ModeType {
+export enum ModeType {
   PROPOSAL = "PROPOSAL",
   DAO = "DAO",
-  REMOVE = "REMOVE",
 }
 
 const CommentSchema = z.object({

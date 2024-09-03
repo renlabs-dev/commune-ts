@@ -1,10 +1,10 @@
--- Custom SQL migration file, put you code below! --
 CREATE VIEW
   comment_digest AS
 SELECT
   pc.id,
   pc.proposal_id,
   pc.user_key,
+  pc.type,
   pc.user_name,
   pc.content,
   pc.created_at,
@@ -35,6 +35,7 @@ GROUP BY
   pc.id,
   pc.proposal_id,
   pc.user_key,
+  pc.type,
   pc.content,
   pc.created_at
 ORDER BY

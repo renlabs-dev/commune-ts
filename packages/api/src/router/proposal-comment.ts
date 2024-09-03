@@ -5,6 +5,7 @@ import { eq, sql } from "@commune-ts/db";
 import {
   commentInteractionSchema,
   commentReportSchema,
+  ModeType,
   proposalCommentDigestView,
   proposalCommentSchema,
 } from "@commune-ts/db/schema";
@@ -19,12 +20,20 @@ import { publicProcedure } from "../trpc";
 export const proposalCommentRouter = {
   // GET
   byId: publicProcedure
-    .input(z.object({ proposalId: z.number() }))
+    .input(
+      z.object({
+        proposalId: z.number(),
+        type: z.nativeEnum(ModeType),
+      }),
+    )
     .query(({ ctx, input }) => {
       return ctx.db
         .select()
         .from(proposalCommentDigestView)
-        .where(eq(proposalCommentDigestView.proposalId, input.proposalId))
+        .where(
+          eq(proposalCommentDigestView.proposalId, input.proposalId) &&
+            eq(proposalCommentDigestView.type, input.type),
+        )
         .execute();
     }),
   byUserId: publicProcedure
