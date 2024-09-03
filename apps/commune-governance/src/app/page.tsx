@@ -9,10 +9,10 @@ import { Container } from "@commune-ts/ui";
 import type { VoteStatus } from "./components/vote-label";
 import { BalanceSection } from "./components/balance-section";
 import { CardSkeleton } from "./components/card-skeleton";
-import { DaoCard } from "./components/dao-card";
+import { DaoCard } from "./components/dao/dao-card";
 import { FooterDivider } from "./components/footer-divider";
-import { ProposalCard } from "./components/proposal-card";
 import { ProposalListHeader } from "./components/proposal-list-header";
+import { ProposalCard } from "./components/proposal/proposal-card";
 
 export default function HomePage(): JSX.Element {
   const {

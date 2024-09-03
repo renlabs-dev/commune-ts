@@ -11,14 +11,14 @@ import {
 } from "@commune-ts/utils";
 
 import type { VoteStatus } from "../../../components/vote-label";
-import { CreateComment } from "~/app/components/create-comment";
+import { CreateComment } from "~/app/components/comments/create-comment";
+import { ViewComment } from "~/app/components/comments/view-comment";
 import { Label } from "~/app/components/label";
-import { ProposalComment } from "~/app/components/proposal-comments";
-import { ProposalTypeLabel } from "~/app/components/proposal-type-label";
-import { RewardLabel } from "~/app/components/reward-label";
+import { ProposalTypeLabel } from "~/app/components/proposal/proposal-type-label";
+import { RewardLabel } from "~/app/components/proposal/reward-label";
+import { VoterList } from "~/app/components/proposal/voter-list";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { VoteText } from "~/app/components/vote-text";
-import { VoterList } from "~/app/components/voter-list";
 import {
   calcProposalFavorablePercent,
   handleCustomProposal,
@@ -26,9 +26,9 @@ import {
   handleProposalVotesInFavor,
 } from "../../../../utils";
 import { MarkdownView } from "../../../components/markdown-view";
+import { VoteCard } from "../../../components/proposal/vote-card";
+import { VotingPowerButton } from "../../../components/proposal/voting-power-button";
 import { StatusLabel } from "../../../components/status-label";
-import { VoteCard } from "../../../components/vote-card";
-import { VotingPowerButton } from "../../../components/voting-power-button";
 
 interface CustomContent {
   paramId: number;
@@ -177,10 +177,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
           </div>
         </div>
         <div className="w-full">
-          <ProposalComment
-            proposalId={content.id}
-            proposalStatus={content.status}
-          />
+          <ViewComment modeType="PROPOSAL" proposalId={content.id} />
         </div>
         <div className="m-2 hidden h-fit min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md  animate-delay-200 md:flex">
           <CreateComment proposalId={content.id} />
