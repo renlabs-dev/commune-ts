@@ -2,7 +2,7 @@ import { match } from "rustie";
 
 import type { ProposalData } from "@commune-ts/types";
 
-import { Label } from "./label";
+import { Label } from "../label";
 
 interface ProposalTypeLabelProps {
   result: ProposalData;

@@ -7,13 +7,12 @@ import {
   UserIcon,
 } from "@heroicons/react/20/solid";
 
-import type { ProposalStatus } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { smallAddress } from "@commune-ts/utils";
 
+import type { ModeType } from "./create-comment";
 import { api } from "~/trpc/react";
-import { ModeType } from "./create-comment";
 import { ReportComment } from "./report-comment";
 
 export enum VoteType {
@@ -21,12 +20,12 @@ export enum VoteType {
   DOWN = "DOWN",
 }
 
-export function ProposalComment({
+export function ViewComment({
   proposalId,
-  // proposalStatus,
+  modeType,
 }: {
   proposalId: number;
-  proposalStatus: ProposalStatus;
+  modeType: "PROPOSAL" | "DAO";
 }) {
   const { selectedAccount } = useCommune();
   const [votingCommentId, setVotingCommentId] = useState<string | null>(null);
@@ -34,31 +33,13 @@ export function ProposalComment({
     {},
   );
 
-  // function getVoterStake(address: SS58Address) {
-  //   if (!selectedAccount?.address) return null;
-
-  //   if ("open" in proposalStatus) {
-  //     const { votesFor, votesAgainst, stakeFor, stakeAgainst } =
-  //       proposalStatus.open;
-
-  //     if (votesFor.includes(address)) {
-  //       return `${formatToken(stakeFor / BigInt(votesFor.length))} COMAI`;
-  //     }
-
-  //     if (votesAgainst.includes(address)) {
-  //       return `${formatToken(stakeAgainst / BigInt(votesAgainst.length))} COMAI`;
-  //     }
-  //   }
-  //   return null;
-  // }
-
   const {
     data: proposalComments,
     error,
     isLoading,
     refetch,
   } = api.proposalComment.byId.useQuery(
-    { type: ModeType.PROPOSAL, proposalId },
+    { type: modeType as ModeType, proposalId },
     { enabled: !!proposalId },
   );
 
@@ -209,9 +190,6 @@ export function ProposalComment({
                           {comment.userName && comment.userName}
                         </span>
                         {smallAddress(comment.userKey)}{" "}
-                        {/* <span className="ml-2 text-sm text-gray-400">
-                          {getVoterStake(comment.userKey as SS58Address)}
-                        </span> */}
                       </div>
                       <div className="flex items-center gap-1">
                         <button
