@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import type { SQL, Table } from "@commune-ts/db";
 import type { SubspaceModule } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
-import { daoVoteSchema, DaoVoteType, moduleData } from "@commune-ts/db/schema";
+import {
+  cadreSchema,
+  daoVoteSchema,
+  DaoVoteType,
+  moduleData,
+} from "@commune-ts/db/schema";
 
 export async function upsertModuleData(
   modules: SubspaceModule[],
@@ -63,6 +63,18 @@ export async function computeTotalVotesPerDao(): Promise<
     .execute();
 
   return result;
+}
+
+export async function countCadreKeys(): Promise<number> {
+  const result = await db
+    .select({
+      count: sql`count(*)`.as<number>(),
+    })
+    .from(cadreSchema)
+    .where(sql`${cadreSchema.deletedAt} is null`)
+    .execute();
+
+  return result[0]?.count;
 }
 
 // util for upsert https://orm.drizzle.team/learn/guides/upsert#postgresql-and-sqlite
