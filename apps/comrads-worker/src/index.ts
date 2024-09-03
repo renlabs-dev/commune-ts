@@ -10,7 +10,11 @@ import {
   queryRegisteredModulesInfo,
 } from "@commune-ts/subspace/queries";
 
-import { computeTotalVotesPerDao, upsertModuleData } from "./db";
+import {
+  computeTotalVotesPerDao,
+  countCadreKeys,
+  upsertModuleData,
+} from "./db";
 
 type WorkerType = "dao" | "validator";
 const workerName = process.argv[2] as WorkerType;
@@ -88,6 +92,11 @@ async function run_validator_worker(props: WorkerProps) {
   }
 }
 
+async function get_cadre_threshold() {
+  const keys = await countCadreKeys();
+  return Math.floor(keys / 2) + 1;
+}
+
 async function run_dao_worker(props: WorkerProps) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -101,6 +110,13 @@ async function run_dao_worker(props: WorkerProps) {
 
       log(`Block ${props.lastBlock.blockNumber}: processing`);
       const votes = await computeTotalVotesPerDao();
+      for (const vote_info of votes) {
+        const { daoId, acceptVotes, refuseVotes, removeVotes } = vote_info;
+        console.log(daoId);
+        console.log(acceptVotes);
+      }
+      const vote_threshold = await get_cadre_threshold();
+      console.log(vote_threshold);
       console.log(votes);
     } catch (e) {
       log("UNEXPECTED ERROR: ", e);

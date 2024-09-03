@@ -13,6 +13,7 @@ import { toast } from "@commune-ts/providers/use-toast";
 import { smallAddress } from "@commune-ts/utils";
 
 import { api } from "~/trpc/react";
+import { ModeType } from "./create-comment";
 import { ReportComment } from "./report-comment";
 
 export enum VoteType {
@@ -57,7 +58,7 @@ export function ProposalComment({
     isLoading,
     refetch,
   } = api.proposalComment.byId.useQuery(
-    { proposalId },
+    { type: ModeType.PROPOSAL, proposalId },
     { enabled: !!proposalId },
   );
 

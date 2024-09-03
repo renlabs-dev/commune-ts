@@ -54,7 +54,7 @@ export const DAO_APPLICATIONS_SCHEMA = z.object({
   status: z
     .string()
     .refine(
-      (value) => ["Pending", "Accepted", "Refused"].includes(value),
+      (value) => ["Pending", "Accepted", "Refused", "Removed"].includes(value),
       "Invalid proposal status",
     )
     .transform((value) => value as DaoStatus),
