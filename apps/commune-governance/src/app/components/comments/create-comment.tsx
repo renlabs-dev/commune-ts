@@ -14,11 +14,6 @@ const MAX_CHARACTERS = 300;
 const MAX_NAME_CHARACTERS = 300;
 const MIN_STAKE_REQUIRED = 5000;
 
-export enum ModeType {
-  PROPOSAL = "PROPOSAL",
-  DAO = "DAO",
-}
-
 const CommentSchema = z.object({
   content: z
     .string()
@@ -45,7 +40,13 @@ const CommentSchema = z.object({
     ),
 });
 
-export function CreateComment({ proposalId }: { proposalId: number }) {
+export function CreateComment({
+  proposalId,
+  ModeType,
+}: {
+  proposalId: number;
+  ModeType: "PROPOSAL" | "DAO";
+}) {
   const router = useRouter();
   const [content, setContent] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -55,6 +56,8 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
   let userStakeWeight: bigint | null = null;
 
   const { selectedAccount, stakeOut } = useCommune();
+
+  const { data: cadreUsers } = api.dao.byCadre.useQuery();
 
   const CreateComment = api.proposalComment.createComment.useMutation({
     onSuccess: () => {
@@ -77,14 +80,23 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       return;
     }
 
-    if (
-      !userStakeWeight ||
-      Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED
-    ) {
-      setError(
-        `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`,
-      );
-      return;
+    if (ModeType === "PROPOSAL") {
+      if (
+        !userStakeWeight ||
+        Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED
+      ) {
+        setError(
+          `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`,
+        );
+        return;
+      }
+    } else {
+      if (
+        !cadreUsers?.some((user) => user.userKey === selectedAccount.address)
+      ) {
+        setError("Only Cadre members can submit comments in DAO mode.");
+        return;
+      }
     }
 
     try {
@@ -92,7 +104,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       CreateComment.mutate({
         content,
         proposalId,
-        type: ModeType.PROPOSAL,
+        type: ModeType,
         userName: name || undefined,
         userKey: String(selectedAccount.address),
       });
@@ -114,11 +126,21 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
     userStakeWeight = userStakeEntry ?? 0n;
   }
 
-  const isSubmitDisabled =
-    CreateComment.isPending ||
-    !selectedAccount?.address ||
-    !userStakeWeight ||
-    Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED;
+  const isSubmitDisabled = () => {
+    if (CreateComment.isPending || !selectedAccount?.address) return true;
+
+    if (ModeType === "PROPOSAL") {
+      return (
+        !userStakeWeight ||
+        Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED
+      );
+    }
+    {
+      return !cadreUsers?.some(
+        (user) => user.userKey === selectedAccount.address,
+      );
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2">
@@ -149,15 +171,17 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
       <button
         type="submit"
         className="bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={isSubmitDisabled}
+        disabled={isSubmitDisabled()}
       >
         {CreateComment.isPending ? "Submitting..." : "Submit"}
       </button>
-      {isSubmitDisabled && !error && (
+      {isSubmitDisabled() && !error && (
         <p className="text-sm text-yellow-500">
           {!selectedAccount?.address
             ? "Please connect your wallet to submit a comment."
-            : `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`}
+            : ModeType === "PROPOSAL"
+              ? `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`
+              : "Only Cadre members can submit comments in DAO mode."}
         </p>
       )}
     </form>

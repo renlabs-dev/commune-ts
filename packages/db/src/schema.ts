@@ -108,17 +108,14 @@ export const moduleReport = createTable("module_report", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export enum ModeType {
-  PROPOSAL = "PROPOSAL",
-  DAO = "DAO",
-}
+export type GovernanceModeType = "PROPOSAL" | "DAO";
 
 export const proposalCommentSchema = createTable(
   "proposal_comment",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     proposalId: integer("proposal_id").notNull(),
-    type: text("type").$type<ModeType>(),
+    type: text("type").$type<GovernanceModeType>(),
     userKey: ss58Address("user_key").notNull(),
     userName: text("user_name"),
     content: text("content").notNull(),
@@ -233,9 +230,19 @@ export const daoVoteSchema = createTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
-    isProcessed: boolean("is_processed").default(false),
   },
   (t) => ({
     unq: unique().on(t.daoId, t.userKey),
   }),
+);
+
+export const governanceNotificationSchema = createTable(
+  "governance_notification",
+  {
+    id: serial("id").primaryKey(),
+    type: text("type").$type<GovernanceModeType>(),
+    proposalId: integer("proposal_id").notNull(),
+    notifiedAt: timestamp("notified_at").defaultNow(),
+    createdAt: timestamp("created_at").notNull(),
+  },
 );
