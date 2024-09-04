@@ -19,13 +19,16 @@ export const daoRouter = {
         where: eq(daoVoteSchema.id, input.id),
       });
     }),
+  byCadre: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.cadreSchema.findMany();
+  }),
   // POST
   create: publicProcedure
     .input(DAO_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(daoVoteSchema).values({
         daoId: input.daoId,
-        votingKey: input.votingKey,
+        userKey: input.userKey,
         daoVoteType: input.daoVoteType,
       });
     }),
@@ -36,13 +39,13 @@ export const daoRouter = {
         .update(daoVoteSchema)
         .set({
           daoId: input.daoId,
-          votingKey: input.votingKey,
+          userKey: input.userKey,
           daoVoteType: input.daoVoteType,
           updatedAt: new Date(),
         })
         .where(
           and(
-            eq(daoVoteSchema.votingKey, input.votingKey),
+            // eq(daoVoteSchema.userKey, input.userKey),
             eq(daoVoteSchema.daoId, input.daoId),
           ),
         );
