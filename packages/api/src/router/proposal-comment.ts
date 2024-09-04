@@ -5,7 +5,7 @@ import { and, eq, sql } from "@commune-ts/db";
 import {
   commentInteractionSchema,
   commentReportSchema,
-  ModeType,
+  GovernanceModeType,
   proposalCommentDigestView,
   proposalCommentSchema,
 } from "@commune-ts/db/schema";
@@ -23,7 +23,7 @@ export const proposalCommentRouter = {
     .input(
       z.object({
         proposalId: z.number(),
-        type: z.nativeEnum(ModeType),
+        type: z.enum(["PROPOSAL", "DAO"] as const),
       }),
     )
     .query(({ ctx, input }) => {

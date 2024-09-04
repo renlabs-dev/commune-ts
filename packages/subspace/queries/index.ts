@@ -1,6 +1,8 @@
 import "@polkadot/api-augment";
 
-import { ApiPromise } from "@polkadot/api";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ApiPromise, Keyring } from "@polkadot/api";
+import { encodeAddress } from "@polkadot/util-crypto";
 
 import {
   Api,
@@ -75,6 +77,32 @@ export async function queryDaosEntries(api: Api) {
   }
 
   return daos;
+}
+
+export async function pushToWhitelist(
+  api: ApiPromise,
+  moduleKey: SS58Address,
+  mnemonic: string | undefined,
+) {
+  if (!api?.tx.governanceModule?.addToWhitelist) return false;
+  console.log(await api.tx.governanceModule.addToWhitelist);
+
+  const gambiarra = 50;
+
+  const keyring = new Keyring({ type: "sr25519" });
+
+  if (!mnemonic) {
+    throw new Error("No sudo mnemonic provided");
+  }
+  const sudoKeypair = keyring.addFromUri(mnemonic);
+
+  const params = {
+    moduleKey: moduleKey,
+    recommendedWeight: gambiarra,
+  };
+  await api.tx.governanceModule.addToWhitelist(params, sudoKeypair);
+
+  return true;
 }
 
 export async function queryDaoTreasuryAddress(api: Api) {

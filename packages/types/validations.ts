@@ -51,6 +51,7 @@ export const DAO_APPLICATIONS_SCHEMA = z.object({
   userId: ADDRESS_SCHEMA, // TODO: validate SS58 address
   payingFor: ADDRESS_SCHEMA, // TODO: validate SS58 address
   data: z.string(),
+  // blockNumber: z.number(), // fix this when its on the blockchain
   status: z
     .string()
     .refine(
