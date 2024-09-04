@@ -74,7 +74,7 @@ export async function countCadreKeys(): Promise<number> {
     .where(sql`${cadreSchema.deletedAt} is null`)
     .execute();
 
-  return result[0]?.count;
+  return result[0].count;
 }
 
 // util for upsert https://orm.drizzle.team/learn/guides/upsert#postgresql-and-sqlite

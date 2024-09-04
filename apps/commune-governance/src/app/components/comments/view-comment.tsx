@@ -11,7 +11,6 @@ import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { smallAddress } from "@commune-ts/utils";
 
-import type { ModeType } from "./create-comment";
 import { api } from "~/trpc/react";
 import { ReportComment } from "./report-comment";
 
@@ -39,7 +38,7 @@ export function ViewComment({
     isLoading,
     refetch,
   } = api.proposalComment.byId.useQuery(
-    { type: modeType as ModeType, proposalId },
+    { type: modeType, proposalId },
     { enabled: !!proposalId },
   );
 
