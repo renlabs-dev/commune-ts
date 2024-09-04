@@ -149,7 +149,7 @@ async function run_dao_worker(props: WorkerProps) {
               props.api,
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               dao_hash_map[daoId]!.userId,
-              "grunt nasty buzz frown entry denial chicken shaft barely animal kick wild",
+              "",
             );
           }
           console.log("shadowheart");
