@@ -29,11 +29,7 @@ export const daoRouter = {
   createVote: publicProcedure
     .input(DAO_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(daoVoteSchema).values({
-        daoId: input.daoId,
-        userKey: input.userKey,
-        daoVoteType: input.daoVoteType,
-      });
+      await ctx.db.insert(daoVoteSchema).values(input).execute();
     }),
   // deleted_at
   deleteVote: publicProcedure
