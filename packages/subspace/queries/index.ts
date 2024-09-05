@@ -1,6 +1,5 @@
 import "@polkadot/api-augment";
 
-import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ApiPromise, Keyring } from "@polkadot/api";
 import { encodeAddress } from "@polkadot/util-crypto";
 
@@ -85,7 +84,6 @@ export async function pushToWhitelist(
   mnemonic: string | undefined,
 ) {
   if (!api?.tx.governanceModule?.addToWhitelist) return false;
-  console.log(await api.tx.governanceModule.addToWhitelist);
 
   const gambiarra = 50;
 
@@ -95,12 +93,59 @@ export async function pushToWhitelist(
     throw new Error("No sudo mnemonic provided");
   }
   const sudoKeypair = keyring.addFromUri(mnemonic);
+  const accountId = encodeAddress(moduleKey, 42);
 
-  const params = {
-    moduleKey: moduleKey,
-    recommendedWeight: gambiarra,
-  };
-  await api.tx.governanceModule.addToWhitelist(params, sudoKeypair);
+  const tx = await api.tx.governanceModule.addToWhitelist(accountId, gambiarra);
+
+  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
+    console.error(err);
+    return false;
+  });
+
+  return true;
+}
+
+export async function removeFromWhitelist(
+  api: ApiPromise,
+  moduleKey: SS58Address,
+  mnemonic: string | undefined,
+) {
+  if (!api?.tx.governanceModule?.removeFromWhitelist) return false;
+  if (!mnemonic) {
+    throw new Error("No sudo mnemonic provided");
+  }
+
+  const accountId = encodeAddress(moduleKey, 42);
+  const tx = await api.tx.governanceModule.removeFromWhitelist(accountId);
+
+  const keyring = new Keyring({ type: "sr25519" });
+  const sudoKeypair = keyring.addFromUri(mnemonic);
+  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
+    console.error(err);
+    return false;
+  });
+
+  return true;
+}
+
+export async function refuseDaoApplication(
+  api: ApiPromise,
+  proposalId: number,
+  mnemonic: string | undefined,
+) {
+  if (!api?.tx.governanceModule?.refuseDaoApplication) return false;
+  if (!mnemonic) {
+    throw new Error("No sudo mnemonic provided");
+  }
+
+  const tx = await api.tx.governanceModule.refuseDaoApplication(proposalId);
+
+  const keyring = new Keyring({ type: "sr25519" });
+  const sudoKeypair = keyring.addFromUri(mnemonic);
+  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
+    console.error(err);
+    return false;
+  });
 
   return true;
 }

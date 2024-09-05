@@ -1,6 +1,6 @@
-import { Label } from "../label";
+import type { DaoStatus } from "@commune-ts/types";
 
-export type DaoStatus = "Pending" | "Accepted" | "Refused" | "Removed";
+import { Label } from "../label";
 
 interface StatusLabelProps {
   result: DaoStatus;

@@ -8,6 +8,7 @@ import { smallAddress } from "@commune-ts/utils";
 
 import { CreateComment } from "~/app/components/comments/create-comment";
 import { ViewComment } from "~/app/components/comments/view-comment";
+import { DaoVoteCard } from "~/app/components/dao/dao-vote-card";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";
 import { DaoStatusLabel } from "../../../components/dao/dao-status-label";
@@ -83,10 +84,18 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
             </div>
           </div>
         </div>
+
         <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400  backdrop-blur-md animate-delay-200">
           <div className="flex items-center gap-3">
             <DaoStatusLabel result={content.status as DaoStatus} />
           </div>
+        </div>
+
+        <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-500 md:block">
+          <DaoVoteCard
+            daoId={content.id}
+            daoStatus={content.status as DaoStatus}
+          />
         </div>
       </div>
     </div>
