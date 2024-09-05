@@ -169,7 +169,17 @@ export interface UpdateDelegatingVotingPower {
 
 // == DAO Applications ==
 
-export type DaoStatus = "Pending" | "Accepted" | "Refused" | "Removed";
+export enum DaoApplicationVote {
+  FAVORABLE = "FAVORABLE",
+  AGAINST = "AGAINST",
+  REFUSE = "REFUSE",
+}
+
+export type DaoApplicationStatus =
+  | "Accepted"
+  | "Refused"
+  | "Pending"
+  | "Removed";
 
 export type DaoApplications = z.infer<typeof DAO_APPLICATIONS_SCHEMA>;
 

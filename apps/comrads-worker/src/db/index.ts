@@ -1,5 +1,5 @@
 import type { SQL, Table } from "@commune-ts/db";
-import type { NewNotification } from "@commune-ts/db/schema";
+import type { NewNotification, NewVote } from "@commune-ts/db/schema";
 import type { GovernanceModeType, SubspaceModule } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
@@ -47,12 +47,21 @@ export interface VotesByProposal {
   removeVotes: number;
 }
 
+export async function vote(new_vote: NewVote) {
+  await db.insert(daoVoteSchema).values(new_vote);
+}
+export async function addSeenProposal(proposal: NewNotification) {
+  await db.insert(governanceNotificationSchema).values(proposal);
+}
+
 export async function computeTotalVotesPerDao(): Promise<VotesByProposal[]> {
+  const voteTypes = ["Accepted", "Refused", "Removed"] as DaoVoteType;
+
   const result = await db
     .select({
       daoId: daoVoteSchema.daoId,
       acceptVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = 'ACCEPT' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = '${voteTypes[0]}' then 1 end)`.as<number>(),
       refuseVotes:
         sql`count(case when ${daoVoteSchema.daoVoteType} = 'REFUSE' then 1 end)`.as<number>(),
       removeVotes:
@@ -74,15 +83,11 @@ export async function getProposalIdsByType(
       proposalId: governanceNotificationSchema.proposalId,
     })
     .from(governanceNotificationSchema)
-    .where(sql`type = ${type})`);
+    .where(sql`type = ${type}`);
 
   const proposalIds = result.map((row) => row.proposalId);
 
   return proposalIds;
-}
-// export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
-export async function addSeenProposal(proposal: NewNotification) {
-  await db.insert(governanceNotificationSchema).values(proposal);
 }
 
 export async function countCadreKeys(): Promise<number> {

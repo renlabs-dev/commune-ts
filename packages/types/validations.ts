@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import {
   Codec,
-  DaoStatus,
+  DaoApplicationStatus,
   OptionalProperties,
   Proposal,
   SS58Address,
@@ -56,9 +56,9 @@ export const DAO_APPLICATIONS_SCHEMA = z.object({
     .string()
     .refine(
       (value) => ["Pending", "Accepted", "Refused", "Removed"].includes(value),
-      "Invalid proposal status",
+      "Invalid DAO status format",
     )
-    .transform((value) => value as DaoStatus),
+    .transform((value) => value as DaoApplicationStatus),
   applicationCost: TOKEN_AMOUNT_SCHEMA,
 });
 

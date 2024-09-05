@@ -36,6 +36,7 @@
   },
   "prettier": "@commune-ts/prettier-config",
   "dependencies": {
+    "@commune-ts/types": "workspace:*",
     "@t3-oss/env-nextjs": "^0.10.1",
     "drizzle-orm": "^0.31.2",
     "drizzle-zod": "^0.5.1",

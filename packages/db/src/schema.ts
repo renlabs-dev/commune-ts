@@ -1,9 +1,9 @@
-import { asc, eq, is, sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import {
   bigint,
-  boolean,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   pgView,
   serial,
@@ -13,6 +13,8 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+
+import { DaoApplicationVote } from "@commune-ts/types";
 
 export const ss58Address = (name: string) => varchar(name, { length: 256 });
 
@@ -205,8 +207,6 @@ export const commentReportSchema = createTable("comment_report", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export type DaoVoteType = "Pending" | "Accepted" | "Refused" | "Removed";
-
 export const cadreSchema = createTable("cadre", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key").notNull().unique(),
@@ -216,13 +216,33 @@ export const cadreSchema = createTable("cadre", {
   deletedAt: timestamp("deleted_at").default(sql`null`),
 });
 
+type SumTypeValues<T> = T extends any ? T : never;
+
+// Get the possible values of DaoApplicationVote
+type DaoApplicationVoteValues = SumTypeValues<DaoApplicationVote>;
+
+// Helper function to infer the possible values of a sum type as a tuple
+function getSumTypeValuesAsTuple<T extends string>() {
+  return [] as unknown as [T, ...T[]];
+}
+
+// Get the possible values of DaoApplicationVote as a tuple
+const daoApplicationVoteValuesObj =
+  getSumTypeValuesAsTuple<DaoApplicationVoteValues>();
+
+export const DaoApplicationVoteEnum = pgEnum(
+  "dao_vote_type",
+  daoApplicationVoteValuesObj,
+);
+
+export type NewVote = typeof daoVoteSchema.$inferInsert;
 export const daoVoteSchema = createTable(
   "dao_vote",
   {
     id: serial("id").primaryKey(),
     daoId: integer("dao_id").notNull(),
     userKey: ss58Address("user_key").references(() => cadreSchema.userKey),
-    daoVoteType: text("dao_vote_type").$type<DaoVoteType>(),
+    daoVoteType: DaoApplicationVoteEnum("dao_vote_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
@@ -231,6 +251,10 @@ export const daoVoteSchema = createTable(
     unq: unique().on(t.id, t.userKey, t.daoId),
   }),
 );
+
+/**
+ * Auxiliary table to store the notification of a governance proposals / DAOs.
+ */
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
 
 export const governanceNotificationSchema = createTable(
