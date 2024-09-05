@@ -205,11 +205,7 @@ export const commentReportSchema = createTable("comment_report", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export enum DaoVoteType {
-  ACCEPT = "ACCEPT",
-  REFUSE = "REFUSE",
-  REMOVE = "REMOVE",
-}
+export type DaoVoteType = "Pending" | "Accepted" | "Refused" | "Removed";
 
 export const cadreSchema = createTable("cadre", {
   id: serial("id").primaryKey(),
@@ -232,17 +228,17 @@ export const daoVoteSchema = createTable(
     deletedAt: timestamp("deleted_at").default(sql`null`),
   },
   (t) => ({
-    unq: unique().on(t.daoId, t.userKey),
+    unq: unique().on(t.id, t.userKey, t.daoId),
   }),
 );
+export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
 
 export const governanceNotificationSchema = createTable(
   "governance_notification",
   {
     id: serial("id").primaryKey(),
-    type: text("type").$type<GovernanceModeType>(),
+    type: text("type").$type<GovernanceModeType>().notNull(),
     proposalId: integer("proposal_id").notNull(),
     notifiedAt: timestamp("notified_at").defaultNow(),
-    createdAt: timestamp("created_at").notNull(),
   },
 );

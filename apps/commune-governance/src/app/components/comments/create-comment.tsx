@@ -181,7 +181,7 @@ export function CreateComment({
             ? "Please connect your wallet to submit a comment."
             : ModeType === "PROPOSAL"
               ? `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`
-              : "Only Cadre members can submit comments in DAO mode."}
+              : "Only Cadre members can submit comments in DAO Applications."}
         </p>
       )}
     </form>

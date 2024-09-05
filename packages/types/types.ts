@@ -26,6 +26,7 @@ export type { AnyTuple, Codec } from "@polkadot/types/types";
 export type Entry<T> = [unknown, T];
 export type RawEntry = Entry<Codec>[] | undefined;
 export type Result<T, E> = Enum<{ Ok: T; Err: E }>;
+export type GovernanceModeType = "PROPOSAL" | "DAO";
 
 export type Nullish = null | undefined;
 export type Api = ApiDecoration<"promise"> | ApiPromise;
