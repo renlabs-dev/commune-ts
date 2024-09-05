@@ -248,9 +248,6 @@ export function useCustomMetadata<T extends BaseProposal | BaseDao>(
         if (data != null) {
           const [id] = data;
           outputs.set(id, result);
-        } else {
-          // eslint-disable-next-line no-console
-          console.info(`Missing result for ${kind} metadata query`);
         }
       });
       return outputs;

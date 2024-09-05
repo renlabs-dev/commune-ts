@@ -14,10 +14,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { DaoApplicationVote } from "@commune-ts/types";
-
 export const ss58Address = (name: string) => varchar(name, { length: 256 });
-
 export const createTable = pgTableCreator((name) => `${name}`);
 
 /**
@@ -216,33 +213,19 @@ export const cadreSchema = createTable("cadre", {
   deletedAt: timestamp("deleted_at").default(sql`null`),
 });
 
-type SumTypeValues<T> = T extends any ? T : never;
+export const daoVoteType = pgEnum("dao_vote_type", [
+  "ACCEPT",
+  "REFUSE",
+  "REMOVE",
+]);
 
-// Get the possible values of DaoApplicationVote
-type DaoApplicationVoteValues = SumTypeValues<DaoApplicationVote>;
-
-// Helper function to infer the possible values of a sum type as a tuple
-function getSumTypeValuesAsTuple<T extends string>() {
-  return [] as unknown as [T, ...T[]];
-}
-
-// Get the possible values of DaoApplicationVote as a tuple
-const daoApplicationVoteValuesObj =
-  getSumTypeValuesAsTuple<DaoApplicationVoteValues>();
-
-export const DaoApplicationVoteEnum = pgEnum(
-  "dao_vote_type",
-  daoApplicationVoteValuesObj,
-);
-
-export type NewVote = typeof daoVoteSchema.$inferInsert;
 export const daoVoteSchema = createTable(
   "dao_vote",
   {
     id: serial("id").primaryKey(),
     daoId: integer("dao_id").notNull(),
     userKey: ss58Address("user_key").references(() => cadreSchema.userKey),
-    daoVoteType: DaoApplicationVoteEnum("dao_vote_type").notNull(),
+    daoVoteType: daoVoteType("dao_vote_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
@@ -255,8 +238,6 @@ export const daoVoteSchema = createTable(
 /**
  * Auxiliary table to store the notification of a governance proposals / DAOs.
  */
-export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
-
 export const governanceNotificationSchema = createTable(
   "governance_notification",
   {
