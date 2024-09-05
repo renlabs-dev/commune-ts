@@ -118,7 +118,9 @@ export function ViewComment({
       <div className="m-2 flex h-full min-h-max animate-fade-down flex-col items-center justify-between border border-white/20 bg-[#898989]/5 p-6 text-white backdrop-blur-md animate-delay-200">
         <div className="mb-4 flex w-full flex-col items-center justify-between gap-1 border-b border-gray-500 border-white/20 pb-2 text-gray-400 md:flex-row">
           <h2 className="w-full text-start font-semibold">
-            Community Comments
+            {modeType === "PROPOSAL"
+              ? "Community Comments"
+              : "DAO Cadre Comments"}
           </h2>
           <div className="flex w-full space-x-2 md:justify-end">
             {["oldest", "newest", "mostUpvotes"].map((option) => (
