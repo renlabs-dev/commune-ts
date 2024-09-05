@@ -1,9 +1,12 @@
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+import { DaoApplicationStatus } from "@commune-ts/types";
+
 import {
   commentInteractionSchema,
   commentReportSchema,
+  DaoApplicationVoteEnum,
   daoVoteSchema,
   moduleReport,
   proposalCommentSchema,
@@ -91,7 +94,7 @@ export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
 export const DAO_VOTE_INSERT_SCHEMA = createInsertSchema(daoVoteSchema, {
   daoId: z.number().int(),
   userKey: z.string(),
-  daoVoteType: z.enum(["ACCEPT", "REFUSE", "REMOVE"] as const),
+  daoVoteType: z.enum(DaoApplicationVoteEnum.enumValues),
 }).omit({
   id: true,
   createdAt: true,

@@ -271,6 +271,7 @@ export function parseAddress(valueRaw: Codec): DaoApplications | null {
 
 export function parseDaos(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
+  console.log(value);
   const validated = DAO_APPLICATIONS_SCHEMA.safeParse(value);
   if (!validated.success) {
     return null;
