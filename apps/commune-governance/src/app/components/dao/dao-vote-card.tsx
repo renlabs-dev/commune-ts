@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { BackspaceIcon, ReceiptRefundIcon } from "@heroicons/react/24/outline";
 
-import type { DaoStatus } from "@commune-ts/types";
+import type {
+  DaoApplicationStatus,
+  DaoApplicationVote,
+} from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { WalletButton } from "@commune-ts/wallet";
@@ -12,16 +15,16 @@ import { api } from "~/trpc/react";
 import { GovernanceStatusNotOpen } from "../governance-status-not-open";
 import { SectionHeaderText } from "../section-header-text";
 
-export type DaoVoteStatus = "FAVORABLE" | "AGAINST" | "UNVOTED" | "REMOVE";
+type DaoApplicationVoteExtended = DaoApplicationVote | "UNVOTED";
 
 export function DaoVoteCard(props: {
-  daoStatus: DaoStatus;
+  daoStatus: DaoApplicationStatus;
   daoId: number;
-}): JSX.Element {
+}) {
   const { daoId, daoStatus } = props;
   const { isConnected, selectedAccount } = useCommune();
 
-  const [vote, setVote] = useState<DaoVoteStatus>("UNVOTED");
+  const [vote, setVote] = useState<DaoApplicationVoteExtended>("UNVOTED");
 
   const { data: votes } = api.dao.byId.useQuery({ id: daoId });
   const { data: cadreUsers } = api.dao.byCadre.useQuery();
@@ -94,7 +97,7 @@ export function DaoVoteCard(props: {
     }
   }
 
-  function handleVotePreference(value: DaoVoteStatus): void {
+  function handleVotePreference(value: DaoApplicationVoteExtended): void {
     if (vote === "UNVOTED" || vote !== value) {
       setVote(value);
       return;
@@ -110,7 +113,7 @@ export function DaoVoteCard(props: {
       return;
     }
 
-    let daoVoteType: "ACCEPT" | "REFUSE" | "REMOVE";
+    let daoVoteType: "ACCEPT" | "REFUSE" | "REMOVE"; // TODO: vote
     switch (vote) {
       case "FAVORABLE":
         daoVoteType = "ACCEPT";
