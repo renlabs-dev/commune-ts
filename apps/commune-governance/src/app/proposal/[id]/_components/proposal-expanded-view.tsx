@@ -15,6 +15,7 @@ import { CreateComment } from "~/app/components/comments/create-comment";
 import { ViewComment } from "~/app/components/comments/view-comment";
 import { Label } from "~/app/components/label";
 import { ProposalTypeLabel } from "~/app/components/proposal/proposal-type-label";
+import { ProposalVoteCard } from "~/app/components/proposal/proposal-vote-card";
 import { RewardLabel } from "~/app/components/proposal/reward-label";
 import { VoterList } from "~/app/components/proposal/voter-list";
 import { SectionHeaderText } from "~/app/components/section-header-text";
@@ -26,7 +27,6 @@ import {
   handleProposalVotesInFavor,
 } from "../../../../utils";
 import { MarkdownView } from "../../../components/markdown-view";
-import { VoteCard } from "../../../components/proposal/vote-card";
 import { VotingPowerButton } from "../../../components/proposal/voting-power-button";
 import { StatusLabel } from "../../../components/status-label";
 
@@ -229,7 +229,7 @@ export function ProposalExpandedView(props: CustomContent): JSX.Element {
         </div>
 
         <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-500 md:block">
-          <VoteCard
+          <ProposalVoteCard
             proposalId={content.id}
             proposalStatus={content.status}
             voted={content.voted}

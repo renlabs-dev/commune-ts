@@ -1,11 +1,12 @@
 import type { SQL, Table } from "@commune-ts/db";
-import type { SubspaceModule } from "@commune-ts/types";
+import type { NewNotification } from "@commune-ts/db/schema";
+import type { GovernanceModeType, SubspaceModule } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
   cadreSchema,
   daoVoteSchema,
-  DaoVoteType,
+  governanceNotificationSchema,
   moduleData,
 } from "@commune-ts/db/schema";
 
@@ -39,23 +40,23 @@ export async function upsertModuleData(
     .execute();
 }
 
-export async function computeTotalVotesPerDao(): Promise<
-  {
-    daoId: number;
-    acceptVotes: number;
-    refuseVotes: number;
-    removeVotes: number;
-  }[]
-> {
+export interface VotesByProposal {
+  daoId: number;
+  acceptVotes: number;
+  refuseVotes: number;
+  removeVotes: number;
+}
+
+export async function computeTotalVotesPerDao(): Promise<VotesByProposal[]> {
   const result = await db
     .select({
       daoId: daoVoteSchema.daoId,
       acceptVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = ${DaoVoteType.ACCEPT} then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = 'ACCEPT' then 1 end)`.as<number>(),
       refuseVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = ${DaoVoteType.REFUSE} then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = 'REFUSE' then 1 end)`.as<number>(),
       removeVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = ${DaoVoteType.REMOVE} then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = 'REMOVE' then 1 end)`.as<number>(),
     })
     .from(daoVoteSchema)
     .where(sql`${daoVoteSchema.deletedAt} is null`)
@@ -63,6 +64,25 @@ export async function computeTotalVotesPerDao(): Promise<
     .execute();
 
   return result;
+}
+
+export async function getProposalIdsByType(
+  type: GovernanceModeType,
+): Promise<number[]> {
+  const result = await db
+    .select({
+      proposalId: governanceNotificationSchema.proposalId,
+    })
+    .from(governanceNotificationSchema)
+    .where(sql`type = ${type})`);
+
+  const proposalIds = result.map((row) => row.proposalId);
+
+  return proposalIds;
+}
+// export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+export async function addSeenProposal(proposal: NewNotification) {
+  await db.insert(governanceNotificationSchema).values(proposal);
 }
 
 export async function countCadreKeys(): Promise<number> {
@@ -73,6 +93,10 @@ export async function countCadreKeys(): Promise<number> {
     .from(cadreSchema)
     .where(sql`${cadreSchema.deletedAt} is null`)
     .execute();
+
+  if (!result[0]) {
+    return 0;
+  }
 
   return result[0].count;
 }
