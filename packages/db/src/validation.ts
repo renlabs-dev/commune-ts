@@ -1,33 +1,44 @@
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { DaoApplicationStatus, DaoApplicationVote } from "@commune-ts/types";
-
 import {
   commentInteractionSchema,
   commentReportSchema,
-  DaoApplicationVoteEnum,
   daoVoteSchema,
   moduleReport,
   proposalCommentSchema,
-  ReportReason,
   userModuleData,
   VoteType,
 } from "./schema";
+
+const MAX_CHARACTERS = 300;
 
 export const PROPOSAL_COMMENT_INSERT_SCHEMA = createInsertSchema(
   proposalCommentSchema,
   {
     content: z
       .string()
-      .min(1)
-      .max(512)
-      .transform((v) => v.trim())
-      .refine((s) => s.length, "Comment should not be blank"),
-    userKey: z.string().min(1),
-    userName: z.string().optional(),
-    proposalId: z.number().int(),
-    type: z.enum(["PROPOSAL", "DAO"] as const),
+      .min(1, "Comment cannot be empty")
+      .max(
+        MAX_CHARACTERS,
+        `Comment must be ${MAX_CHARACTERS} characters or less`,
+      )
+      .refine(
+        (value) => !/https?:\/\/\S+/i.test(value),
+        "Links are not allowed in comments",
+      )
+      .refine(
+        (value) => !/[<>{}[\]\\/]/g.test(value),
+        "Special characters are not allowed",
+      ),
+    userName: z
+      .string()
+      .max(MAX_CHARACTERS, `Name must be ${MAX_CHARACTERS} characters or less`)
+      .optional()
+      .refine(
+        (value) => !value || !/[<>{}[\]\\/]/g.test(value),
+        "Special characters are not allowed in the name",
+      ),
   },
 ).omit({
   id: true,
@@ -38,8 +49,6 @@ export const PROPOSAL_COMMENT_INSERT_SCHEMA = createInsertSchema(
 export const COMMENT_INTERACTION_INSERT_SCHEMA = createInsertSchema(
   commentInteractionSchema,
   {
-    commentId: z.string(),
-    userKey: z.string(),
     voteType: z.nativeEnum(VoteType),
   },
 ).omit({
@@ -50,9 +59,6 @@ export const COMMENT_INTERACTION_INSERT_SCHEMA = createInsertSchema(
 export const COMMENT_REPORT_INSERT_SCHEMA = createInsertSchema(
   commentReportSchema,
   {
-    commentId: z.string(),
-    userKey: z.string(),
-    reason: z.nativeEnum(ReportReason),
     content: z
       .string()
       .min(1)
@@ -66,15 +72,12 @@ export const COMMENT_REPORT_INSERT_SCHEMA = createInsertSchema(
 });
 
 export const MODULE_REPORT_INSERT_SCHEMA = createInsertSchema(moduleReport, {
-  userKey: z.string(),
-  moduleId: z.number().int(),
   content: z
     .string()
     .min(1)
     .max(512)
     .transform((v) => v.trim())
     .refine((s) => s.length, "Comment should not be blank"),
-  reason: z.nativeEnum(ReportReason),
 }).omit({
   id: true,
   createdAt: true,
