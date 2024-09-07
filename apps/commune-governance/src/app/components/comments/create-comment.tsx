@@ -14,32 +14,6 @@ const MAX_CHARACTERS = 300;
 const MAX_NAME_CHARACTERS = 300;
 const MIN_STAKE_REQUIRED = 5000;
 
-const CommentSchema = z.object({
-  content: z
-    .string()
-    .min(1, "Comment cannot be empty")
-    .max(MAX_CHARACTERS, `Comment must be ${MAX_CHARACTERS} characters or less`)
-    .refine(
-      (value) => !/https?:\/\/\S+/i.test(value),
-      "Links are not allowed in comments",
-    )
-    .refine(
-      (value) => !/[<>{}[\]\\/]/g.test(value),
-      "Special characters are not allowed",
-    ),
-  name: z
-    .string()
-    .max(
-      MAX_NAME_CHARACTERS,
-      `Name must be ${MAX_NAME_CHARACTERS} characters or less`,
-    )
-    .optional()
-    .refine(
-      (value) => !value || !/[<>{}[\]\\/]/g.test(value),
-      "Special characters are not allowed in the name",
-    ),
-});
-
 export function CreateComment({
   proposalId,
   ModeType,
@@ -100,11 +74,10 @@ export function CreateComment({
     }
 
     try {
-      CommentSchema.parse({ content, name });
       CreateComment.mutate({
         content,
         proposalId,
-        type: ModeType,
+        governanceModel: ModeType,
         userName: name || undefined,
         userKey: String(selectedAccount.address),
       });
