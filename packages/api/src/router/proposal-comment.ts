@@ -5,7 +5,6 @@ import { and, eq, sql } from "@commune-ts/db";
 import {
   commentInteractionSchema,
   commentReportSchema,
-  GovernanceModeType,
   proposalCommentDigestView,
   proposalCommentSchema,
 } from "@commune-ts/db/schema";
@@ -33,7 +32,7 @@ export const proposalCommentRouter = {
         .where(
           and(
             eq(proposalCommentDigestView.proposalId, input.proposalId),
-            eq(proposalCommentDigestView.type, input.type),
+            eq(proposalCommentDigestView.governanceModel, input.type),
           ),
         )
         .execute();

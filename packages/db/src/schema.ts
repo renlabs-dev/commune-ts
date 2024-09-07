@@ -14,8 +14,9 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const ss58Address = (name: string) => varchar(name, { length: 256 });
 export const createTable = pgTableCreator((name) => `${name}`);
+
+export const ss58Address = (name: string) => varchar(name, { length: 256 });
 
 /**
  * Modules registered on the Commune chain.
@@ -85,17 +86,17 @@ export const userModuleData = createTable(
   }),
 );
 
-export enum ReportReason {
-  spam = "spam",
-  harassment = "harassment",
-  hateSpeech = "hateSpeech",
-  violence = "violence",
-  sexualContent = "sexualContent",
-}
-
 /**
  * A report made by a user about a module.
  */
+export const ReportReasonEnum = pgEnum("reason", [
+  "SPAM",
+  "VIOLENCE",
+  "HARASSMENT",
+  "HATE_SPEECH",
+  "SEXUAL_CONTENT",
+]);
+
 export const moduleReport = createTable("module_report", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key"),
@@ -103,18 +104,24 @@ export const moduleReport = createTable("module_report", {
     .references(() => moduleData.id)
     .notNull(),
   content: text("content"),
-  reason: varchar("reason", { length: 16 }),
+  reason: ReportReasonEnum("reason").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export type GovernanceModeType = "PROPOSAL" | "DAO";
+/**
+ * A comment made by a user on a proposal or DAO.
+ */
+export const governanceModelEnum = pgEnum("governance_model", [
+  "PROPOSAL",
+  "DAO",
+]);
 
 export const proposalCommentSchema = createTable(
   "proposal_comment",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     proposalId: integer("proposal_id").notNull(),
-    type: text("type").$type<GovernanceModeType>(),
+    governanceModel: governanceModelEnum("governance_model"),
     userKey: ss58Address("user_key").notNull(),
     userName: text("user_name"),
     content: text("content").notNull(),
@@ -126,6 +133,9 @@ export const proposalCommentSchema = createTable(
   }),
 );
 
+/**
+ * A vote made by a user on a comment.
+ */
 export enum VoteType {
   UP = "UP",
   DOWN = "DOWN",
@@ -160,7 +170,7 @@ export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
       id: proposalCommentSchema.id,
       proposalId: proposalCommentSchema.proposalId,
       userKey: proposalCommentSchema.userKey,
-      type: proposalCommentSchema.type,
+      governanceModel: proposalCommentSchema.governanceModel,
       userName: proposalCommentSchema.userName,
       content: proposalCommentSchema.content,
       createdAt: proposalCommentSchema.createdAt,
@@ -183,7 +193,7 @@ export const proposalCommentDigestView = pgView("comment_digest").as((qb) =>
       proposalCommentSchema.id,
       proposalCommentSchema.proposalId,
       proposalCommentSchema.userKey,
-      proposalCommentSchema.type,
+      proposalCommentSchema.governanceModel,
       proposalCommentSchema.content,
       proposalCommentSchema.createdAt,
     )
@@ -200,10 +210,13 @@ export const commentReportSchema = createTable("comment_report", {
     .references(() => proposalCommentSchema.id)
     .notNull(),
   content: text("content"),
-  reason: varchar("reason", { length: 16 }),
+  reason: ReportReasonEnum("reason").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+/**
+ * A DAO (Decentralized Autonomous Organization) is a group of users that can vote on proposals.
+ */
 export const cadreSchema = createTable("cadre", {
   id: serial("id").primaryKey(),
   userKey: ss58Address("user_key").notNull().unique(),
@@ -213,7 +226,10 @@ export const cadreSchema = createTable("cadre", {
   deletedAt: timestamp("deleted_at").default(sql`null`),
 });
 
-export const daoVoteType = pgEnum("dao_vote_type", [
+/**
+ * This table stores votes on S2 DAOs Applications.
+ */
+export const daoVoteTypeEnum = pgEnum("dao_vote_type", [
   "ACCEPT",
   "REFUSE",
   "REMOVE",
@@ -224,8 +240,10 @@ export const daoVoteSchema = createTable(
   {
     id: serial("id").primaryKey(),
     daoId: integer("dao_id").notNull(),
-    userKey: ss58Address("user_key").references(() => cadreSchema.userKey),
-    daoVoteType: daoVoteType("dao_vote_type").notNull(),
+    userKey: ss58Address("user_key")
+      .references(() => cadreSchema.userKey)
+      .notNull(),
+    daoVoteType: daoVoteTypeEnum("dao_vote_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
@@ -242,7 +260,7 @@ export const governanceNotificationSchema = createTable(
   "governance_notification",
   {
     id: serial("id").primaryKey(),
-    type: text("type").$type<GovernanceModeType>().notNull(),
+    governanceModel: governanceModelEnum("governance_model").notNull(),
     proposalId: integer("proposal_id").notNull(),
     notifiedAt: timestamp("notified_at").defaultNow(),
   },

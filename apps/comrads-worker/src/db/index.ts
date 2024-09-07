@@ -1,5 +1,4 @@
 import type { SQL, Table } from "@commune-ts/db";
-import type { NewNotification, NewVote } from "@commune-ts/db/schema";
 import type { GovernanceModeType, SubspaceModule } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
@@ -9,6 +8,9 @@ import {
   governanceNotificationSchema,
   moduleData,
 } from "@commune-ts/db/schema";
+
+export type NewVote = typeof daoVoteSchema.$inferInsert;
+export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
 
 export async function upsertModuleData(
   modules: SubspaceModule[],
@@ -55,17 +57,15 @@ export async function addSeenProposal(proposal: NewNotification) {
 }
 
 export async function computeTotalVotesPerDao(): Promise<VotesByProposal[]> {
-  const voteTypes = ["Accepted", "Refused", "Removed"] as DaoVoteType;
-
   const result = await db
     .select({
       daoId: daoVoteSchema.daoId,
       acceptVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = '${voteTypes[0]}' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[0]}' then 1 end)`.as<number>(),
       refuseVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = 'REFUSE' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[1]}' then 1 end)`.as<number>(),
       removeVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = 'REMOVE' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[2]}' then 1 end)`.as<number>(),
     })
     .from(daoVoteSchema)
     .where(sql`${daoVoteSchema.deletedAt} is null`)

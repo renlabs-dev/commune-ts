@@ -1,29 +1,20 @@
 "use client";
 
+import type { inferProcedureOutput } from "@trpc/server";
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { z } from "zod";
 
+import type { AppRouter } from "@commune-ts/api";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 
 import { api } from "~/trpc/react";
 
-enum ReportReason {
-  spam = "spam",
-  harassment = "harassment",
-  hateSpeech = "hateSpeech",
-  violence = "violence",
-  sexualContent = "sexualContent",
-}
-
-const reportSchema = z.object({
-  reason: z.nativeEnum(ReportReason),
-  content: z.string().min(10).max(500),
-});
-
-type ReportFormData = z.infer<typeof reportSchema>;
+type ReportFormData = inferProcedureOutput<
+  AppRouter["proposalComment"]["createComment"]
+>;
 
 interface ReportCommentProps {
   commentId: string;
@@ -32,7 +23,7 @@ interface ReportCommentProps {
 export function ReportComment({ commentId }: ReportCommentProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState<ReportFormData>({
-    reason: ReportReason.spam,
+    reason: "",
     content: "",
   });
   const [errors, setErrors] = useState<Partial<ReportFormData>>({});

@@ -45,7 +45,6 @@ export const TOKEN_AMOUNT_SCHEMA = z
   .transform((value) => BigInt(value));
 
 // == DAO Applications ==
-
 export const DAO_APPLICATIONS_SCHEMA = z.object({
   id: z.number(),
   userId: ADDRESS_SCHEMA,
