@@ -2,6 +2,7 @@ import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
 import express from "express";
+import { match } from "rustie";
 
 import type {
   CustomDataError,
@@ -49,30 +50,53 @@ const NETUID_ZERO = 0;
 // const DAO_EXPIRATION_TIME = 75600; // blocks
 const DAO_EXPIRATION_TIME = 0; // blocks
 
-export async function fetchCustomMetadata(
+export function append_error_info(
+  error: CustomDataError,
+  info: string,
+  sep = " ",
+): CustomDataError {
+  const old_info = error.message;
+  const message = old_info + sep + info;
+  return { message };
+}
+
+export async function process_metadata(
+  url: string,
   kind: "proposal" | "dao",
   entryId: number,
-  metadataField: string,
-): Promise<Result<CustomMetadata, CustomDataError>> {
-  const cid = parseIpfsUri(metadataField);
-  if (cid == null) {
-    const message = `Invalid IPFS URI '${metadataField}' for ${kind} ${entryId}`;
-    return { Err: { message } };
-  }
-
-  const url = buildIpfsGatewayUrl(cid);
+) {
   const response = await fetch(url);
   const obj: unknown = await response.json();
 
   const schema = CUSTOM_METADATA_SCHEMA;
   const validated = schema.safeParse(obj);
-
   if (!validated.success) {
     const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
     return { Err: { message } };
   }
-
   return { Ok: validated.data };
+}
+
+export async function fetchCustomMetadata(
+  kind: "proposal" | "dao",
+  entryId: number,
+  metadataField: string,
+): Promise<Result<CustomMetadata, CustomDataError>> {
+  const r = parseIpfsUri(metadataField);
+
+  const result = match(r)({
+    async Ok(cid): Promise<Result<CustomMetadata, CustomDataError>> {
+      const url = buildIpfsGatewayUrl(cid);
+      const metadata = await process_metadata(url, kind, entryId);
+      return metadata;
+    },
+    async Err(err_message) {
+      return Promise.resolve({
+        Err: append_error_info(err_message, `for ${kind} ${entryId}`),
+      });
+    },
+  });
+  return result;
 }
 
 async function setup(): Promise<ApiPromise> {
