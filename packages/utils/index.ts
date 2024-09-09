@@ -4,6 +4,7 @@ import { AssertionError } from "tsafe";
 import {
   AnyTuple,
   Codec,
+  CustomDataError,
   DAO_APPLICATIONS_SCHEMA,
   DaoApplications,
   Entry,
@@ -11,6 +12,7 @@ import {
   Proposal,
   PROPOSAL_SCHEMA,
   RawEntry,
+  Result,
   SS58Address,
   StorageKey,
   SUBSPACE_MODULE_SCHEMA,
@@ -127,18 +129,20 @@ export function smallAddress(address: string, size?: number): string {
 
 // == IPFS ==
 
-export function parseIpfsUri(uri: string): CID | null {
+export function parseIpfsUri(uri: string): Result<CID, CustomDataError> {
   const validated = URL_SCHEMA.safeParse(uri);
   if (!validated.success) {
-    return null;
+    const message = `Invalid IPFS URI '${uri}'`;
+    return { Err: { message } };
   }
   const ipfsPrefix = "ipfs://";
   const rest = uri.startsWith(ipfsPrefix) ? uri.slice(ipfsPrefix.length) : uri;
   try {
     const cid = CID.parse(rest);
-    return cid;
+    return { Ok: cid };
   } catch (e) {
-    return null;
+    const message = `Unable to parse IPFS URI '${uri}'`;
+    return { Err: { message } };
   }
 }
 

@@ -63,6 +63,15 @@ export interface CustomDataError {
   message: string;
 }
 
+export function isCustomDataError(obj: any): obj is CustomDataError {
+  return (
+    typeof obj === "object" &&
+    "Err" in obj &&
+    typeof obj.Err === "object" &&
+    "message" in obj.Err
+  );
+}
+
 export type CustomMetadataState = Result<CustomMetadata, CustomDataError>;
 export type WithMetadataState<T> = T & { customData?: CustomMetadataState };
 

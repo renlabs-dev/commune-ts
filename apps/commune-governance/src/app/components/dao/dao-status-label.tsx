@@ -3,11 +3,11 @@ import type { DaoApplicationStatus } from "@commune-ts/types";
 import { Label } from "../label";
 
 interface StatusLabelProps {
-  status: DaoApplicationStatus;
+  daoStatus: DaoApplicationStatus;
 }
 
 export const DaoStatusLabel = (props: StatusLabelProps): JSX.Element => {
-  const { status } = props;
+  const { daoStatus } = props;
   const votingStatus = {
     Pending: (
       <Label className="w-auto border border-yellow-500 bg-yellow-500/10 py-1.5 text-center text-yellow-500 lg:text-left">
@@ -30,5 +30,5 @@ export const DaoStatusLabel = (props: StatusLabelProps): JSX.Element => {
       </Label>
     ),
   };
-  return votingStatus[status];
+  return votingStatus[daoStatus];
 };

@@ -108,6 +108,11 @@ export function DaoVoteCard(props: {
       return;
     }
 
+    if (!cadreUsers?.some((user) => user.userKey === selectedAccount.address)) {
+      toast.error("Only Cadre members can vote.");
+      return;
+    }
+
     if (!vote) {
       toast.error("Please select a valid vote option.");
       return;

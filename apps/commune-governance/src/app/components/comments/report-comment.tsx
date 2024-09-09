@@ -12,9 +12,14 @@ import { toast } from "@commune-ts/providers/use-toast";
 
 import { api } from "~/trpc/react";
 
-type ReportFormData = inferProcedureOutput<
-  AppRouter["proposalComment"]["createComment"]
->;
+type ProposalComment = inferProcedureOutput<
+  AppRouter["proposalComment"]["byReport"]
+>[0];
+
+interface ReportFormData {
+  reason: ProposalComment["reason"];
+  content: string;
+}
 
 interface ReportCommentProps {
   commentId: string;
@@ -22,10 +27,12 @@ interface ReportCommentProps {
 
 export function ReportComment({ commentId }: ReportCommentProps) {
   const [modalOpen, setModalOpen] = useState(false);
+
   const [formData, setFormData] = useState<ReportFormData>({
-    reason: "",
+    reason: "SPAM",
     content: "",
   });
+
   const [errors, setErrors] = useState<Partial<ReportFormData>>({});
 
   const { selectedAccount } = useCommune();
@@ -34,7 +41,7 @@ export function ReportComment({ commentId }: ReportCommentProps) {
     api.proposalComment.createCommentReport.useMutation({
       onSuccess: () => {
         setModalOpen(false);
-        setFormData({ reason: ReportReason.spam, content: "" });
+        setFormData({ reason: formData.reason, content: "" });
         setErrors({});
       },
     });
@@ -48,7 +55,10 @@ export function ReportComment({ commentId }: ReportCommentProps) {
   ) => {
     const { name, value } = e.target;
     if (name === "reason") {
-      setFormData((prev) => ({ ...prev, [name]: value as ReportReason }));
+      setFormData((prev) => ({
+        ...prev,
+        reason: value as ProposalComment["reason"],
+      }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -56,7 +66,6 @@ export function ReportComment({ commentId }: ReportCommentProps) {
 
   const validateForm = (): boolean => {
     try {
-      reportSchema.parse(formData);
       setErrors({});
       return true;
     } catch (error) {
@@ -122,13 +131,11 @@ export function ReportComment({ commentId }: ReportCommentProps) {
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 bg-black/40  p-2"
                 >
-                  <option value={ReportReason.spam}>Spam</option>
-                  <option value={ReportReason.harassment}>Harassment</option>
-                  <option value={ReportReason.hateSpeech}>Hate Speech</option>
-                  <option value={ReportReason.violence}>Violence</option>
-                  <option value={ReportReason.sexualContent}>
-                    Sexual Content
-                  </option>
+                  <option value="SPAM">Spam</option>
+                  <option value="VIOLENCE">Violence</option>
+                  <option value="HARASSMENT">Harassment</option>
+                  <option value="HATE_SPEECH">Hate speech</option>
+                  <option value="SEXUAL_CONTENT">Sexual content</option>
                 </select>
                 {errors.reason && (
                   <p className="mt-1 text-xs text-red-500">{errors.reason}</p>
