@@ -33,7 +33,7 @@ export function DaoCard(props: DaoCardProps): JSX.Element {
             ) : null}
             {!title && <Skeleton className="w-8/12 py-3 pb-4" />}
             <div className="mb-2 flex w-full flex-row justify-center gap-2 lg:mb-0 lg:ml-auto lg:w-auto lg:flex-row lg:justify-end lg:pl-4">
-              <DaoStatusLabel status={daoState.status} />
+              <DaoStatusLabel daoStatus={daoState.status} />
             </div>
           </Card.Header>
           <Card.Body className="px-0 py-0">

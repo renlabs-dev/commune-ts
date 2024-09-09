@@ -2,7 +2,7 @@
 
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-import type { DaoStatus } from "@commune-ts/types";
+import type { DaoApplicationStatus } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { smallAddress } from "@commune-ts/utils";
 
@@ -87,14 +87,16 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
 
         <div className="m-2 animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400  backdrop-blur-md animate-delay-200">
           <div className="flex items-center gap-3">
-            <DaoStatusLabel result={content.status as DaoStatus} />
+            <DaoStatusLabel
+              daoStatus={content.status as DaoApplicationStatus}
+            />
           </div>
         </div>
 
         <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-500 md:block">
           <DaoVoteCard
             daoId={content.id}
-            daoStatus={content.status as DaoStatus}
+            daoStatus={content.status as DaoApplicationStatus}
           />
         </div>
       </div>

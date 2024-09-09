@@ -59,6 +59,9 @@ export const proposalCommentRouter = {
         {} as Record<string, string>,
       );
     }),
+  byReport: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.commentReportSchema.findMany();
+  }),
   // POST
   createComment: publicProcedure
     .input(PROPOSAL_COMMENT_INSERT_SCHEMA)
