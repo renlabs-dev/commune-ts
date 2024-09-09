@@ -611,6 +611,9 @@ importers:
       prettier:
         specifier: ^3.3.1
         version: 3.3.3
+      rustie:
+        specifier: "*"
+        version: 0.2.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.16.5)(typescript@5.5.4)
@@ -978,31 +981,6 @@ importers:
       "@commune-ts/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
-
-  packages/validators:
-    dependencies:
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
-    devDependencies:
-      "@commune-ts/eslint-config":
-        specifier: workspace:*
-        version: link:../../tooling/eslint
-      "@commune-ts/prettier-config":
-        specifier: workspace:*
-        version: link:../../tooling/prettier
-      "@commune-ts/tsconfig":
-        specifier: workspace:*
-        version: link:../../tooling/typescript
-      eslint:
-        specifier: ^8.0.0
-        version: 8.57.0
-      prettier:
-        specifier: ^3.3.1
-        version: 3.3.3
-      typescript:
-        specifier: ^5.4.5
-        version: 5.5.4
 
   packages/wallet:
     dependencies:
