@@ -27,6 +27,12 @@ export const CUSTOM_METADATA_SCHEMA = z.object({
   body: z.string().optional(),
 });
 
+export const DAO_METADATA_SCHEMA = z.object({
+  title: z.string(),
+  body: z.string(),
+  discord_id: z.string(),
+});
+
 export const URL_SCHEMA = z.string().trim().url();
 
 export const ADDRESS_SCHEMA = z.string().refine(isSS58, "Invalid SS58 address");
