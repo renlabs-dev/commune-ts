@@ -61,11 +61,11 @@ export async function computeTotalVotesPerDao(): Promise<VotesByProposal[]> {
     .select({
       daoId: daoVoteSchema.daoId,
       acceptVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[0]}' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = ${daoVoteSchema.daoVoteType.enumValues[0]} then 1 end)`.as<number>(),
       refuseVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[1]}' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = ${daoVoteSchema.daoVoteType.enumValues[1]} then 1 end)`.as<number>(),
       removeVotes:
-        sql`count(case when ${daoVoteSchema.daoVoteType} = '${daoVoteSchema.daoVoteType.enumValues[2]}' then 1 end)`.as<number>(),
+        sql`count(case when ${daoVoteSchema.daoVoteType} = ${daoVoteSchema.daoVoteType.enumValues[2]} then 1 end)`.as<number>(),
     })
     .from(daoVoteSchema)
     .where(sql`${daoVoteSchema.deletedAt} is null`)
@@ -83,7 +83,7 @@ export async function getProposalIdsByType(
       proposalId: governanceNotificationSchema.proposalId,
     })
     .from(governanceNotificationSchema)
-    .where(sql`type = ${type}`);
+    .where(sql`governance_model = ${type}`);
 
   const proposalIds = result.map((row) => row.proposalId);
 

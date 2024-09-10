@@ -26,11 +26,31 @@ export const daoRouter = {
     return ctx.db.query.cadreSchema.findMany();
   }),
   // POST
+  // createVote: publicProcedure
+  //   .input(DAO_VOTE_INSERT_SCHEMA)
+  //   .mutation(async ({ ctx, input }) => {
+  //     await ctx.db.insert(daoVoteSchema).values(input).execute();
+  //   }),
   createVote: publicProcedure
     .input(DAO_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(daoVoteSchema)
+        .set({
+          deletedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(daoVoteSchema.userKey, input.userKey),
+            eq(daoVoteSchema.daoId, input.daoId),
+            isNull(daoVoteSchema.deletedAt),
+          ),
+        )
+        .execute();
+
       await ctx.db.insert(daoVoteSchema).values(input).execute();
     }),
+
   // deleted_at
   deleteVote: publicProcedure
     .input(z.object({ userKey: z.string(), daoId: z.number() }))

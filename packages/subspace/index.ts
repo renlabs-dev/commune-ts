@@ -2,7 +2,7 @@ import "@polkadot/api-augment";
 
 import { ApiPromise, WsProvider } from "@polkadot/api";
 
-import { queryStakeFrom } from "./queries";
+// import { queryStakeFrom } from "./queries";
 
 // == To run this file: npx tsx index.ts ==
 
@@ -21,4 +21,4 @@ if (!api.isConnected) {
 
 console.log("API connected");
 
-console.log(await queryStakeFrom(api));
+// console.log(await queryStakeFrom(api));

@@ -1,11 +1,15 @@
 import { CID } from "multiformats/cid";
+import { match } from "rustie";
 import { AssertionError } from "tsafe";
 
 import {
   AnyTuple,
   Codec,
+  CUSTOM_METADATA_SCHEMA,
   CustomDataError,
+  CustomMetadata,
   DAO_APPLICATIONS_SCHEMA,
+  DAO_METADATA_SCHEMA,
   DaoApplications,
   Entry,
   isSS58,
@@ -129,6 +133,11 @@ export function smallAddress(address: string, size?: number): string {
 
 // == IPFS ==
 
+export function buildIpfsGatewayUrl(cid: CID): string {
+  const cidStr = cid.toString();
+  return `https://ipfs.io/ipfs/${cidStr}`;
+}
+
 export function parseIpfsUri(uri: string): Result<CID, CustomDataError> {
   const validated = URL_SCHEMA.safeParse(uri);
   if (!validated.success) {
@@ -144,11 +153,6 @@ export function parseIpfsUri(uri: string): Result<CID, CustomDataError> {
     const message = `Unable to parse IPFS URI '${uri}'`;
     return { Err: { message } };
   }
-}
-
-export function buildIpfsGatewayUrl(cid: CID): string {
-  const cidStr = cid.toString();
-  return `https://ipfs.io/ipfs/${cidStr}`;
 }
 
 // == Handlers ==
@@ -306,4 +310,79 @@ export function removeEmojis(text: string): string {
     /[\u{1F000}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F191}-\u{1F251}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2194}-\u{2199}\u{21A9}-\u{21AA}\u{231A}-\u{231B}\u{2328}\u{23CF}\u{23E9}-\u{23F3}\u{23F8}-\u{23FA}\u{24C2}\u{25AA}-\u{25AB}\u{25B6}\u{25C0}\u{25FB}-\u{25FE}\u{2600}-\u{2604}\u{260E}\u{2611}\u{2614}-\u{2615}\u{2618}\u{261D}\u{2620}\u{2622}-\u{2623}\u{2626}\u{262A}\u{262E}-\u{262F}\u{2638}-\u{263A}\u{2640}\u{2642}\u{2648}-\u{2653}\u{265F}-\u{2660}\u{2663}\u{2665}-\u{2666}\u{2668}\u{267B}\u{267E}-\u{267F}\u{2692}-\u{2697}\u{2699}\u{269B}-\u{269C}\u{26A0}-\u{26A1}\u{26AA}-\u{26AB}\u{26B0}-\u{26B1}\u{26BD}-\u{26BE}\u{26C4}-\u{26C5}\u{26C8}\u{26CE}-\u{26CF}\u{26D1}\u{26D3}-\u{26D4}\u{26E9}-\u{26EA}\u{26F0}-\u{26F5}\u{26F7}-\u{26FA}\u{26FD}\u{2702}\u{2705}\u{2708}-\u{270D}\u{270F}]/gu;
 
   return text.replace(emojiPattern, "");
+}
+
+export function appendErrorInfo(
+  error: CustomDataError,
+  info: string,
+  sep = " ",
+): CustomDataError {
+  const old_info = error.message;
+  const message = old_info + sep + info;
+  return { message };
+}
+
+export async function processMetadata(
+  url: string,
+  kind: "proposal" | "dao",
+  entryId: number,
+) {
+  const response = await fetch(url);
+  const obj: unknown = await response.json();
+
+  const schema =
+    kind === "proposal" ? CUSTOM_METADATA_SCHEMA : DAO_METADATA_SCHEMA;
+  const data = match(kind)({
+    dao() {
+      const validated = DAO_METADATA_SCHEMA.safeParse(obj);
+      if (!validated.success) {
+        const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
+        return { Err: { message } };
+      } else {
+        return { Ok: validated.data };
+      }
+    },
+    proposal() {
+      const validated = CUSTOM_METADATA_SCHEMA.safeParse(obj);
+      if (!validated.success) {
+        const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
+        return { Err: { message } };
+      } else {
+        return { Ok: validated.data };
+      }
+    },
+  });
+}
+
+export async function fetchCustomMetadata(
+  kind: "proposal" | "dao",
+  entryId: number,
+  metadataField: string,
+): Promise<Result<CustomMetadata, CustomDataError>> {
+  const r = parseIpfsUri(metadataField);
+
+  const result = match(r)({
+    async Ok(cid): Promise<Result<CustomMetadata, CustomDataError>> {
+      const url = buildIpfsGatewayUrl(cid); // this is wrong
+      const metadata = await processMetadata(url, kind, entryId);
+      return metadata;
+    },
+    async Err(err_message) {
+      return Promise.resolve({
+        Err: appendErrorInfo(err_message, `for ${kind} ${entryId}`),
+      });
+    },
+  });
+  return result;
+}
+
+export function flattenResult<T, E>(x: Result<T, E>): T | null {
+  return match(x)({
+    Ok(r) {
+      return r;
+    },
+    Err() {
+      return null;
+    },
+  });
 }
