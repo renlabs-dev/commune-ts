@@ -144,7 +144,12 @@ export function CreateComment({
       <button
         type="submit"
         className="bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={isSubmitDisabled()}
+        disabled={
+          isSubmitDisabled() ||
+          CreateComment.isPending ||
+          !selectedAccount?.address ||
+          content.length === 0
+        }
       >
         {CreateComment.isPending ? "Submitting..." : "Submit"}
       </button>

@@ -127,7 +127,6 @@ async function notifyNewApplication(pending_apps: DaoApplications[]) {
     const flattenedMetadata = flattenResult(metadata);
     if (flattenedMetadata !== null) {
       const user = flattenedMetadata.body;
-      console.log("shadowherat"); //bot.notifyProposal()
     }
     return addSeenProposal(seen_proposal);
   }

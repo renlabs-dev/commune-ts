@@ -158,6 +158,9 @@ importers:
       rustie:
         specifier: ^0.2.0
         version: 0.2.0
+      superjson:
+        specifier: 2.2.1
+        version: 2.2.1
       tsafe:
         specifier: ^1.6.6
         version: 1.7.2
@@ -611,9 +614,6 @@ importers:
       prettier:
         specifier: ^3.3.1
         version: 3.3.3
-      rustie:
-        specifier: "*"
-        version: 0.2.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.16.5)(typescript@5.5.4)
