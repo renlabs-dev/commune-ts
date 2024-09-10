@@ -2,15 +2,11 @@ import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
 import express from "express";
-import { match } from "rustie";
 
 import type {
-  CustomDataError,
-  CustomMetadata,
   DaoApplications,
   GovernanceModeType,
   LastBlock,
-  Result,
 } from "@commune-ts/types";
 import {
   ApiPromise,
@@ -21,8 +17,7 @@ import {
   refuseDaoApplication,
   removeFromWhitelist,
 } from "@commune-ts/subspace/queries";
-import { buildIpfsGatewayUrl, parseIpfsUri } from "@commune-ts/subspace/utils";
-import { CUSTOM_METADATA_SCHEMA } from "@commune-ts/types";
+import { fetchCustomMetadata, flattenResult } from "@commune-ts/subspace/utils";
 
 import type { NewNotification, VotesByProposal } from "./db";
 import {
@@ -50,55 +45,6 @@ const NETUID_ZERO = 0;
 // const DAO_EXPIRATION_TIME = 75600; // blocks
 const DAO_EXPIRATION_TIME = 0; // blocks
 
-export function append_error_info(
-  error: CustomDataError,
-  info: string,
-  sep = " ",
-): CustomDataError {
-  const old_info = error.message;
-  const message = old_info + sep + info;
-  return { message };
-}
-
-export async function process_metadata(
-  url: string,
-  kind: "proposal" | "dao",
-  entryId: number,
-) {
-  const response = await fetch(url);
-  const obj: unknown = await response.json();
-
-  const schema = CUSTOM_METADATA_SCHEMA;
-  const validated = schema.safeParse(obj);
-  if (!validated.success) {
-    const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
-    return { Err: { message } };
-  }
-  return { Ok: validated.data };
-}
-
-export async function fetchCustomMetadata(
-  kind: "proposal" | "dao",
-  entryId: number,
-  metadataField: string,
-): Promise<Result<CustomMetadata, CustomDataError>> {
-  const r = parseIpfsUri(metadataField);
-
-  const result = match(r)({
-    async Ok(cid): Promise<Result<CustomMetadata, CustomDataError>> {
-      const url = buildIpfsGatewayUrl(cid);
-      const metadata = await process_metadata(url, kind, entryId);
-      return metadata;
-    },
-    async Err(err_message) {
-      return Promise.resolve({
-        Err: append_error_info(err_message, `for ${kind} ${entryId}`),
-      });
-    },
-  });
-  return result;
-}
-
 async function setup(): Promise<ApiPromise> {
   const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
 
@@ -123,6 +69,7 @@ function is_new_block(saved_block: number, queried_block: number) {
   }
   return true;
 }
+
 async function run_validator_worker(props: WorkerProps) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -165,13 +112,23 @@ async function get_cadre_threshold() {
   return Math.floor(keys / 2) + 1;
 }
 
-async function notify_new_application(pending_apps: DaoApplications[]) {
-  async function push_notification(proposal: DaoApplications) {
+async function notifyNewApplication(pending_apps: DaoApplications[]) {
+  async function pushNotification(proposal: DaoApplications) {
     const seen_proposal: NewNotification = {
       governanceModel: p_type,
       proposalId: proposal.id,
     };
     console.log("pushed notification"); // actually to call the discord endpoint and etc
+    const metadata = await fetchCustomMetadata(
+      "dao",
+      proposal.id,
+      proposal.data,
+    );
+    const flattenedMetadata = flattenResult(metadata);
+    if (flattenedMetadata !== null) {
+      const user = flattenedMetadata.body;
+      console.log("shadowherat"); //bot.notifyProposal()
+    }
     return addSeenProposal(seen_proposal);
   }
   const p_type: GovernanceModeType = "DAO";
@@ -180,7 +137,7 @@ async function notify_new_application(pending_apps: DaoApplications[]) {
   const unseen_proposals = pending_apps.filter(
     (application) => !proposalsSet.has(application.id),
   );
-  const notifications_promises = unseen_proposals.map(push_notification);
+  const notifications_promises = unseen_proposals.map(pushNotification);
   Promise.all(notifications_promises).catch((error) =>
     console.log(`Failed to notify proposal for reason: ${error}`),
   );
@@ -209,6 +166,8 @@ async function getVotesOnPending(
   const votes_on_pending = votes.filter(
     (vote) =>
       dao_hash_map[vote.daoId] &&
+      (dao_hash_map[vote.daoId]?.status == "Pending" ||
+        dao_hash_map[vote.daoId]?.status == "Accepted") &&
       (dao_hash_map[vote.daoId]?.blockNumber ?? last_block_number) +
         DAO_EXPIRATION_TIME <=
         last_block_number,
@@ -224,8 +183,9 @@ async function process_votes_on_proposal(
 ) {
   const mnemonic = process.env.SUBSPACE_MNEMONIC;
   const { daoId, acceptVotes, refuseVotes, removeVotes } = vote_info;
-
   console.log(`Accept: ${acceptVotes} ${daoId} Threshold: ${vote_threshold}`);
+  console.log(`Refuse: ${refuseVotes} ${daoId} Threshold: ${vote_threshold}`);
+  console.log(`Remove: ${removeVotes} ${daoId} Threshold: ${vote_threshold}`);
   if (acceptVotes >= vote_threshold) {
     // sanity check
     if (daoId in dao_hash_map) {
@@ -247,7 +207,7 @@ async function process_votes_on_proposal(
     dao_hash_map[daoId] !== undefined &&
     dao_hash_map[daoId].status === "Accepted"
   ) {
-    log(`removing proposal ${daoId}`);
+    log(`Removing proposal ${daoId}`);
     await removeFromWhitelist(api, dao_hash_map[daoId].userId, mnemonic);
   }
 }
@@ -307,9 +267,7 @@ async function run_dao_worker(props: WorkerProps) {
         dao_hash_map,
         props.api,
       );
-      const notify_promise = notify_new_application(
-        Object.values(dao_hash_map),
-      );
+      const notify_promise = notifyNewApplication(Object.values(dao_hash_map));
       await proc_promise;
       await notify_promise;
     } catch (e) {

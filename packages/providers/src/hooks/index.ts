@@ -20,20 +20,10 @@ import {
   queryUserTotalStaked,
 } from "@commune-ts/subspace/queries";
 
-import type {
-  Api,
-  CustomDataError,
-  CustomMetadata,
-  LastBlock,
-  Nullish,
-  Result,
-  SS58Address,
-} from "../types";
-import { CUSTOM_METADATA_SCHEMA } from "../types";
+import type { Api, LastBlock, Nullish, SS58Address } from "../types";
 import {
-  buildIpfsGatewayUrl,
+  fetchCustomMetadata,
   LAST_BLOCK_STALE_TIME,
-  parseIpfsUri,
   PROPOSALS_STALE_TIME,
   STAKE_STALE_TIME,
 } from "../utils";
@@ -139,11 +129,11 @@ export function useAllStakeOut(communeCacheUrl: string) {
   });
 }
 
-export function useStakeFrom(api: Api | Nullish) {
+export function useStakeFrom(communeCacheUrl: string) {
   return useQuery({
     queryKey: ["stake_from"],
-    enabled: api != null,
-    queryFn: () => queryStakeFrom(api!),
+    enabled: communeCacheUrl != null,
+    queryFn: () => queryStakeFrom(communeCacheUrl),
     staleTime: STAKE_STALE_TIME,
     refetchOnWindowFocus: false,
   });
@@ -188,32 +178,6 @@ interface BaseProposal {
 interface BaseDao {
   id: number;
   data: string;
-}
-
-export async function fetchCustomMetadata(
-  kind: "proposal" | "dao",
-  entryId: number,
-  metadataField: string,
-): Promise<Result<CustomMetadata, CustomDataError>> {
-  const cid = parseIpfsUri(metadataField);
-  if (cid == null) {
-    const message = `Invalid IPFS URI '${metadataField}' for ${kind} ${entryId}`;
-    return { Err: { message } };
-  }
-
-  const url = buildIpfsGatewayUrl(cid);
-  const response = await fetch(url);
-  const obj: unknown = await response.json();
-
-  const schema = CUSTOM_METADATA_SCHEMA;
-  const validated = schema.safeParse(obj);
-
-  if (!validated.success) {
-    const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
-    return { Err: { message } };
-  }
-
-  return { Ok: validated.data };
 }
 
 export function useCustomMetadata<T extends BaseProposal | BaseDao>(
