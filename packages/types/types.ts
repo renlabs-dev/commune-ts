@@ -14,6 +14,8 @@ import {
   SUBSPACE_MODULE_SCHEMA,
 } from "./validations";
 
+export { ZodSchema } from "zod";
+
 export type {
   InjectedAccountWithMeta,
   InjectedExtension,
