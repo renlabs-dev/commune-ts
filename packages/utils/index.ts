@@ -22,6 +22,7 @@ import {
   SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
   URL_SCHEMA,
+  ZodSchema,
 } from "@commune-ts/types";
 
 /**
@@ -324,34 +325,31 @@ export function appendErrorInfo(
 
 export async function processMetadata(
   url: string,
-  kind: "proposal" | "dao",
+  zodSchema: ZodSchema,
   entryId: number,
+  kind?: string,
 ) {
   const response = await fetch(url);
   const obj: unknown = await response.json();
 
-  const schema =
-    kind === "proposal" ? CUSTOM_METADATA_SCHEMA : DAO_METADATA_SCHEMA;
-  const data = match(kind)({
-    dao() {
-      const validated = DAO_METADATA_SCHEMA.safeParse(obj);
-      if (!validated.success) {
-        const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
-        return { Err: { message } };
-      } else {
-        return { Ok: validated.data };
-      }
-    },
-    proposal() {
-      const validated = CUSTOM_METADATA_SCHEMA.safeParse(obj);
-      if (!validated.success) {
-        const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
-        return { Err: { message } };
-      } else {
-        return { Ok: validated.data };
-      }
-    },
-  });
+  const validated = zodSchema.safeParse(obj);
+  if (!validated.success) {
+    const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
+    return { Err: { message } };
+  }
+  return { Ok: validated.data };
+}
+
+export async function processProposalMetadata(url: string, entryId: number) {
+  return await processMetadata(
+    url,
+    CUSTOM_METADATA_SCHEMA,
+    entryId,
+    "proposal",
+  );
+}
+export async function processDaoMetadata(url: string, entryId: number) {
+  return await processMetadata(url, CUSTOM_METADATA_SCHEMA, entryId, "dao");
 }
 
 export async function fetchCustomMetadata(
@@ -364,7 +362,10 @@ export async function fetchCustomMetadata(
   const result = match(r)({
     async Ok(cid): Promise<Result<CustomMetadata, CustomDataError>> {
       const url = buildIpfsGatewayUrl(cid); // this is wrong
-      const metadata = await processMetadata(url, kind, entryId);
+      const metadata =
+        kind == "proposal"
+          ? await processProposalMetadata(url, entryId)
+          : await processDaoMetadata(url, entryId);
       return metadata;
     },
     async Err(err_message) {
