@@ -5,8 +5,16 @@ import { and, eq, isNull } from "@commune-ts/db";
 
 import "@commune-ts/db/schema";
 
-import { daoVoteSchema } from "@commune-ts/db/schema";
-import { DAO_VOTE_INSERT_SCHEMA } from "@commune-ts/db/validation";
+import {
+  cadreCandidatesSchema,
+  cadreVoteSchema,
+  daoVoteSchema,
+} from "@commune-ts/db/schema";
+import {
+  CADRE_CANDIDATES_INSERT_SCHEMA,
+  CADRE_VOTE_INSERT_SCHEMA,
+  DAO_VOTE_INSERT_SCHEMA,
+} from "@commune-ts/db/validation";
 
 import { publicProcedure } from "../trpc";
 
@@ -25,12 +33,10 @@ export const daoRouter = {
   byCadre: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.cadreSchema.findMany();
   }),
+  byCadreCandidates: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.cadreCandidatesSchema.findMany();
+  }),
   // POST
-  // createVote: publicProcedure
-  //   .input(DAO_VOTE_INSERT_SCHEMA)
-  //   .mutation(async ({ ctx, input }) => {
-  //     await ctx.db.insert(daoVoteSchema).values(input).execute();
-  //   }),
   createVote: publicProcedure
     .input(DAO_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
@@ -50,8 +56,6 @@ export const daoRouter = {
 
       await ctx.db.insert(daoVoteSchema).values(input).execute();
     }),
-
-  // deleted_at
   deleteVote: publicProcedure
     .input(z.object({ userKey: z.string(), daoId: z.number() }))
     .mutation(async ({ ctx, input }) => {
@@ -66,5 +70,15 @@ export const daoRouter = {
             eq(daoVoteSchema.daoId, input.daoId),
           ),
         );
+    }),
+  addCadreCandidates: publicProcedure
+    .input(CADRE_CANDIDATES_INSERT_SCHEMA)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(cadreCandidatesSchema).values(input).execute();
+    }),
+  createCadreVote: publicProcedure
+    .input(CADRE_VOTE_INSERT_SCHEMA)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(cadreVoteSchema).values(input).execute();
     }),
 } satisfies TRPCRouterRecord;

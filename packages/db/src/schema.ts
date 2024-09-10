@@ -227,6 +227,37 @@ export const cadreSchema = createTable("cadre", {
 });
 
 /**
+ * Users can apply to join the DAO Cadre.
+ */
+export const cadreCandidatesSchema = createTable("cadre_candidates", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key").notNull().unique(),
+  discordId: varchar("discord_id", { length: 64 }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at").default(sql`null`),
+});
+
+export const cadreVoteTypeEnum = pgEnum("cadre_vote_type", [
+  "ACCEPT",
+  "REFUSE",
+]);
+
+export const cadreVoteSchema = createTable("cadre_vote", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key")
+    .references(() => cadreSchema.userKey)
+    .notNull(),
+  applicantKey: ss58Address("applicant_key")
+    .references(() => cadreCandidatesSchema.userKey)
+    .notNull(),
+  vote: cadreVoteTypeEnum("vote").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at").default(sql`null`),
+});
+
+/**
  * This table stores votes on S2 DAOs Applications.
  */
 export const daoVoteTypeEnum = pgEnum("dao_vote_type", [

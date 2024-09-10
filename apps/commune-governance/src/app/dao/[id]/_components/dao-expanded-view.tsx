@@ -8,6 +8,7 @@ import { smallAddress } from "@commune-ts/utils";
 
 import { CreateComment } from "~/app/components/comments/create-comment";
 import { ViewComment } from "~/app/components/comments/view-comment";
+import { CreateCadreCandidates } from "~/app/components/dao/create-cadre-candidates";
 import { DaoVoteCard } from "~/app/components/dao/dao-vote-card";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";
@@ -98,6 +99,10 @@ export function DaoExpandedView(props: CustomContent): JSX.Element {
             daoId={content.id}
             daoStatus={content.status as DaoApplicationStatus}
           />
+        </div>
+
+        <div className="m-2 hidden animate-fade-down border border-white/20 bg-[#898989]/5 p-6 text-gray-400 backdrop-blur-md animate-delay-700 md:block">
+          <CreateCadreCandidates />
         </div>
       </div>
     </div>
