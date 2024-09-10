@@ -137,7 +137,10 @@ export function DaoVoteCard(props: {
     });
   }
 
-  if (userVote) {
+  if (
+    (userVote && daoStatus === "Pending") ||
+    (daoStatus === "Accepted" && userVote?.daoVoteType === "REMOVE")
+  ) {
     return (
       <>
         <SectionHeaderText text="Cast your vote" />

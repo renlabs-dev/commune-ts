@@ -2,9 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 
-import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
 import { MarkdownView } from "@commune-ts/ui/markdown-view";
-import { smallAddress } from "@commune-ts/utils";
+import { fetchCustomMetadata, smallAddress } from "@commune-ts/utils";
 
 import { ReportModule } from "~/app/components/report-module";
 import { api } from "~/trpc/server";

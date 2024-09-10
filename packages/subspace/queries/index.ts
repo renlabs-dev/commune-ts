@@ -85,8 +85,6 @@ export async function pushToWhitelist(
 ) {
   if (!api?.tx.governanceModule?.addToWhitelist) return false;
 
-  const gambiarra = 50;
-
   const keyring = new Keyring({ type: "sr25519" });
 
   if (!mnemonic) {
@@ -95,13 +93,13 @@ export async function pushToWhitelist(
   const sudoKeypair = keyring.addFromUri(mnemonic);
   const accountId = encodeAddress(moduleKey, 42);
 
-  const tx = await api.tx.governanceModule.addToWhitelist(accountId, gambiarra);
+  const tx = await api.tx.governanceModule.addToWhitelist(accountId);
 
   const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
     console.error(err);
     return false;
   });
-
+  console.log(`Extrinsic: ${extrinsic}`);
   return true;
 }
 

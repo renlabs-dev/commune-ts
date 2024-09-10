@@ -971,6 +971,9 @@ importers:
       multiformats:
         specifier: ^13.1.0
         version: 13.2.2
+      rustie:
+        specifier: ^0.2.0
+        version: 0.2.0
       tsafe:
         specifier: ^1.6.6
         version: 1.7.2
