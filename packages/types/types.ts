@@ -9,6 +9,7 @@ import { z } from "zod";
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
+  DAO_METADATA_SCHEMA,
   PROPOSAL_DATA_SCHEMA,
   PROPOSAL_STATUS_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
@@ -60,6 +61,7 @@ export interface BaseDao {
 }
 
 export type CustomMetadata = z.infer<typeof CUSTOM_METADATA_SCHEMA>;
+export type CustomDaoMetadata = z.infer<typeof DAO_METADATA_SCHEMA>;
 
 export interface CustomDataError {
   message: string;

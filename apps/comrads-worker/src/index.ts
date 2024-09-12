@@ -1,6 +1,7 @@
 import "@polkadot/api-augment";
 
 import { WsProvider } from "@polkadot/api";
+import axios from "axios";
 import express from "express";
 
 import type {
@@ -17,7 +18,12 @@ import {
   refuseDaoApplication,
   removeFromWhitelist,
 } from "@commune-ts/subspace/queries";
-import { fetchCustomMetadata, flattenResult } from "@commune-ts/subspace/utils";
+import {
+  buildIpfsGatewayUrl,
+  flattenResult,
+  parseIpfsUri,
+  processDaoMetadata,
+} from "@commune-ts/subspace/utils";
 
 import type { NewNotification, VotesByProposal } from "./db";
 import {
@@ -114,22 +120,46 @@ async function get_cadre_threshold() {
 
 async function notifyNewApplication(pending_apps: DaoApplications[]) {
   async function pushNotification(proposal: DaoApplications) {
-    const seen_proposal: NewNotification = {
-      governanceModel: p_type,
-      proposalId: proposal.id,
-    };
-    console.log("pushed notification"); // actually to call the discord endpoint and etc
-    const metadata = await fetchCustomMetadata(
-      "dao",
-      proposal.id,
-      proposal.data,
-    );
-    const flattenedMetadata = flattenResult(metadata);
-    if (flattenedMetadata !== null) {
-      const user = flattenedMetadata.body;
+    const r = parseIpfsUri(proposal.data);
+    const cid = flattenResult(r);
+    if (cid === null) {
+      console.log(`Failed to parse ${proposal.id} cid`);
+    } else {
+      const url = buildIpfsGatewayUrl(cid); // this is wrong
+      const metadata = await processDaoMetadata(url, proposal.id);
+      const resolved_metadata = flattenResult(metadata);
+      // shadowheart
+      if (resolved_metadata === null) {
+        console.log(`Failed to get metadata on proposal ${proposal.id}`);
+      } else {
+        const notification = {
+          discord_uid: `${resolved_metadata.discord_id}`,
+          app_id: `${proposal.id}`,
+          application_url: `https://governance.communeai.org/dao/${proposal.id}`,
+        };
+        const headers = {
+          "X-token": process.env.DISCORD_API_TOKEN,
+        };
+        const seen_proposal: NewNotification = {
+          governanceModel: p_type,
+          proposalId: proposal.id,
+        };
+        await axios
+          .post(process.env.DISCORD_API_ENDPOINT, notification, {
+            headers,
+          })
+          .then(async function (response) {
+            console.log(response);
+            await addSeenProposal(seen_proposal);
+          })
+          .catch((reason) => console.log(`Reject bc ${reason}`));
+        console.log("pushed notification"); // actually to call the discord endpoint and etc
+        return;
+      }
     }
-    return addSeenProposal(seen_proposal);
+    return;
   }
+
   const p_type: GovernanceModeType = "DAO";
   const proposals = await getProposalIdsByType(p_type);
   const proposalsSet: Set<number> = new Set<number>(proposals);
@@ -210,7 +240,6 @@ async function process_votes_on_proposal(
     await removeFromWhitelist(api, dao_hash_map[daoId].userId, mnemonic);
   }
 }
-
 async function process_all_votes(
   votes_on_pending: VotesByProposal[],
   vote_threshold: number,
