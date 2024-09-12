@@ -145,7 +145,7 @@ async function notifyNewApplication(pending_apps: DaoApplications[]) {
           proposalId: proposal.id,
         };
         await axios
-          .post(process.env.DISCORD_API_ENDPOINT, notification, {
+          .post(`${process.env.DISCORD_API_ENDPOINT}`, notification, {
             headers,
           })
           .then(async function (response) {
