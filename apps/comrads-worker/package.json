@@ -19,6 +19,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@commune-ts/subspace": "workspace:*",
     "@commune-ts/types": "workspace:*",
     "@polkadot/api": "^11.1.1",
     "express": "^4.19.2"
