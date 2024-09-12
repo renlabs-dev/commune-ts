@@ -6,6 +6,7 @@ import {
   AnyTuple,
   Codec,
   CUSTOM_METADATA_SCHEMA,
+  CustomDaoMetadata,
   CustomDataError,
   CustomMetadata,
   DAO_APPLICATIONS_SCHEMA,
@@ -348,10 +349,12 @@ export async function processProposalMetadata(url: string, entryId: number) {
     "proposal",
   );
 }
-export async function processDaoMetadata(url: string, entryId: number) {
+export async function processDaoMetadata(
+  url: string,
+  entryId: number,
+): Promise<Result<CustomDaoMetadata, CustomDataError>> {
   return await processMetadata(url, CUSTOM_METADATA_SCHEMA, entryId, "dao");
 }
-
 export async function fetchCustomMetadata(
   kind: "proposal" | "dao",
   entryId: number,
