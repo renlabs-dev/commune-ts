@@ -17,11 +17,11 @@ import {
 } from "../../utils";
 import { Card } from "./card";
 import { Label } from "./label";
-import { MarkdownView } from "./markdown-view";
 import { ProposalTypeLabel } from "./proposal-type-label";
 import { RewardLabel } from "./reward-label";
 import { StatusLabel } from "./status-label";
 import { VoteLabel } from "./vote-label";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 export interface ProposalCardProps {
   proposalState: ProposalState;

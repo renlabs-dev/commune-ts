@@ -26,11 +26,11 @@
   },
   "prettier": "@commune-ts/prettier-config",
   "dependencies": {
-    "@heroicons/react": "^2.1.3",
+    "@heroicons/react": "catalog:",
     "@uiw/react-markdown-preview": "^5.1.1",
     "class-variance-authority": "^0.7.0",
-    "next": "^14.2.3",
-    "tailwind-merge": "^2.3.0",
+    "next": "catalog:",
+    "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
