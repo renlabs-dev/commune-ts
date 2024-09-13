@@ -324,7 +324,9 @@ async function main() {
       lastBlockNumber,
     });
   } else {
-    console.error("Invalid worker type argument. Please specify 'dao' or 'validator'");
+    console.error(
+      "Invalid worker type argument. Please specify 'dao' or 'validator'",
+    );
     process.exit(1);
   }
 }
