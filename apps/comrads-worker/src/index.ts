@@ -34,9 +34,8 @@ import {
   upsertModuleData,
 } from "./db";
 
-type WorkerType = "dao" | "validator";
-const workerName = process.argv[2] as WorkerType;
 const blockTime = 8000;
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -48,8 +47,7 @@ function log(...args: unknown[]) {
 }
 
 const NETUID_ZERO = 0;
-// const DAO_EXPIRATION_TIME = 75600; // blocks
-const DAO_EXPIRATION_TIME = 0; // blocks
+const DAO_EXPIRATION_TIME = 75600; // 7 days in blocks
 
 async function setup(): Promise<ApiPromise> {
   const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
@@ -306,33 +304,39 @@ async function run_dao_worker(props: WorkerProps) {
   }
 }
 
-async function main(worker_type: WorkerType) {
+const workerType = process.argv[2] ?? "validator";
+
+async function main() {
   const api = await setup();
   const lastBlockNumber = -1;
   const lastBlock = await queryLastBlock(api);
-  if (worker_type === "validator") {
+
+  if (workerType === "dao") {
+    await run_dao_worker({
+      lastBlock,
+      api,
+      lastBlockNumber,
+    });
+  } else if (workerType === "validator") {
     await run_validator_worker({
       lastBlock,
       api,
       lastBlockNumber,
     });
   } else {
-    await run_dao_worker({
-      lastBlock,
-      api,
-      lastBlockNumber,
-    });
+    console.error("Invalid worker type argument. Please specify 'dao' or 'validator'");
+    process.exit(1);
   }
 }
 
-main(workerName)
+main()
   .catch(console.error)
   .finally(() => process.exit());
 
 const app = express();
 
 app.get("/api/health", (_, res) => {
-  res.send(`${workerName} OK`);
+  res.send(`${workerType} OK`);
 });
 
 const port = process.env.PORT ?? 3000;
