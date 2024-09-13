@@ -20,6 +20,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
       method: "POST",
       headers: {
+        // eslint-disable-next-line no-restricted-properties
         Authorization: `Bearer ${process.env.PINATA_JWT}`,
       },
       body: data,
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { IpfsHash } = (await res.json()) as { IpfsHash: string };
 
     return NextResponse.json({ IpfsHash }, { status: 200 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return NextResponse.json(
       { error: "Internal Server Error" },

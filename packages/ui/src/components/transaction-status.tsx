@@ -3,7 +3,7 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
 
-import { TransactionResult } from "@commune-ts/types";
+import type { TransactionResult } from "@commune-ts/types";
 
 import { cn } from "..";
 

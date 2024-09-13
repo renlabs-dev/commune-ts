@@ -36,6 +36,7 @@ export function Wallet() {
     stakeOut,
     balance,
     accounts,
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     handleWalletModal,
     openWalletModal,
   } = useCommune();
@@ -122,7 +123,7 @@ export function Wallet() {
     });
 
     if (activeMenu === "stake") {
-      addStake({
+      void addStake({
         validator,
         amount,
 
@@ -130,7 +131,7 @@ export function Wallet() {
       });
     }
     if (activeMenu === "unstake") {
-      removeStake({
+      void removeStake({
         validator,
         amount,
 
@@ -149,7 +150,7 @@ export function Wallet() {
 
     if (activeMenu === "transfer") {
       // ORIGINAL SEND
-      transfer({
+      void transfer({
         to: validator,
         amount,
         callback: handleCallback,
@@ -208,6 +209,7 @@ export function Wallet() {
 
   useEffect(() => {
     setUserStakeWeight(calculateUserStakeWeight());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount, stakeOut]);
 
   const [freeBalancePercentage, setFreeBalancePercentage] = useState(0);
@@ -233,8 +235,8 @@ export function Wallet() {
   }, [selectedAccount]);
 
   useEffect(() => {
-    const freeBalance = fromNano(balance || 0);
-    const stakedBalance = fromNano(userStakeWeight || 0);
+    const freeBalance = fromNano(balance ?? 0);
+    const stakedBalance = fromNano(userStakeWeight ?? 0);
     const availablePercentage =
       (freeBalance * 100) / (stakedBalance + freeBalance);
 
@@ -306,14 +308,14 @@ export function Wallet() {
                   customHandler={handleOpenSelectWallet}
                   className="tw-w-full"
                 />
-                <CopyButton code={selectedAccount?.address || ""} />
+                <CopyButton code={selectedAccount?.address ?? ""} />
               </div>
               <div className="tw-flex tw-flex-col tw-animate-fade tw-animate-delay-500 tw-gap-4 tw-border-b tw-border-white/20 tw-p-4 tw-text-white">
                 <div className="tw-border tw-border-white/20 tw-p-4">
                   <div className="tw-flex tw-w-full tw-justify-between gap-6">
                     <div>
                       <p className="tw-text-xl tw-text-green-500">
-                        {formatToken(balance || 0)}
+                        {formatToken(balance ?? 0)}
                         <span className="tw-ml-1 tw-text-sm tw-font-light tw-text-gray-400">
                           COMAI
                         </span>
@@ -325,7 +327,7 @@ export function Wallet() {
                     <div className="tw-text-right">
                       <p className="tw-text-xl tw-text-red-500">
                         {stakeOut
-                          ? formatToken(userStakeWeight || 0)
+                          ? formatToken(userStakeWeight ?? 0)
                           : "Loading..."}
                         <span className="tw-ml-1 tw-text-sm tw-font-light tw-text-gray-400">
                           COMAI

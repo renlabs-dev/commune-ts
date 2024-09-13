@@ -43,7 +43,6 @@ async function main() {
   let lastBlockNumber = -1;
   let lastBlock: LastBlock;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       const currentTime = new Date();

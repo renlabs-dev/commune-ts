@@ -34,7 +34,6 @@
     "@commune-ts/tailwind-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
     "@next/eslint-plugin-next": "catalog:",
-    "@tailwindcss/typography": "^0.5.10",
     "@types/node": "catalog:",
     "@types/react": "catalog:react18",
     "@types/react-dom": "catalog:react18",

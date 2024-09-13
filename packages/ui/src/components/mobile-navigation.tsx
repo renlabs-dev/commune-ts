@@ -1,6 +1,7 @@
 "use client";
 
-import React, { ReactElement, useState } from "react";
+import type { ReactElement } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
@@ -68,20 +69,19 @@ export function MobileNavigation(props: MobileNavigationProps) {
               {props.genericContent}
 
               <div className={cn("space-y-2 border-white/20 p-4")}>
-                {props.navigationLinks &&
-                  props?.navigationLinks?.map(({ name, href, external }) => (
-                    <Link
-                      key={name}
-                      href={href}
-                      onClick={toggleMobileMenu}
-                      target={external ? "_blank" : "_self"}
-                      className={cn(
-                        " block w-full border border-white/20 p-3 px-6 text-center text-base  font-semibold leading-7 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 hover:backdrop-blur-sm",
-                      )}
-                    >
-                      {name}
-                    </Link>
-                  ))}
+                {props.navigationLinks?.map(({ name, href, external }) => (
+                  <Link
+                    key={name}
+                    href={href}
+                    onClick={toggleMobileMenu}
+                    target={external ? "_blank" : "_self"}
+                    className={cn(
+                      "block w-full border border-white/20 p-3 px-6 text-center text-base font-semibold leading-7 text-gray-400 hover:border-green-600 hover:bg-green-600/5 hover:text-green-600 hover:backdrop-blur-sm",
+                    )}
+                  >
+                    {name}
+                  </Link>
+                ))}
               </div>
 
               <div
