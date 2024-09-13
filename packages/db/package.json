@@ -40,17 +40,17 @@
     "drizzle-orm": "^0.31.2",
     "drizzle-zod": "^0.5.1",
     "postgres": "^3.4.4",
-    "zod": "^3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.14.15",
     "dotenv-cli": "^7.4.2",
     "drizzle-kit": "^0.22.6",
-    "eslint": "^8.0.0",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5"
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
   }
 }

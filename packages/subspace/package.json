@@ -20,7 +20,7 @@
     "tsafe": "^1.6.6",
     "types": "link:@polkadot/types/types",
     "yarn": "^1.22.22",
-    "zod": "^3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",

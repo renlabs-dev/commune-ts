@@ -32,13 +32,13 @@
     "@commune-ts/tsconfig": "workspace:*",
     "@polkadot/api-augment": "^11.1.1",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.14.15",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^8.0.0",
+    "eslint": "catalog:",
     "nodemon": "^3.1.4",
-    "prettier": "^3.3.1",
+    "prettier": "catalog:",
     "ts-node": "^10.9.2",
     "tsx": "^4.15.6",
-    "typescript": "^5.4.5"
+    "typescript": "catalog:"
   }
 }
