@@ -1,24 +1,24 @@
 {
   "name": "@commune-ts/prettier-config",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     ".": "./index.js"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "git clean -xdf .cache .turbo node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
-    "prettier": "^3.3.1",
-    "prettier-plugin-tailwindcss": "^0.5.14"
+    "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "^0.6.6"
   },
   "devDependencies": {
     "@commune-ts/tsconfig": "workspace:*",
-    "typescript": "^5.4.5"
-  }
+    "typescript": "catalog:"
+  },
+  "prettier": "@commune-ts/prettier-config"
 }
