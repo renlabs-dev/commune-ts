@@ -10,8 +10,7 @@ RUN corepack enable
 RUN pnpm --version
 
 # Install turbo
-RUN npm install -g "turbo@^2.0.3"
-
+RUN npm install -g "turbo@^2.1.1"
 
 # ======== pruner layer ======== #
 FROM base AS pruner
