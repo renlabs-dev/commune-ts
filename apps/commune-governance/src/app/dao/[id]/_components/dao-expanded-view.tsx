@@ -9,7 +9,8 @@ import { smallAddress } from "@commune-ts/utils";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";
 import { DaoStatusLabel } from "../../../components/dao-status-label";
-import { MarkdownView } from "../../../components/markdown-view";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
+
 
 interface CustomContent {
   paramId: number;

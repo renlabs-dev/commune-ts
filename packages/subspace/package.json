@@ -11,21 +11,20 @@
   "dependencies": {
     "@commune-ts/types": "workspace:*",
     "@commune-ts/utils": "workspace:*",
-    "@polkadot/api": "^11.1.1",
-    "@polkadot/api-augment": "^11.1.1",
-    "@polkadot/types": "^11.1.1",
-    "@polkadot/util-crypto": "^12.6.2",
-    "multiformats": "^13.1.0",
-    "rustie": "^0.2.0",
-    "tsafe": "^1.6.6",
+    "@polkadot/api": "catalog:",
+    "@polkadot/api-augment": "catalog:",
+    "@polkadot/types": "catalog:",
+    "@polkadot/util-crypto": "catalog:",
+    "multiformats": "catalog:",
+    "rustie": "catalog:",
+    "tsafe": "catalog:",
     "types": "link:@polkadot/types/types",
-    "yarn": "^1.22.22",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
-    "tsx": "^4.15.6"
+    "tsx": "catalog:"
   },
   "compilerOptions": {
     "module": "ESNext",

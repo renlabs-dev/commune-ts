@@ -34,10 +34,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@commune-ts/prettier-config",
   "dependencies": {
-    "@t3-oss/env-nextjs": "^0.10.1",
-    "drizzle-orm": "^0.31.2",
+    "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "postgres": "^3.4.4",
     "zod": "catalog:"
@@ -46,11 +44,12 @@
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
-    "@types/node": "^20.14.15",
-    "dotenv-cli": "^7.4.2",
-    "drizzle-kit": "^0.22.6",
+    "@types/node": "catalog:",
+    "dotenv-cli": "catalog:",
+    "drizzle-kit": "^0.24.2",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
-  }
+  },
+  "prettier": "@commune-ts/prettier-config"
 }

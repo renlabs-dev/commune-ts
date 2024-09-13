@@ -25,10 +25,10 @@ import {
   handleProposalVotesAgainst,
   handleProposalVotesInFavor,
 } from "../../../../utils";
-import { MarkdownView } from "../../../components/markdown-view";
 import { StatusLabel } from "../../../components/status-label";
 import { VoteCard } from "../../../components/vote-card";
 import { VotingPowerButton } from "../../../components/voting-power-button";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 interface CustomContent {
   paramId: number;
