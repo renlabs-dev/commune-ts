@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
-import { fetchCustomMetadata } from "@commune-ts/providers/hooks";
-import { smallAddress } from "@commune-ts/utils";
+import { fetchCustomMetadata, smallAddress } from "@commune-ts/utils";
 
 import { useDelegateStore } from "~/stores/delegateStore";
 import { CopySquareButton } from "./copy-square-button";
@@ -69,7 +68,7 @@ export function ModuleCard(props: ModuleCardProps) {
       </h2>
       <p>{props.name ?? ""}</p>
       <div className="flex items-center justify-between gap-2">
-        <span className="flex w-full items-center gap-1 border border-white/20 bg-[#898989]/5 py-2 pl-2 backdrop-blur-md  md:text-sm 2xl:text-base">
+        <span className="flex w-full items-center gap-1 border border-white/20 bg-[#898989]/5 py-2 pl-2 backdrop-blur-md md:text-sm 2xl:text-base">
           <Squares2X2Icon className="h-6 w-6 text-green-500" />{" "}
           {smallAddress(String(props.moduleKey))}
         </span>
