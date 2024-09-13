@@ -1,5 +1,6 @@
 {
   "name": "@commune-ts/wallet",
+  "type": "module",
   "version": "0.0.0",
   "license": "MIT",
   "sideEffects": [

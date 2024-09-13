@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 
 import { cn } from "..";
-import { copyToClipboard } from "../../../subspace/utils";
 
 interface CodeComponentProps {
   code: string;
@@ -19,7 +18,7 @@ export function CopyButton(props: CodeComponentProps): JSX.Element {
     setTimeout(() => {
       setCopied(false);
     }, 1000);
-    await copyToClipboard(text);
+    await navigator.clipboard.writeText(text);
 
     return;
   }

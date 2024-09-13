@@ -18,7 +18,6 @@
     "multiformats": "catalog:",
     "rustie": "catalog:",
     "tsafe": "catalog:",
-    "types": "link:@polkadot/types/types",
     "zod": "catalog:"
   },
   "devDependencies": {

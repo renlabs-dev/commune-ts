@@ -1,20 +1,22 @@
 import { CID } from "multiformats/cid";
 import { AssertionError } from "tsafe";
 
-import {
+import type {
   AnyTuple,
   Codec,
-  DAO_APPLICATIONS_SCHEMA,
   DaoApplications,
   Entry,
-  isSS58,
   Proposal,
-  PROPOSAL_SCHEMA,
   RawEntry,
   SS58Address,
   StorageKey,
-  SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
+} from "@commune-ts/types";
+import {
+  DAO_APPLICATIONS_SCHEMA,
+  isSS58,
+  PROPOSAL_SCHEMA,
+  SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA,
 } from "@commune-ts/types";
 
@@ -87,7 +89,7 @@ export const PARAM_FIELD_DISPLAY_NAMES = {
 // == assertion ==
 
 export function assertOrThrow(
-  condition: any,
+  condition: unknown,
   message: string,
 ): asserts condition {
   if (!condition) {
@@ -122,7 +124,7 @@ export function calculateAmount(amount: string): number {
 }
 
 export function smallAddress(address: string, size?: number): string {
-  return `${address.slice(0, size || 8)}…${address.slice(size ? size * -1 : -8)}`;
+  return `${address.slice(0, size ?? 8)}…${address.slice(size ? size * -1 : -8)}`;
 }
 
 // == IPFS ==
@@ -137,6 +139,7 @@ export function parseIpfsUri(uri: string): CID | null {
   try {
     const cid = CID.parse(rest);
     return cid;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return null;
   }
@@ -181,7 +184,8 @@ export function handleDaos(
 }
 
 export const copyToClipboard = (text: string) => {
-  // @ts-ignore
+  // @ts-expect-error navigator is a global object
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   navigator.clipboard.writeText(text);
 };
 
@@ -222,10 +226,12 @@ export class StorageEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
 
   get netuid(): number {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.entry[0].args[0]!.toPrimitive() as number;
   }
 
   get uidOrKey(): string | number {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.entry[0].args[1]!.toPrimitive() as string | number;
   }
 
@@ -240,7 +246,8 @@ export class StorageEntry {
     const isUid = typeof this.uidOrKey === "number";
 
     const key = isUid
-      ? uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
+      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
       : this.uidOrKey;
 
     assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
@@ -289,6 +296,7 @@ export function parseProposal(valueRaw: Codec): Proposal | null {
 
 export const paramNameToDisplayName = (paramName: string): string => {
   return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     PARAM_FIELD_DISPLAY_NAMES[
       paramName as keyof typeof PARAM_FIELD_DISPLAY_NAMES
     ] ?? paramName
