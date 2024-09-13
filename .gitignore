@@ -37,14 +37,13 @@ yarn-error.log*
 # turbo
 .turbo
 
-# ui
+# typescript
 dist/
+.cache/
 
 .git
 .gitignore
 *.md
-dist
-.turbo
 
 # nix
 flake*
