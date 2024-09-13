@@ -4,6 +4,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 import {
   getExpirationTime,
   removeEmojis,
@@ -26,7 +27,6 @@ import {
   handleProposalVotesAgainst,
   handleProposalVotesInFavor,
 } from "../../../../utils";
-import { MarkdownView } from "../../../components/markdown-view";
 import { VotingPowerButton } from "../../../components/proposal/voting-power-button";
 import { StatusLabel } from "../../../components/status-label";
 

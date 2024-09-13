@@ -6,9 +6,9 @@ import { smallAddress } from "@commune-ts/utils";
 
 import { handleCustomDaos } from "../../../utils";
 import { Card } from "../card";
-import { MarkdownView } from "../markdown-view";
-import { Skeleton } from "../skeleton";
 import { DaoStatusLabel } from "./dao-status-label";
+import { Skeleton } from "../skeleton";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 
 interface DaoCardProps {
   daoState: DaoState;

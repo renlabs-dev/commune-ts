@@ -7,6 +7,7 @@ async function getDiscordWidgetData(): Promise<unknown> {
   try {
     const res = await fetch(uri);
     return res.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return null;
   }

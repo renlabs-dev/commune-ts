@@ -11,6 +11,7 @@ const globalForDb = globalThis as unknown as {
   conn: postgres.Sql | undefined;
 };
 
+// eslint-disable-next-line no-restricted-properties
 const conn = globalForDb.conn ?? postgres(String(process.env.POSTGRES_URL));
 // if (process.env.NODE_ENV !== "production") globalForDb.conn = conn;
 

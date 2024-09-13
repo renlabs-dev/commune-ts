@@ -1,7 +1,7 @@
 {
   "name": "@commune-ts/tsconfig",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
   "files": [
     "*.json"
   ]
