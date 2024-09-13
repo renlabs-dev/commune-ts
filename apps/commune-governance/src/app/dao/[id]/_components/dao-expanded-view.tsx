@@ -4,16 +4,16 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 import type { DaoApplicationStatus } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 import { smallAddress } from "@commune-ts/utils";
 
 import { CreateComment } from "~/app/components/comments/create-comment";
 import { ViewComment } from "~/app/components/comments/view-comment";
 import { CreateCadreCandidates } from "~/app/components/dao/create-cadre-candidates";
+import { DaoStatusLabel } from "~/app/components/dao/dao-status-label";
 import { DaoVoteCard } from "~/app/components/dao/dao-vote-card";
 import { SectionHeaderText } from "~/app/components/section-header-text";
 import { handleCustomDaos } from "../../../../utils";
-import { DaoStatusLabel } from "../../../components/dao/dao-status-label";
-import { MarkdownView } from "../../../components/markdown-view";
 
 interface CustomContent {
   paramId: number;

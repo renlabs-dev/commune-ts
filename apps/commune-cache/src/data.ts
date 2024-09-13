@@ -98,7 +98,6 @@ export async function updateStakeDataLoop() {
     let lastBlock: LastBlock;
     const api = await setup();
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       lastBlock = await queryLastBlock(api);
       if (

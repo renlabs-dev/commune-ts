@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -43,19 +43,18 @@ export function Header(props: HeaderProps): JSX.Element {
         </Link>
         <div className={cn("flex items-center")}>
           <div className={cn("hidden pr-6 lg:flex lg:gap-6")}>
-            {props.navigationLinks &&
-              props.navigationLinks.map(({ name, href, external }) => (
-                <Link
-                  className={cn(
-                    "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
-                  )}
-                  href={href}
-                  key={name}
-                  target={external ? "_blank" : "_self"}
-                >
-                  {name}
-                </Link>
-              ))}
+            {props.navigationLinks?.map(({ name, href, external }) => (
+              <Link
+                className={cn(
+                  "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
+                )}
+                href={href}
+                key={name}
+                target={external ? "_blank" : "_self"}
+              >
+                {name}
+              </Link>
+            ))}
           </div>
 
           {props.wallet}
