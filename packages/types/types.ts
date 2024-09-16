@@ -3,10 +3,10 @@ import type { ApiDecoration } from "@polkadot/api/types";
 import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
-import { Variant } from "rustie/dist/enum";
-import { z } from "zod";
+import type { Variant } from "rustie/dist/enum";
+import type { z } from "zod";
 
-import {
+import type {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
   DAO_METADATA_SCHEMA,
@@ -67,11 +67,13 @@ export interface CustomDataError {
   message: string;
 }
 
-export function isCustomDataError(obj: any): obj is CustomDataError {
+// TODO: see if this works
+export function isCustomDataError(obj: object): obj is CustomDataError {
   return (
     typeof obj === "object" &&
     "Err" in obj &&
     typeof obj.Err === "object" &&
+    obj.Err !== null &&
     "message" in obj.Err
   );
 }
@@ -93,11 +95,11 @@ export interface StakeFromData {
   perAddr: Map<string, bigint>;
 }
 
-export type VoteWithStake = {
+export interface VoteWithStake {
   address: SS58Address;
   stake: bigint;
   vote: "In Favor" | "Against";
-};
+}
 
 export interface LastBlock {
   blockHeader: Header;
@@ -242,8 +244,7 @@ export interface UnrewardedProposal {
 
 // == Field Params ==
 
-export interface SubspaceModule
-  extends z.infer<typeof SUBSPACE_MODULE_SCHEMA> {}
+export type SubspaceModule = z.infer<typeof SUBSPACE_MODULE_SCHEMA>;
 
 export type OptionalProperties<T> = keyof T extends infer K
   ? K extends keyof T

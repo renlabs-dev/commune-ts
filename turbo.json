@@ -64,6 +64,7 @@
     }
   },
   "globalEnv": [
+    "DEBUG",
     "POSTGRES_URL",
     "DISCORD_API_TOKEN",
     "DISCORD_API_ENDPOINT",
