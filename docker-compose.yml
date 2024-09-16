@@ -12,7 +12,7 @@ services:
   admin:
     image: adminer
     restart: always
-    depends_on: 
+    depends_on:
       - postgres
     ports:
       - 8080:8080
@@ -29,14 +29,14 @@ services:
     command: npm start
     ports:
       - 3010:3010
-  comrads-worker:
+  commune-worker:
     depends_on:
       - postgres
     build:
       context: .
       dockerfile: tooling/dockerfile/backend-service.Dockerfile
       args:
-        - PROJECT=comrads-worker
+        - PROJECT=commune-worker
         - PORT=3020
     environment:
       - NEXT_PUBLIC_WS_PROVIDER_URL=${NEXT_PUBLIC_WS_PROVIDER_URL}

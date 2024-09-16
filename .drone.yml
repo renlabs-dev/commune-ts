@@ -46,7 +46,7 @@ trigger:
       - apps/commune-governance/**
       - apps/commune-validator/**
       - apps/communex-page/**
-      - apps/comrads-worker/**
+      - apps/commune-worker/**
       - apps/sample-app/**
       - apps/commune-wallet/**
       - apps/commune-cache/**
@@ -73,7 +73,7 @@ steps:
     when:
       paths:
         exclude:
-          - apps/comrads-worker/**
+          - apps/commune-worker/**
 
   - name: worker-build
     image: plugins/docker
@@ -82,13 +82,13 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/comrads-worker
+      repo: ghcr.io/agicommies/commune-worker
       tags:
         - latest
         - ${DRONE_BRANCH}
         - ${DRONE_COMMIT_SHA:0:7}
       dockerfile: docker/Dockerfile
-      build_args: APP_NAME=comrads-worker
+      build_args: APP_NAME=commune-worker
     when:
       paths:
         exclude:
@@ -177,7 +177,7 @@ trigger:
       - apps/commune-page/**
       - apps/commune-validator/**
       - apps/communex-page/**
-      - apps/comrads-worker/**
+      - apps/commune-worker/**
       - apps/sample-app/**
       - apps/commune-wallet/**
       - apps/commune-cache/**
@@ -230,7 +230,7 @@ trigger:
       - apps/commune-page/**
       - apps/commune-validator/**
       - apps/communex-page/**
-      - apps/comrads-worker/**
+      - apps/commune-worker/**
       - apps/sample-app/**
       - apps/commune-governance/**
       - apps/commune-cache/**
@@ -283,7 +283,7 @@ trigger:
       - apps/commune-page/**
       - apps/commune-validator/**
       - apps/communex-page/**
-      - apps/comrads-worker/**
+      - apps/commune-worker/**
       - apps/sample-app/**
       - apps/commune-governance/**
       - apps/commune-wallet/**
