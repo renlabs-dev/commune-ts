@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
 import { cn } from "..";
 
@@ -32,7 +31,7 @@ export function CopyButton(props: CodeComponentProps): JSX.Element {
       type="button"
     >
       <span className={cn(`flex items-center ${copied ? "text-green-" : ""}`)}>
-        <Image
+        <img
           alt=""
           className="ml-0.5"
           height={30}

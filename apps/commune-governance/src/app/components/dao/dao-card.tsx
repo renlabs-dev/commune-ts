@@ -2,13 +2,13 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
 import type { DaoState } from "@commune-ts/types";
+import { MarkdownView } from "@commune-ts/ui/markdown-view";
 import { smallAddress } from "@commune-ts/utils";
 
 import { handleCustomDaos } from "../../../utils";
 import { Card } from "../card";
-import { DaoStatusLabel } from "./dao-status-label";
 import { Skeleton } from "../skeleton";
-import { MarkdownView } from "@commune-ts/ui/markdown-view";
+import { DaoStatusLabel } from "./dao-status-label";
 
 interface DaoCardProps {
   daoState: DaoState;

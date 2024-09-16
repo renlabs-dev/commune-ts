@@ -29,7 +29,6 @@
     "@heroicons/react": "catalog:",
     "@uiw/react-markdown-preview": "^5.1.1",
     "class-variance-authority": "^0.7.0",
-    "next": "catalog:",
     "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {

@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
-
 import { links } from "..";
 
 export function Footer({ shouldBeFixed = false, className = "" }): JSX.Element {
@@ -16,13 +13,13 @@ export function Footer({ shouldBeFixed = false, className = "" }): JSX.Element {
 
           <div className="flex justify-center gap-6 md:w-4/12">
             {socialList.map((item) => (
-              <Link
+              <a
                 className="text-subtitle leading-6 hover:text-gray-800 hover:underline"
                 href={item.href}
                 key={item.name}
               >
                 {item.icon}
-              </Link>
+              </a>
             ))}
           </div>
 
@@ -40,31 +37,26 @@ const socialList = [
     name: "Discord",
     href: links.discord,
     icon: (
-      <Image
-        alt="Discord icon"
-        height={26}
-        src="/discord-icon.svg"
-        width={26}
-      />
+      <img alt="Discord icon" height={26} src="/discord-icon.svg" width={26} />
     ),
   },
   {
     name: "X",
     href: links.x,
-    icon: <Image alt="X icon" height={22} src="/x-icon.svg" width={22} />,
+    icon: <img alt="X icon" height={22} src="/x-icon.svg" width={22} />,
   },
   {
     name: "GitHub",
     href: links.github,
     icon: (
-      <Image alt="Github icon" height={23} src="/github-icon.svg" width={23} />
+      <img alt="Github icon" height={23} src="/github-icon.svg" width={23} />
     ),
   },
   {
     name: "Telegram",
     href: links.telegram,
     icon: (
-      <Image
+      <img
         alt="Telegram icon"
         height={22}
         src="/telegram-icon.svg"

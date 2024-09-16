@@ -2,8 +2,6 @@
 
 import type { ReactElement } from "react";
 import React, { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
 
 import { cn, links } from "..";
@@ -70,7 +68,7 @@ export function MobileNavigation(props: MobileNavigationProps) {
 
               <div className={cn("space-y-2 border-white/20 p-4")}>
                 {props.navigationLinks?.map(({ name, href, external }) => (
-                  <Link
+                  <a
                     key={name}
                     href={href}
                     onClick={toggleMobileMenu}
@@ -80,7 +78,7 @@ export function MobileNavigation(props: MobileNavigationProps) {
                     )}
                   >
                     {name}
-                  </Link>
+                  </a>
                 ))}
               </div>
 
@@ -91,15 +89,15 @@ export function MobileNavigation(props: MobileNavigationProps) {
               >
                 {headerSocialLinks.map((value) => {
                   return (
-                    <Link key={value.href} href={value.href} target="_blank">
-                      <Image
+                    <a key={value.href} href={value.href} target="_blank">
+                      <img
                         src={value.icon}
                         alt={`${value.alt} Icon`}
                         width={40}
                         height={40}
                         className={cn("h-8 w-8")}
                       />
-                    </Link>
+                    </a>
                   );
                 })}
               </div>
