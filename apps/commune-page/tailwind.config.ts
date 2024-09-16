@@ -10,6 +10,7 @@ export default {
     ...baseConfig.content,
     "../../packages/ui/src/components/*.{ts,tsx}",
   ],
-  presets: [baseConfig, typography],
+  presets: [baseConfig],
   theme: {},
+  plugins: [typography]
 } satisfies Config;
