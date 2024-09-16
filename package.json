@@ -1,10 +1,6 @@
 {
   "name": "commune-ts",
   "private": true,
-  "engines": {
-    "node": ">=20.16.0"
-  },
-  "packageManager": "pnpm@9.7.1",
   "scripts": {
     "build": "turbo run build",
     "clean": "git clean -xdf node_modules",
@@ -29,16 +25,22 @@
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
     "prepare": "husky",
+    "sort:package": "find . -name \"package.json\" -not -path \"**/node_modules/**\" -type f -print0 | xargs -0 -I {} pnpm sort-package-json \"{}\"",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add"
   },
+  "prettier": "@commune-ts/prettier-config",
   "devDependencies": {
     "@commune-ts/prettier-config": "workspace:*",
     "@turbo/gen": "^2.1.1",
     "husky": "^9.1.4",
     "prettier": "catalog:",
+    "sort-package-json": "^2.10.1",
     "turbo": "^2.1.1",
     "typescript": "catalog:"
   },
-  "prettier": "@commune-ts/prettier-config"
+  "packageManager": "pnpm@9.7.1",
+  "engines": {
+    "node": ">=20.16.0"
+  }
 }
