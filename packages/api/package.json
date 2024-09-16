@@ -20,8 +20,8 @@
   },
   "prettier": "@commune-ts/prettier-config",
   "dependencies": {
-    "@commune-ts/types": "workspace:*",
     "@commune-ts/db": "workspace:*",
+    "@commune-ts/types": "workspace:*",
     "@trpc/server": "catalog:",
     "superjson": "2.2.1",
     "zod": "catalog:"
