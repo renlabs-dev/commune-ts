@@ -34,7 +34,6 @@
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
-    "@commune-ts/tailwind-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
     "@commune-ts/types": "workspace:*",
     "@types/react": "catalog:react18",

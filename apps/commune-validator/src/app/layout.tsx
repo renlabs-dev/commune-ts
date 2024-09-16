@@ -6,12 +6,12 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import { Providers } from "@commune-ts/providers/context";
 import { links } from "@commune-ts/ui/data";
-import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { cairo, oxanium } from "~/utils/fonts";
 import { DelegatedModulesList } from "./components/delegated-modules-list";
 
 export const metadata: Metadata = {
@@ -50,6 +50,7 @@ export default function RootLayout({
             </div>
           </div>
           <Header
+            font={oxanium.className}
             logoSrc="/logo.svg"
             navigationLinks={[
               { name: "Governance", href: links.governance, external: true },

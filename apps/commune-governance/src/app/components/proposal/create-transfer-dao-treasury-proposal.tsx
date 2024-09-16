@@ -9,7 +9,8 @@ import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import { TransactionStatus } from "@commune-ts/ui";
-import { cairo } from "@commune-ts/ui/fonts";
+
+import { cairo } from "~/utils/fonts";
 
 const transferDaoTreasuryProposalSchema = z.object({
   title: z.string().min(1, "Title is required"),

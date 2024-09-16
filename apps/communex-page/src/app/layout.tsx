@@ -4,10 +4,11 @@ import type { Metadata } from "next";
 
 import { Providers } from "@commune-ts/providers/context";
 import { links } from "@commune-ts/ui/data";
-import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 import { Wallet, WalletButton } from "@commune-ts/wallet";
+
+import { cairo, oxanium } from "~/utils/fonts";
 
 // TODO this could come from the ui lib since the only thing that changes between apps is the title
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({
         <Providers>
           <Wallet />
           <Header
+            font={oxanium.className}
             logoSrc="/logo.svg"
             navigationLinks={[
               { name: "Home Page", href: links.landing_page, external: true },

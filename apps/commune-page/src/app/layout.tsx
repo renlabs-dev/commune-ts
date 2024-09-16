@@ -3,9 +3,10 @@ import "../styles/globals.css";
 import type { Metadata } from "next";
 
 import { links } from "@commune-ts/ui/data";
-import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
+
+import { cairo, oxanium } from "~/utils/fonts";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -25,6 +26,7 @@ export default function RootLayout({
         className={`relative bg-[#111713] bg-[url('/bg-pattern.svg')] text-gray-200 ${cairo.className} animate-fade-in`}
       >
         <Header
+          font={oxanium.className}
           logoSrc="/logo.svg"
           navigationLinks={[
             { name: "Governance", href: links.governance, external: true },
