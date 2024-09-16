@@ -1,50 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import "@polkadot/api-augment";
 
-type SS58Address = string;
+/** Related to weights computation */
 
-// ----------------------------------- retrieve weights -----------------------------------
+type Key = string;
 
-// async function getUserWeightMap(db: Db) {
-//   const result = await db
-//     .select({
-//       userKey: userModuleData.userKey,
-//       moduleKey: userModuleData.moduleKey,
-//       weight: userModuleData.weight,
-//     })
-//     .from(moduleData)
-//     .where(
-//       eq(
-//         moduleData.atBlock,
-//         sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
-//       ),
-//     )
-//     .innerJoin(
-//       userModuleData,
-//       eq(moduleData.moduleKey, userModuleData.moduleKey),
-//     );
-
-//   // user -> module key -> weight (0–100)
-//   const userWeightMap = new Map<string, Map<string, bigint>>();
-//   result.forEach((entry) => {
-//     if (!userWeightMap.has(entry.userKey)) {
-//       userWeightMap.set(entry.userKey, new Map<string, bigint>());
-//     }
-//     userWeightMap
-//       .get(entry.userKey)!
-//       .set(entry.moduleKey!, BigInt(entry.weight!));
-//   });
-//   return userWeightMap;
-// }
-
-// ----------------------------------- calc weights -----------------------------------
-
-function finalWeights(
-  // modules: Set<SS58Address>,
-  user_stakes: Map<SS58Address, bigint>, // user -> amount staked
-  user_weight_maps: Map<SS58Address, Map<SS58Address, bigint>>, // user -> module key -> weight (0–100)
+export function calcFinalWeights(
+  user_stakes: Map<Key, bigint>, // user -> amount staked
+  user_weight_maps: Map<Key, Map<Key, bigint>>, // user -> module key -> weight (0–100)
 ) {
-  const acc_module_weights = new Map<SS58Address, bigint>();
+  const acc_module_weights = new Map<Key, bigint>();
 
   for (const [user_key, user_stake] of user_stakes.entries()) {
     const user_weights = user_weight_maps.get(user_key);
@@ -59,22 +23,21 @@ function finalWeights(
     if (total_user_weight == 0n) continue;
 
     for (const [module_key, weight] of user_weights.entries()) {
-      const user_module_weight = (user_stake * weight) / total_user_weight;
+      if (weight == 0n) continue;
+
+      const stake_weight = (user_stake * weight) / total_user_weight;
 
       const cur_module_weight = acc_module_weights.get(module_key) ?? 0n;
-      acc_module_weights.set(
-        module_key,
-        cur_module_weight + user_module_weight,
-      );
+      acc_module_weights.set(module_key, cur_module_weight + stake_weight);
     }
 
     /*
-  We have Σ(weight_i) / total_user_weight = 1  
-  so      Σ(user_module_weight_i) = user_stake
+    We have Σ(weight_i) / total_user_weight = 1  
+    so      Σ(stake_weight_i) = user_stake
 
-  This effectively distributes the user's stake in nano as "points" to each
-  module in proportion to the weights they have assigned to them.
-  */
+    This effectively distributes the user's stake in nano as "points" to each
+    module in proportion to the weights they have assigned to them.
+    */
   }
 
   return acc_module_weights;
@@ -83,7 +46,7 @@ function finalWeights(
 /**
  * Normalize module weights to integer percentages.
  */
-function normalizeModuleWeights(module_weights: Map<SS58Address, bigint>) {
+export function normalizeModuleWeights(module_weights: Map<Key, bigint>) {
   const module_key_arr = [];
   const module_weight_arr = [];
 
@@ -145,7 +108,7 @@ module2: 025%
 module3: 075%
 */
 
-function testFinalWeights() {
+function _testFinalWeights() {
   const user_stakes = new Map();
   user_stakes.set("A", 1000n);
   user_stakes.set("B", 500n);
@@ -161,11 +124,11 @@ function testFinalWeights() {
   user_weight_maps.get("C")!.set("module3", 100n);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const result = finalWeights(user_stakes, user_weight_maps);
+  const result = calcFinalWeights(user_stakes, user_weight_maps);
   const normalized = normalizeModuleWeights(result);
 
   console.log(result);
   console.log(normalized);
 }
 
-testFinalWeights();
+// _testFinalWeights();
