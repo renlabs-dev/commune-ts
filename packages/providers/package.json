@@ -13,7 +13,6 @@
   "dependencies": {
     "@commune-ts/subspace": "workspace:*",
     "@commune-ts/types": "workspace:*",
-    "@commune-ts/ui": "workspace:*",
     "@commune-ts/utils": "workspace:*",
     "@polkadot/api": "catalog:",
     "@polkadot/api-augment": "catalog:",
@@ -33,7 +32,6 @@
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
-    "@commune-ts/tailwind-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:react18",

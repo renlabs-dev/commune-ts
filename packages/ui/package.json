@@ -30,8 +30,7 @@
     "@uiw/react-markdown-preview": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "next": "catalog:",
-    "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
@@ -43,7 +42,6 @@
     "eslint": "catalog:",
     "prettier": "catalog:",
     "react": "catalog:react18",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {

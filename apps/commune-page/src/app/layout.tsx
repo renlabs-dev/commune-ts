@@ -2,7 +2,6 @@ import "../styles/globals.css";
 
 import type { Metadata } from "next";
 
-import { Providers } from "@commune-ts/providers/context";
 import { links } from "@commune-ts/ui/data";
 import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
@@ -23,23 +22,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`relative bg-[#111713] bg-[url('/bg-pattern.svg')] ${cairo.className} animate-fade-in`}
+        className={`relative bg-[#111713] bg-[url('/bg-pattern.svg')] text-gray-200 ${cairo.className} animate-fade-in`}
       >
-        <Providers>
-          <Header
-            logoSrc="/logo.svg"
-            navigationLinks={[
-              { name: "Governance", href: links.governance, external: true },
-              { name: "Docs", href: links.docs, external: false },
-              { name: "Blog", href: links.blog, external: true },
-              { name: "Wallet", href: links.wallet, external: true },
-              { name: "Join Community", href: links.discord, external: true },
-            ]}
-            title="Commune AI"
-          />
-          {children}
-          <Footer shouldBeFixed className="md:hidden lg:block" />
-        </Providers>
+        <Header
+          logoSrc="/logo.svg"
+          navigationLinks={[
+            { name: "Governance", href: links.governance, external: true },
+            { name: "Docs", href: links.docs, external: false },
+            { name: "Blog", href: links.blog, external: true },
+            { name: "Wallet", href: links.wallet, external: true },
+            { name: "Join Community", href: links.discord, external: true },
+          ]}
+          title="Commune AI"
+        />
+        {children}
+        <Footer shouldBeFixed className="md:hidden lg:block" />
       </body>
     </html>
   );
