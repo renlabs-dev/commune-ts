@@ -4,12 +4,12 @@ import type { Metadata } from "next";
 
 import { Providers } from "@commune-ts/providers/context";
 import { links } from "@commune-ts/ui/data";
-import { cairo } from "@commune-ts/ui/fonts";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
 import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { cairo, oxanium } from "~/utils/fonts";
 import { MobileHeaderContent } from "./components/mobile-header-content";
 import ProposalRewardCard from "./components/proposal-reward-card";
 
@@ -35,6 +35,7 @@ export default function RootLayout({
           <TRPCReactProvider>
             <Wallet />
             <Header
+              font={oxanium.className}
               logoSrc="/logo.svg"
               title="Community Governance"
               wallet={<WalletButton />}

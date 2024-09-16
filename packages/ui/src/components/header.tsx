@@ -1,6 +1,15 @@
 import type { ReactElement } from "react";
 
-import { cn, MobileNavigation, oxanium } from "..";
+import { cn, MobileNavigation } from "..";
+
+export interface NextFont {
+  className: string;
+  style: {
+    fontFamily: string;
+    fontWeight?: number;
+    fontStyle?: string;
+  };
+}
 
 interface HeaderProps {
   logoSrc: string;
@@ -8,6 +17,7 @@ interface HeaderProps {
   navigationLinks?: { name: string; href: string; external: boolean }[];
   wallet?: JSX.Element;
   mobileContent?: ReactElement;
+  font: NextFont["className"];
 }
 
 export function Header(props: HeaderProps): JSX.Element {
@@ -32,7 +42,7 @@ export function Header(props: HeaderProps): JSX.Element {
           />
           <h3
             className={cn(
-              oxanium.className,
+              props.font,
               "mt-0.5 hidden text-2xl font-light text-white md:flex",
             )}
           >

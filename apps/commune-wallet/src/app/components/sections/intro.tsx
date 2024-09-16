@@ -7,8 +7,8 @@ import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import type { InjectedAccountWithMeta } from "@commune-ts/ui";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { Loading, NoWalletExtensionDisplay } from "@commune-ts/ui";
-import { oxanium } from "@commune-ts/ui/fonts";
 
+import { oxanium } from "~/utils/fonts";
 import { Wallet } from "./wallet";
 
 interface IntroSectionProps {
