@@ -30,6 +30,9 @@ catalogs:
     '@t3-oss/env-nextjs':
       specifier: ^0.10.1
       version: 0.10.1
+    '@tailwindcss/typography':
+      specifier: ^0.5.15
+      version: 0.5.15
     '@tanstack/react-query':
       specifier: ^5.51.23
       version: 5.51.24
@@ -373,7 +376,7 @@ importers:
         specifier: 'catalog:'
         version: 14.2.5
       '@tailwindcss/typography':
-        specifier: ^0.5.15
+        specifier: 'catalog:'
         version: 0.5.15(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4)))
       '@types/node':
         specifier: 'catalog:'
@@ -531,8 +534,8 @@ importers:
         specifier: 'catalog:'
         version: 14.2.5
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.14(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4)))
+        specifier: 'catalog:'
+        version: 0.5.15(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4)))
       '@types/node':
         specifier: 'catalog:'
         version: 20.16.1
@@ -2149,11 +2152,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  '@tailwindcss/typography@0.5.14':
-    resolution: {integrity: sha512-ZvOCjUbsJBjL9CxQBn+VEnFpouzuKhxh2dH8xMIWHILL+HfOYtlAkWcyoon8LlzE53d2Yo6YO6pahKKNW3q1YQ==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders'
 
   '@tailwindcss/typography@0.5.15':
     resolution: {integrity: sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==}
@@ -6670,14 +6668,6 @@ snapshots:
       zod: 3.23.8
     optionalDependencies:
       typescript: 5.5.4
-
-  '@tailwindcss/typography@0.5.14(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4)))':
-    dependencies:
-      lodash.castarray: 4.4.0
-      lodash.isplainobject: 4.0.6
-      lodash.merge: 4.6.2
-      postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))
 
   '@tailwindcss/typography@0.5.15(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4)))':
     dependencies:
