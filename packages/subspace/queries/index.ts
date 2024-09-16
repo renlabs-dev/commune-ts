@@ -1,19 +1,22 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import "@polkadot/api-augment";
 
 import { ApiPromise, Keyring } from "@polkadot/api";
 import { encodeAddress } from "@polkadot/util-crypto";
 
-import {
+import type {
   Api,
-  isSS58,
   LastBlock,
-  modulePropResolvers,
   OptionalProperties,
   SS58Address,
   StakeOutData,
-  SUBSPACE_MODULE_SCHEMA,
   SubspaceModule,
   VoteWithStake,
+} from "@commune-ts/types";
+import {
+  isSS58,
+  modulePropResolvers,
+  SUBSPACE_MODULE_SCHEMA,
 } from "@commune-ts/types";
 import {
   assertOrThrow,
@@ -49,7 +52,7 @@ export async function queryBalance(api: Api, address: SS58Address | string) {
   }
   const {
     data: { free: freeBalance },
-  } = (await api.query.system!.account(address)) || {};
+  } = await api.query.system.account(address);
   return BigInt(freeBalance.toString());
 }
 
@@ -83,7 +86,7 @@ export async function pushToWhitelist(
   moduleKey: SS58Address,
   mnemonic: string | undefined,
 ) {
-  if (!api?.tx.governanceModule?.addToWhitelist) return false;
+  if (!api.tx.governanceModule?.addToWhitelist) return false;
 
   const keyring = new Keyring({ type: "sr25519" });
 
@@ -93,14 +96,18 @@ export async function pushToWhitelist(
   const sudoKeypair = keyring.addFromUri(mnemonic);
   const accountId = encodeAddress(moduleKey, 42);
 
-  const tx = await api.tx.governanceModule.addToWhitelist(accountId);
+  const tx = api.tx.governanceModule.addToWhitelist(accountId);
 
-  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
-    console.error(err);
-    return false;
-  });
-  console.log(`Extrinsic: ${extrinsic}`);
-  return true;
+  const extrinsic = await tx
+    .signAndSend(sudoKeypair)
+    .catch((err) => {
+      console.error(err);
+      return false;
+    })
+    .then(() => {
+      console.log(`Extrinsic: ${extrinsic}`);
+      return true;
+    });
 }
 
 export async function removeFromWhitelist(
@@ -108,22 +115,26 @@ export async function removeFromWhitelist(
   moduleKey: SS58Address,
   mnemonic: string | undefined,
 ) {
-  if (!api?.tx.governanceModule?.removeFromWhitelist) return false;
+  if (!api.tx.governanceModule?.removeFromWhitelist) return false;
   if (!mnemonic) {
     throw new Error("No sudo mnemonic provided");
   }
 
   const accountId = encodeAddress(moduleKey, 42);
-  const tx = await api.tx.governanceModule.removeFromWhitelist(accountId);
+  const tx = api.tx.governanceModule.removeFromWhitelist(accountId);
 
   const keyring = new Keyring({ type: "sr25519" });
   const sudoKeypair = keyring.addFromUri(mnemonic);
-  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
-    console.error(err);
-    return false;
-  });
-
-  return true;
+  const extrinsic = await tx
+    .signAndSend(sudoKeypair)
+    .catch((err) => {
+      console.error(err);
+      return false;
+    })
+    .then(() => {
+      console.log(`Extrinsic: ${extrinsic}`);
+      return true;
+    });
 }
 
 export async function refuseDaoApplication(
@@ -131,19 +142,25 @@ export async function refuseDaoApplication(
   proposalId: number,
   mnemonic: string | undefined,
 ) {
-  if (!api?.tx.governanceModule?.refuseDaoApplication) return false;
+  if (!api.tx.governanceModule?.refuseDaoApplication) return false;
   if (!mnemonic) {
     throw new Error("No sudo mnemonic provided");
   }
 
-  const tx = await api.tx.governanceModule.refuseDaoApplication(proposalId);
+  const tx = api.tx.governanceModule.refuseDaoApplication(proposalId);
 
   const keyring = new Keyring({ type: "sr25519" });
   const sudoKeypair = keyring.addFromUri(mnemonic);
-  const extrinsic = await tx.signAndSend(sudoKeypair).catch((err) => {
-    console.error(err);
-    return false;
-  });
+  const extrinsic = await tx
+    .signAndSend(sudoKeypair)
+    .catch((err) => {
+      console.error(err);
+      return false;
+    })
+    .then(() => {
+      console.log(`Extrinsic: ${extrinsic}`);
+      return true;
+    });
 
   return true;
 }
@@ -195,8 +212,9 @@ export async function queryGlobalGovernanceConfig(
     throw new Error("globalGovernanceConfig is falsey");
   }
 
-  const config = await globalGovernanceConfig();
+  const config = (await globalGovernanceConfig()) as GovernanceConfiguration;
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!config) {
     throw new Error("Failed to fetch global governance config");
   }
@@ -205,29 +223,26 @@ export async function queryGlobalGovernanceConfig(
 
   // Safely parse each field
   if ("proposalCost" in config) {
-    parsedConfig.proposalCost = BigInt((config as any).proposalCost.toString());
+    parsedConfig.proposalCost = BigInt(config.proposalCost?.toString() ?? "0");
   }
   if ("proposalExpiration" in config) {
-    parsedConfig.proposalExpiration = (
-      config as any
-    ).proposalExpiration.toNumber();
+    parsedConfig.proposalExpiration = config.proposalExpiration;
   }
   if ("voteMode" in config) {
-    parsedConfig.voteMode = (config as any).voteMode.type as VoteMode;
+    parsedConfig.voteMode = config.voteMode;
   }
   if ("proposalRewardTreasuryAllocation" in config) {
-    parsedConfig.proposalRewardTreasuryAllocation = (
-      config as any
-    ).proposalRewardTreasuryAllocation.toNumber();
+    parsedConfig.proposalRewardTreasuryAllocation =
+      config.proposalRewardTreasuryAllocation;
   }
   if ("maxProposalRewardTreasuryAllocation" in config) {
     parsedConfig.maxProposalRewardTreasuryAllocation = BigInt(
-      (config as any).maxProposalRewardTreasuryAllocation.toString(),
+      config.maxProposalRewardTreasuryAllocation?.toString() ?? "0",
     );
   }
   if ("proposalRewardInterval" in config) {
     parsedConfig.proposalRewardInterval = BigInt(
-      (config as any).proposalRewardInterval.toString(),
+      config.proposalRewardInterval?.toString() ?? "0",
     );
   }
 
@@ -260,7 +275,7 @@ export function getRewardAllocation(
 
 export async function queryRewardAllocation(api: Api) {
   const balance = await queryDaoTreasuryAddress(api).then((result) =>
-    queryBalance(api, result as SS58Address),
+    queryBalance(api, result!),
   );
 
   const governanceConfig = await queryGlobalGovernanceConfig(api);
@@ -304,7 +319,7 @@ export async function queryCalculateStakeOut(api: Api) {
   const perAddr = new Map<string, bigint>();
 
   for (const [keyRaw, valueRaw] of stakeToQuery) {
-    const [fromAddrRaw, toAddrRaw] = keyRaw.args;
+    const [fromAddrRaw] = keyRaw.args;
     const fromAddr = fromAddrRaw!.toString();
 
     const staked = BigInt(valueRaw.toString());
@@ -457,6 +472,103 @@ export async function queryUserTotalStaked(
  * @param extraProps if empty, only the required properties are returned (netuid, uid, key)
  * @param netuidWhitelist if empty, modules from all subnets are returned
  */
+
+// def get_map_subnets_params(
+//   client: CommuneClient, block_hash: str | None = None
+// ) -> dict[int, SubnetParamsWithEmission]:
+//   """
+//   Gets all subnets info on the network
+//   """
+//   bulk_query = client.query_batch_map(
+//       {
+//           "SubspaceModule": [
+//               ("ImmunityPeriod", []),
+//               ("MinAllowedWeights", []),
+//               ("MaxAllowedWeights", []),
+//               ("Tempo", []),
+//               ("MaxAllowedUids", []),
+//               ("Founder", []),
+//               ("FounderShare", []),
+//               ("IncentiveRatio", []),
+//               ("TrustRatio", []),
+//               ("SubnetNames", []),
+//               ("MaxWeightAge", []),
+//               ("BondsMovingAverage", []),
+//               ("MaximumSetWeightCallsPerEpoch", []),
+//               ("MinValidatorStake", []),
+//               ("MaxAllowedValidators", []),
+//               ("ModuleBurnConfig", []),
+//               ("SubnetMetadata", []),
+//           ],
+//           "GovernanceModule": [
+//               ("SubnetGovernanceConfig", []),
+//           ],
+//           "SubnetEmissionModule": [
+//               ("SubnetEmission", []),
+//           ],
+
+//       },
+//       block_hash,
+//   )
+//   subnet_maps: SubnetParamsMaps = {
+//       "netuid_to_emission": bulk_query["SubnetEmission"],
+//       "netuid_to_tempo": bulk_query["Tempo"],
+//       "netuid_to_min_allowed_weights": bulk_query["MinAllowedWeights"],
+//       "netuid_to_max_allowed_weights": bulk_query["MaxAllowedWeights"],
+//       "netuid_to_max_allowed_uids": bulk_query["MaxAllowedUids"],
+//       "netuid_to_founder": bulk_query["Founder"],
+//       "netuid_to_founder_share": bulk_query["FounderShare"],
+//       "netuid_to_incentive_ratio": bulk_query["IncentiveRatio"],
+//       "netuid_to_trust_ratio": bulk_query["TrustRatio"],
+//       "netuid_to_name": bulk_query["SubnetNames"],
+//       "netuid_to_max_weight_age": bulk_query["MaxWeightAge"],
+//       "netuid_to_bonds_ma": bulk_query.get("BondsMovingAverage", {}),
+//       "netuid_to_maximum_set_weight_calls_per_epoch": bulk_query.get("MaximumSetWeightCallsPerEpoch", {}),
+//       "netuid_to_governance_configuration": bulk_query["SubnetGovernanceConfig"],
+//       "netuid_to_immunity_period": bulk_query["ImmunityPeriod"],
+//       "netuid_to_min_validator_stake": bulk_query.get("MinValidatorStake", {}),
+//       "netuid_to_max_allowed_validators": bulk_query.get("MaxAllowedValidators", {}),
+//       "netuid_to_module_burn_config": bulk_query.get("ModuleBurnConfig", {}),
+//       "netuid_to_subnet_metadata": bulk_query.get("SubnetMetadata", {}),
+//   }
+//   result_subnets: dict[int, SubnetParamsWithEmission] = {}
+
+//   for netuid, name in subnet_maps["netuid_to_name"].items():
+
+//       subnet: SubnetParamsWithEmission = {
+//           "name": name,
+//           "founder": subnet_maps["netuid_to_founder"][netuid],
+//           "founder_share": subnet_maps["netuid_to_founder_share"][netuid],
+//           "incentive_ratio": subnet_maps["netuid_to_incentive_ratio"][netuid],
+//           "max_allowed_uids": subnet_maps["netuid_to_max_allowed_uids"][netuid],
+//           "max_allowed_weights": subnet_maps["netuid_to_max_allowed_weights"][netuid],
+//           "min_allowed_weights": subnet_maps["netuid_to_min_allowed_weights"][netuid],
+//           "tempo": subnet_maps["netuid_to_tempo"][netuid],
+//           "trust_ratio": subnet_maps["netuid_to_trust_ratio"][netuid],
+//           "emission": subnet_maps["netuid_to_emission"][netuid],
+//           "max_weight_age": subnet_maps["netuid_to_max_weight_age"][netuid],
+//           "bonds_ma": subnet_maps["netuid_to_bonds_ma"].get(netuid, None),
+//           "maximum_set_weight_calls_per_epoch": subnet_maps["netuid_to_maximum_set_weight_calls_per_epoch"].get(netuid, 30),
+//           "governance_config": subnet_maps["netuid_to_governance_configuration"][netuid],
+//           "immunity_period": subnet_maps["netuid_to_immunity_period"][netuid],
+//           "min_validator_stake": subnet_maps["netuid_to_min_validator_stake"].get(netuid, to_nano(50_000)),
+//           "max_allowed_validators": subnet_maps["netuid_to_max_allowed_validators"].get(netuid, 50),
+//           "module_burn_config": cast(BurnConfiguration, subnet_maps["netuid_to_module_burn_config"].get(netuid, None)),
+//           "subnet_metadata": subnet_maps["netuid_to_subnet_metadata"].get(netuid, None),
+//       }
+
+//       result_subnets[netuid] = subnet
+
+//   return result_subnets
+
+export async function queryRegisteredSubnetsInfo(api: Api) {
+  console.log("Fetching subnet keys from the chain...");
+  const netuids = (await api.query.subspaceModule!.subnetNames!.entries()).map(
+    (entry) => new StorageEntry(entry).netuid,
+  );
+
+  console.log(netuids);
+}
 export async function queryRegisteredModulesInfo<
   P extends OptionalProperties<SubspaceModule>,
 >(
@@ -494,11 +606,8 @@ export async function queryRegisteredModulesInfo<
 
   return modules
     .map((m) => SUBSPACE_MODULE_SCHEMA.safeParse(m))
-    .filter(
-      (parsed) =>
-        parsed.success || console.error("UNEXPECTED ERROR: ", parsed.error),
-    )
-    .map((parsed) => parsed.data!);
+    .filter((parsed) => parsed.success)
+    .map((parsed) => parsed.data);
 }
 
 /**
@@ -512,7 +621,7 @@ async function enrichSubspaceModules<
   api: Api,
   moduleMap: Map<number, Map<SS58Address, SubspaceModule>>,
   props: P[],
-  netuidWhitelist?: number[] | undefined,
+  netuidWhitelist?: number[],
 ): Promise<Map<number, Map<SS58Address, SubspaceModule>>> {
   if (props.length === 0) {
     return moduleMap;
@@ -533,7 +642,7 @@ async function enrichSubspaceModules<
 
       assertOrThrow(Array.isArray(entries), `entries of "${prop}" is an array`);
 
-      console.log(`Fetched ${entries?.length} "${prop}" entries`);
+      console.log(`Fetched ${entries.length} "${prop}" entries`);
 
       for (const entry of entries) {
         const netuid = entry.netuid;

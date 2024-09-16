@@ -16,6 +16,7 @@ import type {
   SS58Address,
   StorageKey,
   SubspaceModule,
+  ZodSchema,
 } from "@commune-ts/types";
 import {
   CUSTOM_METADATA_SCHEMA,
@@ -24,7 +25,6 @@ import {
   PROPOSAL_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA,
-  ZodSchema,
 } from "@commune-ts/types";
 
 /**
