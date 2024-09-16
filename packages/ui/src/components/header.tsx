@@ -1,6 +1,4 @@
 import type { ReactElement } from "react";
-import Image from "next/image";
-import Link from "next/link";
 
 import { cn, MobileNavigation, oxanium } from "..";
 
@@ -24,8 +22,8 @@ export function Header(props: HeaderProps): JSX.Element {
           "mx-auto flex w-full max-w-screen-2xl items-center justify-between px-3 py-3",
         )}
       >
-        <Link className={cn("flex items-center gap-3")} href="/">
-          <Image
+        <a className={cn("flex items-center gap-3")} href="/">
+          <img
             alt="Logo"
             className={cn("h-10 w-10")}
             height={100}
@@ -40,11 +38,11 @@ export function Header(props: HeaderProps): JSX.Element {
           >
             {props.title}
           </h3>
-        </Link>
+        </a>
         <div className={cn("flex items-center")}>
           <div className={cn("hidden pr-6 lg:flex lg:gap-6")}>
             {props.navigationLinks?.map(({ name, href, external }) => (
-              <Link
+              <a
                 className={cn(
                   "flex flex-col items-center text-lg font-normal leading-6 text-white transition duration-500 hover:text-green-500",
                 )}
@@ -53,7 +51,7 @@ export function Header(props: HeaderProps): JSX.Element {
                 target={external ? "_blank" : "_self"}
               >
                 {name}
-              </Link>
+              </a>
             ))}
           </div>
 
