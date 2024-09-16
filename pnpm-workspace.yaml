@@ -9,6 +9,7 @@ catalog:
   "@trpc/react-query": ^11.0.0-rc.477
   "@trpc/server": ^11.0.0-rc.477
   "@types/node": ^20.14.15
+  "@tailwindcss/typography": "^0.5.15"
   "@next/eslint-plugin-next": ^14.2.5
   "@heroicons/react": ^2.1.5
   "@t3-oss/env-nextjs": ^0.10.1
