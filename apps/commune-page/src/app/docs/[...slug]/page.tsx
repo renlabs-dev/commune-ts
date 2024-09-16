@@ -7,8 +7,6 @@ import {
 import { DocSidebar } from "../../components/doc-sidebar";
 import { tutorials } from "./tutorials";
 
-export const runtime = "edge";
-
 export default function Docs({ params }: { params: { slug: string } }) {
   const prefix = `/docs`;
 
