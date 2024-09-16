@@ -9,8 +9,8 @@
   "dependencies": {
     "@commune-ts/types": "workspace:*",
     "multiformats": "catalog:",
-    "tsafe": "catalog:",
-    "rustie": "catalog:"
+    "rustie": "catalog:",
+    "tsafe": "catalog:"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
