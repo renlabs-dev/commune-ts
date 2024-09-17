@@ -32,7 +32,7 @@ export const proposalCommentRouter = {
         .where(
           and(
             eq(proposalCommentDigestView.proposalId, input.proposalId),
-            // eq(proposalCommentDigestView.governanceModel, input.type),
+            eq(proposalCommentDigestView.governanceModel, input.type),
           ),
         )
         .execute();
