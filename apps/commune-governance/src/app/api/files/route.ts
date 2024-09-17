@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { env } from "~/env";
+
 export const runtime = "edge";
 
 export function config(): { api: { bodyParser: false } } {
@@ -20,8 +22,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
       method: "POST",
       headers: {
-        // eslint-disable-next-line no-restricted-properties
-        Authorization: `Bearer ${process.env.PINATA_JWT}`,
+        Authorization: `Bearer ${env.PINATA_JWT}`,
       },
       body: data,
     });
