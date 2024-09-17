@@ -8,8 +8,8 @@ import { publicProcedure } from "../trpc";
 export const authRouter = {
   startSession: publicProcedure
     .input(SignedPayloadSchema)
-    .mutation(({ input }) => {
-      const token = createSessionToken(input);
+    .mutation( async ({ input }) => {
+      const token = await createSessionToken(input);
       // TODO: somehow check that the userKey is an valid commune/substrate address
 
       return { token, authenticationType: "Bearer" };
