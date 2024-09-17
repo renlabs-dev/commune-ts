@@ -3,7 +3,7 @@ import { decodeAddress } from "@polkadot/util-crypto";
 import { assert } from "tsafe";
 import { z } from "zod";
 
-import {
+import type {
   Codec,
   DaoApplicationStatus,
   OptionalProperties,
@@ -16,9 +16,11 @@ export function isSS58(value: string | null | undefined): value is SS58Address {
   let decoded: Uint8Array | null;
   try {
     decoded = decodeAddress(value);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return decoded != null;
 }
 
@@ -151,7 +153,7 @@ export const SUBSPACE_MODULE_SCHEMA = z.object({
 export const modulePropResolvers: {
   [P in OptionalProperties<SubspaceModule>]: (
     value: Codec,
-  ) => z.SafeParseReturnType<any, SubspaceModule[P]>;
+  ) => z.SafeParseReturnType<unknown, SubspaceModule[P]>;
 } = {
   name: (value: Codec) =>
     SUBSPACE_MODULE_NAME_SCHEMA.safeParse(value.toPrimitive()),
