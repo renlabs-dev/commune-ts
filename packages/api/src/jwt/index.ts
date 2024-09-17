@@ -48,9 +48,9 @@ export const createSessionToken = async (signedSessionData: SignedPayload) => {
     uri: data.uri,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const token = jwt.sign(
     tokenData,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     process.env.JWT_SECRET!,
     jwtOptions(),
   );
@@ -71,9 +71,9 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
 
 export function isJwtTokenValid(token: string) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const decodedToken = jwt.verify(
       token,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       process.env.JWT_SECRET!,
       {
         algorithms: ["HS256"],
