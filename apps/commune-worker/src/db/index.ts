@@ -37,6 +37,7 @@ export async function upsertModuleData(
         "metadataUri",
         "registrationBlock",
         "name",
+        "moduleId", // certo?
       ]),
     })
     .execute();
