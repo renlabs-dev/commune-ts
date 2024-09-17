@@ -51,7 +51,7 @@ export const createSessionToken = async (signedSessionData: SignedPayload) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const token = jwt.sign(
     tokenData,
-    "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
+    process.env.JWT_SECRET!,
     jwtOptions(),
   );
 
@@ -62,7 +62,7 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
   const { userKey } = jwt.verify(
     token,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
+    process.env.JWT_SECRET!,
     jwtOptions(),
   ) as TokenData;
 
@@ -74,7 +74,7 @@ export function isJwtTokenValid(token: string) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const decodedToken = jwt.verify(
       token,
-      "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
+      process.env.JWT_SECRET!,
       {
         algorithms: ["HS256"],
         issuer: "commune-ts",
