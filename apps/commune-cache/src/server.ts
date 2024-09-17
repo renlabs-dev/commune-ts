@@ -3,11 +3,12 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import cors from "cors";
 import express from "express";
 
+import { env } from "./env";
 import routes from "./routes";
 import { log } from "./utils";
 
-const port = process.env.PORT;
-const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
+const port = env.NEXT_PUBLIC_PORT;
+const wsEndpoint = env.NEXT_PUBLIC_WS_PROVIDER_URL;
 
 async function setup(): Promise<ApiPromise> {
   const provider = new WsProvider(wsEndpoint);
