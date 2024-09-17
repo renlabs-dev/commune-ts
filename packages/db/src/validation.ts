@@ -96,7 +96,7 @@ export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
   },
 ).omit({
   id: true,
-  userKey: true
+  userKey: true,
 });
 
 export const DAO_VOTE_INSERT_SCHEMA = createInsertSchema(daoVoteSchema).omit({

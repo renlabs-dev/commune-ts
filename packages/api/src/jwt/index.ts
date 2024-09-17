@@ -49,7 +49,11 @@ export const createSessionToken = async (signedSessionData: SignedPayload) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const token = jwt.sign(tokenData, "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79", jwtOptions());
+  const token = jwt.sign(
+    tokenData,
+    "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
+    jwtOptions(),
+  );
 
   return token;
 };
@@ -68,10 +72,14 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
 export function isJwtTokenValid(token: string) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const decodedToken = jwt.verify(token, "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79", {
-      algorithms: ["HS256"],
-      issuer: "commune-ts",
-    }) as jwt.JwtPayload;
+    const decodedToken = jwt.verify(
+      token,
+      "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
+      {
+        algorithms: ["HS256"],
+        issuer: "commune-ts",
+      },
+    ) as jwt.JwtPayload;
 
     // Check if the token has expired
     const currentTimestamp = Math.floor(Date.now() / 1000);
