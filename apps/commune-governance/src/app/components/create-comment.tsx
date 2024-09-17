@@ -12,7 +12,7 @@ import { api } from "~/trpc/react";
 
 const MAX_CHARACTERS = 300;
 const MAX_NAME_CHARACTERS = 300;
-const MIN_STAKE_REQUIRED = 5000;
+const MIN_STAKE_REQUIRED = 10;
 
 const CommentSchema = z.object({
   content: z
@@ -42,14 +42,14 @@ const CommentSchema = z.object({
 
 export function CreateComment({ proposalId }: { proposalId: number }) {
   const router = useRouter();
+  const { selectedAccount, stakeOut } = useCommune();
+
   const [content, setContent] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [remainingChars, setRemainingChars] = useState(MAX_CHARACTERS);
 
   let userStakeWeight: bigint | null = null;
-
-  const { selectedAccount, stakeOut } = useCommune();
 
   const CreateComment = api.proposalComment.createComment.useMutation({
     onSuccess: () => {
@@ -63,7 +63,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
     setRemainingChars(MAX_CHARACTERS - content.length);
   }, [content]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -74,7 +74,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
 
     if (
       !userStakeWeight ||
-      Number(formatToken(userStakeWeight)) < MIN_STAKE_REQUIRED
+      Number(formatToken(userStakeWeight || 0)) < MIN_STAKE_REQUIRED
     ) {
       setError(
         `You need to have at least ${MIN_STAKE_REQUIRED} total staked balance to submit a comment.`,
@@ -84,11 +84,10 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
 
     try {
       CommentSchema.parse({ content, name });
-      CreateComment.mutate({
+      await CreateComment.mutateAsync({
         content,
         proposalId,
         userName: name || undefined,
-        userKey: String(selectedAccount.address),
       });
       toast.success("Comment submitted successfully!, Reloading page...");
       setTimeout(() => {
@@ -124,7 +123,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
           placeholder="Your comment here"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="h-24 w-full resize-none bg-gray-600/10 p-3 text-white"
+          className="h-24 w-full resize-none bg-gray-600/10 p-3 text-white disabled:cursor-not-allowed"
           maxLength={MAX_CHARACTERS}
         />
         <span className="absolute bottom-2 right-2 text-sm text-gray-400">
@@ -136,7 +135,7 @@ export function CreateComment({ proposalId }: { proposalId: number }) {
         placeholder="Your name here (optional)"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="mb-2 w-full bg-gray-600/10 p-3 text-white"
+        className={`mb-2 w-full bg-gray-600/10 p-3 text-white disabled:cursor-not-allowed`}
         maxLength={MAX_NAME_CHARACTERS}
       />
       {error && <p className="text-sm text-red-500">{error}</p>}

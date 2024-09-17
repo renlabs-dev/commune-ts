@@ -11,6 +11,8 @@ import {
   DAO_APPLICATIONS_SCHEMA,
   PROPOSAL_DATA_SCHEMA,
   PROPOSAL_STATUS_SCHEMA,
+  SessionDataSchema,
+  SignedPayloadSchema,
   SUBSPACE_MODULE_SCHEMA,
 } from "./validations";
 
@@ -230,3 +232,6 @@ export type OptionalProperties<T> = keyof T extends infer K
       : never
     : never
   : never;
+
+export type SessionData = z.infer<typeof SessionDataSchema>;
+export type SignedPayload = z.infer<typeof SignedPayloadSchema>;

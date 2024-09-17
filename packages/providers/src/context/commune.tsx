@@ -7,6 +7,48 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { toast } from "react-toastify";
 
+// async function verifyPolkadotAddress(account: InjectedAccountWithMeta) {
+//   if (!account) {
+//     throw new Error('Address not found in the connected accounts');
+//   }
+
+//   // Create a message to sign
+//   const message = stringToU8a('Verify my Polkadot address');
+
+//   // Get the signer
+//   const injector = await web3FromAddress(account.address);
+
+//   try {
+//     // Request signature
+//     const signRaw = injector?.signer?.signRaw;
+//     if (!signRaw) {
+//       throw new Error('Signer not available');
+//     }
+
+//     const { signature } = await signRaw({
+//       address: account.address,
+//       data: u8aToHex(message),
+//       type: 'bytes'
+//     });
+
+//     // Verify the signature
+//     await cryptoWaitReady();
+//     const { isValid } = signatureVerify(message, signature, account.address);
+
+//     if (isValid) {
+//       console.log('Address verified successfully');
+//       console.log(message, signature, account.address)
+//       return true
+//     } else {
+//       console.log('Address verification failed');
+//       return false;
+//     }
+//   } catch (error) {
+//     console.error('Error during verification:', error);
+//     return false;
+//   }
+// }
+
 import type {
   AddCustomProposal,
   AddDaoApplication,
@@ -549,64 +591,49 @@ export function CommuneProvider({
   return (
     <CommuneContext.Provider
       value={{
-        api,
-        communeCacheUrl,
-        isConnected,
-        setIsConnected,
-        isInitialized,
-
         accounts,
-        selectedAccount,
-        setSelectedAccount,
-        handleGetWallets,
-        handleConnect,
-
-        handleWalletModal,
-        openWalletModal,
-
-        balance,
-        isBalanceLoading,
-
-        addStake,
-        removeStake,
-        transfer,
-        transferStake,
-
-        voteProposal,
-        removeVoteProposal,
         addCustomProposal,
         addDaoApplication,
+        addStake,
         addTransferDaoTreasuryProposal,
-
-        updateDelegatingVotingPower,
-
-        lastBlock,
-        isLastBlockLoading,
-
-        daoTreasury,
-        isDaoTreasuryLoading,
-
-        notDelegatingVoting,
-        isNotDelegatingVotingLoading,
-
-        unrewardedProposals,
-        isUnrewardedProposalsLoading,
-
-        rewardAllocation,
-        isRewardAllocationLoading,
-
-        stakeOut,
-        isStakeOutLoading,
-
-        userTotalStaked,
-        isUserTotalStakedLoading,
-
-        proposalsWithMeta,
-        isProposalsLoading,
-
+        api,
+        balance,
+        communeCacheUrl,
         daosWithMeta,
+        daoTreasury,
+        handleConnect,
+        handleGetWallets,
+        handleWalletModal,
+        isBalanceLoading,
+        isConnected,
         isDaosLoading,
+        isDaoTreasuryLoading,
+        isInitialized,
+        isLastBlockLoading,
+        isNotDelegatingVotingLoading,
+        isProposalsLoading,
+        isRewardAllocationLoading,
+        isStakeOutLoading,
+        isUnrewardedProposalsLoading,
+        isUserTotalStakedLoading,
+        lastBlock,
+        notDelegatingVoting,
+        openWalletModal,
+        proposalsWithMeta,
+        removeStake,
+        removeVoteProposal,
+        rewardAllocation,
+        selectedAccount,
+        setIsConnected,
+        setSelectedAccount,
         signHex,
+        stakeOut,
+        transfer,
+        transferStake,
+        unrewardedProposals,
+        updateDelegatingVotingPower,
+        userTotalStaked,
+        voteProposal,
       }}
     >
       {children}

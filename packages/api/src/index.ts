@@ -31,6 +31,3 @@ type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 export { createTRPCContext, appRouter, createCaller };
 export type { AppRouter, RouterInputs, RouterOutputs };
-
-export { signData, createSessionData } from "./jwt/client";
-export type { SessionData } from "./jwt/client";

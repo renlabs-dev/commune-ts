@@ -1,7 +1,8 @@
 import * as jwt from "jsonwebtoken";
 
-import { SessionDataSchema } from "./client";
-import { SignedPayload, verifySignedData } from "./sign";
+import { SignedPayload } from "@commune-ts/types";
+
+import { verifySignedData } from "./sign";
 
 // Map<nonce, timestamp>
 const seenNonces = new Map<string, number>();
@@ -18,11 +19,8 @@ const jwtOptions = (): jwt.SignOptions => ({
   expiresIn: "6h",
 });
 
-export const createSessionToken = (signedSessionData: SignedPayload) => {
-  const { address, data } = verifySignedData(
-    signedSessionData,
-    SessionDataSchema,
-  );
+export const createSessionToken = async (signedSessionData: SignedPayload) => {
+  const { address, data } = await verifySignedData(signedSessionData);
 
   // check if the sessionData is not older than 10 minutes
   if (new Date(data.created).getTime() + 10 * 60 * 1000 < Date.now()) {
@@ -64,3 +62,30 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
 
   return { userKey };
 };
+
+export function isJwtTokenValid(token: string) {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!, {
+      algorithms: ["HS256"],
+      issuer: "commune-ts",
+    }) as jwt.JwtPayload;
+
+    // Check if the token has expired
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (decodedToken.exp && decodedToken.exp < currentTimestamp) {
+      return false; // Token has expired
+    }
+
+    // Additional checks can be added here if needed
+    // For example, checking if the token was issued in the past:
+    if (decodedToken.iat && decodedToken.iat > currentTimestamp) {
+      return false; // Token was issued in the future
+    }
+
+    return true; // Token is valid and not expired
+  } catch (error) {
+    // Token is invalid (e.g., signature mismatch, malformed)
+    console.log(error);
+    return false;
+  }
+}
