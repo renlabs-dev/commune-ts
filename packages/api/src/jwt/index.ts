@@ -19,8 +19,8 @@ const jwtOptions = (): jwt.SignOptions => ({
   expiresIn: "6h",
 });
 
-export const createSessionToken = (signedSessionData: SignedPayload) => {
-  const { address, data } = verifySignedData(signedSessionData);
+export const createSessionToken = async (signedSessionData: SignedPayload) => {
+  const { address, data } = await verifySignedData(signedSessionData);
 
   // check if the sessionData is not older than 10 minutes
   if (new Date(data.created).getTime() + 10 * 60 * 1000 < Date.now()) {
@@ -49,7 +49,7 @@ export const createSessionToken = (signedSessionData: SignedPayload) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const token = jwt.sign(tokenData, process.env.JWT_SECRET!, jwtOptions());
+  const token = jwt.sign(tokenData, "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79", jwtOptions());
 
   return token;
 };
@@ -58,7 +58,7 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
   const { userKey } = jwt.verify(
     token,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    process.env.JWT_SECRET!,
+    "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79",
     jwtOptions(),
   ) as TokenData;
 
@@ -68,7 +68,7 @@ export const decodeJwtSessionToken = (token: string): { userKey: string } => {
 export function isJwtTokenValid(token: string) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!, {
+    const decodedToken = jwt.verify(token, "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79", {
       algorithms: ["HS256"],
       issuer: "commune-ts",
     }) as jwt.JwtPayload;
