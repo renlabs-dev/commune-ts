@@ -89,6 +89,7 @@ export const moduleRouter = {
     }),
   // POST
   deleteUserModuleData: authenticatedProcedure.mutation(async ({ ctx }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userKey = ctx.user!.userKey;
     await ctx.db
       .delete(userModuleData)
@@ -97,6 +98,7 @@ export const moduleRouter = {
   createUserModuleData: authenticatedProcedure
     .input(USER_MODULE_DATA_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const userKey = ctx.user!.userKey;
       await ctx.db.insert(userModuleData).values({
         moduleId: input.moduleId,
@@ -107,6 +109,7 @@ export const moduleRouter = {
   createModuleReport: authenticatedProcedure
     .input(MODULE_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const userKey = ctx.user!.userKey;
       await ctx.db.insert(moduleReport).values({
         moduleId: input.moduleId,
