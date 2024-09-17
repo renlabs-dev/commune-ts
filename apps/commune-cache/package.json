@@ -22,9 +22,11 @@
   "dependencies": {
     "@commune-ts/subspace": "workspace:*",
     "@polkadot/api": "catalog:",
+    "@t3-oss/env-core": "^0.11.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "json-bigint": "^1.0.0"
+    "json-bigint": "^1.0.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@commune-ts/eslint-config": "workspace:*",
