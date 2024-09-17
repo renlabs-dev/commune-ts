@@ -53,6 +53,8 @@ ARG APP_NAME
 
 ENV PORT=8000
 
+ENV NEXT_PUBLIC_PORT=8000
+
 WORKDIR /app
 
 COPY --from=builder /app/ .
