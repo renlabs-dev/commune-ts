@@ -14,7 +14,7 @@ import {
   PROPOSAL_COMMENT_INSERT_SCHEMA,
 } from "@commune-ts/db/validation";
 
-import { publicProcedure } from "../trpc";
+import { authenticatedProcedure, publicProcedure } from "../trpc";
 
 export const proposalCommentRouter = {
   // GET
@@ -32,7 +32,7 @@ export const proposalCommentRouter = {
         .where(
           and(
             eq(proposalCommentDigestView.proposalId, input.proposalId),
-            eq(proposalCommentDigestView.governanceModel, input.type),
+            // eq(proposalCommentDigestView.governanceModel, input.type),
           ),
         )
         .execute();
@@ -63,22 +63,28 @@ export const proposalCommentRouter = {
     return ctx.db.query.commentReportSchema.findMany();
   }),
   // POST
-  createComment: publicProcedure
-    .input(PROPOSAL_COMMENT_INSERT_SCHEMA)
+  createComment: authenticatedProcedure
+    .input(PROPOSAL_COMMENT_INSERT_SCHEMA.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(proposalCommentSchema).values(input);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.user!.userKey;
+      await ctx.db.insert(proposalCommentSchema).values({ ...input, userKey });
     }),
-  createCommentReport: publicProcedure
-    .input(COMMENT_REPORT_INSERT_SCHEMA)
+  createCommentReport: authenticatedProcedure
+    .input(COMMENT_REPORT_INSERT_SCHEMA.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(commentReportSchema).values(input);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.user!.userKey;
+      await ctx.db.insert(commentReportSchema).values({ ...input, userKey });
     }),
-  castVote: publicProcedure
-    .input(COMMENT_INTERACTION_INSERT_SCHEMA)
+  castVote: authenticatedProcedure
+    .input(COMMENT_INTERACTION_INSERT_SCHEMA.omit({ userKey: true }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.user!.userKey;
       await ctx.db
         .insert(commentInteractionSchema)
-        .values(input)
+        .values({ ...input, userKey })
         .onConflictDoUpdate({
           target: [
             commentInteractionSchema.commentId,
@@ -89,13 +95,14 @@ export const proposalCommentRouter = {
           },
         });
     }),
-  deleteVote: publicProcedure
-    .input(z.object({ commentId: z.string(), userKey: z.string() }))
+  deleteVote: authenticatedProcedure
+    .input(z.object({ commentId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const userKey = ctx.user?.userKey;
       await ctx.db
         .delete(commentInteractionSchema)
         .where(
-          sql`${commentInteractionSchema.commentId} = ${input.commentId} AND ${commentInteractionSchema.userKey} = ${input.userKey}`,
+          sql`${commentInteractionSchema.commentId} = ${input.commentId} AND ${commentInteractionSchema.userKey} = ${userKey}`,
         );
     }),
 } satisfies TRPCRouterRecord;
