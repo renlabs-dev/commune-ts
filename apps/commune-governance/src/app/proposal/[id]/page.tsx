@@ -3,8 +3,6 @@ import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 
 import { ProposalExpandedView } from "./_components/proposal-expanded-view";
 
-export const runtime = "edge";
-
 export default function CardView({
   params,
 }: {

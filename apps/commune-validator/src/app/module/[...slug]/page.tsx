@@ -8,8 +8,6 @@ import { fetchCustomMetadata, smallAddress } from "@commune-ts/utils";
 import { ReportModule } from "~/app/components/report-module";
 import { api } from "~/trpc/server";
 
-// export const runtime = "edge";
-
 interface Params {
   params: {
     slug: string[];
