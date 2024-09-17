@@ -64,21 +64,21 @@ export const proposalCommentRouter = {
   }),
   // POST
   createComment: authenticatedProcedure
-    .input(PROPOSAL_COMMENT_INSERT_SCHEMA.omit({ userKey: true }))
+    .input(PROPOSAL_COMMENT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const userKey = ctx.user!.userKey;
       await ctx.db.insert(proposalCommentSchema).values({ ...input, userKey });
     }),
   createCommentReport: authenticatedProcedure
-    .input(COMMENT_REPORT_INSERT_SCHEMA.omit({ userKey: true }))
+    .input(COMMENT_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const userKey = ctx.user!.userKey;
       await ctx.db.insert(commentReportSchema).values({ ...input, userKey });
     }),
   castVote: authenticatedProcedure
-    .input(COMMENT_INTERACTION_INSERT_SCHEMA.omit({ userKey: true }))
+    .input(COMMENT_INTERACTION_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const userKey = ctx.user!.userKey;
