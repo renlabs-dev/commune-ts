@@ -158,3 +158,16 @@ export const modulePropResolvers: {
   metadata: (value: Codec) =>
     SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
 };
+
+export const SessionDataSchema = z.object({
+  statement: z.string(), // "Sign in with polkadot extension to authenticate your session"
+  uri: z.string(), // origin or "unknown"
+  nonce: z.string(), // base64 randomstring
+  created: z.string().datetime(), // ISO date string
+});
+
+export const SignedPayloadSchema = z.object({
+  payload: z.string({ description: "in hex" }),
+  signature: z.string({ description: "in hex" }),
+  address: z.string({ description: "in hex" }),
+});

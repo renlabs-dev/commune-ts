@@ -37,8 +37,13 @@ export function IntroSection(props: IntroSectionProps) {
   };
 
   const handleSelectWallet = (account: InjectedAccountWithMeta) => {
-    localStorage.setItem("favoriteWalletAddress", account.address);
+    const currentWallet = localStorage.getItem("favoriteWalletAddress");
+    if (account.address === currentWallet) return;
+
     setSelectedAccount(account);
+    localStorage.removeItem("authorization");
+    localStorage.setItem("favoriteWalletAddress", account.address);
+
     setIsConnected(true);
     props.setShowWallets(false);
     props.onWalletSwitch();

@@ -114,13 +114,11 @@ export function ProposalComment({
       if (currentVote === voteType) {
         await deleteVoteMutation.mutateAsync({
           commentId,
-          userKey: selectedAccount.address,
         });
         setLocalVotes((prev) => ({ ...prev, [commentId]: null }));
       } else {
         await castVoteMutation.mutateAsync({
           commentId,
-          userKey: selectedAccount.address,
           voteType,
         });
         setLocalVotes((prev) => ({ ...prev, [commentId]: voteType }));

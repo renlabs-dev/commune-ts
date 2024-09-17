@@ -37,7 +37,7 @@
     "husky": "^9.1.4",
     "prettier": "^3.3.1",
     "sort-package-json": "^2.10.1",
-    "turbo": "^2.0.3",
+    "turbo": "^2.1.1",
     "typescript": "^5.4.5"
   },
   "packageManager": "pnpm@9.6.0+sha256.dae0f7e822c56b20979bb5965e3b73b8bdabb6b8b8ef121da6d857508599ca35",

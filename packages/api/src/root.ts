@@ -4,9 +4,9 @@ import { proposalCommentRouter } from "./router/proposal-comment";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
+  auth: authRouter,
   module: moduleRouter,
   proposalComment: proposalCommentRouter,
-  auth: authRouter,
 });
 
 // export type definition of API

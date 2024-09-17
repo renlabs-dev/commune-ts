@@ -1,3 +1,4 @@
+import { stringToHex } from "@polkadot/util";
 import { CID } from "multiformats/cid";
 import { AssertionError } from "tsafe";
 
@@ -11,6 +12,8 @@ import {
   Proposal,
   PROPOSAL_SCHEMA,
   RawEntry,
+  SessionData,
+  SignedPayload,
   SS58Address,
   StorageKey,
   SUBSPACE_MODULE_SCHEMA,
@@ -303,3 +306,43 @@ export function removeEmojis(text: string): string {
 
   return text.replace(emojiPattern, "");
 }
+
+function generateNonce(): string {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
+}
+
+export function createSessionData(window: {
+  location: { origin: string };
+}): SessionData {
+  crypto;
+  return {
+    statement:
+      "Sign in with polkadot extension to authenticate your session at " +
+      window.location.origin,
+    uri: window.location.origin || "unknown",
+    // nonce: randomBytes(16).toString("base64"),
+    nonce: generateNonce(),
+    created: new Date().toISOString(),
+  };
+}
+
+export const signData = async <T>(
+  signer: (
+    msgHex: `0x${string}`,
+  ) => Promise<{ signature: `0x${string}`; address: string }>,
+  data: T,
+): Promise<SignedPayload> => {
+  const dataHex = stringToHex(JSON.stringify(data));
+  const { signature, address } = await signer(dataHex);
+  return {
+    payload: dataHex,
+    signature,
+    address,
+  };
+};
+
+// export const JWT_SECRET = "95614424651656c92f70fcc90980fbf25607a87e9fa487d913f455cc740cbd79"
