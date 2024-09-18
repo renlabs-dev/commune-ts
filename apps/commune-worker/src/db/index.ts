@@ -1,5 +1,5 @@
 import type { SQL, Table } from "@commune-ts/db";
-import type { GovernanceModeType, SubspaceModule } from "@commune-ts/types";
+import type { GovernanceModeType } from "@commune-ts/types";
 import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
@@ -10,23 +10,28 @@ import {
 } from "@commune-ts/db/schema";
 
 export type NewVote = typeof daoVoteSchema.$inferInsert;
-export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+export type Module = typeof moduleData.$inferInsert;
 
-export async function upsertModuleData(
-  modules: SubspaceModule[],
-  atBlock: number,
-) {
+export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+export async function upsertModuleData(modules: Module[], atBlock: number) {
   await db
     .insert(moduleData)
     .values(
       modules.map((m) => ({
         netuid: m.netuid,
-        moduleKey: m.key,
+        moduleKey: m.moduleKey,
         name: m.name,
         atBlock,
-        addressUri: m.address,
-        metadataUri: m.metadata,
         registrationBlock: m.registrationBlock,
+        addressUri: m.addressUri,
+        metadataUri: m.metadataUri,
+        emission: m.emission,
+        incentive: m.incentive,
+        dividend: m.dividend,
+        delegationFee: m.delegationFee,
+        totalStaked: m.totalStaked,
+        totalStakers: m.totalStakers,
+        totalRewards: m.totalRewards,
       })),
     )
     .onConflictDoUpdate({
@@ -37,7 +42,13 @@ export async function upsertModuleData(
         "metadataUri",
         "registrationBlock",
         "name",
-        "moduleId", // certo?
+        "emission",
+        "incentive",
+        "dividend",
+        "delegationFee",
+        "totalStaked",
+        "totalStakers",
+        "totalRewards",
       ]),
     })
     .execute();
