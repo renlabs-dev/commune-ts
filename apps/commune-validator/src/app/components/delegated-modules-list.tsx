@@ -143,7 +143,7 @@ export function DelegatedModulesList() {
   return (
     <>
       {selectedAccount?.address && (
-        <div className="fixed bottom-0 right-0 z-50 mt-8 flex w-full flex-col-reverse text-sm md:bottom-4 md:mr-4 md:w-fit">
+        <div className="fixed bottom-0 right-0 z-50 mt-8 hidden w-full flex-col-reverse text-sm md:bottom-4 md:mr-4 md:flex md:w-fit">
           <div className="flex animate-fade-up items-center justify-between divide-white/20 rounded-full border border-white/20 bg-[#898989]/5 font-semibold text-white backdrop-blur-md">
             <span className="flex">
               <p className="border-r border-white/20 px-3 pl-5">

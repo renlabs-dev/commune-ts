@@ -1,7 +1,4 @@
 export const subnetDataList = [
-  { key: "id", label: "ID" },
-  { key: "netuid", label: "NetUID" },
-  { key: "name", label: "Name" },
   { key: "tempo", label: "Tempo" },
   { key: "minAllowedWeights", label: "Min Allowed Weights" },
   { key: "maxAllowedWeights", label: "Max Allowed Weights" },
