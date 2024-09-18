@@ -18,22 +18,28 @@ export default function RootLayout({
           Welcome to the Community Validator
         </h3>
         <h1 className="animate-fade-down text-2xl font-semibold animate-delay-500 md:text-4xl">
-          Interact with modules created by the{" "}
+          Interact with modules, validators and subnets created by the{" "}
           <span className="text-green-600">community</span>.
         </h1>
       </div>
       <div className="mb-4 flex w-full animate-fade-down flex-col gap-4 border-b border-white/20 pb-4 animate-delay-300 md:flex-row">
         <Link
           href="/"
-          className={`w-full gap-2 border  bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
+          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
-          All Modules
+          Modules
         </Link>
         <Link
           href="/weighted"
           className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/weighted" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
         >
           Your Weighted Modules
+        </Link>
+        <Link
+          href="/subnets"
+          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/subnets" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
+        >
+          Subnets
         </Link>
       </div>
       {children}
