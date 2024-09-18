@@ -11,6 +11,7 @@ import {
   moduleReport,
   proposalCommentSchema,
   userModuleData,
+  userSubnetDataSchema,
   VoteType,
 } from "./schema";
 
@@ -88,6 +89,15 @@ export const MODULE_REPORT_INSERT_SCHEMA = createInsertSchema(moduleReport, {
 
 export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
   userModuleData,
+  {
+    weight: z.number().positive(),
+  },
+).omit({
+  id: true,
+});
+
+export const USER_SUBNET_DATA_INSERT_SCHEMA = createInsertSchema(
+  userSubnetDataSchema,
   {
     weight: z.number().positive(),
   },
