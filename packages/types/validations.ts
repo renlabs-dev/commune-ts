@@ -135,6 +135,7 @@ assert<Extends<z.infer<typeof PROPOSAL_SCHEMA>, Proposal>>();
 
 export const SUBSPACE_MODULE_NAME_SCHEMA = z.string();
 export const SUBSPACE_MODULE_ADDRESS_SCHEMA = z.string();
+export const NUMBER_SCHEMA = z.number();
 export const SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA = z.number();
 export const SUBSPACE_MODULE_METADATA_SCHEMA = z.string(); // TODO: validate it's a valid ipfs hash or something (?)
 export const SUBSPACE_MODULE_LAST_UPDATE_SCHEMA = z.any();
@@ -148,6 +149,19 @@ export const SUBSPACE_MODULE_SCHEMA = z.object({
   registrationBlock: SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.optional(),
   metadata: SUBSPACE_MODULE_METADATA_SCHEMA.optional(),
   lastUpdate: SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.optional(),
+  atBlock: z.number().optional(),
+
+  addressUri: z.string().optional(),
+  metadataUri: z.string().optional(),
+
+  emission: z.bigint().optional(),
+  incentive: z.bigint().optional(),
+  dividend: z.bigint().optional(),
+  delegationFee: z.number().optional(),
+
+  totalStaked: z.bigint().optional(),
+  totalStakers: z.number().optional(),
+  totalRewards: z.bigint().optional(),
 });
 
 export const modulePropResolvers: {
@@ -165,4 +179,14 @@ export const modulePropResolvers: {
     SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.safeParse(value.toPrimitive()), // not really working right now (Cannot read properties of undefined (reading 'toPrimitive'))
   metadata: (value: Codec) =>
     SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
+  atBlock: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  addressUri: (value: Codec) => URL_SCHEMA.safeParse(value.toPrimitive()),
+  metadataUri: (value: Codec) => URL_SCHEMA.safeParse(value.toPrimitive()),
+  emission: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  incentive: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  dividend: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  delegationFee: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  totalStaked: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  totalStakers: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  totalRewards: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
 };

@@ -6,6 +6,7 @@ import {
 import type { WorkerProps } from "../types";
 import { BLOCK_TIME, isNewBlock, log, NETUID_ZERO, sleep } from "../common";
 import { upsertModuleData } from "../db";
+import { SubspaceModuleToDatabase } from "../db/type-transformations.js";
 
 export async function moduleFetcherWorker(props: WorkerProps) {
   while (true) {
@@ -20,17 +21,36 @@ export async function moduleFetcherWorker(props: WorkerProps) {
 
       log(`Block ${props.lastBlock.blockNumber}: processing`);
 
+      // TODO: do this in a better way
       const modules = await queryRegisteredModulesInfo(
         props.lastBlock.apiAtBlock,
-        ["name", "address", "metadata", "registrationBlock"],
+        [
+          "name",
+          "address",
+          "registrationBlock",
+          "metadata",
+          "lastUpdate",
+          "atBlock",
+          "addressUri",
+          "metadataUri",
+          "emission",
+          "incentive",
+          "dividend",
+          "delegationFee",
+          "totalStaked",
+          "totalStakers",
+          "totalRewards",
+        ],
         [NETUID_ZERO],
       );
-
+      const modulesData = modules.map((module) =>
+        SubspaceModuleToDatabase(module),
+      );
       log(
         `Block ${props.lastBlock.blockNumber}: upserting  ${modules.length} modules`,
       );
 
-      await upsertModuleData(modules, props.lastBlock.blockNumber);
+      await upsertModuleData(modulesData, props.lastBlock.blockNumber);
 
       log(
         `Block ${props.lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
