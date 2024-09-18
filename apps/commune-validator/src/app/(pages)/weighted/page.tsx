@@ -11,7 +11,7 @@ export default function Page() {
 
   if (!selectedAccount?.address)
     return (
-      <span className="w-full justify-center pt-12 text-center text-xl">
+      <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
         Connect Wallet to view your weighted modules.
       </span>
     );
@@ -22,12 +22,12 @@ export default function Page() {
 
   return (
     <>
-      <div
-        key={module.id}
-        className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      >
-        {weightedModules.length ? (
-          weightedModules.map((module) => (
+      {weightedModules.length ? (
+        <div
+          key={module.id}
+          className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          {weightedModules.map((module) => (
             <ModuleCard
               id={module.id}
               key={module.id}
@@ -35,13 +35,13 @@ export default function Page() {
               moduleKey={module.address}
               metadata={null} // TODO - metadataUri
             />
-          ))
-        ) : (
-          <span className="absolute w-full justify-center pt-12 text-center text-xl">
-            No weighted modules found.
-          </span>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
+          No weighted modules found.
+        </span>
+      )}
     </>
   );
 }
