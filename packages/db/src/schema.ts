@@ -22,9 +22,9 @@ export const ss58Address = (name: string) => varchar(name, { length: 256 });
 /**
  * Modules registered on the Commune chain.
  *
+ * lastSeenBlock = max(atBlock)
  * atBlock == lastSeenBlock         --> registered
  * atBlock <  lastSeenBlock         --> deregistered
- * lastSeenBlock - atBlock > 1 week --> should be deleted
  */
 export const moduleData = createTable(
   "module_data",

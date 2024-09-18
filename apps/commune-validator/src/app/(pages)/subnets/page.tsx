@@ -5,7 +5,7 @@ export default async function SubnetsPage() {
   const data = await api.subnet.all();
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="mb-4 w-full">
       {data.map((subnet) => (
         <SubnetAccordion key={subnet.id} subnet={subnet} />
       ))}
