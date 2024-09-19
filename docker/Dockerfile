@@ -28,8 +28,8 @@ RUN turbo prune ${APP_NAME} --docker
 FROM base AS builder
 ARG APP_NAME
 
-ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://commune-api-node-10.communeai.net"
-ENV NEXT_PUBLIC_CACHE_PROVIDER_URL="https://commune-cache-azn4r.ondigitalocean.app"
+ENV NEXT_PUBLIC_WS_PROVIDER_URL="wss://api.communeai.net"
+ENV NEXT_PUBLIC_CACHE_PROVIDER_URL="https://cache.communeai.org"
 
 WORKDIR /app
 
