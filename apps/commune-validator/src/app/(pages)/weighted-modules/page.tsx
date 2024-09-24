@@ -3,11 +3,11 @@
 import { useCommune } from "@commune-ts/providers/use-commune";
 
 import { ModuleCard } from "~/app/components/module-card";
-import { useDelegateStore } from "~/stores/delegateStore";
+import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 
 export default function Page() {
   const { selectedAccount } = useCommune();
-  const { delegatedModules } = useDelegateStore();
+  const { delegatedModules } = useDelegateModuleStore();
 
   if (!selectedAccount?.address)
     return (
