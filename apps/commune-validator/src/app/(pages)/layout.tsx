@@ -19,28 +19,44 @@ export default function RootLayout({
         </h3>
         <h1 className="animate-fade-down text-2xl font-semibold animate-delay-500 md:text-4xl">
           Interact with modules, validators and subnets created by the{" "}
-          <span className="text-green-600">community</span>.
+          <span
+            className={`${pathname === "/subnets" || pathname === "/weighted-subnets" ? "text-cyan-500" : "text-green-500"}`}
+          >
+            community
+          </span>
+          .
         </h1>
       </div>
-      <div className="mb-4 flex w-full animate-fade-down flex-col gap-4 border-b border-white/20 pb-4 animate-delay-300 md:flex-row">
-        <Link
-          href="/"
-          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
-        >
-          Modules
-        </Link>
-        <Link
-          href="/weighted"
-          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/weighted" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
-        >
-          Your Weighted Modules
-        </Link>
-        <Link
-          href="/subnets"
-          className={`w-full gap-2 border bg-[#898989]/5 p-3 text-center text-lg text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10 ${pathname === "/subnets" ? "border-green-500 bg-green-500/10" : "border-white/20"}`}
-        >
-          Subnets
-        </Link>
+      <div className="mb-4 flex w-full gap-3 border-b border-white/20 text-center">
+        <div className="flex w-full animate-fade-down flex-col gap-4 pb-4 backdrop-blur-md animate-delay-300 md:flex-row">
+          <Link
+            href="/"
+            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-green-500 hover:bg-green-500/10 active:bg-green-500/50 ${pathname === "/" ? "border-green-500 bg-green-500/10 text-green-500" : "border-white/20 text-white"}`}
+          >
+            Modules
+          </Link>
+          <Link
+            href="/weighted-modules"
+            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-green-500 hover:bg-green-500/10 active:bg-green-500/50 ${pathname === "/weighted-modules" ? "border-green-500 bg-green-500/10 text-green-500" : "border-white/20 text-white"}`}
+          >
+            Weighted Modules
+          </Link>
+        </div>
+        <div className="mb-4 border-l border-white/20" />
+        <div className="flex w-full animate-fade-down flex-col gap-4 pb-4 backdrop-blur-md animate-delay-300 md:flex-row">
+          <Link
+            href="/subnets"
+            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10 active:bg-cyan-500/50 ${pathname === "/subnets" ? "border-cyan-500 bg-cyan-500/10 text-cyan-500" : "border-white/20 text-white"}`}
+          >
+            Subnets
+          </Link>
+          <Link
+            href="/weighted-subnets"
+            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10 active:bg-cyan-500/50 ${pathname === "/weighted-subnets" ? "border-cyan-500 bg-cyan-500/10 text-cyan-500" : "border-white/20 text-white"}`}
+          >
+            Weighted Subnets
+          </Link>
+        </div>
       </div>
       {children}
     </Container>

@@ -7,7 +7,7 @@ import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { formatToken, smallAddress } from "@commune-ts/utils";
 
-import { useDelegateStore } from "~/stores/delegateStore";
+import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 import { api } from "~/trpc/react";
 
 export function DelegatedModulesList() {
@@ -19,7 +19,7 @@ export function DelegatedModulesList() {
     setDelegatedModulesFromDB,
     updateOriginalModules,
     hasUnsavedChanges,
-  } = useDelegateStore();
+  } = useDelegateModuleStore();
   const totalPercentage = getTotalPercentage();
   const { selectedAccount, userTotalStaked } = useCommune();
   const router = useRouter();
