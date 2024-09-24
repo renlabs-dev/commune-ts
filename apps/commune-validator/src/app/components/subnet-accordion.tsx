@@ -25,12 +25,12 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
           <NameCard label="Founder" name={smallAddress(subnet.founder)} />
         </div>
         <div className="flex gap-3">
-          <button className="flex w-fit items-center text-nowrap rounded-full border border-green-500 bg-green-600/15 px-4 py-1.5 text-sm font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50">
+          <button className="flex w-fit items-center text-nowrap rounded-full border border-cyan-500 bg-cyan-600/15 px-4 py-1.5 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50">
             <span>DELEGATE</span>
           </button>
           <button
             onClick={toggleAccordion}
-            className="flex w-fit items-center text-nowrap rounded-full border border-green-500 bg-green-600/15 py-1.5 pl-3 pr-2 text-sm font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+            className="flex w-fit items-center text-nowrap rounded-full border border-cyan-500 bg-cyan-600/15 py-1.5 pl-3 pr-2 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
           >
             <span>{isOpen ? "COLLAPSE" : "EXPAND"}</span>
             <span>
@@ -46,7 +46,7 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
 
       {isOpen && (
         <div className="mt-4 border-t border-white/20 p-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {subnetDataList.map((field) => (
               <InfoItem
                 key={field.key}
@@ -64,7 +64,7 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
 function InfoItem({ label, value }: { label: string; value: unknown }) {
   return (
     <div className="flex gap-2">
-      <span className="font-semibold text-green-500">{label}:</span>
+      <span className="font-semibold text-cyan-500">{label}:</span>
       <span>
         {value !== null && value !== undefined ? String(value) : "N/A"}
       </span>

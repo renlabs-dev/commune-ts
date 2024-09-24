@@ -2,7 +2,7 @@
 
 import { ChartPieIcon } from "@heroicons/react/24/outline";
 
-import { useDelegateStore } from "~/stores/delegateStore";
+import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 
 interface DelegateModuleWeightProps {
   id: number;
@@ -12,7 +12,8 @@ interface DelegateModuleWeightProps {
 }
 
 export function DelegateModuleWeight(props: DelegateModuleWeightProps) {
-  const { delegatedModules, addModule, removeModule } = useDelegateStore();
+  const { delegatedModules, addModule, removeModule } =
+    useDelegateModuleStore();
   const isModuleDelegated = delegatedModules.some((m) => m.id === props.id);
 
   const handleDelegateClick = () => {
