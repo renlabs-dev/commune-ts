@@ -58,7 +58,7 @@ export const faqData = [
   },
   {
     question: "What is the current token emission?",
-    answer: `It's 250k tokens/daily.`,
+    answer: `Token emission is dynamic and depends on Rootnet's subnet allocation. Although there is a daily upper limit of 250,000 tokens, the current emission is approximately 70,000 new tokens per day, primarily due to Rootnet DAO recycling.`,
   },
   {
     question: "What is the total supply of COMAI tokens?",
