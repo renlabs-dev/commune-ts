@@ -4,7 +4,6 @@ import { persist } from "zustand/middleware";
 interface DelegatedSubnet {
   id: number;
   founder: string;
-  title: string;
   name: string;
   percentage: number;
 }
