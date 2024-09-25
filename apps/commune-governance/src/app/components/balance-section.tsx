@@ -13,7 +13,6 @@ export function BalanceSection({
 }): JSX.Element {
   const {
     isInitialized,
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     handleWalletModal,
     daoTreasury,
     balance,
@@ -108,7 +107,7 @@ export function BalanceSection({
         <div className="flex animate-fade-down flex-row items-center justify-between border-t !border-white/20 bg-[#898989]/5 p-6 pr-6 animate-delay-200 lg:w-1/3 lg:border lg:pr-10">
           <div className="flex flex-col items-start gap-1">
             {!isInitialized ||
-            (selectedAccount?.meta.name && userStakeWeight == null) ? (
+              (selectedAccount?.meta.name && userStakeWeight == null) ? (
               <p className="animate-pulse text-gray-400">
                 Loading...
                 <span className="text-lg text-white"> COMAI</span>

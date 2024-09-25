@@ -63,7 +63,7 @@ interface CommuneContextType {
   selectedAccount: InjectedAccountWithMeta | null;
   setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
 
-  handleWalletModal(state?: boolean): void;
+  handleWalletModal: (state?: boolean) => void;
   openWalletModal: boolean;
 
   addStake: (stake: Stake) => Promise<void>;
@@ -222,7 +222,7 @@ export function CommuneProvider({
     }
   }
 
-  function handleWalletModal(state?: boolean): void {
+  const handleWalletModal = (state?: boolean): void => {
     setOpenWalletModal(state || !openWalletModal);
   }
 
