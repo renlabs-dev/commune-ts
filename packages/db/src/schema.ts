@@ -114,6 +114,7 @@ export const moduleReport = createTable("module_report", {
 export const governanceModelEnum = pgEnum("governance_model", [
   "PROPOSAL",
   "DAO",
+  "FORUM",
 ]);
 
 export const proposalCommentSchema = createTable(
@@ -295,4 +296,100 @@ export const governanceNotificationSchema = createTable(
     proposalId: integer("proposal_id").notNull(),
     notifiedAt: timestamp("notified_at").defaultNow(),
   },
+);
+
+export const forumTagEnum = pgEnum("forum_tag_enum", [
+  "OFF-TOPIC",
+  "ANNOUNCEMENT",
+  "PROPOSAL",
+  "DAO",
+  "GENERAL",
+  "TECHNICAL",
+  "SUPPORT",
+  "BUG",
+  "FEATURE-REQUEST",
+  "META",
+  "OTHER",
+  "SUBSPACE",
+  "WEB",
+]);
+
+export const forumPostSchema = createTable(
+  "forum_post",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: integer("proposal_id").notNull(),
+    tag: forumTagEnum("governance_model"),
+    userKey: ss58Address("user_key").notNull(),
+    userName: text("user_name"),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
+  },
+  (t) => ({
+    postIdIndex: index("post_id_index").on(t.postId),
+  }),
+);
+
+export const forumReportSchema = createTable("forum_report", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key"),
+  postId: uuid("post_id")
+    .references(() => proposalCommentSchema.id)
+    .notNull(),
+  content: text("content"),
+  reason: ReportReasonEnum("reason").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const forumPostInteractionSchema = createTable(
+  "forum_post_interaction",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id")
+      .references(() => forumPostSchema.id)
+      .notNull(),
+    userKey: ss58Address("user_key").notNull(),
+    voteType: varchar("vote_type", { length: 4 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    unq: unique().on(t.postId, t.userKey),
+    postIdIndex: index("post_id_index").on(t.postId),
+    postVoteIndex: index("post_vote_index").on(t.postId, t.voteType),
+  }),
+);
+
+export const forumPostDigestView = pgView("forum_post_digest").as((qb) =>
+  qb
+    .select({
+      id: forumPostSchema.id,
+      postId: forumPostSchema.postId,
+      userKey: forumPostSchema.userKey,
+      userName: forumPostSchema.userName,
+      content: forumPostSchema.content,
+      createdAt: forumPostSchema.createdAt,
+      upvotes:
+        sql<number>`SUM(CASE WHEN ${forumPostInteractionSchema.voteType} = "UP" THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("upvotes"),
+      downvotes:
+        sql<number>`SUM(CASE WHEN ${forumPostInteractionSchema.voteType} = ${VoteType.DOWN} THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("downvotes"),
+    })
+    .from(forumPostSchema)
+    .where(sql`${forumPostSchema.deletedAt} IS NULL`)
+    .leftJoin(
+      forumPostInteractionSchema,
+      eq(forumPostSchema.id, forumPostInteractionSchema.postId),
+    )
+    .groupBy(
+      forumPostSchema.id,
+      forumPostSchema.postId,
+      forumPostSchema.userKey,
+      forumPostSchema.content,
+      forumPostSchema.createdAt,
+    )
+    .orderBy(asc(forumPostSchema.createdAt)),
 );
