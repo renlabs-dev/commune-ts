@@ -151,17 +151,12 @@ export const SUBSPACE_MODULE_SCHEMA = z.object({
   lastUpdate: SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.optional(),
   atBlock: z.number().optional(),
 
-  addressUri: z.string().optional(),
-  metadataUri: z.string().optional(),
-
   emission: z.bigint().optional(),
   incentive: z.bigint().optional(),
-  dividend: z.bigint().optional(),
+  dividends: z.bigint().optional(),
   delegationFee: z.number().optional(),
 
-  totalStaked: z.bigint().optional(),
-  totalStakers: z.number().optional(),
-  totalRewards: z.bigint().optional(),
+  stakeFrom: z.bigint().optional(),
 });
 
 export const modulePropResolvers: {
@@ -180,13 +175,13 @@ export const modulePropResolvers: {
   metadata: (value: Codec) =>
     SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
   atBlock: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  addressUri: (value: Codec) => URL_SCHEMA.safeParse(value.toPrimitive()),
-  metadataUri: (value: Codec) => URL_SCHEMA.safeParse(value.toPrimitive()),
-  emission: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  incentive: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  dividend: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  emission: (value: Codec) =>
+    TOKEN_AMOUNT_SCHEMA.safeParse(value.toPrimitive()),
+  incentive: (value: Codec) =>
+    TOKEN_AMOUNT_SCHEMA.safeParse(value.toPrimitive()),
+  dividends: (value: Codec) =>
+    TOKEN_AMOUNT_SCHEMA.safeParse(value.toPrimitive()),
   delegationFee: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  totalStaked: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  totalStakers: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
-  totalRewards: (value: Codec) => NUMBER_SCHEMA.safeParse(value.toPrimitive()),
+  stakeFrom: (value: Codec) =>
+    TOKEN_AMOUNT_SCHEMA.safeParse(value.toPrimitive()),
 };

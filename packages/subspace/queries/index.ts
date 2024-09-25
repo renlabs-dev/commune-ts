@@ -579,7 +579,6 @@ export async function queryRegisteredModulesInfo<
   netuidWhitelist = netuidWhitelist?.length
     ? Array.from(new Set(netuidWhitelist))
     : undefined;
-
   console.log("Fetching module keys from the chain...");
 
   const keyEntries = (await api.query.subspaceModule!.keys!.entries())
@@ -590,7 +589,6 @@ export async function queryRegisteredModulesInfo<
     );
 
   console.log(`Fetched ${keyEntries.length} module keys`);
-
   const modulesMap = newSubstrateModuleMap(keyEntries.map(newSubstrateModule));
 
   await enrichSubspaceModules(api, modulesMap, extraProps, netuidWhitelist);
@@ -630,6 +628,8 @@ async function enrichSubspaceModules<
 
   const uidKeyMap = newUidKeyMap(moduleMap);
 
+  console.log("api");
+
   await Promise.all(
     props.map(async (prop) => {
       console.log(`Fetching "${prop}" entries...`);
@@ -639,7 +639,6 @@ async function enrichSubspaceModules<
           (entry: StorageEntry) =>
             !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
         );
-
       assertOrThrow(Array.isArray(entries), `entries of "${prop}" is an array`);
 
       console.log(`Fetched ${entries.length} "${prop}" entries`);

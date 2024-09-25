@@ -253,6 +253,7 @@ export class StorageEntry {
    */
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
     const isUid = typeof this.uidOrKey === "number";
+    console.log(uidKeyMap);
 
     const key = isUid
       ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

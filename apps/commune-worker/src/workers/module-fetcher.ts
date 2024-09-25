@@ -30,27 +30,22 @@ export async function moduleFetcherWorker(props: WorkerProps) {
           "registrationBlock",
           "metadata",
           "lastUpdate",
-          "atBlock",
-          "addressUri",
-          "metadataUri",
           "emission",
           "incentive",
-          "dividend",
+          "dividends",
           "delegationFee",
-          "totalStaked",
-          "totalStakers",
-          "totalRewards",
+          "stakeFrom",
         ],
         [NETUID_ZERO],
       );
       const modulesData = modules.map((module) =>
-        SubspaceModuleToDatabase(module),
+        SubspaceModuleToDatabase(module, props.lastBlock.blockNumber),
       );
       log(
         `Block ${props.lastBlock.blockNumber}: upserting  ${modules.length} modules`,
       );
 
-      await upsertModuleData(modulesData, props.lastBlock.blockNumber);
+      await upsertModuleData(modulesData);
 
       log(
         `Block ${props.lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,

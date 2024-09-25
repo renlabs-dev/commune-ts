@@ -32,7 +32,7 @@ export const moduleData = createTable(
     id: serial("id").primaryKey(),
 
     netuid: integer("netuid").notNull(),
-    // moduleId: integer("module_id"),
+    moduleId: integer("module_id").notNull(),
     moduleKey: ss58Address("module_key").notNull(),
 
     atBlock: integer("at_block").notNull(),
