@@ -322,6 +322,7 @@ export const forumPostSchema = createTable(
     tag: forumTagEnum("governance_model"),
     userKey: ss58Address("user_key").notNull(),
     userName: text("user_name"),
+    title: text("title").notNull(),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
