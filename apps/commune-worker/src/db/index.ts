@@ -13,15 +13,16 @@ export type NewVote = typeof daoVoteSchema.$inferInsert;
 export type Module = typeof moduleData.$inferInsert;
 
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
-export async function upsertModuleData(modules: Module[], atBlock: number) {
+export async function upsertModuleData(modules: Module[]) {
   await db
     .insert(moduleData)
     .values(
       modules.map((m) => ({
         netuid: m.netuid,
+        moduleId: m.moduleId,
         moduleKey: m.moduleKey,
         name: m.name,
-        atBlock,
+        atBlock: m.atBlock,
         registrationBlock: m.registrationBlock,
         addressUri: m.addressUri,
         metadataUri: m.metadataUri,
