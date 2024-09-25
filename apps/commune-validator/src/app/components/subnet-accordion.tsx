@@ -8,6 +8,7 @@ import type { AppRouter } from "@commune-ts/api";
 import { smallAddress } from "@commune-ts/utils";
 
 import { subnetDataList } from "~/utils/subnet-data-list";
+import { DelegateSubnetWeight } from "./delegate-subnet-weight";
 
 type Subnet = NonNullable<inferProcedureOutput<AppRouter["subnet"]["byId"]>>;
 
@@ -25,14 +26,16 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
           <NameCard label="Founder" name={smallAddress(subnet.founder)} />
         </div>
         <div className="flex gap-3">
-          <button className="flex w-fit items-center text-nowrap rounded-full border border-cyan-500 bg-cyan-600/15 px-4 py-1.5 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50">
-            <span>DELEGATE</span>
-          </button>
+          <DelegateSubnetWeight
+            id={subnet.netuid}
+            founder={subnet.founder}
+            name={subnet.name}
+          />
           <button
             onClick={toggleAccordion}
-            className="flex w-fit items-center text-nowrap rounded-full border border-cyan-500 bg-cyan-600/15 py-1.5 pl-3 pr-2 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+            className="flex w-fit items-center text-nowrap border border-cyan-500 bg-cyan-600/15 py-1.5 pl-3 pr-1 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
           >
-            <span>{isOpen ? "COLLAPSE" : "EXPAND"}</span>
+            <span>{isOpen ? "Collapse" : "Expand"}</span>
             <span>
               <ChevronUpIcon
                 className={`h-5 w-5 transform transition-transform ${

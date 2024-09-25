@@ -23,10 +23,7 @@ export default function Page() {
   return (
     <>
       {weightedModules.length ? (
-        <div
-          key={module.id}
-          className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
+        <div className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {weightedModules.map((module) => (
             <ModuleCard
               id={module.id}
