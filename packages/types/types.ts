@@ -255,16 +255,3 @@ export type OptionalProperties<T> = keyof T extends infer K
       : never
     : never
   : never;
-
-export function getSubspaceStorageMapping() {
-  return {
-    VecMapping: ["emission", "incentive", "dividends"],
-    DoubleMap: [
-      "metadata",
-      "lastUpdate",
-      "registrationBlock",
-      "name",
-      "address",
-    ],
-  };
-}

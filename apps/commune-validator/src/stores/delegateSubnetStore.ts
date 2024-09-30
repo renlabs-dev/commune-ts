@@ -28,7 +28,7 @@ export const useDelegateSubnetStore = create<DelegateState>()(
         set((state) => ({
           delegatedSubnets: [
             ...state.delegatedSubnets,
-            { ...Subnet, percentage: 0 },
+            { ...Subnet, percentage: 1 },
           ],
         })),
       removeSubnet: (id) =>

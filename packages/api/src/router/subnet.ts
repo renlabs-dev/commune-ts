@@ -45,10 +45,16 @@ export const subnetRouter = {
   createUserSubnetData: publicProcedure
     .input(USER_SUBNET_DATA_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(userSubnetDataSchema).values({
-        netuid: input.netuid,
-        userKey: input.userKey,
-        weight: input.weight,
-      });
+      await ctx.db
+        .insert(userSubnetDataSchema)
+        .values({
+          netuid: input.netuid,
+          userKey: input.userKey,
+          weight: input.weight,
+        })
+        .onConflictDoUpdate({
+          target: [userSubnetDataSchema.userKey, userSubnetDataSchema.netuid],
+          set: { weight: input.weight },
+        });
     }),
 } satisfies TRPCRouterRecord;
