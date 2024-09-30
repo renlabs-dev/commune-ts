@@ -1,6 +1,6 @@
 import type { SubspaceModule } from "@commune-ts/types";
 
-import type { Module } from "./index.ts";
+import type { Module } from "./index.js";
 
 export function SubspaceModuleToDatabase(
   module: SubspaceModule,
