@@ -2,15 +2,25 @@
 
 import { ChartPieIcon } from "@heroicons/react/24/outline";
 
+import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
+
 import type { Subnet } from "~/utils/types";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 
 export function DelegateSubnetWeight({ subnet }: { subnet: Subnet }) {
   const { delegatedSubnets, addSubnet, removeSubnet } =
     useDelegateSubnetStore();
+
+  const { selectedAccount } = useCommune();
+
   const isSubnetDelegated = delegatedSubnets.some((m) => m.id === subnet.id);
 
   const handleDelegateClick = () => {
+    if (!selectedAccount?.address) {
+      toast.error("Connect Wallet to delegate to a subnet.");
+      return;
+    }
     if (isSubnetDelegated) {
       removeSubnet(subnet.id);
     } else {
@@ -30,7 +40,7 @@ export function DelegateSubnetWeight({ subnet }: { subnet: Subnet }) {
       <ChartPieIcon
         className={`h-5 w-5 ${isSubnetDelegated ? "text-red-500" : "text-cyan-500"}`}
       />
-      {isSubnetDelegated ? "Remove" : "Delegate"}
+      {isSubnetDelegated ? "Remove" : "Allocate"}
     </button>
   );
 }
