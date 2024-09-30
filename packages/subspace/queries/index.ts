@@ -14,16 +14,19 @@ import type {
   VoteWithStake,
 } from "@commune-ts/types";
 import {
+  getSubspaceStorageMapping,
   isSS58,
   modulePropResolvers,
   SUBSPACE_MODULE_SCHEMA,
 } from "@commune-ts/types";
 import {
   assertOrThrow,
+  ChainEntry,
   handleDaos,
   handleProposals,
   newSubstrateModule,
   StorageEntry,
+  StorageVecMap,
 } from "@commune-ts/utils";
 
 export { ApiPromise };
@@ -421,7 +424,7 @@ export async function processVotesAndStakes(
     totalStakeMap.set(address, totalStake);
   }
 
-  // Process all votes and push it to an array to avoid spreding
+  // Process all votes and push it to an array to avoid spread
   const processedVotes: VoteWithStake[] = [];
   votesFor.map((address) => {
     processedVotes.push({
@@ -472,94 +475,6 @@ export async function queryUserTotalStaked(
  * @param extraProps if empty, only the required properties are returned (netuid, uid, key)
  * @param netuidWhitelist if empty, modules from all subnets are returned
  */
-
-// def get_map_subnets_params(
-//   client: CommuneClient, block_hash: str | None = None
-// ) -> dict[int, SubnetParamsWithEmission]:
-//   """
-//   Gets all subnets info on the network
-//   """
-//   bulk_query = client.query_batch_map(
-//       {
-//           "SubspaceModule": [
-//               ("ImmunityPeriod", []),
-//               ("MinAllowedWeights", []),
-//               ("MaxAllowedWeights", []),
-//               ("Tempo", []),
-//               ("MaxAllowedUids", []),
-//               ("Founder", []),
-//               ("FounderShare", []),
-//               ("IncentiveRatio", []),
-//               ("TrustRatio", []),
-//               ("SubnetNames", []),
-//               ("MaxWeightAge", []),
-//               ("BondsMovingAverage", []),
-//               ("MaximumSetWeightCallsPerEpoch", []),
-//               ("MinValidatorStake", []),
-//               ("MaxAllowedValidators", []),
-//               ("ModuleBurnConfig", []),
-//               ("SubnetMetadata", []),
-//           ],
-//           "GovernanceModule": [
-//               ("SubnetGovernanceConfig", []),
-//           ],
-//           "SubnetEmissionModule": [
-//               ("SubnetEmission", []),
-//           ],
-
-//       },
-//       block_hash,
-//   )
-//   subnet_maps: SubnetParamsMaps = {
-//       "netuid_to_emission": bulk_query["SubnetEmission"],
-//       "netuid_to_tempo": bulk_query["Tempo"],
-//       "netuid_to_min_allowed_weights": bulk_query["MinAllowedWeights"],
-//       "netuid_to_max_allowed_weights": bulk_query["MaxAllowedWeights"],
-//       "netuid_to_max_allowed_uids": bulk_query["MaxAllowedUids"],
-//       "netuid_to_founder": bulk_query["Founder"],
-//       "netuid_to_founder_share": bulk_query["FounderShare"],
-//       "netuid_to_incentive_ratio": bulk_query["IncentiveRatio"],
-//       "netuid_to_trust_ratio": bulk_query["TrustRatio"],
-//       "netuid_to_name": bulk_query["SubnetNames"],
-//       "netuid_to_max_weight_age": bulk_query["MaxWeightAge"],
-//       "netuid_to_bonds_ma": bulk_query.get("BondsMovingAverage", {}),
-//       "netuid_to_maximum_set_weight_calls_per_epoch": bulk_query.get("MaximumSetWeightCallsPerEpoch", {}),
-//       "netuid_to_governance_configuration": bulk_query["SubnetGovernanceConfig"],
-//       "netuid_to_immunity_period": bulk_query["ImmunityPeriod"],
-//       "netuid_to_min_validator_stake": bulk_query.get("MinValidatorStake", {}),
-//       "netuid_to_max_allowed_validators": bulk_query.get("MaxAllowedValidators", {}),
-//       "netuid_to_module_burn_config": bulk_query.get("ModuleBurnConfig", {}),
-//       "netuid_to_subnet_metadata": bulk_query.get("SubnetMetadata", {}),
-//   }
-//   result_subnets: dict[int, SubnetParamsWithEmission] = {}
-
-//   for netuid, name in subnet_maps["netuid_to_name"].items():
-
-//       subnet: SubnetParamsWithEmission = {
-//           "name": name,
-//           "founder": subnet_maps["netuid_to_founder"][netuid],
-//           "founder_share": subnet_maps["netuid_to_founder_share"][netuid],
-//           "incentive_ratio": subnet_maps["netuid_to_incentive_ratio"][netuid],
-//           "max_allowed_uids": subnet_maps["netuid_to_max_allowed_uids"][netuid],
-//           "max_allowed_weights": subnet_maps["netuid_to_max_allowed_weights"][netuid],
-//           "min_allowed_weights": subnet_maps["netuid_to_min_allowed_weights"][netuid],
-//           "tempo": subnet_maps["netuid_to_tempo"][netuid],
-//           "trust_ratio": subnet_maps["netuid_to_trust_ratio"][netuid],
-//           "emission": subnet_maps["netuid_to_emission"][netuid],
-//           "max_weight_age": subnet_maps["netuid_to_max_weight_age"][netuid],
-//           "bonds_ma": subnet_maps["netuid_to_bonds_ma"].get(netuid, None),
-//           "maximum_set_weight_calls_per_epoch": subnet_maps["netuid_to_maximum_set_weight_calls_per_epoch"].get(netuid, 30),
-//           "governance_config": subnet_maps["netuid_to_governance_configuration"][netuid],
-//           "immunity_period": subnet_maps["netuid_to_immunity_period"][netuid],
-//           "min_validator_stake": subnet_maps["netuid_to_min_validator_stake"].get(netuid, to_nano(50_000)),
-//           "max_allowed_validators": subnet_maps["netuid_to_max_allowed_validators"].get(netuid, 50),
-//           "module_burn_config": cast(BurnConfiguration, subnet_maps["netuid_to_module_burn_config"].get(netuid, None)),
-//           "subnet_metadata": subnet_maps["netuid_to_subnet_metadata"].get(netuid, None),
-//       }
-
-//       result_subnets[netuid] = subnet
-
-//   return result_subnets
 
 export async function queryRegisteredSubnetsInfo(api: Api) {
   console.log("Fetching subnet keys from the chain...");
@@ -629,14 +544,25 @@ async function enrichSubspaceModules<
   const uidKeyMap = newUidKeyMap(moduleMap);
 
   console.log("api");
-
+  const mapping = getSubspaceStorageMapping();
+  const prop = props[0];
+  if (prop !== undefined) {
+    const x = await api.query.subspaceModule?.[prop]?.entries();
+    console.log(x?.keys());
+    console.log("shadowheart");
+    process.exit(0);
+  }
   await Promise.all(
     props.map(async (prop) => {
       console.log(`Fetching "${prop}" entries...`);
       const entries = (await api.query.subspaceModule?.[prop]?.entries())
-        ?.map((entry) => new StorageEntry(entry))
+        ?.map((entry) =>
+          prop in mapping.DoubleMap
+            ? new StorageEntry(entry)
+            : new StorageVecMap(entry),
+        )
         .filter(
-          (entry: StorageEntry) =>
+          (entry: ChainEntry) =>
             !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
         );
       assertOrThrow(Array.isArray(entries), `entries of "${prop}" is an array`);
@@ -657,7 +583,10 @@ async function enrichSubspaceModules<
           }
           continue;
         }
-
+        if (prop == "emission") {
+          console.log(entry.value);
+          process.exit("32.1");
+        }
         const parsedValue = modulePropResolvers[prop](entry.value);
 
         if (!parsedValue.success) {
