@@ -30,7 +30,7 @@ export const useDelegateModuleStore = create<DelegateState>()(
         set((state) => ({
           delegatedModules: [
             ...state.delegatedModules,
-            { ...module, percentage: 0 },
+            { ...module, percentage: 1 },
           ],
         })),
       removeModule: (id) =>

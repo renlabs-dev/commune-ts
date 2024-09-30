@@ -24,7 +24,7 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
 
   return (
     <div
-      className={`duration-20 gap-2 border py-4 text-lg text-white backdrop-blur-md transition ${isSubnetDelegated ? "border-cyan-500 bg-cyan-500/5 hover:bg-cyan-500/10" : "border-white/20 bg-[#898989]/5 hover:bg-white/5"}`}
+      className={`duration-20 animate-fade-up gap-2 border py-4 text-lg text-white backdrop-blur-md transition ${isSubnetDelegated ? "border-cyan-500 bg-cyan-500/5 hover:bg-cyan-500/10" : "border-white/20 bg-[#898989]/5 hover:bg-white/5"}`}
     >
       <div className="flex flex-col items-center justify-between gap-3 border-white/20 px-4 md:flex-row">
         <div className="flex gap-6">

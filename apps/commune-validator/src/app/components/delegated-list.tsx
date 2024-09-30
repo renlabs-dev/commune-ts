@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { cn } from "@commune-ts/ui";
 import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
@@ -51,6 +52,26 @@ export function DelegatedList() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  function handleAutoCompletePercentage() {
+    const items = activeTab === "modules" ? delegatedModules : delegatedSubnets;
+    const updateFn =
+      activeTab === "modules" ? updateModulePercentage : updateSubnetPercentage;
+
+    const remainingPercentage = 100 - totalPercentage;
+    const itemsToUpdate = items.length;
+
+    if (itemsToUpdate === 0) return;
+
+    const percentagePerItem = Math.floor(remainingPercentage / itemsToUpdate);
+    const extraPercentage = remainingPercentage % itemsToUpdate;
+
+    items.forEach((item, index) => {
+      const newPercentage =
+        item.percentage + percentagePerItem + (index < extraPercentage ? 1 : 0);
+      updateFn(item.id, newPercentage);
+    });
+  }
 
   const {
     data: userModuleData,
@@ -268,6 +289,38 @@ export function DelegatedList() {
     router.push("/subnets");
   }
 
+  const hasZeroPercentage = () => {
+    const items = activeTab === "modules" ? delegatedModules : delegatedSubnets;
+    return items.some((item) => item.percentage === 0);
+  };
+
+  function getSubmitStatus() {
+    if (!selectedAccount?.address) {
+      return { disabled: true, message: "Please connect your wallet" };
+    }
+    if (totalPercentage !== 100) {
+      return { disabled: true, message: "Total percentage must be 100%" };
+    }
+    if (hasZeroPercentage()) {
+      return {
+        disabled: true,
+        message: "Remove or allocate weight to all items",
+      };
+    }
+    if (isSubmitting) {
+      return { disabled: true, message: "Submitting..." };
+    }
+    if (
+      (activeTab === "modules" && hasUnsavedModuleChanges()) ||
+      (activeTab === "subnets" && hasUnsavedSubnetChanges())
+    ) {
+      return { disabled: false, message: "You have unsaved changes" };
+    }
+    return { disabled: false, message: "All changes saved!" };
+  }
+
+  const submitStatus = getSubmitStatus();
+
   return (
     <>
       {selectedAccount?.address && (
@@ -315,12 +368,7 @@ export function DelegatedList() {
               >
                 {totalPercentage}%
               </b>{" "}
-              Weighted{" "}
-              {totalPercentage !== 100 && (
-                <span className="text-amber-500">
-                  ({totalPercentage > 100 ? "More then" : "Less then"} 100%)
-                </span>
-              )}
+              Weighted
             </span>
             <span className="border-r border-white/20 px-3">
               <div className="flex gap-1 text-white">
@@ -333,23 +381,29 @@ export function DelegatedList() {
               </div>
             </span>
             <span className="px-3">
-              {(activeTab === "modules" && hasUnsavedModuleChanges()) ||
-              (activeTab === "subnets" && hasUnsavedSubnetChanges()) ? (
-                <span className="font-semibold text-red-500">
-                  You have unsaved changes
-                </span>
-              ) : (
-                <span
-                  className={`font-semibold ${activeTab === "subnets" ? "text-cyan-500" : "text-green-500"}`}
-                >
-                  All changes saved!
-                </span>
-              )}
+              <span
+                className={`font-semibold ${
+                  submitStatus.message === "You have unsaved changes"
+                    ? "text-red-500"
+                    : submitStatus.message === "All changes saved!"
+                      ? activeTab === "subnets"
+                        ? "text-cyan-500"
+                        : "text-green-500"
+                      : "text-amber-500"
+                }`}
+              >
+                {submitStatus.message}
+              </span>
             </span>
             <span>
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`relative flex w-fit items-center gap-1 text-nowrap rounded-full border px-5 py-3 font-semibold transition duration-200 ${activeTab === "subnets" ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50" : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"}`}
+                className={cn(
+                  "relative flex w-fit items-center gap-1 text-nowrap rounded-full border px-5 py-3 font-semibold transition duration-200",
+                  activeTab === "subnets"
+                    ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+                    : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50",
+                )}
               >
                 <span>{isOpen ? "COLLAPSE VIEW" : "EXPAND VIEW"}</span>
                 <span>
@@ -370,8 +424,9 @@ export function DelegatedList() {
                 <div>{activeTab === "modules" ? "Address" : "Founder"}</div>
                 <div>Percentage</div>
               </div>
-              {activeTab === "modules"
-                ? delegatedModules.map((module) => (
+              {activeTab === "modules" ? (
+                delegatedModules.length ? (
+                  delegatedModules.map((module) => (
                     <div
                       key={module.id}
                       className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
@@ -407,57 +462,81 @@ export function DelegatedList() {
                       </div>
                     </div>
                   ))
-                : delegatedSubnets.map((subnet) => (
-                    <div
-                      key={subnet.id}
-                      className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
-                    >
-                      <div className="text-white">{subnet.name}</div>
-                      <div className="hidden text-white md:block">
-                        {subnet.name}
-                      </div>
-                      <div className="text-gray-400">
-                        {smallAddress(subnet.founder)}
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="number"
-                          value={subnet.percentage}
-                          onChange={(e) =>
-                            handlePercentageChange(
-                              subnet.id,
-                              Number(e.target.value),
-                            )
-                          }
-                          className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
-                          min="0"
-                          max="100"
-                        />
-                        <span className="mr-2 text-white">%</span>{" "}
-                        <span className="mr-2 text-white">%</span>
-                        <button
-                          onClick={() => removeSubnet(subnet.id)}
-                          className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
-                        >
-                          <XMarkIcon className="h-4 w-4" />
-                        </button>
-                      </div>
+                ) : (
+                  <div className="py-6 text-white">
+                    No modules found. Select a module to allocate weight through
+                    the modules page and they will appear here.
+                  </div>
+                )
+              ) : delegatedSubnets.length ? (
+                delegatedSubnets.map((subnet) => (
+                  <div
+                    key={subnet.id}
+                    className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
+                  >
+                    <div className="text-white">{subnet.name}</div>
+                    <div className="hidden text-white md:block">
+                      {subnet.name}
                     </div>
-                  ))}
-              <div className="flex flex-col gap-3">
+                    <div className="text-gray-400">
+                      {smallAddress(subnet.founder)}
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        value={subnet.percentage}
+                        onChange={(e) =>
+                          handlePercentageChange(
+                            subnet.id,
+                            Number(e.target.value),
+                          )
+                        }
+                        className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
+                        min="0"
+                        max="100"
+                      />
+                      <span className="mr-2 text-white">%</span>
+                      <button
+                        onClick={() => removeSubnet(subnet.id)}
+                        className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-6 text-white">
+                  No subnets found. Select a subnet to allocate weight through
+                  the subnets page and they will appear here.
+                </div>
+              )}
+              <div className="flex flex-row gap-3">
+                <button
+                  onClick={handleAutoCompletePercentage}
+                  className={cn(
+                    "mt-4 w-[30%] animate-fade rounded-full border p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300",
+                    totalPercentage === 100
+                      ? "cursor-not-allowed border-white/20 bg-[#898989]/5 text-white opacity-50"
+                      : "border-purple-500 bg-purple-500/10 text-purple-500 hover:border-purple-500 hover:bg-purple-500/15",
+                  )}
+                  disabled={totalPercentage === 100}
+                >
+                  Auto-Complete to 100%
+                </button>
+
                 <button
                   onClick={handleSubmit}
-                  className={`mt-4 w-full animate-fade rounded-full border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300 ${
-                    isSubmitting ||
-                    totalPercentage !== 100 ||
-                    (!selectedAccount.address &&
-                      `hover:border-green-500 hover:bg-green-500/10`)
-                  } disabled:opacity-50`}
-                  disabled={
-                    isSubmitting ||
-                    totalPercentage !== 100 ||
-                    !selectedAccount.address
-                  }
+                  className={cn(
+                    "mt-4 w-full animate-fade rounded-full border p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300",
+                    submitStatus.disabled
+                      ? "cursor-not-allowed border-white/20 bg-[#898989]/5 opacity-50"
+                      : activeTab === "subnets"
+                        ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+                        : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50",
+                  )}
+                  disabled={submitStatus.disabled}
+                  title={submitStatus.disabled ? submitStatus.message : ""}
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
