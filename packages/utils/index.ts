@@ -10,6 +10,7 @@ import type {
   CustomMetadata,
   DaoApplications,
   Entry,
+  OptionalProperties,
   Proposal,
   RawEntry,
   Result,
@@ -22,6 +23,7 @@ import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
   isSS58,
+  modulePropResolvers,
   PROPOSAL_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA,
@@ -232,26 +234,83 @@ export function getExpirationTime(
 }
 
 export interface ChainEntry {
-  netuid: number;
-  uidOrKey: string | number;
-  value: Codec;
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parse<P extends OptionalProperties<SubspaceModule>>(prop: P): any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getMapModules(netuid: number): any;
+}
+
+export class CorrectAbstraction {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
+
+  getMapModules(netuid: number) {
+    const subnet_values = this.entry[netuid];
+    if (subnet_values != undefined) {
+      const values = subnet_values[1].toPrimitive() as number[];
+      const modules_map = Object.fromEntries(
+        values.map((value, index) => [index, value]),
+      );
+      return modules_map;
+    } else return {};
+  }
+}
+
+export function getSubspaceStorageMapping<
+  P extends OptionalProperties<SubspaceModule>,
+>(prop: P) {
+  const mapping = {
+    VecMapping: ["emission", "incentive", "dividends"],
+    DoubleMap: [
+      "metadata",
+      "lastUpdate",
+      "registrationBlock",
+      "name",
+      "address",
+    ],
+  };
+  if (mapping.VecMapping.includes(prop)) return "VecMapping";
+  else if (mapping.DoubleMap.includes(prop)) return "DoubleMap";
+  else return null;
+}
+
+export function getPropsToMap<P extends OptionalProperties<SubspaceModule>>(
+  props: P[],
+) {
+  const mapped_props = props.reduce(
+    (acc, prop) => {
+      acc[prop] = getSubspaceStorageMapping(prop);
+      return acc;
+    },
+    {} as Record<P, ReturnType<typeof getSubspaceStorageMapping>>,
+  );
 }
 
 export class StorageVecMap implements ChainEntry {
-  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
-  get netuid(): number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[0]!.toPrimitive() as number;
+  constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
+
+  getMapModules(netuid: number) {
+    const subnet_values = this.entry[netuid];
+    if (subnet_values != undefined) {
+      const values = subnet_values[1].toPrimitive() as number[];
+      const modules_map = Object.fromEntries(
+        values.map((value, index) => [index, value]),
+      );
+      return modules_map;
+    } else return {};
   }
 
-  get uidOrKey(): string | number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[0]!.toPrimitive() as string | number;
+  // gale
+
+  parse<P extends OptionalProperties<SubspaceModule>>(prop: P) {
+    const parsedValue = modulePropResolvers[prop](this.value);
+    return parsedValue;
   }
 
-  get value(): Codec {
-    return this.entry[1] as Codec;
+  get_map_to_modules<P extends OptionalProperties<SubspaceModule>>(prop: P) {
+    for (const v in this.entry[1]) {
+      console.log(v);
+    }
   }
 
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
@@ -299,6 +358,11 @@ export class StorageEntry implements ChainEntry {
     assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
 
     return key;
+  }
+
+  parse<P extends OptionalProperties<SubspaceModule>>(prop: P) {
+    const parsedValue = modulePropResolvers[prop](this.value);
+    return parsedValue;
   }
 }
 

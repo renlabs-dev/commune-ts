@@ -546,63 +546,71 @@ async function enrichSubspaceModules<
   console.log("api");
   const mapping = getSubspaceStorageMapping();
   const prop = props[0];
-  if (prop !== undefined) {
-    const x = await api.query.subspaceModule?.[prop]?.entries();
-    console.log(x?.keys());
-    console.log("shadowheart");
-    process.exit(0);
-  }
-  await Promise.all(
-    props.map(async (prop) => {
-      console.log(`Fetching "${prop}" entries...`);
-      const entries = (await api.query.subspaceModule?.[prop]?.entries())
-        ?.map((entry) =>
-          prop in mapping.DoubleMap
-            ? new StorageEntry(entry)
-            : new StorageVecMap(entry),
-        )
-        .filter(
-          (entry: ChainEntry) =>
-            !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
-        );
-      assertOrThrow(Array.isArray(entries), `entries of "${prop}" is an array`);
 
-      console.log(`Fetched ${entries.length} "${prop}" entries`);
-
-      for (const entry of entries) {
-        const netuid = entry.netuid;
-        const key = entry.resolveKey(uidKeyMap);
-
-        const module = moduleMap.get(netuid)?.get(key);
-
-        if (!module) {
-          if (process.env.DEBUG === "true") {
-            console.info(
-              `WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`,
-            );
-          }
-          continue;
-        }
-        if (prop == "emission") {
-          console.log(entry.value);
-          process.exit("32.1");
-        }
-        const parsedValue = modulePropResolvers[prop](entry.value);
-
-        if (!parsedValue.success) {
-          console.error(
-            `Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`,
-          );
-          console.error(parsedValue.error);
-          continue;
-        }
-
-        module[prop] = parsedValue.data;
+  if (prop != undefined) {
+    if (mapping.VecMapping.includes(prop)) {
+      const sub_entry = await api.query.subspaceModule?.[prop]?.entries();
+      if (sub_entry !== undefined) {
+        const x = new StorageVecMap(sub_entry);
+        console.log(x.getMapModules(0));
+        process.exit(42);
       }
-    }),
-  );
+    }
+    await Promise.all(
+      props.map(async (prop) => {
+        console.log(`Fetching "${prop}" entries...`);
+        const entries = (await api.query.subspaceModule?.[prop]?.entries())
+          ?.map((entry) =>
+            prop in mapping.DoubleMap
+              ? new StorageEntry(entry)
+              : new StorageVecMap(entry),
+          )
+          .filter(
+            (entry: ChainEntry) =>
+              !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
+          );
+        assertOrThrow(
+          Array.isArray(entries),
+          `entries of "${prop}" is an array`,
+        );
 
-  return moduleMap;
+        console.log(`Fetched ${entries.length} "${prop}" entries`);
+
+        for (const entry of entries) {
+          const netuid = entry.netuid;
+          const key = entry.resolveKey(uidKeyMap);
+
+          const module = moduleMap.get(netuid)?.get(key);
+
+          if (!module) {
+            if (process.env.DEBUG === "true") {
+              console.info(
+                `WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`,
+              );
+            }
+            continue;
+          }
+          if (prop == "emission") {
+            console.log(entry.value);
+            process.exit(3);
+          }
+          const parsedValue = modulePropResolvers[prop](entry.value);
+
+          if (!parsedValue.success) {
+            console.error(
+              `Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`,
+            );
+            console.error(parsedValue.error);
+            continue;
+          }
+
+          module[prop] = parsedValue.data;
+        }
+      }),
+    );
+
+    return moduleMap;
+  }
 }
 
 /**
