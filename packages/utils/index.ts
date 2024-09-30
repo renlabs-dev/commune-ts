@@ -231,9 +231,46 @@ export function getExpirationTime(
   return `${formattedDate} ${shouldReturnRemainingTime ? `(${hoursRemaining} hours)` : ""}`;
 }
 
-export class StorageEntry {
-  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
+export interface ChainEntry {
+  netuid: number;
+  uidOrKey: string | number;
+  value: Codec;
+  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address;
+}
 
+export class StorageVecMap implements ChainEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
+  get netuid(): number {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.entry[0].args[0]!.toPrimitive() as number;
+  }
+
+  get uidOrKey(): string | number {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.entry[0].args[0]!.toPrimitive() as string | number;
+  }
+
+  get value(): Codec {
+    return this.entry[1] as Codec;
+  }
+
+  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
+    const isUid = typeof this.uidOrKey === "number";
+    console.log(uidKeyMap);
+
+    const key = isUid
+      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
+      : this.uidOrKey;
+
+    assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
+
+    return key;
+  }
+}
+
+export class StorageEntry implements ChainEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
   get netuid(): number {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.entry[0].args[0]!.toPrimitive() as number;
@@ -247,7 +284,6 @@ export class StorageEntry {
   get value(): Codec {
     return this.entry[1] as Codec;
   }
-
   /**
    * as the module identifier can be a uid or a key, this function resolves it to a key
    */

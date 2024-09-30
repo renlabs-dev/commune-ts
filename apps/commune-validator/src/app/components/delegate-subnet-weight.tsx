@@ -2,28 +2,19 @@
 
 import { ChartPieIcon } from "@heroicons/react/24/outline";
 
+import type { Subnet } from "~/utils/types";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 
-interface DelegateSubnetWeightProps {
-  id: number;
-  founder: string;
-  name: string;
-}
-
-export function DelegateSubnetWeight(props: DelegateSubnetWeightProps) {
+export function DelegateSubnetWeight({ subnet }: { subnet: Subnet }) {
   const { delegatedSubnets, addSubnet, removeSubnet } =
     useDelegateSubnetStore();
-  const isSubnetDelegated = delegatedSubnets.some((m) => m.id === props.id);
+  const isSubnetDelegated = delegatedSubnets.some((m) => m.id === subnet.id);
 
   const handleDelegateClick = () => {
     if (isSubnetDelegated) {
-      removeSubnet(props.id);
+      removeSubnet(subnet.id);
     } else {
-      addSubnet({
-        id: props.id,
-        founder: props.founder,
-        name: props.name,
-      });
+      addSubnet({ ...subnet });
     }
   };
 
