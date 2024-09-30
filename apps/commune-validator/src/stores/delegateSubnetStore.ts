@@ -1,10 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface DelegatedSubnet {
-  id: number;
-  founder: string;
-  name: string;
+import type { Subnet } from "~/utils/types";
+
+interface DelegatedSubnet extends Subnet {
   percentage: number;
 }
 

@@ -23,7 +23,7 @@ export default function Page() {
   return (
     <>
       {weightedSubnets.length ? (
-        <div className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mb-16 flex h-full w-full animate-fade-up grid-cols-1 flex-col gap-4 animate-delay-700">
           {weightedSubnets.map((subnet) => (
             <SubnetAccordion key={subnet.id} subnet={subnet} />
           ))}

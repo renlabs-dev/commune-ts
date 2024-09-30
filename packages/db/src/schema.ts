@@ -153,7 +153,7 @@ export const userSubnetDataSchema = createTable(
     id: serial("id").primaryKey(),
     userKey: ss58Address("user_key").notNull(),
     netuid: integer("netuid")
-      .references(() => subnetDataSchema.id)
+      .references(() => subnetDataSchema.netuid)
       .notNull(),
     weight: integer("weight").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
