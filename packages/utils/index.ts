@@ -27,6 +27,7 @@ import {
   PROPOSAL_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA,
+  Api,
 } from "@commune-ts/types";
 
 /**
@@ -256,9 +257,11 @@ export class CorrectAbstraction {
   }
 }
 
+type StorageTypes = "VecMapping" | "DoubleMap";
+
 export function getSubspaceStorageMapping<
   P extends OptionalProperties<SubspaceModule>,
->(prop: P) {
+>(prop: P): StorageTypes | null {
   const mapping = {
     VecMapping: ["emission", "incentive", "dividends"],
     DoubleMap: [
@@ -276,14 +279,32 @@ export function getSubspaceStorageMapping<
 
 export function getPropsToMap<P extends OptionalProperties<SubspaceModule>>(
   props: P[],
+  api: Api,
 ) {
   const mapped_props = props.reduce(
     (acc, prop) => {
       acc[prop] = getSubspaceStorageMapping(prop);
       return acc;
     },
-    {} as Record<P, ReturnType<typeof getSubspaceStorageMapping>>,
+    {} as Record<P, StorageTypes | null>,
   );
+  let mapped_prop_entries: Record<P, ChainEntry> = {} as Record<P, ChainEntry>;
+  const keys = Object.keys(mapped_props) as P[];
+  const asyncOperations = keys.map(async (prop) => {
+    const value = mapped_props[prop];
+    const entries = await api.query.subspaceModule?.[prop]?.entries();
+    if (entries === undefined) {
+      console.log(`No entries for ${prop}`);
+      // TODO: panic
+      process.exit(1);
+    }
+    if (value === "VecMapping") {
+      mapped_prop_entries[prop] = new StorageVecMap(entries);
+    }
+    else if (value === "DoubleMap") {
+      mapped_prop_entries[prop] = new StorageEntry(entries[0]);
+    }
+  });
 }
 
 export class StorageVecMap implements ChainEntry {
@@ -300,17 +321,10 @@ export class StorageVecMap implements ChainEntry {
     } else return {};
   }
 
-  // gale
 
   parse<P extends OptionalProperties<SubspaceModule>>(prop: P) {
     const parsedValue = modulePropResolvers[prop](this.value);
     return parsedValue;
-  }
-
-  get_map_to_modules<P extends OptionalProperties<SubspaceModule>>(prop: P) {
-    for (const v in this.entry[1]) {
-      console.log(v);
-    }
   }
 
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
@@ -328,7 +342,44 @@ export class StorageVecMap implements ChainEntry {
   }
 }
 
-export class StorageEntry implements ChainEntry {
+
+
+export class DoubleMapEntries implements ChainEntry {
+  constructor(private readonly entries: [StorageKey<AnyTuple>, unknown]) {}
+  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
+    const isUid = typeof this.uidOrKey === "number";
+    console.log(uidKeyMap);
+
+    const key = isUid
+      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
+      : this.uidOrKey;
+
+    assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
+
+    return key;
+  }
+
+  parse<P extends OptionalProperties<SubspaceModule>>(prop: P) {
+    const parsedValue = modulePropResolvers[prop](this.value);
+    return parsedValue;
+  }
+
+  getMapModules(netuid: number) {
+    const subnet_values = this.entry[netuid];
+    if (subnet_values != undefined) {
+      const values = subnet_values[1].toPrimitive() as number[];
+      const modules_map = Object.fromEntries(
+        values.map((value, index) => [index, value]),
+      );
+      return modules_map;
+    } else return {};
+  }
+}
+
+
+
+export class StorageEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
   get netuid(): number {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
