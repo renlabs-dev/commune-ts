@@ -4,15 +4,7 @@ import { useState } from "react";
 
 import type { ProposalStatus, SS58Address } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import {
-  Checkbox,
-  Container,
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-  Label,
-} from "@commune-ts/ui";
+import { Container } from "@commune-ts/ui";
 
 import type { VoteStatus } from "./components/vote-label";
 import { BalanceSection } from "./components/balance-section";
@@ -113,14 +105,7 @@ export default function HomePage(): JSX.Element {
       <div className="h-full w-full bg-repeat">
         <Container>
           <BalanceSection className="hidden lg:flex" />
-          <div className="flex items-center space-x-2 pt-2">
-            <div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <Label htmlFor="terms">Accept terms and conditions</Label>
-              </div>
-            </div>
-          </div>
+
           <ProposalListHeader
             setViewMode={setViewMode}
             viewMode={viewMode}
