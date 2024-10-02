@@ -18,9 +18,9 @@ export function SubspaceModuleToDatabase(
     incentive: module.incentive ?? null,
     dividend: module.dividends ?? null,
     delegationFee: module.delegationFee ?? null,
-    totalStaked: module.totalStaked ?? null,
-    totalStakers: module.totalStakers ?? null,
-    totalRewards: module.totalRewards ?? null,
+    totalStaked: null,
+    totalStakers: null,
+    totalRewards: null,
     moduleId: module.uid,
   };
 }
