@@ -30,6 +30,7 @@ import {
   standardizeUidToSS58address,
   SubspaceStorageName,
 } from "@commune-ts/utils";
+import { bigint } from "zod";
 
 export { ApiPromise };
 
@@ -487,7 +488,7 @@ export async function queryRegisteredSubnetsInfo(api: Api) {
   console.log(netuids);
 }
 export async function queryRegisteredModulesInfo<
-  P extends OptionalProperties<SubspaceModule>,
+  P extends OptionalProperties<SubspaceModule> & SubspaceStorageName,
 >(
   api: Api,
   extraProps: P[] = [],
@@ -497,13 +498,12 @@ export async function queryRegisteredModulesInfo<
     ? Array.from(new Set(netuidWhitelist))
     : undefined;
   console.log("Fetching module keys from the chain...");
-
   const uidToSS58Query = await enrichSubspaceModules(api, ["keys"], netuidWhitelist);
   const uidToSS58 = uidToSS58Query['keys'] as Record<string, SS58Address>;
   const modulesInfo = await enrichSubspaceModules(api, extraProps, netuidWhitelist);
+  //eslint-disable-next-line
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
-  const SS58ToUid = Object.fromEntries(Object.entries(uidToSS58).map(([key, value]) => [value, key])) as Record<string, string>;
-  const moduleMap: Map<number, SubspaceModule> = new Map();
+  const moduleMap: SubspaceModule[] = [];
 
   for (const uid of Object.keys(uidToSS58)) {
     const moduleKey = uidToSS58[uid];
@@ -511,24 +511,36 @@ export async function queryRegisteredModulesInfo<
       console.error(`Module key not found for uid ${uid}`);
       continue;
     }
+    // TODO: remove ts-igore
+    // @ts-ignore
+    const emission = processedModules["emission"][moduleKey];
+    // @ts-ignore
+    const incentive = processedModules["incentive"][moduleKey];
+    // @ts-ignore
+    const dividends = processedModules["dividends"][moduleKey];
     const module = SUBSPACE_MODULE_SCHEMA.parse({
       uid: parseInt(uid),
       key: moduleKey,
       netuid: 0,
+      // @ts-ignore
       name: processedModules["name"][moduleKey],
+      // @ts-ignore
       address: processedModules["address"][moduleKey],
+      // @ts-ignore
       registrationBlock: processedModules["registrationBlock"][moduleKey],
+      // @ts-ignore
       metadata: processedModules["metadata"][moduleKey],
+      // @ts-ignore
       lastUpdate: processedModules["lastUpdate"][moduleKey],
       atBlock: 0,
-      emission: BigInt(processedModules["emission"][moduleKey]),
-      incentive: BigInt(processedModules["incentive"][moduleKey]),
-      dividends: BigInt(processedModules["dividends"][moduleKey]),
+      emission: emission ? BigInt(emission) : -1n,
+      incentive: incentive ? BigInt(incentive) : -1n,
+      dividends: dividends ? BigInt(dividends) : -1n,
       delegationFee: 0,
       stakeFrom: 0n,
 
     })
-    moduleMap.set(parseInt(uid), module);
+    moduleMap.push(module);
   }
   return moduleMap;
 }
@@ -539,139 +551,21 @@ export async function queryRegisteredModulesInfo<
  * @returns the same moduleMap passed as argument
  */
 async function enrichSubspaceModules<
-  P extends OptionalProperties<SubspaceModule>,
+  T extends SubspaceStorageName,
 >(
   api: Api,
-  props: SubspaceStorageName[],
+  props: T[],
   netuidWhitelist?: number[],
-): Promise<Record<P, Record<string, string | number>>> {
+): Promise<Record<T, Record<string, string | number>>> {
   if (props.length === 0) {
-    return {} as Record<P, Record<string, string | number>>;
+    return {} as Record<T, Record<string, string | number>>;
   }
   props = Array.from(new Set(props));
-  const modulePropMap: Record<P, Record<string, string | number>> = {} as Record<P, Record<string, string | number>>;
+  const modulePropMap: Record<T, Record<string, string | number>> = {} as Record<T, Record<string, string | number>>;
   const moduletas = await getPropsToMap(props, api, 0);
-  const entries = Object.entries(moduletas) as [P, ChainEntry][];
+  const entries = Object.entries(moduletas) as [T, ChainEntry][];
   entries.map(([prop, entry]) => {
     modulePropMap[prop] = entry.getMapModules(0);
   });
   return modulePropMap;
-  console.log(modulePropMap);
-  console.log("astarion");
-  process.exit(13)
-  const prop = props[0];
-  if (prop != undefined) {
-    const modules = moduletas[prop]?.getMapModules(0);
-    console.log(modules);
-  }
-  process.exit(1);
-  const uidKeyMap = newUidKeyMap(moduleMap);
-
-  console.log("api");
-  const mapping = getSubspaceStorageMapping();
-
-  // if (prop != undefined) {
-  //   if (mapping.VecMapping.includes(prop)) {
-  //     const sub_entry = await api.query.subspaceModule?.[prop]?.entries();
-  //     if (sub_entry !== undefined) {
-  //       const x = new StorageVecMap(sub_entry);
-  //       console.log(x.getMapModules(0));
-  //       process.exit(42);
-  //     }
-  //   }
-  //   await Promise.all(
-  //     props.map(async (prop) => {
-  //       console.log(`Fetching "${prop}" entries...`);
-  //       const entries = (await api.query.subspaceModule?.[prop]?.entries())
-  //         ?.map((entry) =>
-  //           prop in mapping.DoubleMap
-  //             ? new StorageEntry(entry)
-  //             : new StorageVecMap(entry),
-  //         )
-  //         .filter(
-  //           (entry: ChainEntry) =>
-  //             !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
-  //         );
-  //       assertOrThrow(
-  //         Array.isArray(entries),
-  //         `entries of "${prop}" is an array`,
-  //       );
-
-  //       console.log(`Fetched ${entries.length} "${prop}" entries`);
-
-  //       for (const entry of entries) {
-  //         const netuid = entry.netuid;
-  //         const key = entry.resolveKey(uidKeyMap);
-
-  //         const module = moduleMap.get(netuid)?.get(key);
-
-  //         if (!module) {
-  //           if (process.env.DEBUG === "true") {
-  //             console.info(
-  //               `WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`,
-  //             );
-  //           }
-  //           continue;
-  //         }
-  //         if (prop == "emission") {
-  //           console.log(entry.value);
-  //           process.exit(3);
-  //         }
-  //         const parsedValue = modulePropResolvers[prop](entry.value);
-
-  //         if (!parsedValue.success) {
-  //           console.error(
-  //             `Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`,
-  //           );
-  //           console.error(parsedValue.error);
-  //           continue;
-  //         }
-
-  //         module[prop] = parsedValue.data;
-  //       }
-  //     }),
-  //   );
-
-  //   return moduleMap;
-  // }
-}
-
-/**
- * maps netuid -> uid -> key
- */
-function newUidKeyMap(
-  moduleMap: Map<number, Map<SS58Address, SubspaceModule>>,
-): Map<number, Map<number, SS58Address>> {
-  const uidKeyMap = new Map<number, Map<number, SS58Address>>();
-
-  for (const [netuid, keyMap] of moduleMap) {
-    if (!uidKeyMap.has(netuid)) {
-      uidKeyMap.set(netuid, new Map());
-    }
-
-    for (const [key, module] of keyMap) {
-      uidKeyMap.get(netuid)!.set(module.uid, key);
-    }
-  }
-
-  return uidKeyMap;
-}
-
-/**
- * maps netuid -> key -> SubspaceModule
- */
-function newSubstrateModuleMap(
-  subspaceModules: SubspaceModule[],
-): Map<number, Map<SS58Address, SubspaceModule>> {
-  const moduleMap = new Map<number, Map<SS58Address, SubspaceModule>>();
-
-  for (const module of subspaceModules) {
-    if (!moduleMap.has(module.netuid)) {
-      moduleMap.set(module.netuid, new Map());
-    }
-
-    moduleMap.get(module.netuid)!.set(module.key, module);
-  }
-
-  return moduleMap;
 }
