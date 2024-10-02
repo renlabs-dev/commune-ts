@@ -5,7 +5,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { cn } from "@commune-ts/ui";
+import {
+  cn,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@commune-ts/ui";
 import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
@@ -418,99 +426,115 @@ export function DelegatedList() {
           </div>
           {isOpen && (
             <div className="mb-2 flex animate-fade-up flex-col divide-white/20 rounded-3xl border border-white/20 bg-[#898989]/5 p-4 font-semibold text-white backdrop-blur-md">
-              <div className="mb-2 grid grid-cols-3 gap-6 border-b border-white/20 pb-2 text-sm font-semibold text-gray-400 md:grid-cols-4">
-                <div>{activeTab === "modules" ? "Module" : "Subnet"}</div>
-                <div className="hidden md:block">Name</div>
-                <div>{activeTab === "modules" ? "Address" : "Founder"}</div>
-                <div>Percentage</div>
-              </div>
-              {activeTab === "modules" ? (
-                delegatedModules.length ? (
-                  delegatedModules.map((module) => (
-                    <div
-                      key={module.id}
-                      className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
-                    >
-                      <div className="text-white">{module.title}</div>
-                      <div className="hidden text-white md:block">
-                        {module.name}
-                      </div>
-                      <div className="text-gray-400">
-                        {smallAddress(module.address)}
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="number"
-                          value={module.percentage}
-                          onChange={(e) =>
-                            handlePercentageChange(
-                              module.id,
-                              Number(e.target.value),
-                            )
-                          }
-                          className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
-                          min="0"
-                          max="100"
-                        />
-                        <span className="mr-2 text-white">%</span>
-                        <button
-                          onClick={() => removeModule(module.id)}
-                          className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
-                        >
-                          <XMarkIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-6 text-white">
-                    No modules found. Select a module to allocate weight through
-                    the modules page and they will appear here.
-                  </div>
-                )
-              ) : delegatedSubnets.length ? (
-                delegatedSubnets.map((subnet) => (
-                  <div
-                    key={subnet.id}
-                    className="mb-2 grid animate-fade-up grid-cols-3 items-center gap-6 border-b border-white/20 pb-2 text-sm animate-delay-100 md:grid-cols-4"
-                  >
-                    <div className="text-white">{subnet.name}</div>
-                    <div className="hidden text-white md:block">
-                      {subnet.name}
-                    </div>
-                    <div className="text-gray-400">
-                      {smallAddress(subnet.founder)}
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        type="number"
-                        value={subnet.percentage}
-                        onChange={(e) =>
-                          handlePercentageChange(
-                            subnet.id,
-                            Number(e.target.value),
-                          )
-                        }
-                        className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
-                        min="0"
-                        max="100"
-                      />
-                      <span className="mr-2 text-white">%</span>
-                      <button
-                        onClick={() => removeSubnet(subnet.id)}
-                        className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
-                      >
-                        <XMarkIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-6 text-white">
-                  No subnets found. Select a subnet to allocate weight through
-                  the subnets page and they will appear here.
-                </div>
-              )}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      {activeTab === "modules" ? "Module" : "Subnet"}
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">Name</TableHead>
+                    <TableHead>
+                      {activeTab === "modules" ? "Address" : "Founder"}
+                    </TableHead>
+                    <TableHead>Percentage</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {activeTab === "modules" ? (
+                    delegatedModules.length ? (
+                      delegatedModules.map((module) => (
+                        <TableRow key={module.id}>
+                          <TableCell className="font-medium">
+                            {module.title}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {module.name}
+                          </TableCell>
+                          <TableCell className="text-gray-400">
+                            {smallAddress(module.address)}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <input
+                                type="number"
+                                value={module.percentage}
+                                onChange={(e) =>
+                                  handlePercentageChange(
+                                    module.id,
+                                    Number(e.target.value),
+                                  )
+                                }
+                                className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
+                                min="0"
+                                max="100"
+                              />
+                              <span className="mr-2 text-white">%</span>
+                              <button
+                                onClick={() => removeModule(module.id)}
+                                className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
+                              >
+                                <XMarkIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center">
+                          No modules found. Select a module to allocate weight
+                          through the modules page and they will appear here.
+                        </TableCell>
+                      </TableRow>
+                    )
+                  ) : delegatedSubnets.length ? (
+                    delegatedSubnets.map((subnet) => (
+                      <TableRow key={subnet.id}>
+                        <TableCell className="font-medium">
+                          {subnet.name}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {subnet.name}
+                        </TableCell>
+                        <TableCell className="text-gray-400">
+                          {smallAddress(subnet.founder)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <input
+                              type="number"
+                              value={subnet.percentage}
+                              onChange={(e) =>
+                                handlePercentageChange(
+                                  subnet.id,
+                                  Number(e.target.value),
+                                )
+                              }
+                              className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
+                              min="0"
+                              max="100"
+                            />
+                            <span className="mr-2 text-white">%</span>
+                            <button
+                              onClick={() => removeSubnet(subnet.id)}
+                              className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
+                            >
+                              <XMarkIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">
+                        No subnets found. Select a subnet to allocate weight
+                        through the subnets page and they will appear here.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
               <div className="flex flex-row gap-3">
                 <button
                   onClick={handleAutoCompletePercentage}
@@ -538,7 +562,11 @@ export function DelegatedList() {
                   disabled={submitStatus.disabled}
                   title={submitStatus.disabled ? submitStatus.message : ""}
                 >
-                  {isSubmitting ? "Submitting..." : "Submit"}
+                  {isSubmitting
+                    ? "Submitting..."
+                    : activeTab === "modules"
+                      ? "Submit Modules"
+                      : "Submit Subnets"}
                 </button>
               </div>
             </div>
