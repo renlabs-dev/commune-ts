@@ -21,12 +21,14 @@ export const signData = async <T>(
   };
 };
 
-export const verifySignedData = async (signedInput: SignedPayload) => {
+export const verifySignedData = (signedInput: SignedPayload) => {
   const { payload, signature, address } = signedInput;
-  // eslint-disable-next-line @typescript-eslint/await-thenable
-  await signatureVerify(payload, signature, address);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const result = signatureVerify(payload, signature, address);
+  if (!result.isValid) {
+    throw new Error("Invalid signature");
+  }
+
   const unmarshed = JSON.parse(hexToString(payload));
   const validated = SessionDataSchema.safeParse(unmarshed);
   if (!validated.success) {
