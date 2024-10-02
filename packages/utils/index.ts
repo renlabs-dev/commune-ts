@@ -239,15 +239,21 @@ export interface ChainEntry {
   getMapModules(netuid: number): { [k: string]: string | number; };
 }
 
-export function standardizeUidToSS58address<P extends OptionalProperties<SubspaceModule>>(
-  outerRecord: Record<P, Record<string, string | number>>,
-  uidToKey: Record<string, SS58Address>,
-): Record<P, Record<string, string[]>> {
-  const processedRecord: Record<P, Record<string, string[]>> = {} as Record<P, Record<string, string[]>>;
+export type SubspaceStorageName =
+  | "emission" | "incentive" | "dividends" | "lastUpdate"
+  | "metadata" | "registrationBlock" | "name" | "address"
+  | "keys";
 
-  const entries = Object.entries(outerRecord) as [P, Record<string, string[]>][];
+
+export function standardizeUidToSS58address<T extends SubspaceStorageName>(
+  outerRecord: Record<T, Record<string, string | number>>,
+  uidToKey: Record<string, SS58Address>,
+): Record<T, Record<string, string | number>> {
+  const processedRecord: Record<T, Record<string, string | number>> = {} as Record<T, Record<string, string | number>>;
+
+  const entries = Object.entries(outerRecord) as [T, Record<string, string | number>][];
   for (const [outerKey, innerRecord] of entries) {
-    const processedInnerRecord: Record<string, string[]> = {};
+    const processedInnerRecord: Record<string, string | number> = {};
 
     for (const [innerKey, value] of Object.entries(innerRecord)) {
       if (!isNaN(Number(innerKey))) {
@@ -266,10 +272,6 @@ export function standardizeUidToSS58address<P extends OptionalProperties<Subspac
   return processedRecord;
 }
 
-type SubspaceStorageName =
-  | "emission" | "incentive" | "dividends" | "lastUpdate"
-  | "metadata" | "registrationBlock" | "name" | "address"
-  | "keys";
 
 
 type StorageTypes = "VecMapping" | "DoubleMap";
@@ -305,7 +307,7 @@ export async function getPropsToMap(
     },
     {} as Record<SubspaceStorageName, StorageTypes | null>,
   );
-  let mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<P, ChainEntry>;
+  let mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>;
   const keys = Object.keys(mapped_props) as SubspaceStorageName[];
   const asyncOperations = keys.map(async (prop) => {
     const value = mapped_props[prop];
