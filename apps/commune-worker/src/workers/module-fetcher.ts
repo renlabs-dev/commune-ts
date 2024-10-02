@@ -25,14 +25,15 @@ export async function moduleFetcherWorker(props: WorkerProps) {
       const modules = await queryRegisteredModulesInfo(
         props.lastBlock.apiAtBlock,
         [
-          // "name",
-          // "address",
-          // "registrationBlock",
-          // "metadata",
-          // "lastUpdate",
+          "name",
+          // "keys"
+          "address",
+          "registrationBlock",
+          "metadata",
+          "lastUpdate",
           "emission",
-          // "incentive",
-          // "dividends",
+          "incentive",
+          "dividends",
           // "delegationFee",
           // "stakeFrom",
         ],
