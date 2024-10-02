@@ -131,6 +131,7 @@ export function SendAction(props: {
 
   useEffect(() => {
     void estimateFeeAndUpdateMax();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipient]);
 
   useEffect(() => {
