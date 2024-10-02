@@ -18,7 +18,7 @@ import type {
   StorageKey,
   SubspaceModule,
   ZodSchema,
-} from "@commune-ts/types";
+  Api } from "@commune-ts/types";
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
@@ -26,8 +26,7 @@ import {
   modulePropResolvers,
   PROPOSAL_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
-  URL_SCHEMA,
-  Api,
+  URL_SCHEMA
 } from "@commune-ts/types";
 
 /**
@@ -116,17 +115,48 @@ export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
   return (Number(a) * Number(base)) / Number(b) / baseNum;
 }
 
-export function fromNano(nano: number | bigint): number {
-  if (typeof nano === "bigint") return bigintDivision(nano, 1_000_000_000n);
-  return nano / 1_000_000_000;
+import { BN } from '@polkadot/util';
+
+const NANO_MULTIPLIER = new BN('1000000000');
+
+/**
+ * Converts a nano value to its standard unit representation
+ * @param nanoValue - The value in nano units (as a number, string, or BN)
+ * @param decimals - Number of decimal places to round to (default: 6)
+ * @returns The value in standard units as a string
+ */
+export function fromNano(nanoValue: number | string | bigint | BN, decimals = 9): string {
+  const bnValue = new BN(nanoValue.toString());
+  const integerPart = bnValue.div(NANO_MULTIPLIER);
+  const fractionalPart = bnValue.mod(NANO_MULTIPLIER);
+
+  const fractionalStr = fractionalPart.toString().padStart(9, '0');
+  const roundedFractionalStr = fractionalStr.slice(0, decimals);
+
+  return `${integerPart.toString()}.${roundedFractionalStr}`;
 }
 
-export function formatToken(nano: number | bigint): string {
-  const amount = fromNano(nano);
-  return amount.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+/**
+ * Converts a standard unit value to nano
+ * @param standardValue - The value in standard units (as a number or string)
+ * @returns The value in nano units as a BN
+ */
+export function toNano(standardValue: number | string): BN {
+  const [integerPart, fractionalPart = ''] = standardValue.toString().split('.');
+  const paddedFractionalPart = fractionalPart.padEnd(9, '0');
+  const nanoValue = `${integerPart}${paddedFractionalPart}`;
+  return new BN(nanoValue);
+}
+
+
+export function formatToken(nano: number | bigint, decimalPlaces = 2): string {
+  const fullPrecisionAmount = fromNano(nano);
+  const [integerPart, fractionalPart] = fullPrecisionAmount.split('.');
+  
+  const formattedIntegerPart = parseInt(integerPart).toLocaleString('en-US');
+  const roundedFractionalPart = fractionalPart.slice(0, decimalPlaces).padEnd(decimalPlaces, '0');
+
+  return `${formattedIntegerPart}.${roundedFractionalPart}`;
 }
 
 export function calculateAmount(amount: string): number {
@@ -235,8 +265,8 @@ export function getExpirationTime(
 }
 
 export interface ChainEntry {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getMapModules(netuid: number): { [k: string]: string | number; };
+   
+  getMapModules(netuid: number): Record<string, string | number>;
 }
 
 export type SubspaceStorageName =
@@ -307,7 +337,7 @@ export async function getPropsToMap(
     },
     {} as Record<SubspaceStorageName, StorageTypes | null>,
   );
-  let mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>;
+  const mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>;
   const keys = Object.keys(mapped_props) as SubspaceStorageName[];
   const asyncOperations = keys.map(async (prop) => {
     const value = mapped_props[prop];
@@ -485,6 +515,7 @@ export async function processMetadata(
     const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
     return { Err: { message } };
   }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   return { Ok: validated.data };
 }
 
@@ -536,4 +567,8 @@ export function flattenResult<T, E>(x: Result<T, E>): T | null {
       return null;
     },
   });
+}
+
+export const roundDown = (number: number, decimals: number) => {
+  return Math.floor(number * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
