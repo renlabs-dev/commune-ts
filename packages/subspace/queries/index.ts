@@ -14,7 +14,6 @@ import type {
   VoteWithStake,
 } from "@commune-ts/types";
 import {
-  getSubspaceStorageMapping,
   isSS58,
   modulePropResolvers,
   SUBSPACE_MODULE_SCHEMA,
@@ -27,6 +26,9 @@ import {
   newSubstrateModule,
   StorageEntry,
   StorageVecMap,
+  getPropsToMap,
+  standardizeUidToSS58address,
+  SubspaceStorageName,
 } from "@commune-ts/utils";
 
 export { ApiPromise };
@@ -496,31 +498,39 @@ export async function queryRegisteredModulesInfo<
     : undefined;
   console.log("Fetching module keys from the chain...");
 
-  const keyEntries = (await api.query.subspaceModule!.keys!.entries())
-    .map((entry) => new StorageEntry(entry))
-    .filter(
-      (entry: StorageEntry) =>
-        !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
-    );
+  const uidToSS58Query = await enrichSubspaceModules(api, ["keys"], netuidWhitelist);
+  const uidToSS58 = uidToSS58Query['keys'] as Record<string, SS58Address>;
+  const modulesInfo = await enrichSubspaceModules(api, extraProps, netuidWhitelist);
+  const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
+  const SS58ToUid = Object.fromEntries(Object.entries(uidToSS58).map(([key, value]) => [value, key])) as Record<string, string>;
+  const moduleMap: Map<number, SubspaceModule> = new Map();
 
-  console.log(`Fetched ${keyEntries.length} module keys`);
-  const modulesMap = newSubstrateModuleMap(keyEntries.map(newSubstrateModule));
+  for (const uid of Object.keys(uidToSS58)) {
+    const moduleKey = uidToSS58[uid];
+    if (moduleKey === undefined) {
+      console.error(`Module key not found for uid ${uid}`);
+      continue;
+    }
+    const module = SUBSPACE_MODULE_SCHEMA.parse({
+      uid: parseInt(uid),
+      key: moduleKey,
+      netuid: 0,
+      name: processedModules["name"][moduleKey],
+      address: processedModules["address"][moduleKey],
+      registrationBlock: processedModules["registrationBlock"][moduleKey],
+      metadata: processedModules["metadata"][moduleKey],
+      lastUpdate: processedModules["lastUpdate"][moduleKey],
+      atBlock: 0,
+      emission: BigInt(processedModules["emission"][moduleKey]),
+      incentive: BigInt(processedModules["incentive"][moduleKey]),
+      dividends: BigInt(processedModules["dividends"][moduleKey]),
+      delegationFee: 0,
+      stakeFrom: 0n,
 
-  await enrichSubspaceModules(api, modulesMap, extraProps, netuidWhitelist);
-
-  console.log("modules per netuid:");
-  for (const [netuid, map] of modulesMap) {
-    console.log(`netuid ${netuid}: ${map.size} modules`);
+    })
+    moduleMap.set(parseInt(uid), module);
   }
-
-  const modules = Array.from(modulesMap.values()).flatMap((map) =>
-    Array.from(map.values()),
-  );
-
-  return modules
-    .map((m) => SUBSPACE_MODULE_SCHEMA.safeParse(m))
-    .filter((parsed) => parsed.success)
-    .map((parsed) => parsed.data);
+  return moduleMap;
 }
 
 /**
@@ -532,85 +542,98 @@ async function enrichSubspaceModules<
   P extends OptionalProperties<SubspaceModule>,
 >(
   api: Api,
-  moduleMap: Map<number, Map<SS58Address, SubspaceModule>>,
-  props: P[],
+  props: SubspaceStorageName[],
   netuidWhitelist?: number[],
-): Promise<Map<number, Map<SS58Address, SubspaceModule>>> {
+): Promise<Record<P, Record<string, string | number>>> {
   if (props.length === 0) {
-    return moduleMap;
+    return {} as Record<P, Record<string, string | number>>;
   }
   props = Array.from(new Set(props));
-
+  const modulePropMap: Record<P, Record<string, string | number>> = {} as Record<P, Record<string, string | number>>;
+  const moduletas = await getPropsToMap(props, api, 0);
+  const entries = Object.entries(moduletas) as [P, ChainEntry][];
+  entries.map(([prop, entry]) => {
+    modulePropMap[prop] = entry.getMapModules(0);
+  });
+  return modulePropMap;
+  console.log(modulePropMap);
+  console.log("astarion");
+  process.exit(13)
+  const prop = props[0];
+  if (prop != undefined) {
+    const modules = moduletas[prop]?.getMapModules(0);
+    console.log(modules);
+  }
+  process.exit(1);
   const uidKeyMap = newUidKeyMap(moduleMap);
 
   console.log("api");
   const mapping = getSubspaceStorageMapping();
-  const prop = props[0];
 
-  if (prop != undefined) {
-    if (mapping.VecMapping.includes(prop)) {
-      const sub_entry = await api.query.subspaceModule?.[prop]?.entries();
-      if (sub_entry !== undefined) {
-        const x = new StorageVecMap(sub_entry);
-        console.log(x.getMapModules(0));
-        process.exit(42);
-      }
-    }
-    await Promise.all(
-      props.map(async (prop) => {
-        console.log(`Fetching "${prop}" entries...`);
-        const entries = (await api.query.subspaceModule?.[prop]?.entries())
-          ?.map((entry) =>
-            prop in mapping.DoubleMap
-              ? new StorageEntry(entry)
-              : new StorageVecMap(entry),
-          )
-          .filter(
-            (entry: ChainEntry) =>
-              !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
-          );
-        assertOrThrow(
-          Array.isArray(entries),
-          `entries of "${prop}" is an array`,
-        );
+  // if (prop != undefined) {
+  //   if (mapping.VecMapping.includes(prop)) {
+  //     const sub_entry = await api.query.subspaceModule?.[prop]?.entries();
+  //     if (sub_entry !== undefined) {
+  //       const x = new StorageVecMap(sub_entry);
+  //       console.log(x.getMapModules(0));
+  //       process.exit(42);
+  //     }
+  //   }
+  //   await Promise.all(
+  //     props.map(async (prop) => {
+  //       console.log(`Fetching "${prop}" entries...`);
+  //       const entries = (await api.query.subspaceModule?.[prop]?.entries())
+  //         ?.map((entry) =>
+  //           prop in mapping.DoubleMap
+  //             ? new StorageEntry(entry)
+  //             : new StorageVecMap(entry),
+  //         )
+  //         .filter(
+  //           (entry: ChainEntry) =>
+  //             !netuidWhitelist || netuidWhitelist.includes(entry.netuid),
+  //         );
+  //       assertOrThrow(
+  //         Array.isArray(entries),
+  //         `entries of "${prop}" is an array`,
+  //       );
 
-        console.log(`Fetched ${entries.length} "${prop}" entries`);
+  //       console.log(`Fetched ${entries.length} "${prop}" entries`);
 
-        for (const entry of entries) {
-          const netuid = entry.netuid;
-          const key = entry.resolveKey(uidKeyMap);
+  //       for (const entry of entries) {
+  //         const netuid = entry.netuid;
+  //         const key = entry.resolveKey(uidKeyMap);
 
-          const module = moduleMap.get(netuid)?.get(key);
+  //         const module = moduleMap.get(netuid)?.get(key);
 
-          if (!module) {
-            if (process.env.DEBUG === "true") {
-              console.info(
-                `WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`,
-              );
-            }
-            continue;
-          }
-          if (prop == "emission") {
-            console.log(entry.value);
-            process.exit(3);
-          }
-          const parsedValue = modulePropResolvers[prop](entry.value);
+  //         if (!module) {
+  //           if (process.env.DEBUG === "true") {
+  //             console.info(
+  //               `WARNING: while resolving "${prop}", key ${netuid}::${key} not found in moduleMap`,
+  //             );
+  //           }
+  //           continue;
+  //         }
+  //         if (prop == "emission") {
+  //           console.log(entry.value);
+  //           process.exit(3);
+  //         }
+  //         const parsedValue = modulePropResolvers[prop](entry.value);
 
-          if (!parsedValue.success) {
-            console.error(
-              `Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`,
-            );
-            console.error(parsedValue.error);
-            continue;
-          }
+  //         if (!parsedValue.success) {
+  //           console.error(
+  //             `Error parsing "${prop}" for module ${netuid}::${key} - fallback to undefined`,
+  //           );
+  //           console.error(parsedValue.error);
+  //           continue;
+  //         }
 
-          module[prop] = parsedValue.data;
-        }
-      }),
-    );
+  //         module[prop] = parsedValue.data;
+  //       }
+  //     }),
+  //   );
 
-    return moduleMap;
-  }
+  //   return moduleMap;
+  // }
 }
 
 /**
