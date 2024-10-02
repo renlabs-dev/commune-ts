@@ -2,7 +2,7 @@
 
 import type { SubmittableResult } from "@polkadot/api";
 import type { SubmittableExtrinsic } from "@polkadot/api/types";
-import type { DispatchError } from "@polkadot/types/interfaces";
+import type { Balance, DispatchError } from "@polkadot/types/interfaces";
 import { createContext, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { toast } from "react-toastify";
@@ -41,7 +41,7 @@ import {
   useUnrewardedProposals,
   useUserTotalStaked,
 } from "../hooks";
-import { calculateAmount } from "../utils";
+import { calculateAmount, formatToken, fromNano, toNano } from "../utils";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -62,7 +62,7 @@ interface CommuneContextType {
   accounts: InjectedAccountWithMeta[] | undefined;
   selectedAccount: InjectedAccountWithMeta | null;
   setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
-
+  estimateFee: (recipientAddress: string, amount: string) => Promise<Balance | null>
   handleWalletModal(state?: boolean): void;
   openWalletModal: boolean;
 
@@ -412,6 +412,39 @@ export function CommuneProvider({
     );
   }
 
+  async function estimateFee(
+    recipientAddress: string,
+    amount: string,
+  ): Promise<Balance | null> {
+    try {
+      console.log(amount)
+
+      // Check if the API is ready and has the transfer function
+      if (!api || !api.isReady) {
+        console.error('API is not ready');
+        return null;
+      }
+
+      // Check if all required parameters are provided
+      if (!amount || !selectedAccount) {
+        console.error('Missing required parameters');
+        return null;
+      }
+
+      // Create the transaction
+      const transaction = api.tx.balances.transferKeepAlive(recipientAddress, amount);
+      console.log('estimating fee')
+      // Estimate the fee
+      const info = await transaction.paymentInfo(selectedAccount.address);
+
+      console.log(`Estimated fee: ${formatToken(Number(info.partialFee.toString()))}`);
+      return info.partialFee
+    } catch (error) {
+      console.error('Error estimating fee:', error);
+      return null;
+    }
+  }
+
   async function updateDelegatingVotingPower({
     isDelegating,
     callback,
@@ -523,7 +556,7 @@ export function CommuneProvider({
         isConnected,
         setIsConnected,
         isInitialized,
-
+        estimateFee,
         accounts,
         selectedAccount,
         setSelectedAccount,
