@@ -1,7 +1,7 @@
 "use server";
 
 import { hexToString, stringToHex } from "@polkadot/util";
-import { signatureVerify } from "@polkadot/util-crypto";
+import { signatureVerify, cryptoWaitReady } from "@polkadot/util-crypto";
 
 import type { SignedPayload } from "@commune-ts/types";
 import { SessionDataSchema } from "@commune-ts/types";
@@ -12,6 +12,8 @@ export const signData = async <T>(
   ) => Promise<{ signature: `0x${string}`; address: string }>,
   data: T,
 ): Promise<SignedPayload> => {
+  await cryptoWaitReady();
+
   const dataHex = stringToHex(JSON.stringify(data));
   const { signature, address } = await signer(dataHex);
   return {
@@ -21,7 +23,9 @@ export const signData = async <T>(
   };
 };
 
-export const verifySignedData = (signedInput: SignedPayload) => {
+export const verifySignedData = async (signedInput: SignedPayload) => {
+  await cryptoWaitReady();
+
   const { payload, signature, address } = signedInput;
 
   const result = signatureVerify(payload, signature, address);
