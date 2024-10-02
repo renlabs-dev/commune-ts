@@ -417,7 +417,6 @@ export function CommuneProvider({
     amount: string,
   ): Promise<Balance | null> {
     try {
-      console.log(amount)
 
       // Check if the API is ready and has the transfer function
       if (!api || !api.isReady) {
@@ -433,11 +432,10 @@ export function CommuneProvider({
 
       // Create the transaction
       const transaction = api.tx.balances.transferKeepAlive(recipientAddress, amount);
-      console.log('estimating fee')
+
       // Estimate the fee
       const info = await transaction.paymentInfo(selectedAccount.address);
 
-      console.log(`Estimated fee: ${formatToken(Number(info.partialFee.toString()))}`);
       return info.partialFee
     } catch (error) {
       console.error('Error estimating fee:', error);
