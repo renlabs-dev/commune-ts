@@ -43,6 +43,7 @@ export const createTRPCContext = (opts: {
   if (authToken) {
     try {
       user = decodeJwtSessionToken(authToken);
+      // TODO: verify JWT
     } catch (err) {
       console.error("Failed to decode JWT", err);
     }

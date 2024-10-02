@@ -258,5 +258,5 @@ export type OptionalProperties<T> = keyof T extends infer K
     : never
   : never;
 
-  export type SessionData = z.infer<typeof SessionDataSchema>;
+export type SessionData = z.infer<typeof SessionDataSchema>;
 export type SignedPayload = z.infer<typeof SignedPayloadSchema>;
