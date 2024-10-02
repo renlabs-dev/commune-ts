@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import {
   BoltIcon,
+  RectangleGroupIcon,
   ScaleIcon,
   Squares2X2Icon,
   WalletIcon,
@@ -58,7 +59,7 @@ const TutorialPage = () => {
             How to use the Community Validator
           </h3>
           <h1 className="animate-fade-down text-2xl font-semibold animate-delay-500 md:text-4xl">
-            Learn how to interact with modules created by the{" "}
+            Learn how to interact with modules / subnets created by the{" "}
             <span className="text-green-600">community</span>.
           </h1>
         </div>
@@ -102,9 +103,15 @@ const TutorialPage = () => {
           </button>
           <Link
             href="/"
-            className="flex w-fit items-center gap-2  text-nowrap border border-green-500 bg-green-600/5 px-4 py-2.5 font-semibold text-green-500 backdrop-blur-md transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
+            className="flex w-fit items-center gap-2 text-nowrap border border-green-500 bg-green-600/5 px-4 py-2.5 font-semibold text-green-500 backdrop-blur-md transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
           >
             <Squares2X2Icon className="h-6 w-6" /> Go back to Modules
+          </Link>
+          <Link
+            href="/subnets"
+            className="flex w-fit items-center gap-2 text-nowrap border border-cyan-500 bg-cyan-600/5 px-4 py-2.5 font-semibold text-cyan-500 backdrop-blur-md transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+          >
+            <RectangleGroupIcon className="h-6 w-6" /> Go back to Subnets
           </Link>
         </div>
       </div>

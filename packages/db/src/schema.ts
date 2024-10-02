@@ -6,6 +6,7 @@ import {
   pgEnum,
   pgTableCreator,
   pgView,
+  real,
   serial,
   text,
   timestamp,
@@ -21,9 +22,9 @@ export const ss58Address = (name: string) => varchar(name, { length: 256 });
 /**
  * Modules registered on the Commune chain.
  *
- * atBlock == lastSeenBlock           --> registered
- * atBlock <  lastSeenBlock           --> deregistered
- * |lastSeenBlock - atBlock| < 1 week --> should be deleted
+ * lastSeenBlock = max(atBlock)
+ * atBlock == lastSeenBlock         --> registered
+ * atBlock <  lastSeenBlock         --> deregistered
  */
 export const moduleData = createTable(
   "module_data",
@@ -31,6 +32,7 @@ export const moduleData = createTable(
     id: serial("id").primaryKey(),
 
     netuid: integer("netuid").notNull(),
+    moduleId: integer("module_id").notNull(),
     moduleKey: ss58Address("module_key").notNull(),
 
     atBlock: integer("at_block").notNull(),
@@ -83,6 +85,82 @@ export const userModuleData = createTable(
   },
   (t) => ({
     unq: unique().on(t.userKey, t.moduleId),
+  }),
+);
+
+/**
+ * Subnets registered on the commune chain.
+ */
+export const subnetDataSchema = createTable(
+  "subnet_data",
+  {
+    id: serial("id").primaryKey(),
+    netuid: integer("netuid").notNull().unique(),
+    name: text("name").notNull(),
+    tempo: integer("tempo").notNull(),
+    minAllowedWeights: integer("min_allowed_weights").notNull(),
+    maxAllowedWeights: integer("max_allowed_weights").notNull(),
+    maxAllowedUids: integer("max_allowed_uids").notNull(),
+    maxWeightAge: integer("max_weight_age").notNull(),
+    trustRatio: integer("trust_ratio").notNull(),
+    founderShare: integer("founder_share").notNull(),
+    incentiveRatio: integer("incentive_ratio").notNull(),
+    founder: ss58Address("founder").notNull(),
+    maximumSetWeightCallsPerEpoch: integer(
+      "maximum_set_weight_calls_per_epoch",
+    ),
+    bondsMa: integer("bonds_ma"),
+    immunityPeriod: integer("immunity_period").notNull(),
+    subnetMetadata: text("subnet_metadata"),
+    // GovernanceConfiguration fields
+    proposalCost: integer("proposal_cost").notNull(),
+    proposalExpiration: integer("proposal_expiration").notNull(),
+    voteMode: integer("vote_mode").notNull(),
+    proposalRewardTreasuryAllocation: real(
+      "proposal_reward_treasury_allocation",
+    ).notNull(),
+    maxProposalRewardTreasuryAllocation: integer(
+      "max_proposal_reward_treasury_allocation",
+    ).notNull(),
+    proposalRewardInterval: integer("proposal_reward_interval").notNull(),
+    // BurnConfiguration fields
+    minBurn: integer("min_burn").notNull(),
+    maxBurn: integer("max_burn").notNull(),
+    adjustmentAlpha: integer("adjustment_alpha").notNull(),
+    targetRegistrationsInterval: integer(
+      "target_registrations_interval",
+    ).notNull(),
+    targetRegistrationsPerInterval: integer(
+      "target_registrations_per_interval",
+    ).notNull(),
+    maxRegistrationsPerInterval: integer(
+      "max_registrations_per_interval",
+    ).notNull(),
+    // Additional fields
+    minValidatorStake: integer("min_validator_stake"),
+    maxAllowedValidators: integer("max_allowed_validators"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
+  },
+  (t) => ({
+    unq: unique().on(t.netuid, t.id),
+  }),
+);
+
+export const userSubnetDataSchema = createTable(
+  "user_subnet_data",
+  {
+    id: serial("id").primaryKey(),
+    userKey: ss58Address("user_key").notNull(),
+    netuid: integer("netuid")
+      .references(() => subnetDataSchema.netuid)
+      .notNull(),
+    weight: integer("weight").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
+  },
+  (t) => ({
+    unq: unique().on(t.userKey, t.netuid),
   }),
 );
 
