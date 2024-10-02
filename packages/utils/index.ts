@@ -14,19 +14,20 @@ import type {
   Proposal,
   RawEntry,
   Result,
+  SessionData,
+  SignedPayload,
   SS58Address,
   StorageKey,
   SubspaceModule,
   ZodSchema,
-  SessionData,
-  SignedPayload} from "@commune-ts/types";
+} from "@commune-ts/types";
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
   isSS58,
   PROPOSAL_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
-  URL_SCHEMA
+  URL_SCHEMA,
 } from "@commune-ts/types";
 
 /**
@@ -411,13 +412,10 @@ function generateNonce(): string {
 export function createSessionData(window: {
   location: { origin: string };
 }): SessionData {
-  crypto;
+  const uri = window.location.origin || "<unknown>";
   return {
-    statement:
-      "Sign in with polkadot extension to authenticate your session at " +
-      window.location.origin,
+    statement: `Sign in with polkadot extension to authenticate your session at ${uri}`,
     uri: window.location.origin || "unknown",
-    // nonce: randomBytes(16).toString("base64"),
     nonce: generateNonce(),
     created: new Date().toISOString(),
   };

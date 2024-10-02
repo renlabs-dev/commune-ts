@@ -166,9 +166,9 @@ export const modulePropResolvers: {
 };
 
 export const SessionDataSchema = z.object({
-  statement: z.string(), // "Sign in with polkadot extension to authenticate your session"
-  uri: z.string(), // origin or "unknown"
-  nonce: z.string(), // base64 randomstring
+  statement: z.string(), // "Sign in with polkadot extension to authenticate your session at ${uri}"
+  uri: z.string(), // origin or "<unknown>"
+  nonce: z.string(), // hex random number
   created: z.string().datetime(), // ISO date string
 });
 
