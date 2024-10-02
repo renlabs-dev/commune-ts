@@ -150,11 +150,11 @@ export function toNano(standardValue: number | string): BN {
 
 
 export function formatToken(nano: number | bigint, decimalPlaces = 2): string {
-  const fullPrecisionAmount = fromNano(nano);
-  const [integerPart, fractionalPart] = fullPrecisionAmount.split('.');
+  const fullPrecisionAmount = fromNano(nano).toString();
+  const [integerPart = '0', fractionalPart = ''] = fullPrecisionAmount.split('.');
   
-  const formattedIntegerPart = parseInt(integerPart).toLocaleString('en-US');
-  const roundedFractionalPart = fractionalPart.slice(0, decimalPlaces).padEnd(decimalPlaces, '0');
+  const formattedIntegerPart = Number(integerPart).toLocaleString('en-US');
+  const roundedFractionalPart = fractionalPart.slice(0, decimalPlaces).padEnd(decimalPlaces,'0' );
 
   return `${formattedIntegerPart}.${roundedFractionalPart}`;
 }
@@ -384,12 +384,12 @@ export class StorageVecMap implements ChainEntry {
 
 export class DoubleMapEntries implements ChainEntry {
   constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
-  getMapModules(netuid: number) {
+  getMapModules() {
     const moduleIdToPropValue: Record<number, string> = {};
 
     this.entries.forEach(entry => {
       const moduleCodec = entry[1];
-      const moduleId = entry[0].args[1]!.toPrimitive() as number;
+      const moduleId = entry[0].args[1]?.toPrimitive() as number;
       moduleIdToPropValue[moduleId] = moduleCodec.toPrimitive() as string;
     });
     return moduleIdToPropValue;
@@ -567,8 +567,4 @@ export function flattenResult<T, E>(x: Result<T, E>): T | null {
       return null;
     },
   });
-}
-
-export const roundDown = (number: number, decimals: number) => {
-  return Math.floor(number * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
