@@ -13,13 +13,16 @@ interface TokenData {
   uri: string;
 }
 
-const jwtOptions = (): jwt.SignOptions => ({
+const JWT_OPTIONS: jwt.SignOptions = {
   algorithm: "HS256",
-  issuer: "commune-ts",
   expiresIn: "6h",
-});
+  // issuer: "commune-ts",
+};
 
-export const createSessionToken = async (signedSessionData: SignedPayload) => {
+export const createSessionToken = async (
+  signedSessionData: SignedPayload,
+  jwtSecret: string,
+) => {
   const { address, data } = await verifySignedData(signedSessionData);
 
   // check if the sessionData is not older than 10 minutes
@@ -48,37 +51,26 @@ export const createSessionToken = async (signedSessionData: SignedPayload) => {
     uri: data.uri,
   };
 
-  const token = jwt.sign(
-    tokenData,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    process.env.JWT_SECRET!,
-    jwtOptions(),
-  );
+  const token = jwt.sign(tokenData, jwtSecret, JWT_OPTIONS);
 
   return token;
 };
 
-export const decodeJwtSessionToken = (token: string): { userKey: string } => {
-  const { userKey } = jwt.verify(
-    token,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    process.env.JWT_SECRET!,
-    jwtOptions(),
-  ) as TokenData;
-
+export const decodeJwtSessionToken = (
+  token: string,
+  jwtSecret: string,
+): { userKey: string } => {
+  // TODO: validate
+  const { userKey } = jwt.verify(token, jwtSecret, JWT_OPTIONS) as TokenData; 
   return { userKey };
 };
 
-export function isJwtTokenValid(token: string) {
+export function isJwtTokenValid(token: string, jwtSecret: string) {
   try {
     const decodedToken = jwt.verify(
       token,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      process.env.JWT_SECRET!,
-      {
-        algorithms: ["HS256"],
-        issuer: "commune-ts",
-      },
+      jwtSecret,
+      JWT_OPTIONS,
     ) as jwt.JwtPayload;
 
     // Check if the token has expired
