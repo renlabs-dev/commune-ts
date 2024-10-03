@@ -8,9 +8,9 @@ import { publicProcedure } from "../trpc";
 export const authRouter = {
   startSession: publicProcedure
     .input(SignedPayloadSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       // TODO: verify signed payload
-      const token = await createSessionToken(input);
+      const token = await createSessionToken(input, ctx.jwtSecret);
 
       return { token, authenticationType: "Bearer" };
     }),

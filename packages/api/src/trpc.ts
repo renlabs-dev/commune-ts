@@ -29,7 +29,10 @@ import { decodeJwtSessionToken } from "./jwt";
 export const createTRPCContext = (opts: {
   headers: Headers;
   session: null;
+  jwtSecret: string;
 }) => {
+  const { jwtSecret } = opts;
+
   const source = opts.headers.get("x-trpc-source") ?? "unknown";
   console.log(">>> tRPC Request from", source);
 
@@ -42,7 +45,7 @@ export const createTRPCContext = (opts: {
   let user: { userKey: string } | null = null;
   if (authToken) {
     try {
-      user = decodeJwtSessionToken(authToken);
+      user = decodeJwtSessionToken(authToken, jwtSecret);
       // TODO: verify JWT
     } catch (err) {
       console.error("Failed to decode JWT", err);
@@ -53,6 +56,7 @@ export const createTRPCContext = (opts: {
     db,
     authType,
     user,
+    jwtSecret,
   };
 };
 
