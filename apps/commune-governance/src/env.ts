@@ -1,6 +1,8 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+const AUTH_ORIGIN_DEFAULT = "https://governance.communeai.org";
+
 export const env = createEnv({
   shared: {
     NODE_ENV: z
@@ -13,6 +15,7 @@ export const env = createEnv({
    */
   server: {
     JWT_SECRET: z.string().min(8), // Secret used to sign the JWT
+    AUTH_ORIGIN: z.string().default(AUTH_ORIGIN_DEFAULT), // Origin URI used in the statement signed by the user to authenticate
     PINATA_JWT: z.string(),
     POSTGRES_URL: z.string().url(),
   },
