@@ -9,7 +9,7 @@ export const env = createEnv({
   },
   clientPrefix: "NEXT_PUBLIC_",
   client: {
-    NEXT_PUBLIC_PORT: z.number().default(3000),
+    NEXT_PUBLIC_PORT: z.string().default("3000"),
     NEXT_PUBLIC_WS_PROVIDER_URL: z.string().url(),
   },
   runtimeEnv: process.env,

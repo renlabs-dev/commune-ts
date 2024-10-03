@@ -11,6 +11,7 @@ import {
   moduleReport,
   proposalCommentSchema,
   userModuleData,
+  userSubnetDataSchema,
   VoteType,
 } from "./schema";
 
@@ -97,6 +98,15 @@ export const USER_MODULE_DATA_INSERT_SCHEMA = createInsertSchema(
 ).omit({
   id: true,
   userKey: true,
+});
+
+export const USER_SUBNET_DATA_INSERT_SCHEMA = createInsertSchema(
+  userSubnetDataSchema,
+  {
+    weight: z.number().positive(),
+  },
+).omit({
+  id: true,
 });
 
 export const DAO_VOTE_INSERT_SCHEMA = createInsertSchema(daoVoteSchema).omit({

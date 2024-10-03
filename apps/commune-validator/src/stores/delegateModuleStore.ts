@@ -21,7 +21,7 @@ interface DelegateState {
   updateOriginalModules: () => void;
 }
 
-export const useDelegateStore = create<DelegateState>()(
+export const useDelegateModuleStore = create<DelegateState>()(
   persist(
     (set, get) => ({
       delegatedModules: [],
@@ -30,7 +30,7 @@ export const useDelegateStore = create<DelegateState>()(
         set((state) => ({
           delegatedModules: [
             ...state.delegatedModules,
-            { ...module, percentage: 0 },
+            { ...module, percentage: 1 },
           ],
         })),
       removeModule: (id) =>
@@ -65,7 +65,7 @@ export const useDelegateStore = create<DelegateState>()(
       },
     }),
     {
-      name: "delegate-storage",
+      name: "delegate-module-storage",
     },
   ),
 );

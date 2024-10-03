@@ -71,11 +71,13 @@ export interface CustomDataError {
   message: string;
 }
 
-export function isCustomDataError(obj: any): obj is CustomDataError {
+// TODO: see if this works
+export function isCustomDataError(obj: object): obj is CustomDataError {
   return (
     typeof obj === "object" &&
     "Err" in obj &&
     typeof obj.Err === "object" &&
+    obj.Err !== null &&
     "message" in obj.Err
   );
 }
@@ -246,7 +248,7 @@ export interface UnrewardedProposal {
 
 // == Field Params ==
 
-export type SubspaceModule = z.infer<typeof SUBSPACE_MODULE_SCHEMA>
+export type SubspaceModule = z.infer<typeof SUBSPACE_MODULE_SCHEMA>;
 
 export type OptionalProperties<T> = keyof T extends infer K
   ? K extends keyof T

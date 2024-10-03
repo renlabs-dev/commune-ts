@@ -121,21 +121,6 @@ export default async function ModulePage({ params }: Params) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col justify-between border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
-            <h2 className="mb-4 text-xl font-semibold">Stake to this Module</h2>
-            <div className="flex flex-col gap-2">
-              <h2 className="text-gray-400">Amount</h2>
-              <input
-                type="number"
-                className="w-full bg-[#898989]/10 p-1 text-white"
-                min="0"
-                max="100000000000000"
-              />
-              <button className="w-full animate-fade border border-white/20 bg-[#898989]/5 p-2 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10">
-                Stake
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
