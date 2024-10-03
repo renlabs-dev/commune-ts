@@ -18,7 +18,8 @@ catalog:
   "@polkadot/util-crypto": ^13.0.2
   "@polkadot/types": ^13.0.1
   "@polkadot/api-augment": ^13.0.1
-  "@polkadot/extension-inject": ^0.34.0-beta.12
+  "@polkadot/extension-dapp": ^0.52.3
+  "@polkadot/extension-inject": ^0.52.3
   eslint: ^9.9.0
   prettier: ^3.3.3
   tailwindcss: ^3.4.10
