@@ -10,7 +10,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/commune-page
+      repo: ghcr.io/renlabs-dev/commune-page
       tags:
         - latest
         - ${DRONE_BRANCH}
@@ -63,7 +63,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/community-validator
+      repo: ghcr.io/renlabs-dev/community-validator
       tags:
         - latest
         - ${DRONE_BRANCH}
@@ -82,7 +82,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/commune-worker
+      repo: ghcr.io/renlabs-dev/commune-worker
       tags:
         - latest
         - ${DRONE_BRANCH}
@@ -141,7 +141,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/commune-governance
+      repo: ghcr.io/renlabs-dev/commune-governance
       tags:
         - latest
         - ${DRONE_BRANCH}
@@ -194,7 +194,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/commune-wallet
+      repo: ghcr.io/renlabs-dev/commune-wallet
       tags:
         - latest
         - ${DRONE_BRANCH}
@@ -247,7 +247,7 @@ steps:
       username: ${DRONE_COMMIT_AUTHOR}
       password:
         from_secret: DOCKER_TOKEN
-      repo: ghcr.io/agicommies/commune-cache
+      repo: ghcr.io/renlabs-dev/commune-cache
       tags:
         - latest
         - ${DRONE_BRANCH}

@@ -87,6 +87,13 @@ export const moduleRouter = {
         },
       };
     }),
+  byReport: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.moduleReport.findFirst({
+        where: eq(moduleReport.id, input.id),
+      });
+    }),
   // POST
   deleteUserModuleData: authenticatedProcedure.mutation(async ({ ctx }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

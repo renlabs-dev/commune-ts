@@ -8,7 +8,7 @@ import { formatToken, smallAddress } from "@commune-ts/providers/utils";
 
 interface ValidatorsListProps {
   listType: "all" | "staked";
-  onSelectValidator: (validator: { address: string }) => void;
+  onSelectValidator: (validator: { address: string; stake?: string }) => void;
   onBack: () => void;
   userAddress: string;
 }
@@ -17,11 +17,7 @@ interface Validator {
   name: string;
   description: string;
   address: string;
-}
-
-interface StakedValidator {
-  stake: string;
-  address: string;
+  stake?: string;
 }
 
 export function ValidatorsList(props: ValidatorsListProps) {
@@ -52,16 +48,18 @@ export function ValidatorsList(props: ValidatorsListProps) {
 
   function getValidatorsList(): Validator[] {
     if (props.listType === "staked" && userTotalStaked) {
-      return (userTotalStaked as StakedValidator[]).map((item) => ({
+      return userTotalStaked.map((item) => ({
         name: ``,
         description: `Staked amount: ${formatToken(Number(item.stake))}`,
         address: item.address,
+        stake: item.stake,
       }));
     }
     return validatorsList;
   }
 
   const currentList = getValidatorsList();
+
 
   return (
     <div className="mt-4 w-full animate-fade-down border-t border-white/20 pt-2">

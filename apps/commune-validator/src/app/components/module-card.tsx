@@ -6,7 +6,7 @@ import { ArrowRightIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 
 import { fetchCustomMetadata, smallAddress } from "@commune-ts/utils";
 
-import { useDelegateStore } from "~/stores/delegateStore";
+import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 import { CopySquareButton } from "./copy-square-button";
 import { DelegateModuleWeight } from "./delegate-module-weight";
 
@@ -52,7 +52,7 @@ function useCustomMetadata(id: number, metadata: string | null) {
 
 export function ModuleCard(props: ModuleCardProps) {
   const customMetadata = useCustomMetadata(props.id, props.metadata);
-  const { delegatedModules } = useDelegateStore();
+  const { delegatedModules } = useDelegateModuleStore();
   const isModuleDelegated = delegatedModules.some((m) => m.id === props.id);
 
   const title = customMetadata?.Ok?.title ?? "No Metadata";
