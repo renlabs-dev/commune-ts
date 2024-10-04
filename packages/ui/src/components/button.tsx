@@ -6,13 +6,13 @@ import { cva } from "class-variance-authority";
 import { cn } from ".";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium backdrop-blur-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium backdrop-blur-md transition transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         base: "border",
         default:
-          "border border-white/20 bg-[#898989]/5 text-white hover:border-green-500 hover:bg-green-500/15 hover:text-green-500 active:bg-green-500/40",
+          "hover:bg-background-green border border-white/20 bg-[#898989]/5 bg-background text-white hover:border-green-500 hover:text-green-500 active:bg-green-500/40",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -33,7 +33,7 @@ const buttonVariants = cva(
         default: "h-9 px-4 py-2",
         sm: "h-8 px-3 text-xs",
         lg: "h-10 px-8",
-        xl: "h-12 px-10",
+        xl: "text- h-12 px-12",
         icon: "h-9 w-9",
       },
     },
