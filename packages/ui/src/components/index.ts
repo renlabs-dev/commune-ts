@@ -134,3 +134,4 @@ export {
   TableCell,
   TableCaption,
 } from "./table";
+export { Separator } from "./separator";
