@@ -3,12 +3,12 @@ import {
   bigint,
   index,
   integer,
-  numeric,
   pgEnum,
   pgTableCreator,
   pgView,
   real,
   serial,
+  numeric,
   text,
   timestamp,
   unique,
@@ -103,10 +103,7 @@ export const subnetDataSchema = createTable(
     minAllowedWeights: integer("min_allowed_weights").notNull(),
     maxAllowedWeights: integer("max_allowed_weights").notNull(),
     maxAllowedUids: integer("max_allowed_uids").notNull(),
-    maxWeightAge: numeric("max_weight_age", {
-      precision: 20,
-      scale: 0,
-    }).notNull(),
+    maxWeightAge: numeric("max_weight_age", { precision: 20, scale: 0 }).notNull(),
     trustRatio: integer("trust_ratio").notNull(),
     founderShare: integer("founder_share").notNull(),
     incentiveRatio: integer("incentive_ratio").notNull(),
@@ -132,10 +129,7 @@ export const subnetDataSchema = createTable(
     // BurnConfiguration fields
     minBurn: bigint("min_burn", { mode: "bigint" }).notNull(),
     maxBurn: bigint("max_burn", { mode: "bigint" }).notNull(),
-    adjustmentAlpha: numeric("adjustment_alpha", {
-      precision: 20,
-      scale: 0,
-    }).notNull(),
+    adjustmentAlpha: numeric("adjustment_alpha", { precision: 20, scale: 0 }).notNull(),
     targetRegistrationsInterval: integer(
       "target_registrations_interval",
     ).notNull(),
@@ -148,7 +142,6 @@ export const subnetDataSchema = createTable(
     // Additional fields
     minValidatorStake: bigint("min_validator_stake", { mode: "bigint" }),
     maxAllowedValidators: integer("max_allowed_validators"),
-    // subnetEmission: bigint("subnet_emission", { mode: "bigint" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
   },
