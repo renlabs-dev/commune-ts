@@ -23,10 +23,7 @@ import type {
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
-  isSS58,
-  modulePropResolvers,
   PROPOSAL_SCHEMA,
-  SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA
 } from "@commune-ts/types";
 
@@ -267,7 +264,7 @@ export function getExpirationTime(
 
 export interface ChainEntry {
 
-  getMapModules(netuid: number): Record<string, string>;
+  getMapModules(netuid?: number): Record<string, string>;
 }
 
 
@@ -288,12 +285,12 @@ export type SubspaceStorageName =
 // TODO: add MinimumAllowedStake, stakeFrom
 
 export function standardizeUidToSS58address<T extends SubspaceStorageName>(
-  outerRecord: Record<T, Record<string, string | number>>,
+  outerRecord: Record<T, Record<string, any>>,
   uidToKey: Record<string, SS58Address>,
 ): Record<T, Record<string, string | number>> {
   const processedRecord: Record<T, Record<string, string | number>> = {} as Record<T, Record<string, string | number>>;
 
-  const entries = Object.entries(outerRecord) as [T, Record<string, string | number>][];
+  const entries = Object.entries(outerRecord) as [T, Record<string, any>][];
   for (const [outerKey, innerRecord] of entries) {
     const processedInnerRecord: Record<string, string | number> = {};
 
@@ -346,9 +343,9 @@ export function getSubspaceStorageMappingKind(
 }
 
 export async function getPropsToMap(
-  props: Record<SubspacePalletName, SubspaceStorageName[]>,
+  props: Partial<Record<SubspacePalletName, SubspaceStorageName[]>>,
   api: Api,
-  netuid: number,
+  netuid?: number,
 ): Promise<Record<SubspaceStorageName, ChainEntry>> {
   const mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>
 
@@ -396,6 +393,9 @@ export class StorageVecMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) { }
 
   getMapModules(netuid: number) {
+    if (netuid === undefined) {
+      throw new Error("netuid is required for StorageVecMap");
+    }
     const subnet_values = this.entry[netuid];
     if (subnet_values != undefined) {
       const values = subnet_values[1].toPrimitive() as string[];
@@ -411,7 +411,7 @@ export class StorageVecMap implements ChainEntry {
 export class SimpleMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) { }
 
-  getMapModules(netuid: number) {
+  getMapModules() {
     const modules_map = Object.fromEntries(
       this.entry.map((value, index) => [index, value[1].toPrimitive()]),
     );
@@ -433,54 +433,6 @@ export class DoubleMapEntries implements ChainEntry {
   }
 }
 
-
-export class StorageEntry {
-  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) { }
-  get netuid(): number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[0]!.toPrimitive() as number;
-  }
-
-  get uidOrKey(): string | number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[1]!.toPrimitive() as string | number;
-  }
-
-  get value(): Codec {
-    return this.entry[1] as Codec;
-  }
-  /**
-   * as the module identifier can be a uid or a key, this function resolves it to a key
-   */
-  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
-    const isUid = typeof this.uidOrKey === "number";
-
-    const key = isUid
-      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
-      : this.uidOrKey;
-
-    assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
-
-    return key;
-  }
-
-  parse<P extends OptionalProperties<SubspaceModule>>(prop: P) {
-    const parsedValue = modulePropResolvers[prop](this.value);
-    return parsedValue;
-  }
-}
-
-// the value of a "keys" entry is a codec that holds a ss58 address
-export function newSubstrateModule(keyEntry: StorageEntry): SubspaceModule {
-  const key = keyEntry.value.toPrimitive() as SS58Address;
-
-  return SUBSPACE_MODULE_SCHEMA.parse({
-    uid: keyEntry.uidOrKey as number,
-    netuid: keyEntry.netuid,
-    key,
-  });
-}
 
 export function parseAddress(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
