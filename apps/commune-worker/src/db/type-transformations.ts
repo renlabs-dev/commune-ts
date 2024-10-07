@@ -1,4 +1,7 @@
-import type { SubspaceModule, NetworkSubnetConfig } from "@commune-ts/types";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { NetworkSubnetConfig, SubspaceModule } from "@commune-ts/types";
 
 import type { Module, Subnet } from "./index.js";
 
@@ -25,8 +28,10 @@ export function SubspaceModuleToDatabase(
   };
 }
 
-
-export function SubnetToDatabase(subnet: NetworkSubnetConfig, atBlock: number): Subnet {
+export function SubnetToDatabase(
+  subnet: NetworkSubnetConfig,
+  atBlock: number,
+): Subnet {
   return {
     netuid: subnet.netuid,
     name: subnet.subnetNames,
@@ -39,24 +44,30 @@ export function SubnetToDatabase(subnet: NetworkSubnetConfig, atBlock: number): 
     founderShare: subnet.founderShare,
     incentiveRatio: subnet.incentiveRatio,
     trustRatio: subnet.trustRatio,
-    maxWeightAge: subnet.maxWeightAge,
+    maxWeightAge: String(subnet.maxWeightAge),
     bondsMa: subnet.bondsMovingAverage ?? null,
     maximumSetWeightCallsPerEpoch: subnet.maximumSetWeightCallsPerEpoch ?? null,
-    minValidatorStake: subnet.minValidatorStake ?? null,
+    minValidatorStake: BigInt(subnet.minValidatorStake),
     maxAllowedValidators: subnet.maxAllowedValidators ?? null,
     subnetMetadata: subnet.subnetMetadata,
-    minBurn: subnet.moduleBurnConfig.minBurn,
-    maxBurn: subnet.moduleBurnConfig.maxBurn,
-    adjustmentAlpha: subnet.moduleBurnConfig.adjustmentAlpha,
-    targetRegistrationsInterval: subnet.moduleBurnConfig.targetRegistrationsInterval,
-    maxRegistrationsPerInterval: subnet.moduleBurnConfig.maxRegistrationsPerInterval,
-    proposalCost: subnet.subnetGovernanceConfig.proposalCost,
+    minBurn: BigInt(subnet.moduleBurnConfig.minBurn),
+    maxBurn: BigInt(subnet.moduleBurnConfig.maxBurn),
+    adjustmentAlpha: String(subnet.moduleBurnConfig.adjustmentAlpha),
+    targetRegistrationsInterval:
+      subnet.moduleBurnConfig.targetRegistrationsInterval,
+    maxRegistrationsPerInterval:
+      subnet.moduleBurnConfig.maxRegistrationsPerInterval,
+    proposalCost: BigInt(subnet.subnetGovernanceConfig.proposalCost),
     proposalExpiration: subnet.subnetGovernanceConfig.proposalExpiration,
-    maxProposalRewardTreasuryAllocation: subnet.subnetGovernanceConfig.maxProposalRewardTreasuryAllocation,
-    proposalRewardTreasuryAllocation: subnet.subnetGovernanceConfig.proposalRewardTreasuryAllocation,
-    proposalRewardInterval: subnet.subnetGovernanceConfig.proposalRewardInterval,
-    targetRegistrationsPerInterval: subnet.moduleBurnConfig.targetRegistrationsPerInterval,
-    subnetEmission: subnet.subnetEmission,
+    maxProposalRewardTreasuryAllocation: BigInt(
+      subnet.subnetGovernanceConfig.maxProposalRewardTreasuryAllocation,
+    ),
+    proposalRewardTreasuryAllocation:
+      subnet.subnetGovernanceConfig.proposalRewardTreasuryAllocation,
+    proposalRewardInterval:
+      subnet.subnetGovernanceConfig.proposalRewardInterval,
+    targetRegistrationsPerInterval:
+      subnet.moduleBurnConfig.targetRegistrationsPerInterval,
     atBlock: atBlock,
     voteMode: subnet.subnetGovernanceConfig.voteMode,
   };
