@@ -1,10 +1,10 @@
 "use server";
 
 import { hexToString, stringToHex } from "@polkadot/util";
-import { signatureVerify, cryptoWaitReady } from "@polkadot/util-crypto";
+import { cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
 
 import type { SignedPayload } from "@commune-ts/types";
-import { checkSS58, AUTH_REQ_SCHEMA } from "@commune-ts/types";
+import { AUTH_REQ_SCHEMA, checkSS58 } from "@commune-ts/types";
 
 export const signData = async <T>(
   signer: (
@@ -33,7 +33,7 @@ export const verifySignedData = async (signedInput: SignedPayload) => {
     throw new Error("Invalid signature");
   }
 
-  const unmarshed = JSON.parse(hexToString(payload));
+  const unmarshed = JSON.parse(hexToString(payload)) as unknown;
   const validated = AUTH_REQ_SCHEMA.safeParse(unmarshed);
   if (!validated.success) {
     throw new Error(`Invalid payload: ${validated.error.message}`);

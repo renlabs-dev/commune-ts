@@ -16,7 +16,7 @@ const JWT_OPTIONS: jwt.SignOptions = {
   // issuer: "commune-ts",
 };
 
-export const createSessionToken = async (
+export const createSessionToken = (
   tokenData: SessionData,
   jwtSecret: string,
 ) => {
