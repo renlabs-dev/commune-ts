@@ -4,7 +4,7 @@ import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
 import type { Variant } from "rustie/dist/enum";
-import type { z } from "zod";
+import { z } from "zod";
 
 import type {
   CUSTOM_METADATA_SCHEMA,
@@ -12,11 +12,7 @@ import type {
   DAO_METADATA_SCHEMA,
   PROPOSAL_DATA_SCHEMA,
   PROPOSAL_STATUS_SCHEMA,
-  SUBSPACE_MODULE_SCHEMA} from "./validations";
-
-import type {
-  SessionDataSchema,
-  SignedPayloadSchema
+  SUBSPACE_MODULE_SCHEMA,
 } from "./validations";
 
 export { ZodSchema } from "zod";
@@ -28,6 +24,7 @@ export type {
 
 export type { ApiPromise } from "@polkadot/api";
 export type { StorageKey } from "@polkadot/types";
+
 export type { AnyTuple, Codec } from "@polkadot/types/types";
 
 export type Entry<T> = [unknown, T];
@@ -38,7 +35,8 @@ export type GovernanceModeType = "PROPOSAL" | "DAO";
 export type Nullish = null | undefined;
 export type Api = ApiDecoration<"promise"> | ApiPromise;
 
-// == rustie related stuff ==
+// ==== Rustie related ====
+
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
 type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
@@ -52,6 +50,7 @@ export type UnionToVariants<T> =
       ? Variant<K, ValueOfUnion<T, K>>
       : never
     : never;
+
 // ==========================
 
 export interface BaseProposal {
@@ -122,9 +121,10 @@ export interface ProposalStakeInfo {
 
 // == SS58 ==
 
-export type SS58Address = Tagged<string, "SS58Address">;
+export type SS58Address = Tagged<"SS58Address", string>;
 
 // == Transactions ==
+
 export interface TransactionResult {
   finalized: boolean;
   message: string | null;
@@ -260,5 +260,21 @@ export type OptionalProperties<T> = keyof T extends infer K
     : never
   : never;
 
-export type SessionData = z.infer<typeof SessionDataSchema>;
-export type SignedPayload = z.infer<typeof SignedPayloadSchema>;
+// == Auth ==
+
+export const AUTH_REQ_SCHEMA = z.object({
+  statement: z.string(), // "Sign in with Polkadot extension to authenticate your session at ${uri}"
+  uri: z.string(), // origin or "<unknown>"
+  nonce: z.string(), // hex random number
+  created: z.string().datetime(), // ISO date string
+});
+
+export type AuthReq = z.infer<typeof AUTH_REQ_SCHEMA>;
+
+export const SIGNED_PAYLOAD_SCHEMA = z.object({
+  payload: z.string({ description: "in hex" }),
+  signature: z.string({ description: "in hex" }),
+  address: z.string({ description: "in hex" }),
+});
+
+export type SignedPayload = z.infer<typeof SIGNED_PAYLOAD_SCHEMA>;

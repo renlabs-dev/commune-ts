@@ -12,16 +12,22 @@ import type {
   SubspaceModule,
 } from "./types";
 
-export function isSS58(value: string | null | undefined): value is SS58Address {
-  let decoded: Uint8Array | null;
+export function checkSS58(value: string | SS58Address): SS58Address {
   try {
-    decoded = decodeAddress(value);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
+    decodeAddress(value);
+  } catch (err) {
+    throw new Error(`Invalid SS58 address: ${value}`, { cause: err });
+  }
+  return value as SS58Address;
+}
+
+export function isSS58(value: string | null | undefined): value is SS58Address {
+  try {
+    decodeAddress(value);
+  } catch (_e) {
     return false;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  return decoded != null;
+  return true;
 }
 
 export const CUSTOM_METADATA_SCHEMA = z.object({
@@ -185,16 +191,3 @@ export const modulePropResolvers: {
   stakeFrom: (value: Codec) =>
     TOKEN_AMOUNT_SCHEMA.safeParse(value.toPrimitive()),
 };
-
-export const SessionDataSchema = z.object({
-  statement: z.string(), // "Sign in with polkadot extension to authenticate your session at ${uri}"
-  uri: z.string(), // origin or "<unknown>"
-  nonce: z.string(), // hex random number
-  created: z.string().datetime(), // ISO date string
-});
-
-export const SignedPayloadSchema = z.object({
-  payload: z.string({ description: "in hex" }),
-  signature: z.string({ description: "in hex" }),
-  address: z.string({ description: "in hex" }),
-});

@@ -8,11 +8,12 @@
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { assert } from "tsafe";
 import { ZodError } from "zod";
 
 import { db } from "@commune-ts/db/client";
 
-import { decodeJwtSessionToken } from "./jwt";
+import { decodeSessionToken, SessionData } from "./auth";
 
 /**
  * 1. CONTEXT
@@ -30,6 +31,7 @@ export const createTRPCContext = (opts: {
   headers: Headers;
   session: null;
   jwtSecret: string;
+  authOrigin: string;
 }) => {
   const { jwtSecret } = opts;
 
@@ -42,21 +44,23 @@ export const createTRPCContext = (opts: {
     ""
   ).split(" ");
 
-  let user: { userKey: string } | null = null;
+  let sessionData: SessionData | null = null;
   if (authToken) {
     try {
-      user = decodeJwtSessionToken(authToken, jwtSecret);
+      sessionData = decodeSessionToken(authToken, jwtSecret);
+      assert(sessionData.uri === opts.authOrigin);
       // TODO: verify JWT
     } catch (err) {
-      console.error("Failed to decode JWT", err);
+      console.error(`Failed to validate JWT: ${err}`);
     }
   }
 
   return {
     db,
     authType,
-    user,
+    sessionData,
     jwtSecret,
+    authOrigin: opts.authOrigin,
   };
 };
 
@@ -128,7 +132,7 @@ export const authenticatedProcedure = t.procedure.use(
         message: "Invalid or unsupported authentication type",
       });
     }
-    if (!opts.ctx.user?.userKey) {
+    if (!opts.ctx.sessionData?.userKey) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
         message: "Invalid or expired token",

@@ -4,7 +4,7 @@ import { hexToString, stringToHex } from "@polkadot/util";
 import { signatureVerify, cryptoWaitReady } from "@polkadot/util-crypto";
 
 import type { SignedPayload } from "@commune-ts/types";
-import { SessionDataSchema } from "@commune-ts/types";
+import { checkSS58, AUTH_REQ_SCHEMA } from "@commune-ts/types";
 
 export const signData = async <T>(
   signer: (
@@ -34,9 +34,9 @@ export const verifySignedData = async (signedInput: SignedPayload) => {
   }
 
   const unmarshed = JSON.parse(hexToString(payload));
-  const validated = SessionDataSchema.safeParse(unmarshed);
+  const validated = AUTH_REQ_SCHEMA.safeParse(unmarshed);
   if (!validated.success) {
     throw new Error(`Invalid payload: ${validated.error.message}`);
   }
-  return { data: validated.data, address };
+  return { payload: validated.data, address: checkSS58(address) };
 };

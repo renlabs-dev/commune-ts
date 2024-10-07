@@ -15,7 +15,7 @@ import SuperJSON from "superjson";
 
 import type { AppRouter } from "@commune-ts/api";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { createSessionData, signData } from "@commune-ts/utils";
+import { createAuthReqData, signData } from "@commune-ts/utils";
 
 import { env } from "~/env";
 
@@ -57,7 +57,7 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticating(true);
 
     try {
-      const sessionData = createSessionData(window);
+      const sessionData = createAuthReqData(env.NEXT_PUBLIC_AUTH_ORIGIN);
       const signedData = await signData(signHex, sessionData);
 
       const authClient = createTRPCClient<AppRouter>({

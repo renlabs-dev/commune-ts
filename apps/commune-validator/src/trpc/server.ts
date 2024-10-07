@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 
 import { createCaller, createTRPCContext } from "@commune-ts/api";
 
-import { env } from "../env";
+import { env } from "~/env";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
