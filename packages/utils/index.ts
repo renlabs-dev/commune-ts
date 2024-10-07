@@ -18,7 +18,8 @@ import type {
   StorageKey,
   SubspaceModule,
   ZodSchema,
-  Api } from "@commune-ts/types";
+  Api
+} from "@commune-ts/types";
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
@@ -152,9 +153,9 @@ export function toNano(standardValue: number | string): BN {
 export function formatToken(nano: number | bigint, decimalPlaces = 2): string {
   const fullPrecisionAmount = fromNano(nano).toString();
   const [integerPart = '0', fractionalPart = ''] = fullPrecisionAmount.split('.');
-  
+
   const formattedIntegerPart = Number(integerPart).toLocaleString('en-US');
-  const roundedFractionalPart = fractionalPart.slice(0, decimalPlaces).padEnd(decimalPlaces,'0' );
+  const roundedFractionalPart = fractionalPart.slice(0, decimalPlaces).padEnd(decimalPlaces, '0');
 
   return `${formattedIntegerPart}.${roundedFractionalPart}`;
 }
@@ -265,15 +266,26 @@ export function getExpirationTime(
 }
 
 export interface ChainEntry {
-   
-  getMapModules(netuid: number): Record<string, string | number>;
+
+  getMapModules(netuid: number): Record<string, string>;
 }
+
+
+export type SubspacePalletName =
+  | "subspaceModule" | "governanceModule" | "subnetEmissionModule";
+
 
 export type SubspaceStorageName =
   | "emission" | "incentive" | "dividends" | "lastUpdate"
   | "metadata" | "registrationBlock" | "name" | "address"
-  | "keys";
+  | "keys" | "subnetNames" | "immunityPeriod" | "minAllowedWeights"
+  | "maxAllowedWeights" | "tempo" | "maxAllowedUids" | "founder"
+  | "founderShare" | "incentiveRatio" | "trustRatio" | "maxWeightAge"
+  | "bondsMovingAverage" | "maximumSetWeightCallsPerEpoch" | "minValidatorStake"
+  | "maxAllowedValidators" | "moduleBurnConfig" | "subnetMetadata"
+  | "subnetGovernanceConfig" | "subnetEmission";
 
+// TODO: add MinimumAllowedStake, stakeFrom
 
 export function standardizeUidToSS58address<T extends SubspaceStorageName>(
   outerRecord: Record<T, Record<string, string | number>>,
@@ -303,8 +315,7 @@ export function standardizeUidToSS58address<T extends SubspaceStorageName>(
 }
 
 
-
-type StorageTypes = "VecMapping" | "DoubleMap";
+type StorageTypes = "VecMapping" | "DoubleMap" | "SimpleMap";
 
 export function getSubspaceStorageMappingKind(
   prop: SubspaceStorageName
@@ -316,53 +327,69 @@ export function getSubspaceStorageMappingKind(
   const doubleMapProps: SubspaceStorageName[] = [
     "metadata", "registrationBlock", "name", "address", "keys"
   ];
+  const simpleMapProps: SubspaceStorageName[] = [
+    "minAllowedWeights", "maxWeightAge", "maxAllowedWeights", "trustRatio",
+    "tempo", "founderShare", "subnetNames", "immunityPeriod", "maxAllowedUids",
+    "founder", "incentiveRatio", "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch", "minValidatorStake", "maxAllowedValidators",
+    "moduleBurnConfig", "subnetMetadata", "subnetGovernanceConfig", "subnetEmission"
+  ]
   const mapping = {
     VecMapping: vecProps,
     DoubleMap: doubleMapProps,
+    SimpleMap: simpleMapProps,
   };
   if (mapping.VecMapping.includes(prop)) return "VecMapping";
   else if (mapping.DoubleMap.includes(prop)) return "DoubleMap";
+  else if (mapping.SimpleMap.includes(prop)) return "SimpleMap";
   else return null;
 }
 
 export async function getPropsToMap(
-  props: SubspaceStorageName[],
+  props: Record<SubspacePalletName, SubspaceStorageName[]>,
   api: Api,
   netuid: number,
-) {
-  const mapped_props = props.reduce(
-    (acc, prop) => {
-      acc[prop] = getSubspaceStorageMappingKind(prop);
-      return acc;
-    },
-    {} as Record<SubspaceStorageName, StorageTypes | null>,
-  );
-  const mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>;
-  const keys = Object.keys(mapped_props) as SubspaceStorageName[];
-  const asyncOperations = keys.map(async (prop) => {
-    const value = mapped_props[prop];
-    if (value === "VecMapping") {
-      const entries = await api.query.subspaceModule?.[prop]?.entries();
-      if (entries === undefined) {
-        console.log(`No entries for ${prop}`);
-        // TODO: panic
-        process.exit(1);
-      }
-      mapped_prop_entries[prop] = new StorageVecMap(entries);
-    }
-    else if (value === "DoubleMap") {
-      const entries = await api.query.subspaceModule?.[prop]?.entries(netuid);
-      if (entries === undefined) {
-        console.log(`No entries for ${prop}`);
-        // TODO: panic
-        process.exit(1);
-      }
-      mapped_prop_entries[prop] = new DoubleMapEntries(entries);
-    }
-  });
-  await Promise.all(asyncOperations);
-  return mapped_prop_entries;
+): Promise<Record<SubspaceStorageName, ChainEntry>> {
+  const mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> = {} as Record<SubspaceStorageName, ChainEntry>
 
+  for (const [palletName, storageNames] of Object.entries(props)) {
+    const asyncOperations = storageNames.map(async (storageName) => {
+      const value = getSubspaceStorageMappingKind(storageName);
+
+      if (value === "VecMapping") {
+        const entries = await api.query[palletName]?.[storageName]?.entries();
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new StorageVecMap(entries);
+      } else if (value === "DoubleMap") {
+        const entries = await api.query[palletName]?.[storageName]?.entries(netuid);
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new DoubleMapEntries(entries);
+      } else if (value === "SimpleMap") {
+        const entries = await api.query[palletName]?.[storageName]?.entries();
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new SimpleMap(entries);
+      }
+    });
+
+    await Promise.all(asyncOperations);
+  }
+
+  return mapped_prop_entries;
 }
 
 export class StorageVecMap implements ChainEntry {
@@ -371,7 +398,7 @@ export class StorageVecMap implements ChainEntry {
   getMapModules(netuid: number) {
     const subnet_values = this.entry[netuid];
     if (subnet_values != undefined) {
-      const values = subnet_values[1].toPrimitive() as number[];
+      const values = subnet_values[1].toPrimitive() as string[];
       const modules_map = Object.fromEntries(
         values.map((value, index) => [index, value]),
       );
@@ -381,6 +408,16 @@ export class StorageVecMap implements ChainEntry {
   }
 }
 
+export class SimpleMap implements ChainEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) { }
+
+  getMapModules(netuid: number) {
+    const modules_map = Object.fromEntries(
+      this.entry.map((value, index) => [index, value[1].toPrimitive()]),
+    );
+    return modules_map as Record<string, string>;
+  }
+}
 
 export class DoubleMapEntries implements ChainEntry {
   constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
@@ -417,7 +454,6 @@ export class StorageEntry {
    */
   resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
     const isUid = typeof this.uidOrKey === "number";
-    console.log(uidKeyMap);
 
     const key = isUid
       ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
