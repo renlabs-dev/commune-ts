@@ -27,7 +27,7 @@ export async function subnetFetcherWorker(props: WorkerProps) {
         SubnetToDatabase(subnet, props.lastBlock.blockNumber),
       );
       log(
-        `Block ${props.lastBlock.blockNumber}: upserting  ${subnetData.length} subnets`,
+        `Block ${props.lastBlock.blockNumber}: upserting  ${subnetData.length} modules`,
       );
       await upsertSubnetData(subnetData);
 
