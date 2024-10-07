@@ -12,7 +12,7 @@ import {
 
 export type NewVote = typeof daoVoteSchema.$inferInsert;
 export type Module = typeof moduleData.$inferInsert;
-export type Subnet = typeof subnetDataSchema.$inferInsert
+export type Subnet = typeof subnetDataSchema.$inferInsert;
 
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
 
@@ -40,7 +40,8 @@ export async function upsertSubnetData(subnets: Subnet[]) {
         proposalExpiration: s.proposalExpiration,
         voteMode: s.voteMode,
         proposalRewardTreasuryAllocation: s.proposalRewardTreasuryAllocation,
-        maxProposalRewardTreasuryAllocation: s.maxProposalRewardTreasuryAllocation,
+        maxProposalRewardTreasuryAllocation:
+          s.maxProposalRewardTreasuryAllocation,
         proposalRewardInterval: s.proposalRewardInterval,
         minBurn: s.minBurn,
         maxBurn: s.maxBurn,
@@ -51,7 +52,7 @@ export async function upsertSubnetData(subnets: Subnet[]) {
         minValidatorStake: s.minValidatorStake,
         maxAllowedValidators: s.maxAllowedValidators,
         atBlock: s.atBlock,
-
+        subnetEmission: s.subnetEmission,
       })),
     )
     .onConflictDoUpdate({
