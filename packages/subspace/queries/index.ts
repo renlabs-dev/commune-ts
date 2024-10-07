@@ -15,22 +15,22 @@ import type {
 } from "@commune-ts/types";
 import {
   isSS58,
-  modulePropResolvers,
+  NetworkSubnetConfig,
+  NetworkSubnetConfigSchema,
+  MODULE_BURN_CONFIG_SCHEMA,
+  GOVERNANCE_CONFIG_SCHEMA,
   SUBSPACE_MODULE_SCHEMA,
 } from "@commune-ts/types";
 import {
-  assertOrThrow,
   ChainEntry,
   handleDaos,
   handleProposals,
-  newSubstrateModule,
   StorageEntry,
-  StorageVecMap,
   getPropsToMap,
   standardizeUidToSS58address,
+  SubspacePalletName,
   SubspaceStorageName,
 } from "@commune-ts/utils";
-import { bigint } from "zod";
 
 export { ApiPromise };
 
@@ -487,6 +487,58 @@ export async function queryRegisteredSubnetsInfo(api: Api) {
 
   console.log(netuids);
 }
+
+
+export async function querySubnetParams(api: Api): Promise<Array<NetworkSubnetConfig>> {
+  const subnetProps: Array<SubspaceStorageName> = [
+    "subnetNames",
+    "immunityPeriod",
+    "minAllowedWeights",
+    "maxAllowedWeights", "tempo", "maxAllowedUids", "founder", "founderShare",
+    "incentiveRatio", "trustRatio", "maxWeightAge", "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch", "minValidatorStake", "maxAllowedValidators",
+    "moduleBurnConfig", "subnetMetadata"
+  ]
+  const props: Record<SubspacePalletName, SubspaceStorageName[]> =
+    {
+      subspaceModule: subnetProps,
+      subnetEmissionModule: ["subnetEmission"],
+      governanceModule: ["subnetGovernanceConfig"]
+    } as Record<SubspacePalletName, SubspaceStorageName[]>;
+  const subnetInfo = await queryChain(api, props, [0]);
+  const subnetNames = subnetInfo["subnetNames"];
+
+
+  let subnets: Array<NetworkSubnetConfig> = [];
+  for (const [netuid, name] of Object.entries(subnetNames)) {
+    const subnet: NetworkSubnetConfig = NetworkSubnetConfigSchema.parse({
+      subnetNames: subnetInfo["subnetNames"][netuid]!,
+      immunityPeriod: subnetInfo["immunityPeriod"][netuid]!,
+      minAllowedWeights: subnetInfo["minAllowedWeights"][netuid]!,
+      maxAllowedWeights: subnetInfo["maxAllowedWeights"][netuid]!,
+      tempo: subnetInfo["tempo"][netuid]!,
+      maxAllowedUids: subnetInfo["maxAllowedUids"][netuid]!,
+      founder: subnetInfo["founder"][netuid]!,
+      founderShare: subnetInfo["founderShare"][netuid]!,
+      incentiveRatio: subnetInfo["incentiveRatio"][netuid]!,
+      trustRatio: subnetInfo["trustRatio"][netuid]!,
+      maxWeightAge: subnetInfo["maxWeightAge"][netuid]!,
+      bondsMovingAverage: subnetInfo["bondsMovingAverage"][netuid],
+      maximumSetWeightCallsPerEpoch: subnetInfo["maximumSetWeightCallsPerEpoch"][netuid],
+      minValidatorStake: subnetInfo["minValidatorStake"][netuid]!,
+      maxAllowedValidators: subnetInfo["maxAllowedValidators"][netuid],
+      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(subnetInfo["moduleBurnConfig"][netuid]),
+      subnetMetadata: subnetInfo["subnetMetadata"][netuid],
+      netuid: netuid,
+      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(subnetInfo["subnetGovernanceConfig"][netuid]),
+      subnetEmission: subnetInfo["subnetEmission"][netuid],
+    });
+    subnets.push(subnet);
+  }
+  return subnets;
+}
+
+
 export async function queryRegisteredModulesInfo<
   P extends OptionalProperties<SubspaceModule> & SubspaceStorageName,
 >(
@@ -498,9 +550,11 @@ export async function queryRegisteredModulesInfo<
     ? Array.from(new Set(netuidWhitelist))
     : undefined;
   console.log("Fetching module keys from the chain...");
-  const uidToSS58Query = await enrichSubspaceModules(api, ["keys"], netuidWhitelist);
+  const keyQuery: Record<SubspacePalletName, SubspaceStorageName[]> = { subspaceModule: ["keys"] }
+  const uidToSS58Query = await queryChain(api, keyQuery, netuidWhitelist);
   const uidToSS58 = uidToSS58Query['keys'] as Record<string, SS58Address>;
-  const modulesInfo = await enrichSubspaceModules(api, extraProps, netuidWhitelist);
+  const extraPropsQuery: Record<SubspacePalletName, P[]> = { subspaceModule: extraProps }
+  const modulesInfo = await queryChain(api, extraPropsQuery, netuidWhitelist);
   //eslint-disable-next-line
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
   const moduleMap: SubspaceModule[] = [];
@@ -550,18 +604,18 @@ export async function queryRegisteredModulesInfo<
  *
  * @returns the same moduleMap passed as argument
  */
-async function enrichSubspaceModules<
+async function queryChain<
   T extends SubspaceStorageName,
 >(
   api: Api,
-  props: T[],
+  props: Record<SubspacePalletName, T[]>,
   netuidWhitelist?: number[],
-): Promise<Record<T, Record<string, string | number>>> {
-  if (props.length === 0) {
-    return {} as Record<T, Record<string, string | number>>;
+): Promise<Record<T, Record<string, string | Record<string, any>>>> {
+  if (Object.keys(props).length === 0) {
+    return {} as Record<T, Record<string, string>>;
   }
-  props = Array.from(new Set(props));
-  const modulePropMap: Record<T, Record<string, string | number>> = {} as Record<T, Record<string, string | number>>;
+  // TODO: accept multiple netuids
+  const modulePropMap: Record<T, Record<string, string>> = {} as Record<T, Record<string, string>>;
   const moduletas = await getPropsToMap(props, api, 0);
   const entries = Object.entries(moduletas) as [T, ChainEntry][];
   entries.map(([prop, entry]) => {
