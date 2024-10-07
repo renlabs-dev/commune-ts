@@ -7,12 +7,90 @@ import {
   daoVoteSchema,
   governanceNotificationSchema,
   moduleData,
+  subnetDataSchema,
 } from "@commune-ts/db/schema";
 
 export type NewVote = typeof daoVoteSchema.$inferInsert;
 export type Module = typeof moduleData.$inferInsert;
+export type Subnet = typeof subnetDataSchema.$inferInsert;
 
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+
+export async function upsertSubnetData(subnets: Subnet[]) {
+  await db
+    .insert(subnetDataSchema)
+    .values(
+      subnets.map((s) => ({
+        netuid: s.netuid,
+        name: s.name,
+        tempo: s.tempo,
+        minAllowedWeights: s.minAllowedWeights,
+        maxAllowedWeights: s.maxAllowedWeights,
+        maxAllowedUids: s.maxAllowedUids,
+        maxWeightAge: s.maxWeightAge,
+        trustRatio: s.trustRatio,
+        founderShare: s.founderShare,
+        incentiveRatio: s.incentiveRatio,
+        founder: s.founder,
+        maximumSetWeightCallsPerEpoch: s.maximumSetWeightCallsPerEpoch,
+        bondsMa: s.bondsMa,
+        immunityPeriod: s.immunityPeriod,
+        subnetMetadata: s.subnetMetadata,
+        proposalCost: s.proposalCost,
+        proposalExpiration: s.proposalExpiration,
+        voteMode: s.voteMode,
+        proposalRewardTreasuryAllocation: s.proposalRewardTreasuryAllocation,
+        maxProposalRewardTreasuryAllocation:
+          s.maxProposalRewardTreasuryAllocation,
+        proposalRewardInterval: s.proposalRewardInterval,
+        minBurn: s.minBurn,
+        maxBurn: s.maxBurn,
+        adjustmentAlpha: s.adjustmentAlpha,
+        targetRegistrationsInterval: s.targetRegistrationsInterval,
+        targetRegistrationsPerInterval: s.targetRegistrationsPerInterval,
+        maxRegistrationsPerInterval: s.maxRegistrationsPerInterval,
+        minValidatorStake: s.minValidatorStake,
+        maxAllowedValidators: s.maxAllowedValidators,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        atBlock: s.atBlock,
+      })),
+    )
+    .onConflictDoUpdate({
+      target: [subnetDataSchema.netuid],
+      set: buildConflictUpdateColumns(subnetDataSchema, [
+        "name",
+        "tempo",
+        "minAllowedWeights",
+        "maxAllowedWeights",
+        "maxAllowedUids",
+        "maxWeightAge",
+        "trustRatio",
+        "founderShare",
+        "incentiveRatio",
+        "founder",
+        "maximumSetWeightCallsPerEpoch",
+        "bondsMa",
+        "immunityPeriod",
+        "subnetMetadata",
+        "proposalCost",
+        "proposalExpiration",
+        "voteMode",
+        "proposalRewardTreasuryAllocation",
+        "maxProposalRewardTreasuryAllocation",
+        "proposalRewardInterval",
+        "minBurn",
+        "maxBurn",
+        "adjustmentAlpha",
+        "targetRegistrationsInterval",
+        "targetRegistrationsPerInterval",
+        "maxRegistrationsPerInterval",
+        "minValidatorStake",
+        "maxAllowedValidators",
+      ]),
+    })
+    .execute();
+}
+
 export async function upsertModuleData(modules: Module[]) {
   await db
     .insert(moduleData)

@@ -1,41 +1,38 @@
 import {
-  // queryLastBlock,
-  queryRegisteredSubnetsInfo,
+  queryLastBlock,
+  querySubnetParams,
 } from "@commune-ts/subspace/queries";
 
 import type { WorkerProps } from "../types";
-import {
-  BLOCK_TIME,
-  // isNewBlock,
-  log,
-  sleep,
-  sleepUntilNewBlock,
-} from "../common";
-
-// import { upsertSubnetData } from "../db";
+import { BLOCK_TIME, isNewBlock, log, sleep } from "../common";
+import { upsertSubnetData } from "../db";
+import { SubnetToDatabase } from "../db/type-transformations.js";
 
 export async function subnetFetcherWorker(props: WorkerProps) {
   while (true) {
     try {
       const currentTime = new Date();
-      const lastBlock = await sleepUntilNewBlock(props);
+      const lastBlock = await queryLastBlock(props.api);
+      if (!isNewBlock(props.lastBlock.blockNumber, lastBlock.blockNumber)) {
+        await sleep(BLOCK_TIME);
+        continue;
+      }
       props.lastBlock = lastBlock;
-      await queryRegisteredSubnetsInfo(props.api);
+
       log(`Block ${props.lastBlock.blockNumber}: processing`);
 
-      //   const modules = await queryRegisteredSubnetsInfo(
-      //     props.lastBlock.apiAtBlock,
-      //     ["name", "address", "metadata", "registrationBlock"],
-      //     [NETUID_ZERO],
-      //   );
-      //   log(
-      //     `Block ${props.lastBlock.blockNumber}: upserting  ${subnet.length} subnets`,
-      //   );
-
-      //   await upsertSubnetData(subnet, props.lastBlock.blockNumber);
+      // TODO: do this in a better way
+      const subnets = await querySubnetParams(props.lastBlock.apiAtBlock);
+      const subnetData = subnets.map((subnet) =>
+        SubnetToDatabase(subnet, props.lastBlock.blockNumber),
+      );
+      log(
+        `Block ${props.lastBlock.blockNumber}: upserting  ${subnetData.length} subnets`,
+      );
+      await upsertSubnetData(subnetData);
 
       log(
-        `Block ${props.lastBlock.blockNumber}: subnet data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
+        `Block ${props.lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
       );
     } catch (e) {
       log("UNEXPECTED ERROR: ", e);
