@@ -15,7 +15,7 @@ import type {
   Proposal,
   RawEntry,
   Result,
-  SessionData,
+  AuthReq,
   SignedPayload,
   SS58Address,
   StorageKey,
@@ -572,6 +572,8 @@ export function flattenResult<T, E>(x: Result<T, E>): T | null {
   });
 }
 
+// ==== Auth ====
+
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
@@ -580,13 +582,10 @@ function generateNonce(): string {
   );
 }
 
-export function createSessionData(window: {
-  location: { origin: string };
-}): SessionData {
-  const uri = window.location.origin || "<unknown>";
+export function createAuthReqData(uri: string): AuthReq {
   return {
-    statement: `Sign in with polkadot extension to authenticate your session at ${uri}`,
-    uri: window.location.origin || "unknown",
+    statement: `Sign in with Polkadot extension to authenticate your session at ${uri}`,
+    uri,
     nonce: generateNonce(),
     created: new Date().toISOString(),
   };

@@ -2,7 +2,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@commune-ts/api";
 
-import { env } from "../../../../env";
+import { env } from "~/env";
 
 /**
  * Configure basic CORS headers

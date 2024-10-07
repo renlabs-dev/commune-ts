@@ -41,7 +41,7 @@ export const daoRouter = {
     .input(DAO_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db
         .update(daoVoteSchema)
         .set({
@@ -65,7 +65,7 @@ export const daoRouter = {
     .input(z.object({ daoId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db
         .update(daoVoteSchema)
         .set({
@@ -82,7 +82,7 @@ export const daoRouter = {
     .input(CADRE_CANDIDATES_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db
         .insert(cadreCandidatesSchema)
         .values({ ...input, userKey: userKey })
@@ -92,7 +92,7 @@ export const daoRouter = {
     .input(CADRE_VOTE_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db
         .insert(cadreVoteSchema)
         .values({ ...input, userKey: userKey })

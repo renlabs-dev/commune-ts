@@ -67,21 +67,21 @@ export const proposalCommentRouter = {
     .input(PROPOSAL_COMMENT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db.insert(proposalCommentSchema).values({ ...input, userKey });
     }),
   createCommentReport: authenticatedProcedure
     .input(COMMENT_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db.insert(commentReportSchema).values({ ...input, userKey });
     }),
   castVote: authenticatedProcedure
     .input(COMMENT_INTERACTION_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userKey = ctx.user!.userKey;
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db
         .insert(commentInteractionSchema)
         .values({ ...input, userKey })
@@ -98,7 +98,7 @@ export const proposalCommentRouter = {
   deleteVote: authenticatedProcedure
     .input(z.object({ commentId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const userKey = ctx.user?.userKey;
+      const userKey = ctx.sessionData?.userKey;
       await ctx.db
         .delete(commentInteractionSchema)
         .where(
