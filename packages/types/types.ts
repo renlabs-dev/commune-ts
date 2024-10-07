@@ -245,18 +245,18 @@ export interface UnrewardedProposal {
 
 export type NetworkSubnetConfig = z.infer<typeof NetworkSubnetConfigSchema>;
 export const GOVERNANCE_CONFIG_SCHEMA = z.object({
-  proposalCost: z.coerce.number().int(),
+  proposalCost: z.coerce.bigint(),
   voteMode: z.string(),
-  maxProposalRewardTreasuryAllocation: z.coerce.number().int(),
+  maxProposalRewardTreasuryAllocation: z.coerce.bigint(),
   proposalRewardInterval: z.coerce.number().int(),
   proposalRewardTreasuryAllocation: z.coerce.number(),
   proposalExpiration: z.coerce.number().int(),
 });
 
 export const MODULE_BURN_CONFIG_SCHEMA = z.object({
-  minBurn: z.coerce.number().int(),
-  maxBurn: z.coerce.number().int(),
-  adjustmentAlpha: z.coerce.number().int(),
+  minBurn: z.coerce.bigint(),
+  maxBurn: z.coerce.bigint(),
+  adjustmentAlpha: z.coerce.string(),
   targetRegistrationsInterval: z.coerce.number().int(),
   targetRegistrationsPerInterval: z.coerce.number().int(),
   maxRegistrationsPerInterval: z.coerce.number().int(),
@@ -275,14 +275,14 @@ export const NetworkSubnetConfigSchema = z.object({
   founderShare: z.coerce.number(),
   incentiveRatio: z.coerce.number().int(),
   trustRatio: z.coerce.number().int(),
-  maxWeightAge: z.coerce.number().int(),
+  maxWeightAge: z.coerce.string(),
   bondsMovingAverage: z.coerce.number().int().optional(),
   maximumSetWeightCallsPerEpoch: z.coerce.number().int().optional(),
-  minValidatorStake: z.coerce.number().int(),
+  minValidatorStake: z.coerce.bigint(),
   maxAllowedValidators: z.coerce.number().int().optional(),
   moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA,
   subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA,
-  subnetEmission: z.coerce.number().int(),
+  subnetEmission: z.coerce.bigint(),
   subnetMetadata: z.string().optional(),
 });
 

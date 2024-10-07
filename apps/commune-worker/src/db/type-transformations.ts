@@ -1,4 +1,4 @@
-import type { SubspaceModule, NetworkSubnetConfig } from "@commune-ts/types";
+import type { NetworkSubnetConfig, SubspaceModule } from "@commune-ts/types";
 
 import type { Module, Subnet } from "./index.js";
 
@@ -25,8 +25,10 @@ export function SubspaceModuleToDatabase(
   };
 }
 
-
-export function SubnetToDatabase(subnet: NetworkSubnetConfig, atBlock: number): Subnet {
+export function SubnetToDatabase(
+  subnet: NetworkSubnetConfig,
+  atBlock: number,
+): Subnet {
   return {
     netuid: subnet.netuid,
     name: subnet.subnetNames,
@@ -42,20 +44,26 @@ export function SubnetToDatabase(subnet: NetworkSubnetConfig, atBlock: number): 
     maxWeightAge: subnet.maxWeightAge,
     bondsMa: subnet.bondsMovingAverage ?? null,
     maximumSetWeightCallsPerEpoch: subnet.maximumSetWeightCallsPerEpoch ?? null,
-    minValidatorStake: subnet.minValidatorStake ?? null,
+    minValidatorStake: subnet.minValidatorStake,
     maxAllowedValidators: subnet.maxAllowedValidators ?? null,
     subnetMetadata: subnet.subnetMetadata,
     minBurn: subnet.moduleBurnConfig.minBurn,
     maxBurn: subnet.moduleBurnConfig.maxBurn,
     adjustmentAlpha: subnet.moduleBurnConfig.adjustmentAlpha,
-    targetRegistrationsInterval: subnet.moduleBurnConfig.targetRegistrationsInterval,
-    maxRegistrationsPerInterval: subnet.moduleBurnConfig.maxRegistrationsPerInterval,
+    targetRegistrationsInterval:
+      subnet.moduleBurnConfig.targetRegistrationsInterval,
+    maxRegistrationsPerInterval:
+      subnet.moduleBurnConfig.maxRegistrationsPerInterval,
     proposalCost: subnet.subnetGovernanceConfig.proposalCost,
     proposalExpiration: subnet.subnetGovernanceConfig.proposalExpiration,
-    maxProposalRewardTreasuryAllocation: subnet.subnetGovernanceConfig.maxProposalRewardTreasuryAllocation,
-    proposalRewardTreasuryAllocation: subnet.subnetGovernanceConfig.proposalRewardTreasuryAllocation,
-    proposalRewardInterval: subnet.subnetGovernanceConfig.proposalRewardInterval,
-    targetRegistrationsPerInterval: subnet.moduleBurnConfig.targetRegistrationsPerInterval,
+    maxProposalRewardTreasuryAllocation:
+      subnet.subnetGovernanceConfig.maxProposalRewardTreasuryAllocation,
+    proposalRewardTreasuryAllocation:
+      subnet.subnetGovernanceConfig.proposalRewardTreasuryAllocation,
+    proposalRewardInterval:
+      subnet.subnetGovernanceConfig.proposalRewardInterval,
+    targetRegistrationsPerInterval:
+      subnet.moduleBurnConfig.targetRegistrationsPerInterval,
     subnetEmission: subnet.subnetEmission,
     atBlock: atBlock,
     voteMode: subnet.subnetGovernanceConfig.voteMode,

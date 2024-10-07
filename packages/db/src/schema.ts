@@ -3,12 +3,12 @@ import {
   bigint,
   index,
   integer,
+  numeric,
   pgEnum,
   pgTableCreator,
   pgView,
   real,
   serial,
-  numeric,
   text,
   timestamp,
   unique,
@@ -103,7 +103,10 @@ export const subnetDataSchema = createTable(
     minAllowedWeights: integer("min_allowed_weights").notNull(),
     maxAllowedWeights: integer("max_allowed_weights").notNull(),
     maxAllowedUids: integer("max_allowed_uids").notNull(),
-    maxWeightAge: numeric("max_weight_age", { precision: 20, scale: 0 }).notNull(),
+    maxWeightAge: numeric("max_weight_age", {
+      precision: 20,
+      scale: 0,
+    }).notNull(),
     trustRatio: integer("trust_ratio").notNull(),
     founderShare: integer("founder_share").notNull(),
     incentiveRatio: integer("incentive_ratio").notNull(),
@@ -111,6 +114,7 @@ export const subnetDataSchema = createTable(
     maximumSetWeightCallsPerEpoch: integer(
       "maximum_set_weight_calls_per_epoch",
     ),
+    subnetEmission: bigint("subnet_emission", { mode: "bigint" }).notNull(),
     bondsMa: integer("bonds_ma"),
     immunityPeriod: integer("immunity_period").notNull(),
     subnetMetadata: text("subnet_metadata"),
@@ -129,7 +133,10 @@ export const subnetDataSchema = createTable(
     // BurnConfiguration fields
     minBurn: bigint("min_burn", { mode: "bigint" }).notNull(),
     maxBurn: bigint("max_burn", { mode: "bigint" }).notNull(),
-    adjustmentAlpha: numeric("adjustment_alpha", { precision: 20, scale: 0 }).notNull(),
+    adjustmentAlpha: numeric("adjustment_alpha", {
+      precision: 20,
+      scale: 0,
+    }).notNull(),
     targetRegistrationsInterval: integer(
       "target_registrations_interval",
     ).notNull(),
