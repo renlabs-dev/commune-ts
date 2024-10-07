@@ -8,6 +8,7 @@ import {
   pgView,
   real,
   serial,
+  numeric,
   text,
   timestamp,
   unique,
@@ -97,11 +98,12 @@ export const subnetDataSchema = createTable(
     id: serial("id").primaryKey(),
     netuid: integer("netuid").notNull().unique(),
     name: text("name").notNull(),
+    atBlock: integer("at_block").notNull(),
     tempo: integer("tempo").notNull(),
     minAllowedWeights: integer("min_allowed_weights").notNull(),
     maxAllowedWeights: integer("max_allowed_weights").notNull(),
     maxAllowedUids: integer("max_allowed_uids").notNull(),
-    maxWeightAge: integer("max_weight_age").notNull(),
+    maxWeightAge: numeric("max_weight_age", { precision: 20, scale: 0 }).notNull(),
     trustRatio: integer("trust_ratio").notNull(),
     founderShare: integer("founder_share").notNull(),
     incentiveRatio: integer("incentive_ratio").notNull(),
@@ -113,20 +115,21 @@ export const subnetDataSchema = createTable(
     immunityPeriod: integer("immunity_period").notNull(),
     subnetMetadata: text("subnet_metadata"),
     // GovernanceConfiguration fields
-    proposalCost: integer("proposal_cost").notNull(),
+    proposalCost: bigint("proposal_cost", { mode: "bigint" }).notNull(),
     proposalExpiration: integer("proposal_expiration").notNull(),
-    voteMode: integer("vote_mode").notNull(),
+    voteMode: text("vote_mode").notNull(),
     proposalRewardTreasuryAllocation: real(
       "proposal_reward_treasury_allocation",
     ).notNull(),
-    maxProposalRewardTreasuryAllocation: integer(
+    maxProposalRewardTreasuryAllocation: bigint(
       "max_proposal_reward_treasury_allocation",
+      { mode: "bigint" },
     ).notNull(),
     proposalRewardInterval: integer("proposal_reward_interval").notNull(),
     // BurnConfiguration fields
-    minBurn: integer("min_burn").notNull(),
-    maxBurn: integer("max_burn").notNull(),
-    adjustmentAlpha: integer("adjustment_alpha").notNull(),
+    minBurn: bigint("min_burn", { mode: "bigint" }).notNull(),
+    maxBurn: bigint("max_burn", { mode: "bigint" }).notNull(),
+    adjustmentAlpha: numeric("adjustment_alpha", { precision: 20, scale: 0 }).notNull(),
     targetRegistrationsInterval: integer(
       "target_registrations_interval",
     ).notNull(),
@@ -137,7 +140,7 @@ export const subnetDataSchema = createTable(
       "max_registrations_per_interval",
     ).notNull(),
     // Additional fields
-    minValidatorStake: integer("min_validator_stake"),
+    minValidatorStake: bigint("min_validator_stake", { mode: "bigint" }),
     maxAllowedValidators: integer("max_allowed_validators"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
