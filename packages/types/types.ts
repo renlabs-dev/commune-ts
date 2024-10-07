@@ -4,8 +4,7 @@ import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
 import type { Variant } from "rustie/dist/enum";
-import type { z } from "zod";
-
+import { z } from "zod";
 import type {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
@@ -44,10 +43,10 @@ type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
 
 export type UnionToVariants<T> =
   KeysOfUnion<T> extends infer K
-    ? K extends KeysOfUnion<T>
-      ? Variant<K, ValueOfUnion<T, K>>
-      : never
-    : never;
+  ? K extends KeysOfUnion<T>
+  ? Variant<K, ValueOfUnion<T, K>>
+  : never
+  : never;
 // ==========================
 
 export interface BaseProposal {
@@ -244,14 +243,59 @@ export interface UnrewardedProposal {
 
 // == Field Params ==
 
+export type NetworkSubnetConfig = z.infer<typeof NetworkSubnetConfigSchema>;
+export const GOVERNANCE_CONFIG_SCHEMA = z.object({
+  proposalCost: z.coerce.number().int(),
+  voteMode: z.string(),
+  maxProposalRewardTreasuryAllocation: z.coerce.number().int(),
+  proposalRewardInterval: z.coerce.number().int(),
+  proposalRewardTreasuryAllocation: z.coerce.number(),
+  proposalExpiration: z.coerce.number().int(),
+});
+
+export const MODULE_BURN_CONFIG_SCHEMA = z.object({
+  minBurn: z.coerce.number().int(),
+  maxBurn: z.coerce.number().int(),
+  adjustmentAlpha: z.coerce.number().int(),
+  targetRegistrationsInterval: z.coerce.number().int(),
+  targetRegistrationsPerInterval: z.coerce.number().int(),
+  maxRegistrationsPerInterval: z.coerce.number().int(),
+});
+
+
+export const NetworkSubnetConfigSchema = z.object({
+  netuid: z.coerce.number().int(),
+  subnetNames: z.string(),
+  immunityPeriod: z.coerce.number().int(),
+  minAllowedWeights: z.coerce.number().int(),
+  maxAllowedWeights: z.coerce.number().int(),
+  tempo: z.coerce.number().int(),
+  maxAllowedUids: z.coerce.number().int(),
+  founder: z.string(),
+  founderShare: z.coerce.number(),
+  incentiveRatio: z.coerce.number().int(),
+  trustRatio: z.coerce.number().int(),
+  maxWeightAge: z.coerce.number().int(),
+  bondsMovingAverage: z.coerce.number().int().optional(),
+  maximumSetWeightCallsPerEpoch: z.coerce.number().int().optional(),
+  minValidatorStake: z.coerce.number().int(),
+  maxAllowedValidators: z.coerce.number().int().optional(),
+  moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA,
+  subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA,
+  subnetEmission: z.coerce.number().int(),
+  subnetMetadata: z.string().optional(),
+});
+
+
+
 export type SubspaceModule = z.infer<typeof SUBSPACE_MODULE_SCHEMA>;
 
 export type OptionalProperties<T> = keyof T extends infer K
   ? K extends keyof T
-    ? T[K] extends infer U
-      ? U extends undefined
-        ? K
-        : never
-      : never
-    : never
+  ? T[K] extends infer U
+  ? U extends undefined
+  ? K
+  : never
+  : never
+  : never
   : never;
