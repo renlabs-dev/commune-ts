@@ -51,6 +51,7 @@ export const createTRPCContext = (opts: {
       assert(sessionData.uri === opts.authOrigin);
       // TODO: verify JWT
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.error(`Failed to validate JWT: ${err}`);
     }
   }

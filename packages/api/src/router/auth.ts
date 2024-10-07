@@ -1,7 +1,8 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 
-import { AuthReq, SIGNED_PAYLOAD_SCHEMA } from "@commune-ts/types";
+import type { AuthReq } from "@commune-ts/types";
+import { SIGNED_PAYLOAD_SCHEMA } from "@commune-ts/types";
 
 import { createSessionToken } from "../auth";
 import { verifySignedData } from "../auth/sign";
@@ -16,10 +17,12 @@ export const authRouter = {
     .input(SIGNED_PAYLOAD_SCHEMA)
     .mutation(async ({ ctx, input }) => {
       try {
+        // eslint-disable-next-line no-var
         var { address, payload } = await verifySignedData(input);
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           message: `Invalid signed payload: ${err}`,
           cause: err,
         });
@@ -30,12 +33,13 @@ export const authRouter = {
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           message: `Invalid authentication request: ${err}`,
           cause: err,
         });
       }
 
-      const token = await createSessionToken(
+      const token = createSessionToken(
         {
           userKey: address,
           uri: payload.uri,
