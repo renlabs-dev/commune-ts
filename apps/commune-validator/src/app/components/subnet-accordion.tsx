@@ -5,22 +5,28 @@ import { ChevronUpIcon } from "@heroicons/react/16/solid";
 
 import { smallAddress } from "@commune-ts/utils";
 
-import type { Subnet } from "~/utils/types";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
-import { subnetDataList } from "~/utils/subnet-data-list";
 import { DelegateSubnetWeight } from "./delegate-subnet-weight";
 
-type SubnetKey = keyof Subnet;
+interface SubnetAccordionWeightProps {
+  id: number;
+  name: string;
+  founderAddress: string;
+  percentage?: number;
+}
 
-export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
+export default function SubnetAccordion({
+  id,
+  name,
+  founderAddress,
+  percentage,
+}: SubnetAccordionWeightProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleAccordion = () => setIsOpen(!isOpen);
 
   const { delegatedSubnets } = useDelegateSubnetStore();
-  const isSubnetDelegated = delegatedSubnets.some(
-    (s) => s.id === subnet.netuid,
-  );
+  const isSubnetDelegated = delegatedSubnets.some((s) => s.id === id);
 
   return (
     <div
@@ -28,12 +34,17 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
     >
       <div className="flex flex-col items-center justify-between gap-3 border-white/20 px-4 md:flex-row">
         <div className="flex gap-6">
-          <NameCard label="Name" name={subnet.name} />
-          <NameCard label="Subnet NetUID" name={`${subnet.netuid}`} />
-          <NameCard label="Founder" name={smallAddress(subnet.founder)} />
+          <NameCard label="Name" name={name} />
+          <NameCard label="Subnet id" name={`${id}`} />
+          <NameCard label="Founder" name={smallAddress(founderAddress)} />
+          {percentage && <NameCard label="Allocated" name={`${percentage}%`} />}
         </div>
         <div className="flex gap-3">
-          <DelegateSubnetWeight subnet={subnet} />
+          <DelegateSubnetWeight
+            id={id}
+            name={name}
+            founderAddress={founderAddress}
+          />
           <button
             onClick={toggleAccordion}
             className="flex w-fit items-center text-nowrap border border-cyan-500 bg-cyan-600/15 py-1.5 pl-3 pr-1 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
@@ -49,31 +60,6 @@ export default function SubnetAccordion({ subnet }: { subnet: Subnet }) {
           </button>
         </div>
       </div>
-
-      {isOpen && (
-        <div className="mt-4 border-t border-white/20 p-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {subnetDataList.map((field) => (
-              <InfoItem
-                key={field.key}
-                label={field.label}
-                value={subnet[field.key as SubnetKey]}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function InfoItem({ label, value }: { label: string; value: unknown }) {
-  return (
-    <div className="flex gap-2">
-      <span className="font-semibold text-cyan-500">{label}:</span>
-      <span>
-        {value !== null && value !== undefined ? String(value) : "N/A"}
-      </span>
     </div>
   );
 }

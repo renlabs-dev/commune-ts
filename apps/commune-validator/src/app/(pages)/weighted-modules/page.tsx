@@ -29,8 +29,8 @@ export default function Page() {
               id={module.id}
               key={module.id}
               name={module.name}
+              percentage={module.percentage}
               moduleKey={module.address}
-              metadata={null} // TODO - metadataUri
             />
           ))}
         </div>

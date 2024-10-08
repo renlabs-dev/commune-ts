@@ -17,6 +17,7 @@ export default async function Page({
   const { modules, metadata } = await api.module.paginatedAll({
     page: currentPage,
     limit: 24,
+    // @ts-expect-error - TS doesn't know about sortBy for some reason
     sortBy: sortBy,
     order: order,
   });
@@ -34,7 +35,6 @@ export default async function Page({
               key={module.id}
               name={module.name ?? ""}
               moduleKey={module.moduleKey}
-              metadata={module.metadataUri}
             />
           ))
         ) : (
