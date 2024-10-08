@@ -1,30 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUpIcon } from "@heroicons/react/16/solid";
+import Link from "next/link";
+import { ArrowRightIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
 
 import { smallAddress } from "@commune-ts/utils";
 
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 import { DelegateSubnetWeight } from "./delegate-subnet-weight";
 
-interface SubnetAccordionWeightProps {
+interface SubnetCardWeightProps {
   id: number;
   name: string;
   founderAddress: string;
   percentage?: number;
 }
 
-export default function SubnetAccordion({
+export default function SubnetCard({
   id,
   name,
   founderAddress,
   percentage,
-}: SubnetAccordionWeightProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleAccordion = () => setIsOpen(!isOpen);
-
+}: SubnetCardWeightProps) {
   const { delegatedSubnets } = useDelegateSubnetStore();
   const isSubnetDelegated = delegatedSubnets.some((s) => s.id === id);
 
@@ -45,19 +42,12 @@ export default function SubnetAccordion({
             name={name}
             founderAddress={founderAddress}
           />
-          <button
-            onClick={toggleAccordion}
-            className="flex w-fit items-center text-nowrap border border-cyan-500 bg-cyan-600/15 py-1.5 pl-3 pr-1 text-sm font-semibold text-cyan-500 transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+          <Link
+            className="flex w-full items-center justify-between gap-2 border border-white/20 bg-[#898989]/5 p-2 pl-3 text-sm text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-500"
+            href={`subnet/${id}`}
           >
-            <span>{isOpen ? "Collapse" : "Expand"}</span>
-            <span>
-              <ChevronUpIcon
-                className={`h-5 w-5 transform transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </span>
-          </button>
+            View More <ArrowRightIcon className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </div>

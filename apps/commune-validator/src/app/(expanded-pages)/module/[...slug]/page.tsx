@@ -51,12 +51,11 @@ export default async function ModulePage({ params }: Params) {
     mdl.metadataUri ?? "",
   )) as CustomMetadata;
 
-  const title = metadata.Ok?.title ?? "No Metadata";
   // limited to 140 characters
   const description = metadata.Ok?.body ?? "This module has no custom metadata";
 
   return (
-    <div className="container mx-auto p-4 pb-28 text-white">
+    <div className="container mx-auto min-h-[calc(100vh-169px)] p-4 pb-28 text-white">
       <div className="my-16 flex w-full items-center justify-between">
         <Link
           href="/"
@@ -66,7 +65,7 @@ export default async function ModulePage({ params }: Params) {
           Go back to modules list
         </Link>
         <h1 className="flex-grow animate-fade-right text-center text-3xl font-semibold">
-          {title}
+          {mdl.name}
         </h1>
         <div className="">
           <ReportModule moduleId={mdl.id} />
@@ -101,17 +100,6 @@ function ModuleDataGrid({ module }: { module: Module }) {
           label: "Registration Block",
           value: module.registrationBlock ?? "N/A",
         },
-        {
-          label: "Registered At",
-          value: new Date(module.createdAt).toLocaleString(),
-        },
-      ],
-    },
-    {
-      title: "URIs",
-      fields: [
-        { label: "Address URI", value: module.addressUri ?? "N/A" },
-        { label: "Metadata URI", value: module.metadataUri ?? "N/A" },
       ],
     },
     {

@@ -1,24 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
-import { MarkdownView } from "@commune-ts/ui/markdown-view";
-import { fetchCustomMetadata, smallAddress } from "@commune-ts/utils";
+import { formatToken, smallAddress } from "@commune-ts/utils";
 
 import type { Subnet } from "~/utils/types";
-// import { ReportSubnet } from "~/app/components/report-Subnet";
 import { api } from "~/trpc/server";
 
 interface Params {
   params: {
     slug: string[];
-  };
-}
-
-interface CustomMetadata {
-  Ok?: {
-    title?: string;
-    body?: string;
   };
 }
 
@@ -41,41 +33,36 @@ export default async function SubnetPage({ params }: Params) {
     notFound();
   }
 
-  const metadata = (await fetchCustomMetadata(
-    "proposal",
-    sbnt.id,
-    sbnt.subnetMetadata ?? "",
-  )) as CustomMetadata;
-
-  const title = metadata.Ok?.title ?? "No Metadata";
-
-  const description = metadata.Ok?.body ?? "This Subnet has no custom metadata";
-
   return (
-    <div className="container mx-auto p-4 pb-28 text-white">
-      <div className="my-16 flex w-full items-center justify-between">
-        <Link
-          href="/"
-          className="absolute z-10 flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10"
-        >
-          <ArrowLeftIcon className="h-5 w-5 text-green-500" />
-          Go back to Subnets list
-        </Link>
-        <h1 className="flex-grow animate-fade-right text-center text-3xl font-semibold">
-          {title}
+    <div className="container mx-auto min-h-[calc(100vh-169px)] w-full p-4 pb-28 text-white">
+      <div className="flex w-full flex-col items-center justify-between gap-6 md:my-16 md:flex-row md:gap-0">
+        <div className="z-10 flex gap-3 md:absolute">
+          <Link
+            href="/"
+            className="flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10"
+          >
+            <ArrowLeftIcon className="h-5 w-5 text-cyan-500" />
+            Go back to Subnets list
+          </Link>
+          {sbnt.subnetMetadata && (
+            <Link
+              target="_blank"
+              href={sbnt.subnetMetadata}
+              className="flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10"
+            >
+              <GlobeAltIcon className="h-5 w-5 text-cyan-500" />
+              View More
+            </Link>
+          )}
+        </div>
+        <h1 className="flex-grow animate-fade-right text-center font-semibold text-gray-300">
+          <span className="text-3xl font-semibold text-cyan-500">
+            {sbnt.name}
+          </span>{" "}
+          / NETUID: {sbnt.netuid}
         </h1>
       </div>
-      <div className="flex flex-col-reverse gap-6 md:flex-row">
-        <div className="animate-fade-down animate-delay-300 md:w-[60%] xl:w-[70%]">
-          <div className="border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
-            <h2 className="mb-4 text-xl font-semibold">Description</h2>
-            <MarkdownView source={description} />
-          </div>
-        </div>
-        <div className="flex animate-fade-down flex-col gap-6 animate-delay-500 md:w-[40%] xl:w-[30%]">
-          <SubnetDataGrid subnet={sbnt} />
-        </div>
-      </div>
+      <SubnetDataGrid subnet={sbnt} />
     </div>
   );
 }
@@ -88,7 +75,6 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
         { label: "Subnet ID", value: subnet.id },
         { label: "Netuid", value: subnet.netuid },
         { label: "Name", value: subnet.name },
-        { label: "At Block", value: subnet.atBlock },
         { label: "Tempo", value: subnet.tempo },
         { label: "Founder", value: smallAddress(subnet.founder) },
       ],
@@ -112,7 +98,10 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
       fields: [
         { label: "Founder Share", value: subnet.founderShare },
         { label: "Incentive Ratio", value: subnet.incentiveRatio },
-        { label: "Subnet Emission", value: subnet.subnetEmission.toString() },
+        {
+          label: "Subnet Emission",
+          value: `${formatToken(BigInt(subnet.subnetEmission))} COMAI`,
+        },
         { label: "Bonds MA", value: subnet.bondsMa },
         { label: "Immunity Period", value: subnet.immunityPeriod },
       ],
@@ -120,7 +109,10 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
     {
       title: "Governance Configuration",
       fields: [
-        { label: "Proposal Cost", value: subnet.proposalCost.toString() },
+        {
+          label: "Proposal Cost",
+          value: `${formatToken(BigInt(subnet.proposalCost))} COMAI`,
+        },
         { label: "Proposal Expiration", value: subnet.proposalExpiration },
         { label: "Vote Mode", value: subnet.voteMode },
         {
@@ -129,7 +121,7 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
         },
         {
           label: "Max Proposal Reward Treasury Allocation",
-          value: subnet.maxProposalRewardTreasuryAllocation.toString(),
+          value: `${formatToken(BigInt(subnet.maxProposalRewardTreasuryAllocation))} COMAI`,
         },
         {
           label: "Proposal Reward Interval",
@@ -140,9 +132,18 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
     {
       title: "Burn Configuration",
       fields: [
-        { label: "Min Burn", value: subnet.minBurn.toString() },
-        { label: "Max Burn", value: subnet.maxBurn.toString() },
-        { label: "Adjustment Alpha", value: subnet.adjustmentAlpha },
+        {
+          label: "Min Burn",
+          value: `${formatToken(BigInt(subnet.minBurn))} COMAI`,
+        },
+        {
+          label: "Max Burn",
+          value: `${formatToken(BigInt(subnet.maxBurn))} COMAI`,
+        },
+        {
+          label: "Adjustment Alpha",
+          value: subnet.adjustmentAlpha,
+        },
         {
           label: "Target Registrations Interval",
           value: subnet.targetRegistrationsInterval,
@@ -160,27 +161,18 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
     {
       title: "Additional Information",
       fields: [
+        { label: "At Block", value: subnet.atBlock },
         {
           label: "Min Validator Stake",
-          value: subnet.minValidatorStake?.toString(),
+          value: `${formatToken(subnet.minValidatorStake ?? 0)} COMAI`,
         },
         { label: "Max Allowed Validators", value: subnet.maxAllowedValidators },
-        {
-          label: "Created At",
-          value: new Date(subnet.createdAt).toLocaleString(),
-        },
-        {
-          label: "Deleted At",
-          value: subnet.deletedAt
-            ? new Date(subnet.deletedAt).toLocaleString()
-            : "N/A",
-        },
       ],
     },
   ];
 
   return (
-    <div className="grid gap-6">
+    <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-3">
       {dataGroups.map((group, index) => (
         <div
           key={index}
