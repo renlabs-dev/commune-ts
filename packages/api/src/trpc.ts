@@ -13,7 +13,8 @@ import { ZodError } from "zod";
 
 import { db } from "@commune-ts/db/client";
 
-import { decodeSessionToken, SessionData } from "./auth";
+import type { SessionData } from "./auth";
+import { decodeSessionToken } from "./auth";
 
 /**
  * 1. CONTEXT
