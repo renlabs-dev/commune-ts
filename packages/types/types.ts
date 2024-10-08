@@ -3,10 +3,10 @@ import type { ApiDecoration } from "@polkadot/api/types";
 import type { Header } from "@polkadot/types/interfaces";
 import type { Codec, IU8a } from "@polkadot/types/types";
 import type { Enum, Tagged } from "rustie";
-import { Variant } from "rustie/dist/enum";
+import type { Variant } from "rustie/dist/enum";
 import { z } from "zod";
 
-import {
+import type {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
   DAO_METADATA_SCHEMA,
@@ -24,6 +24,7 @@ export type {
 
 export type { ApiPromise } from "@polkadot/api";
 export type { StorageKey } from "@polkadot/types";
+
 export type { AnyTuple, Codec } from "@polkadot/types/types";
 
 export type Entry<T> = [unknown, T];
@@ -34,7 +35,8 @@ export type GovernanceModeType = "PROPOSAL" | "DAO";
 export type Nullish = null | undefined;
 export type Api = ApiDecoration<"promise"> | ApiPromise;
 
-// == rustie related stuff ==
+// ==== Rustie related ====
+
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
 type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
@@ -44,10 +46,11 @@ type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
 
 export type UnionToVariants<T> =
   KeysOfUnion<T> extends infer K
-    ? K extends KeysOfUnion<T>
-      ? Variant<K, ValueOfUnion<T, K>>
-      : never
-    : never;
+  ? K extends KeysOfUnion<T>
+  ? Variant<K, ValueOfUnion<T, K>>
+  : never
+  : never;
+
 // ==========================
 
 export interface BaseProposal {
@@ -67,11 +70,13 @@ export interface CustomDataError {
   message: string;
 }
 
-export function isCustomDataError(obj: any): obj is CustomDataError {
+// TODO: see if this works
+export function isCustomDataError(obj: object): obj is CustomDataError {
   return (
     typeof obj === "object" &&
     "Err" in obj &&
     typeof obj.Err === "object" &&
+    obj.Err !== null &&
     "message" in obj.Err
   );
 }
@@ -93,11 +98,11 @@ export interface StakeFromData {
   perAddr: Map<string, bigint>;
 }
 
-export type VoteWithStake = {
+export interface VoteWithStake {
   address: SS58Address;
   stake: bigint;
   vote: "In Favor" | "Against";
-};
+}
 
 export interface LastBlock {
   blockHeader: Header;
@@ -116,9 +121,10 @@ export interface ProposalStakeInfo {
 
 // == SS58 ==
 
-export type SS58Address = Tagged<string, "SS58Address">;
+export type SS58Address = Tagged<"SS58Address", string>;
 
 // == Transactions ==
+
 export interface TransactionResult {
   finalized: boolean;
   message: string | null;
@@ -242,8 +248,49 @@ export interface UnrewardedProposal {
 
 // == Field Params ==
 
-export interface SubspaceModule
-  extends z.infer<typeof SUBSPACE_MODULE_SCHEMA> {}
+export type NetworkSubnetConfig = z.infer<typeof NetworkSubnetConfigSchema>;
+export const GOVERNANCE_CONFIG_SCHEMA = z.object({
+  proposalCost: z.coerce.bigint(),
+  voteMode: z.string(),
+  maxProposalRewardTreasuryAllocation: z.coerce.bigint(),
+  proposalRewardInterval: z.coerce.number().int(),
+  proposalRewardTreasuryAllocation: z.coerce.number(),
+  proposalExpiration: z.coerce.number().int(),
+});
+
+export const MODULE_BURN_CONFIG_SCHEMA = z.object({
+  minBurn: z.coerce.bigint(),
+  maxBurn: z.coerce.bigint(),
+  adjustmentAlpha: z.coerce.string(),
+  targetRegistrationsInterval: z.coerce.number().int(),
+  targetRegistrationsPerInterval: z.coerce.number().int(),
+  maxRegistrationsPerInterval: z.coerce.number().int(),
+});
+
+export const NetworkSubnetConfigSchema = z.object({
+  netuid: z.coerce.number().int(),
+  subnetNames: z.string(),
+  immunityPeriod: z.coerce.number().int(),
+  minAllowedWeights: z.coerce.number().int(),
+  maxAllowedWeights: z.coerce.number().int(),
+  tempo: z.coerce.number().int(),
+  maxAllowedUids: z.coerce.number().int(),
+  founder: z.string(),
+  founderShare: z.coerce.number(),
+  incentiveRatio: z.coerce.number().int(),
+  trustRatio: z.coerce.number().int(),
+  maxWeightAge: z.coerce.string(),
+  bondsMovingAverage: z.coerce.number().int().optional(),
+  maximumSetWeightCallsPerEpoch: z.coerce.number().int().optional(),
+  minValidatorStake: z.coerce.bigint(),
+  maxAllowedValidators: z.coerce.number().int().optional(),
+  moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA,
+  subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA,
+  subnetEmission: z.coerce.bigint(),
+  subnetMetadata: z.string().optional(),
+});
+
+export type SubspaceModule = z.infer<typeof SUBSPACE_MODULE_SCHEMA>;
 
 export type OptionalProperties<T> = keyof T extends infer K
   ? K extends keyof T
@@ -254,3 +301,22 @@ export type OptionalProperties<T> = keyof T extends infer K
       : never
     : never
   : never;
+
+// == Auth ==
+
+export const AUTH_REQ_SCHEMA = z.object({
+  statement: z.string(), // "Sign in with Polkadot extension to authenticate your session at ${uri}"
+  uri: z.string(), // origin or "<unknown>"
+  nonce: z.string(), // hex random number
+  created: z.string().datetime(), // ISO date string
+});
+
+export type AuthReq = z.infer<typeof AUTH_REQ_SCHEMA>;
+
+export const SIGNED_PAYLOAD_SCHEMA = z.object({
+  payload: z.string({ description: "in hex" }),
+  signature: z.string({ description: "in hex" }),
+  address: z.string({ description: "in hex" }),
+});
+
+export type SignedPayload = z.infer<typeof SIGNED_PAYLOAD_SCHEMA>;

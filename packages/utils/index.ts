@@ -1,9 +1,12 @@
+import { BN, stringToHex } from "@polkadot/util";
 import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import { AssertionError } from "tsafe";
 
 import type {
   AnyTuple,
+  Api,
+  AuthReq,
   Codec,
   CustomDaoMetadata,
   CustomDataError,
@@ -13,18 +16,16 @@ import type {
   Proposal,
   RawEntry,
   Result,
+  SignedPayload,
   SS58Address,
   StorageKey,
-  SubspaceModule,
+  ZodSchema,
 } from "@commune-ts/types";
 import {
   CUSTOM_METADATA_SCHEMA,
   DAO_APPLICATIONS_SCHEMA,
-  isSS58,
   PROPOSAL_SCHEMA,
-  SUBSPACE_MODULE_SCHEMA,
   URL_SCHEMA,
-  ZodSchema,
 } from "@commune-ts/types";
 
 /**
@@ -113,17 +114,53 @@ export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
   return (Number(a) * Number(base)) / Number(b) / baseNum;
 }
 
-export function fromNano(nano: number | bigint): number {
-  if (typeof nano === "bigint") return bigintDivision(nano, 1_000_000_000n);
-  return nano / 1_000_000_000;
+const NANO_MULTIPLIER = new BN("1000000000");
+
+/**
+ * Converts a nano value to its standard unit representation
+ * @param nanoValue - The value in nano units (as a number, string, or BN)
+ * @param decimals - Number of decimal places to round to (default: 6)
+ * @returns The value in standard units as a string
+ */
+export function fromNano(
+  nanoValue: number | string | bigint | BN,
+  decimals = 9,
+): string {
+  const bnValue = new BN(nanoValue.toString());
+  const integerPart = bnValue.div(NANO_MULTIPLIER);
+  const fractionalPart = bnValue.mod(NANO_MULTIPLIER);
+
+  const fractionalStr = fractionalPart.toString().padStart(9, "0");
+  const roundedFractionalStr = fractionalStr.slice(0, decimals);
+
+  return `${integerPart.toString()}.${roundedFractionalStr}`;
 }
 
-export function formatToken(nano: number | bigint): string {
-  const amount = fromNano(nano);
-  return amount.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+/**
+ * Converts a standard unit value to nano
+ * @param standardValue - The value in standard units (as a number or string)
+ * @returns The value in nano units as a BN
+ */
+export function toNano(standardValue: number | string): BN {
+  const [integerPart, fractionalPart = ""] = standardValue
+    .toString()
+    .split(".");
+  const paddedFractionalPart = fractionalPart.padEnd(9, "0");
+  const nanoValue = `${integerPart}${paddedFractionalPart}`;
+  return new BN(nanoValue);
+}
+
+export function formatToken(nano: number | bigint, decimalPlaces = 2): string {
+  const fullPrecisionAmount = fromNano(nano).toString();
+  const [integerPart = "0", fractionalPart = ""] =
+    fullPrecisionAmount.split(".");
+
+  const formattedIntegerPart = Number(integerPart).toLocaleString("en-US");
+  const roundedFractionalPart = fractionalPart
+    .slice(0, decimalPlaces)
+    .padEnd(decimalPlaces, "0");
+
+  return `${formattedIntegerPart}.${roundedFractionalPart}`;
 }
 
 export function calculateAmount(amount: string): number {
@@ -231,49 +268,217 @@ export function getExpirationTime(
   return `${formattedDate} ${shouldReturnRemainingTime ? `(${hoursRemaining} hours)` : ""}`;
 }
 
-export class StorageEntry {
-  constructor(private readonly entry: [StorageKey<AnyTuple>, unknown]) {}
+export interface ChainEntry {
+  getMapModules(netuid?: number): Record<string, string>;
+}
 
-  get netuid(): number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[0]!.toPrimitive() as number;
+export type SubspacePalletName =
+  | "subspaceModule"
+  | "governanceModule"
+  | "subnetEmissionModule";
+
+export type SubspaceStorageName =
+  | "emission"
+  | "incentive"
+  | "dividends"
+  | "lastUpdate"
+  | "metadata"
+  | "registrationBlock"
+  | "name"
+  | "address"
+  | "keys"
+  | "subnetNames"
+  | "immunityPeriod"
+  | "minAllowedWeights"
+  | "maxAllowedWeights"
+  | "tempo"
+  | "maxAllowedUids"
+  | "founder"
+  | "founderShare"
+  | "incentiveRatio"
+  | "trustRatio"
+  | "maxWeightAge"
+  | "bondsMovingAverage"
+  | "maximumSetWeightCallsPerEpoch"
+  | "minValidatorStake"
+  | "maxAllowedValidators"
+  | "moduleBurnConfig"
+  | "subnetMetadata"
+  | "subnetGovernanceConfig"
+  | "subnetEmission";
+
+// TODO: add MinimumAllowedStake, stakeFrom
+
+export function standardizeUidToSS58address<T extends SubspaceStorageName>(
+  outerRecord: Record<T, Record<string, any>>,
+  uidToKey: Record<string, SS58Address>,
+): Record<T, Record<string, string | number>> {
+  const processedRecord: Record<
+    T,
+    Record<string, string | number>
+  > = {} as Record<T, Record<string, string | number>>;
+
+  const entries = Object.entries(outerRecord) as [T, Record<string, any>][];
+  for (const [outerKey, innerRecord] of entries) {
+    const processedInnerRecord: Record<string, string | number> = {};
+
+    for (const [innerKey, value] of Object.entries(innerRecord)) {
+      if (!isNaN(Number(innerKey))) {
+        const newKey = uidToKey[innerKey];
+        if (newKey !== undefined) {
+          processedInnerRecord[newKey] = value;
+        }
+      } else {
+        processedInnerRecord[innerKey] = value;
+      }
+    }
+
+    processedRecord[outerKey] = processedInnerRecord;
   }
 
-  get uidOrKey(): string | number {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.entry[0].args[1]!.toPrimitive() as string | number;
+  return processedRecord;
+}
+
+type StorageTypes = "VecMapping" | "DoubleMap" | "SimpleMap";
+
+export function getSubspaceStorageMappingKind(
+  prop: SubspaceStorageName,
+): StorageTypes | null {
+  const vecProps: SubspaceStorageName[] = [
+    "emission",
+    "incentive",
+    "dividends",
+    "lastUpdate",
+  ];
+  const doubleMapProps: SubspaceStorageName[] = [
+    "metadata",
+    "registrationBlock",
+    "name",
+    "address",
+    "keys",
+  ];
+  const simpleMapProps: SubspaceStorageName[] = [
+    "minAllowedWeights",
+    "maxWeightAge",
+    "maxAllowedWeights",
+    "trustRatio",
+    "tempo",
+    "founderShare",
+    "subnetNames",
+    "immunityPeriod",
+    "maxAllowedUids",
+    "founder",
+    "incentiveRatio",
+    "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch",
+    "minValidatorStake",
+    "maxAllowedValidators",
+    "moduleBurnConfig",
+    "subnetMetadata",
+    "subnetGovernanceConfig",
+    "subnetEmission",
+  ];
+  const mapping = {
+    VecMapping: vecProps,
+    DoubleMap: doubleMapProps,
+    SimpleMap: simpleMapProps,
+  };
+  if (mapping.VecMapping.includes(prop)) return "VecMapping";
+  else if (mapping.DoubleMap.includes(prop)) return "DoubleMap";
+  else if (mapping.SimpleMap.includes(prop)) return "SimpleMap";
+  else return null;
+}
+
+export async function getPropsToMap(
+  props: Partial<Record<SubspacePalletName, SubspaceStorageName[]>>,
+  api: Api,
+  netuid?: number,
+): Promise<Record<SubspaceStorageName, ChainEntry>> {
+  const mapped_prop_entries: Record<SubspaceStorageName, ChainEntry> =
+    {} as Record<SubspaceStorageName, ChainEntry>;
+
+  for (const [palletName, storageNames] of Object.entries(props)) {
+    const asyncOperations = storageNames.map(async (storageName) => {
+      const value = getSubspaceStorageMappingKind(storageName);
+
+      if (value === "VecMapping") {
+        const entries = await api.query[palletName]?.[storageName]?.entries();
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new StorageVecMap(entries);
+      } else if (value === "DoubleMap") {
+        const entries =
+          await api.query[palletName]?.[storageName]?.entries(netuid);
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new DoubleMapEntries(entries);
+      } else if (value === "SimpleMap") {
+        const entries = await api.query[palletName]?.[storageName]?.entries();
+
+        if (entries === undefined) {
+          console.log(`No entries for ${palletName}.${storageName}`);
+          // TODO: panic
+          process.exit(1);
+        }
+        mapped_prop_entries[storageName] = new SimpleMap(entries);
+      }
+    });
+
+    await Promise.all(asyncOperations);
   }
 
-  get value(): Codec {
-    return this.entry[1] as Codec;
-  }
+  return mapped_prop_entries;
+}
 
-  /**
-   * as the module identifier can be a uid or a key, this function resolves it to a key
-   */
-  resolveKey(uidKeyMap: Map<number, Map<number, SS58Address>>): SS58Address {
-    const isUid = typeof this.uidOrKey === "number";
+export class StorageVecMap implements ChainEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-    const key = isUid
-      ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        uidKeyMap.get(this.netuid)!.get(this.uidOrKey)!
-      : this.uidOrKey;
-
-    assertOrThrow(isSS58(key), `key ${this.netuid}::${key} is an SS58Address`);
-
-    return key;
+  getMapModules(netuid: number) {
+    if (netuid === undefined) {
+      throw new Error("netuid is required for StorageVecMap");
+    }
+    const subnet_values = this.entry[netuid];
+    if (subnet_values != undefined) {
+      const values = subnet_values[1].toPrimitive() as string[];
+      const modules_map = Object.fromEntries(
+        values.map((value, index) => [index, value]),
+      );
+      return modules_map;
+    } else return {};
   }
 }
 
-// the value of a "keys" entry is a codec that holds a ss58 address
-export function newSubstrateModule(keyEntry: StorageEntry): SubspaceModule {
-  const key = keyEntry.value.toPrimitive() as SS58Address;
+export class SimpleMap implements ChainEntry {
+  constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-  return SUBSPACE_MODULE_SCHEMA.parse({
-    uid: keyEntry.uidOrKey as number,
-    netuid: keyEntry.netuid,
-    key,
-  });
+  getMapModules() {
+    const modules_map = Object.fromEntries(
+      this.entry.map((value, index) => [index, value[1].toPrimitive()]),
+    );
+    return modules_map as Record<string, string>;
+  }
+}
+
+export class DoubleMapEntries implements ChainEntry {
+  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) {}
+  getMapModules() {
+    const moduleIdToPropValue: Record<number, string> = {};
+
+    this.entries.forEach((entry) => {
+      const moduleCodec = entry[1];
+      const moduleId = entry[0].args[1]?.toPrimitive() as number;
+      moduleIdToPropValue[moduleId] = moduleCodec.toPrimitive() as string;
+    });
+    return moduleIdToPropValue;
+  }
 }
 
 export function parseAddress(valueRaw: Codec): DaoApplications | null {
@@ -345,6 +550,7 @@ export async function processMetadata(
     const message = `Invalid metadata for ${kind} ${entryId} at ${url}`;
     return { Err: { message } };
   }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   return { Ok: validated.data };
 }
 
@@ -397,3 +603,37 @@ export function flattenResult<T, E>(x: Result<T, E>): T | null {
     },
   });
 }
+
+// ==== Auth ====
+
+function generateNonce(): string {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
+}
+
+export function createAuthReqData(uri: string): AuthReq {
+  return {
+    statement: `Sign in with Polkadot extension to authenticate your session at ${uri}`,
+    uri,
+    nonce: generateNonce(),
+    created: new Date().toISOString(),
+  };
+}
+
+export const signData = async <T>(
+  signer: (
+    msgHex: `0x${string}`,
+  ) => Promise<{ signature: `0x${string}`; address: string }>,
+  data: T,
+): Promise<SignedPayload> => {
+  const dataHex = stringToHex(JSON.stringify(data));
+  const { signature, address } = await signer(dataHex);
+  return {
+    payload: dataHex,
+    signature,
+    address,
+  };
+};

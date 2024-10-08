@@ -12,7 +12,7 @@ import { Wallet, WalletButton } from "@commune-ts/wallet";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { cairo, oxanium } from "~/utils/fonts";
-import { DelegatedModulesList } from "./components/delegated-modules-list";
+import { DelegatedList } from "./components/delegated-list";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -62,7 +62,7 @@ export default function RootLayout({
             wallet={<WalletButton />}
           />
           <TRPCReactProvider>
-            {children} <DelegatedModulesList />
+            {children} <DelegatedList />
           </TRPCReactProvider>
           <Footer />
         </Providers>

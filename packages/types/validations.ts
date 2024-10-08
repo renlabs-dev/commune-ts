@@ -3,7 +3,7 @@ import { decodeAddress } from "@polkadot/util-crypto";
 import { assert } from "tsafe";
 import { z } from "zod";
 
-import {
+import type {
   Codec,
   DaoApplicationStatus,
   OptionalProperties,
@@ -12,14 +12,22 @@ import {
   SubspaceModule,
 } from "./types";
 
-export function isSS58(value: string | null | undefined): value is SS58Address {
-  let decoded: Uint8Array | null;
+export function checkSS58(value: string | SS58Address): SS58Address {
   try {
-    decoded = decodeAddress(value);
-  } catch (e) {
+    decodeAddress(value);
+  } catch (err) {
+    throw new Error(`Invalid SS58 address: ${value}`, { cause: err });
+  }
+  return value as SS58Address;
+}
+
+export function isSS58(value: string | null | undefined): value is SS58Address {
+  try {
+    decodeAddress(value);
+  } catch (_e) {
     return false;
   }
-  return decoded != null;
+  return true;
 }
 
 export const CUSTOM_METADATA_SCHEMA = z.object({
@@ -133,34 +141,26 @@ assert<Extends<z.infer<typeof PROPOSAL_SCHEMA>, Proposal>>();
 
 export const SUBSPACE_MODULE_NAME_SCHEMA = z.string();
 export const SUBSPACE_MODULE_ADDRESS_SCHEMA = z.string();
-export const SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA = z.number();
+export const NUMBER_SCHEMA = z.coerce.number();
+export const SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA = z.coerce.number();
 export const SUBSPACE_MODULE_METADATA_SCHEMA = z.string(); // TODO: validate it's a valid ipfs hash or something (?)
 export const SUBSPACE_MODULE_LAST_UPDATE_SCHEMA = z.any();
 
 export const SUBSPACE_MODULE_SCHEMA = z.object({
-  netuid: z.number(),
+  netuid: z.coerce.number(),
   key: ADDRESS_SCHEMA,
-  uid: z.number(),
+  uid: z.coerce.number().int(),
   name: SUBSPACE_MODULE_NAME_SCHEMA.optional(),
   address: SUBSPACE_MODULE_ADDRESS_SCHEMA.optional(),
   registrationBlock: SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.optional(),
   metadata: SUBSPACE_MODULE_METADATA_SCHEMA.optional(),
   lastUpdate: SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.optional(),
-});
+  atBlock: z.coerce.number().optional(),
 
-export const modulePropResolvers: {
-  [P in OptionalProperties<SubspaceModule>]: (
-    value: Codec,
-  ) => z.SafeParseReturnType<any, SubspaceModule[P]>;
-} = {
-  name: (value: Codec) =>
-    SUBSPACE_MODULE_NAME_SCHEMA.safeParse(value.toPrimitive()),
-  address: (value: Codec) =>
-    SUBSPACE_MODULE_ADDRESS_SCHEMA.safeParse(value.toPrimitive()),
-  registrationBlock: (value: Codec) =>
-    SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA.safeParse(value.toPrimitive()),
-  lastUpdate: (value: Codec) =>
-    SUBSPACE_MODULE_LAST_UPDATE_SCHEMA.safeParse(value.toPrimitive()), // not really working right now (Cannot read properties of undefined (reading 'toPrimitive'))
-  metadata: (value: Codec) =>
-    SUBSPACE_MODULE_METADATA_SCHEMA.safeParse(value.toPrimitive()),
-};
+  emission: z.coerce.bigint().optional(),
+  incentive: z.coerce.bigint().optional(),
+  dividends: z.coerce.bigint().optional(),
+  delegationFee: z.coerce.number().optional(),
+
+  stakeFrom: z.bigint().optional(),
+});

@@ -12,7 +12,7 @@ import {
   USER_MODULE_DATA_INSERT_SCHEMA,
 } from "@commune-ts/db/validation";
 
-import { publicProcedure } from "../trpc";
+import { authenticatedProcedure, publicProcedure } from "../trpc";
 
 export const moduleRouter = {
   // GET
@@ -87,31 +87,42 @@ export const moduleRouter = {
         },
       };
     }),
-  // POST
-  deleteUserModuleData: publicProcedure
-    .input(z.object({ userKey: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .delete(userModuleData)
-        .where(eq(userModuleData.userKey, input.userKey));
-    }),
-  createUserModuleData: publicProcedure
-    .input(USER_MODULE_DATA_INSERT_SCHEMA)
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(userModuleData).values({
-        moduleId: input.moduleId,
-        userKey: input.userKey,
-        weight: input.weight,
+  byReport: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.moduleReport.findFirst({
+        where: eq(moduleReport.id, input.id),
       });
     }),
-  createModuleReport: publicProcedure
+  // POST
+  deleteUserModuleData: authenticatedProcedure.mutation(async ({ ctx }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const userKey = ctx.sessionData!.userKey;
+    await ctx.db
+      .delete(userModuleData)
+      .where(eq(userModuleData.userKey, userKey));
+  }),
+  createUserModuleData: authenticatedProcedure
+    .input(USER_MODULE_DATA_INSERT_SCHEMA)
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+      await ctx.db.insert(userModuleData).values({
+        moduleId: input.moduleId,
+        weight: input.weight,
+        userKey,
+      });
+    }),
+  createModuleReport: authenticatedProcedure
     .input(MODULE_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
       await ctx.db.insert(moduleReport).values({
         moduleId: input.moduleId,
-        userKey: input.userKey,
         content: input.content,
         reason: input.reason,
+        userKey,
       });
     }),
 } satisfies TRPCRouterRecord;
