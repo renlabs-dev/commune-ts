@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Subnet } from "~/utils/types";
-
-interface DelegatedSubnet extends Subnet {
+export interface DelegatedSubnet {
+  id: number;
+  name: string;
   percentage: number;
+  founderAddress: string;
 }
 
 interface DelegateState {
@@ -44,8 +45,8 @@ export const useDelegateSubnetStore = create<DelegateState>()(
       getTotalPercentage: () => {
         return get().delegatedSubnets.reduce((sum, m) => sum + m.percentage, 0);
       },
-      setDelegatedSubnetsFromDB: (Subnets) =>
-        set(() => ({ delegatedSubnets: Subnets, originalSubnets: Subnets })),
+      setDelegatedSubnetsFromDB: (subnets) =>
+        set(() => ({ delegatedSubnets: subnets, originalSubnets: subnets })),
       updateOriginalSubnets: () =>
         set((state) => ({ originalSubnets: [...state.delegatedSubnets] })),
       hasUnsavedChanges: () => {
@@ -53,11 +54,11 @@ export const useDelegateSubnetStore = create<DelegateState>()(
         if (state.delegatedSubnets.length !== state.originalSubnets.length) {
           return true;
         }
-        return state.delegatedSubnets.some((Subnet, index) => {
+        return state.delegatedSubnets.some((subnet, index) => {
           const originalSubnet = state.originalSubnets[index];
           return (
-            Subnet.id !== originalSubnet?.id ||
-            Subnet.percentage !== originalSubnet.percentage
+            subnet.id !== originalSubnet?.id ||
+            subnet.percentage !== originalSubnet.percentage
           );
         });
       },

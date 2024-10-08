@@ -114,6 +114,7 @@ export const subnetDataSchema = createTable(
     maximumSetWeightCallsPerEpoch: integer(
       "maximum_set_weight_calls_per_epoch",
     ),
+    subnetEmission: bigint("subnet_emission", { mode: "bigint" }).notNull(),
     bondsMa: integer("bonds_ma"),
     immunityPeriod: integer("immunity_period").notNull(),
     subnetMetadata: text("subnet_metadata"),
@@ -148,7 +149,6 @@ export const subnetDataSchema = createTable(
     // Additional fields
     minValidatorStake: bigint("min_validator_stake", { mode: "bigint" }),
     maxAllowedValidators: integer("max_allowed_validators"),
-    // subnetEmission: bigint("subnet_emission", { mode: "bigint" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
   },

@@ -2,7 +2,7 @@
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 
-import SubnetAccordion from "~/app/components/subnet-accordion";
+import SubnetCard from "~/app/components/subnet-card";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 
 export default function Page() {
@@ -21,11 +21,17 @@ export default function Page() {
   );
 
   return (
-    <>
+    <div className="min-h-[calc(100vh-169px)] w-full">
       {weightedSubnets.length ? (
         <div className="mb-16 flex h-full w-full grid-cols-1 flex-col gap-4 backdrop-blur-md animate-delay-700">
           {weightedSubnets.map((subnet) => (
-            <SubnetAccordion key={subnet.id} subnet={subnet} />
+            <SubnetCard
+              id={subnet.id}
+              key={subnet.id}
+              name={subnet.name}
+              percentage={subnet.percentage}
+              founderAddress={subnet.founderAddress}
+            />
           ))}
         </div>
       ) : (
@@ -33,6 +39,6 @@ export default function Page() {
           No weighted subnets found.
         </span>
       )}
-    </>
+    </div>
   );
 }

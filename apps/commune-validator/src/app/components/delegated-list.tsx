@@ -141,8 +141,10 @@ export function DelegatedList() {
       }
       if (userSubnetData) {
         const formattedSubnets = userSubnetData.map((subnet) => ({
-          ...subnet.subnet_data,
+          id: subnet.subnet_data.id,
+          name: subnet.subnet_data.name,
           percentage: subnet.user_subnet_data.weight,
+          founderAddress: subnet.subnet_data.founder,
         }));
         setDelegatedSubnetsFromDB(formattedSubnets);
       }
@@ -273,11 +275,15 @@ export function DelegatedList() {
             { enabled: !!selectedAccount.address },
           );
         await refetchSubnets();
-        const formattedSubnets = updatedSubnetData?.map((subnet) => ({
-          ...subnet.subnet_data,
-          percentage: subnet.user_subnet_data.weight,
-        }));
-        setDelegatedSubnetsFromDB(formattedSubnets ?? []);
+        if (updatedSubnetData) {
+          const formattedSubnets = updatedSubnetData.map((subnet) => ({
+            id: subnet.subnet_data.id,
+            name: subnet.subnet_data.name,
+            percentage: subnet.user_subnet_data.weight,
+            founderAddress: subnet.subnet_data.founder,
+          }));
+          setDelegatedSubnetsFromDB(formattedSubnets);
+        }
       }
 
       setIsSubmitting(false);
@@ -432,7 +438,6 @@ export function DelegatedList() {
                     <TableHead>
                       {activeTab === "modules" ? "Module" : "Subnet"}
                     </TableHead>
-                    <TableHead className="hidden md:table-cell">Name</TableHead>
                     <TableHead>
                       {activeTab === "modules" ? "Address" : "Founder"}
                     </TableHead>
@@ -445,9 +450,6 @@ export function DelegatedList() {
                       delegatedModules.map((module) => (
                         <TableRow key={module.id}>
                           <TableCell className="font-medium">
-                            {module.title}
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
                             {module.name}
                           </TableCell>
                           <TableCell className="text-gray-400">
@@ -493,11 +495,8 @@ export function DelegatedList() {
                         <TableCell className="font-medium">
                           {subnet.name}
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {subnet.name}
-                        </TableCell>
                         <TableCell className="text-gray-400">
-                          {smallAddress(subnet.founder)}
+                          {smallAddress(subnet.founderAddress)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NetworkSubnetConfig, SubspaceModule } from "@commune-ts/types";
 
 import type { Module, Subnet } from "./index.js";
@@ -44,30 +41,30 @@ export function SubnetToDatabase(
     founderShare: subnet.founderShare,
     incentiveRatio: subnet.incentiveRatio,
     trustRatio: subnet.trustRatio,
-    maxWeightAge: String(subnet.maxWeightAge),
+    maxWeightAge: subnet.maxWeightAge,
     bondsMa: subnet.bondsMovingAverage ?? null,
     maximumSetWeightCallsPerEpoch: subnet.maximumSetWeightCallsPerEpoch ?? null,
-    minValidatorStake: BigInt(subnet.minValidatorStake),
+    minValidatorStake: subnet.minValidatorStake,
     maxAllowedValidators: subnet.maxAllowedValidators ?? null,
     subnetMetadata: subnet.subnetMetadata,
-    minBurn: BigInt(subnet.moduleBurnConfig.minBurn),
-    maxBurn: BigInt(subnet.moduleBurnConfig.maxBurn),
-    adjustmentAlpha: String(subnet.moduleBurnConfig.adjustmentAlpha),
+    minBurn: subnet.moduleBurnConfig.minBurn,
+    maxBurn: subnet.moduleBurnConfig.maxBurn,
+    adjustmentAlpha: subnet.moduleBurnConfig.adjustmentAlpha,
     targetRegistrationsInterval:
       subnet.moduleBurnConfig.targetRegistrationsInterval,
     maxRegistrationsPerInterval:
       subnet.moduleBurnConfig.maxRegistrationsPerInterval,
-    proposalCost: BigInt(subnet.subnetGovernanceConfig.proposalCost),
+    proposalCost: subnet.subnetGovernanceConfig.proposalCost,
     proposalExpiration: subnet.subnetGovernanceConfig.proposalExpiration,
-    maxProposalRewardTreasuryAllocation: BigInt(
+    maxProposalRewardTreasuryAllocation:
       subnet.subnetGovernanceConfig.maxProposalRewardTreasuryAllocation,
-    ),
     proposalRewardTreasuryAllocation:
       subnet.subnetGovernanceConfig.proposalRewardTreasuryAllocation,
     proposalRewardInterval:
       subnet.subnetGovernanceConfig.proposalRewardInterval,
     targetRegistrationsPerInterval:
       subnet.moduleBurnConfig.targetRegistrationsPerInterval,
+    subnetEmission: subnet.subnetEmission,
     atBlock: atBlock,
     voteMode: subnet.subnetGovernanceConfig.voteMode,
   };
