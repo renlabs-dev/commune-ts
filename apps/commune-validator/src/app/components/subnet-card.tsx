@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRightIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
 
 import { smallAddress } from "@commune-ts/utils";
 
