@@ -7,7 +7,6 @@ import { encodeAddress } from "@polkadot/util-crypto";
 import type {
   Api,
   LastBlock,
-  OptionalProperties,
   SS58Address,
   StakeOutData,
   SubspaceModule,
@@ -25,7 +24,6 @@ import {
   ChainEntry,
   handleDaos,
   handleProposals,
-  StorageEntry,
   getPropsToMap,
   standardizeUidToSS58address,
   SubspacePalletName,
@@ -479,15 +477,6 @@ export async function queryUserTotalStaked(
  * @param netuidWhitelist if empty, modules from all subnets are returned
  */
 
-export async function queryRegisteredSubnetsInfo(api: Api) {
-  console.log("Fetching subnet keys from the chain...");
-  const netuids = (await api.query.subspaceModule!.subnetNames!.entries()).map(
-    (entry) => new StorageEntry(entry).netuid,
-  );
-
-  console.log(netuids);
-}
-
 
 export async function querySubnetParams(api: Api): Promise<Array<NetworkSubnetConfig>> {
   const subnetProps: Array<SubspaceStorageName> = [
@@ -505,7 +494,7 @@ export async function querySubnetParams(api: Api): Promise<Array<NetworkSubnetCo
       subnetEmissionModule: ["subnetEmission"],
       governanceModule: ["subnetGovernanceConfig"]
     } as Record<SubspacePalletName, SubspaceStorageName[]>;
-  const subnetInfo = await queryChain(api, props, [0]);
+  const subnetInfo = await queryChain(api, props);
   const subnetNames = subnetInfo["subnetNames"];
 
 
@@ -539,23 +528,27 @@ export async function querySubnetParams(api: Api): Promise<Array<NetworkSubnetCo
 }
 
 
-export async function queryRegisteredModulesInfo<
-  P extends OptionalProperties<SubspaceModule> & SubspaceStorageName,
->(
+export async function queryRegisteredModulesInfo(
   api: Api,
-  extraProps: P[] = [],
-  netuidWhitelist?: number[],
+  netuid: number,
 ): Promise<SubspaceModule[]> {
-  netuidWhitelist = netuidWhitelist?.length
-    ? Array.from(new Set(netuidWhitelist))
-    : undefined;
   console.log("Fetching module keys from the chain...");
-  const keyQuery: Record<SubspacePalletName, SubspaceStorageName[]> = { subspaceModule: ["keys"] }
-  const uidToSS58Query = await queryChain(api, keyQuery, netuidWhitelist);
+  const keyQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: ["keys"] }
+  const uidToSS58Query = await queryChain(api, keyQuery, netuid);
   const uidToSS58 = uidToSS58Query['keys'] as Record<string, SS58Address>;
-  const extraPropsQuery: Record<SubspacePalletName, P[]> = { subspaceModule: extraProps }
-  const modulesInfo = await queryChain(api, extraPropsQuery, netuidWhitelist);
-  //eslint-disable-next-line
+  const moduleProps: Array<SubspaceStorageName> = [
+    "name",
+    "address",
+    "registrationBlock",
+    "metadata",
+    "lastUpdate",
+    "emission",
+    "incentive",
+    "dividends",
+
+  ]
+  const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: moduleProps }
+  const modulesInfo = await queryChain(api, extraPropsQuery, netuid);
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
   const moduleMap: SubspaceModule[] = [];
 
@@ -565,31 +558,19 @@ export async function queryRegisteredModulesInfo<
       console.error(`Module key not found for uid ${uid}`);
       continue;
     }
-    // TODO: remove ts-igore
-    // @ts-ignore
-    const emission = processedModules["emission"][moduleKey];
-    // @ts-ignore
-    const incentive = processedModules["incentive"][moduleKey];
-    // @ts-ignore
-    const dividends = processedModules["dividends"][moduleKey];
     const module = SUBSPACE_MODULE_SCHEMA.parse({
-      uid: parseInt(uid),
+      uid: uid,
       key: moduleKey,
-      netuid: 0,
-      // @ts-ignore
+      netuid: netuid,
       name: processedModules["name"][moduleKey],
-      // @ts-ignore
       address: processedModules["address"][moduleKey],
-      // @ts-ignore
       registrationBlock: processedModules["registrationBlock"][moduleKey],
-      // @ts-ignore
       metadata: processedModules["metadata"][moduleKey],
-      // @ts-ignore
       lastUpdate: processedModules["lastUpdate"][moduleKey],
       atBlock: 0,
-      emission: emission ? BigInt(emission) : -1n,
-      incentive: incentive ? BigInt(incentive) : -1n,
-      dividends: dividends ? BigInt(dividends) : -1n,
+      emission: processedModules["emission"][moduleKey],
+      incentive: processedModules["incentive"][moduleKey],
+      dividends: processedModules["dividends"][moduleKey],
       delegationFee: 0,
       stakeFrom: 0n,
 
@@ -608,18 +589,18 @@ async function queryChain<
   T extends SubspaceStorageName,
 >(
   api: Api,
-  props: Record<SubspacePalletName, T[]>,
-  netuidWhitelist?: number[],
+  props: Partial<Record<SubspacePalletName, T[]>>,
+  netuidWhitelist?: number,
 ): Promise<Record<T, Record<string, string | Record<string, any>>>> {
   if (Object.keys(props).length === 0) {
     return {} as Record<T, Record<string, string>>;
   }
   // TODO: accept multiple netuids
   const modulePropMap: Record<T, Record<string, string>> = {} as Record<T, Record<string, string>>;
-  const moduletas = await getPropsToMap(props, api, 0);
+  const moduletas = await getPropsToMap(props, api, netuidWhitelist);
   const entries = Object.entries(moduletas) as [T, ChainEntry][];
   entries.map(([prop, entry]) => {
-    modulePropMap[prop] = entry.getMapModules(0);
+    modulePropMap[prop] = entry.getMapModules(netuidWhitelist);
   });
   return modulePropMap;
 }

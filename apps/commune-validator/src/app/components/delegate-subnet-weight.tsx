@@ -5,16 +5,21 @@ import { ChartPieIcon } from "@heroicons/react/24/outline";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 
-import type { Subnet } from "~/utils/types";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 
-export function DelegateSubnetWeight({ subnet }: { subnet: Subnet }) {
+interface DelegateSubnetWeightProps {
+  id: number;
+  name: string;
+  founderAddress: string;
+}
+
+export function DelegateSubnetWeight(props: DelegateSubnetWeightProps) {
   const { delegatedSubnets, addSubnet, removeSubnet } =
     useDelegateSubnetStore();
 
   const { selectedAccount } = useCommune();
 
-  const isSubnetDelegated = delegatedSubnets.some((m) => m.id === subnet.id);
+  const isSubnetDelegated = delegatedSubnets.some((m) => m.id === props.id);
 
   const handleDelegateClick = () => {
     if (!selectedAccount?.address) {
@@ -22,9 +27,13 @@ export function DelegateSubnetWeight({ subnet }: { subnet: Subnet }) {
       return;
     }
     if (isSubnetDelegated) {
-      removeSubnet(subnet.id);
+      removeSubnet(props.id);
     } else {
-      addSubnet({ ...subnet });
+      addSubnet({
+        id: props.id,
+        name: props.name,
+        founderAddress: props.founderAddress,
+      });
     }
   };
 

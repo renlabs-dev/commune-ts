@@ -51,8 +51,8 @@ export async function upsertSubnetData(subnets: Subnet[]) {
         maxRegistrationsPerInterval: s.maxRegistrationsPerInterval,
         minValidatorStake: s.minValidatorStake,
         maxAllowedValidators: s.maxAllowedValidators,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         atBlock: s.atBlock,
+        subnetEmission: s.subnetEmission,
       })),
     )
     .onConflictDoUpdate({

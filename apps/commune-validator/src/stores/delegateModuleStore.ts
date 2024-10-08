@@ -3,9 +3,8 @@ import { persist } from "zustand/middleware";
 
 interface DelegatedModule {
   id: number;
-  address: string;
-  title: string;
   name: string;
+  address: string;
   percentage: number;
 }
 

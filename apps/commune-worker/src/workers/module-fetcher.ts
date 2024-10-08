@@ -24,20 +24,7 @@ export async function moduleFetcherWorker(props: WorkerProps) {
       // TODO: do this in a better way
       const modules = await queryRegisteredModulesInfo(
         props.lastBlock.apiAtBlock,
-        [
-          "name",
-          // "keys"
-          "address",
-          "registrationBlock",
-          "metadata",
-          "lastUpdate",
-          "emission",
-          "incentive",
-          "dividends",
-          // "delegationFee",
-          // "stakeFrom",
-        ],
-        [NETUID_ZERO],
+        NETUID_ZERO,
       );
       const modulesData = modules.map((module) =>
         SubspaceModuleToDatabase(module, props.lastBlock.blockNumber),

@@ -9,7 +9,6 @@ import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 
 interface DelegateModuleWeightProps {
   id: number;
-  title: string;
   name: string;
   moduleKey: string;
 }
@@ -32,9 +31,8 @@ export function DelegateModuleWeight(props: DelegateModuleWeightProps) {
     } else {
       addModule({
         id: props.id,
-        address: props.moduleKey,
-        title: props.title,
         name: props.name,
+        address: props.moduleKey,
       });
     }
   };
