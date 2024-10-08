@@ -21,7 +21,7 @@ export default function Page() {
   );
 
   return (
-    <>
+    <div className="min-h-[calc(100vh-169px)] w-full">
       {weightedModules.length ? (
         <div className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 backdrop-blur-md animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {weightedModules.map((module) => (
@@ -39,6 +39,6 @@ export default function Page() {
           No weighted modules found.
         </span>
       )}
-    </>
+    </div>
   );
 }
