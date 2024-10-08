@@ -7,7 +7,12 @@ export default async function SubnetsPage() {
   return (
     <div className="mb-4 flex w-full flex-col gap-4">
       {data.map((subnet) => (
-        <SubnetAccordion key={subnet.id} subnet={subnet} />
+        <SubnetAccordion
+          key={subnet.id}
+          founderAddress={subnet.founder}
+          id={subnet.id}
+          name={subnet.name}
+        />
       ))}
     </div>
   );
