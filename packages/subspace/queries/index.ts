@@ -498,10 +498,9 @@ export async function queryUserTotalStaked(
  * @param netuidWhitelist if empty, modules from all subnets are returned
  */
 
-export async function querySubnetParams(
-  api: Api,
-): Promise<Array<NetworkSubnetConfig>> {
-  const subnetProps: Array<SubspaceStorageName> = [
+
+export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]> {
+  const subnetProps: SubspaceStorageName[] = [
     "subnetNames",
     "immunityPeriod",
     "minAllowedWeights",
@@ -526,36 +525,32 @@ export async function querySubnetParams(
     governanceModule: ["subnetGovernanceConfig"],
   } as Record<SubspacePalletName, SubspaceStorageName[]>;
   const subnetInfo = await queryChain(api, props);
-  const subnetNames = subnetInfo["subnetNames"];
+  const subnetNames = subnetInfo.subnetNames;
 
-  let subnets: Array<NetworkSubnetConfig> = [];
-  for (const [netuid, name] of Object.entries(subnetNames)) {
+
+  const subnets: NetworkSubnetConfig[] = [];
+  for (const [netuid, _] of Object.entries(subnetNames)) {
     const subnet: NetworkSubnetConfig = NetworkSubnetConfigSchema.parse({
-      subnetNames: subnetInfo["subnetNames"][netuid]!,
-      immunityPeriod: subnetInfo["immunityPeriod"][netuid]!,
-      minAllowedWeights: subnetInfo["minAllowedWeights"][netuid]!,
-      maxAllowedWeights: subnetInfo["maxAllowedWeights"][netuid]!,
-      tempo: subnetInfo["tempo"][netuid]!,
-      maxAllowedUids: subnetInfo["maxAllowedUids"][netuid]!,
-      founder: subnetInfo["founder"][netuid]!,
-      founderShare: subnetInfo["founderShare"][netuid]!,
-      incentiveRatio: subnetInfo["incentiveRatio"][netuid]!,
-      trustRatio: subnetInfo["trustRatio"][netuid]!,
-      maxWeightAge: subnetInfo["maxWeightAge"][netuid]!,
-      bondsMovingAverage: subnetInfo["bondsMovingAverage"][netuid],
-      maximumSetWeightCallsPerEpoch:
-        subnetInfo["maximumSetWeightCallsPerEpoch"][netuid],
-      minValidatorStake: subnetInfo["minValidatorStake"][netuid]!,
-      maxAllowedValidators: subnetInfo["maxAllowedValidators"][netuid],
-      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(
-        subnetInfo["moduleBurnConfig"][netuid],
-      ),
-      subnetMetadata: subnetInfo["subnetMetadata"][netuid],
+      subnetNames: subnetInfo.subnetNames[netuid]!,
+      immunityPeriod: subnetInfo.immunityPeriod[netuid]!,
+      minAllowedWeights: subnetInfo.minAllowedWeights[netuid]!,
+      maxAllowedWeights: subnetInfo.maxAllowedWeights[netuid]!,
+      tempo: subnetInfo.tempo[netuid]!,
+      maxAllowedUids: subnetInfo.maxAllowedUids[netuid]!,
+      founder: subnetInfo.founder[netuid]!,
+      founderShare: subnetInfo.founderShare[netuid]!,
+      incentiveRatio: subnetInfo.incentiveRatio[netuid]!,
+      trustRatio: subnetInfo.trustRatio[netuid]!,
+      maxWeightAge: subnetInfo.maxWeightAge[netuid]!,
+      bondsMovingAverage: subnetInfo.bondsMovingAverage[netuid],
+      maximumSetWeightCallsPerEpoch: subnetInfo.maximumSetWeightCallsPerEpoch[netuid],
+      minValidatorStake: subnetInfo.minValidatorStake[netuid]!,
+      maxAllowedValidators: subnetInfo.maxAllowedValidators[netuid],
+      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(subnetInfo.moduleBurnConfig[netuid]),
+      subnetMetadata: subnetInfo.subnetMetadata[netuid],
       netuid: netuid,
-      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(
-        subnetInfo["subnetGovernanceConfig"][netuid],
-      ),
-      subnetEmission: subnetInfo["subnetEmission"][netuid],
+      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(subnetInfo.subnetGovernanceConfig[netuid]),
+      subnetEmission: subnetInfo.subnetEmission[netuid],
     });
     subnets.push(subnet);
   }
@@ -571,8 +566,8 @@ export async function queryRegisteredModulesInfo(
     subspaceModule: ["keys"],
   };
   const uidToSS58Query = await queryChain(api, keyQuery, netuid);
-  const uidToSS58 = uidToSS58Query["keys"] as Record<string, SS58Address>;
-  const moduleProps: Array<SubspaceStorageName> = [
+  const uidToSS58 = uidToSS58Query.keys as Record<string, SS58Address>;
+  const moduleProps: SubspaceStorageName[] = [
     "name",
     "address",
     "registrationBlock",
@@ -599,15 +594,15 @@ export async function queryRegisteredModulesInfo(
       uid: uid,
       key: moduleKey,
       netuid: netuid,
-      name: processedModules["name"][moduleKey],
-      address: processedModules["address"][moduleKey],
-      registrationBlock: processedModules["registrationBlock"][moduleKey],
-      metadata: processedModules["metadata"][moduleKey],
-      lastUpdate: processedModules["lastUpdate"][moduleKey],
+      name: processedModules.name[moduleKey],
+      address: processedModules.address[moduleKey],
+      registrationBlock: processedModules.registrationBlock[moduleKey],
+      metadata: processedModules.metadata[moduleKey],
+      lastUpdate: processedModules.lastUpdate[moduleKey],
       atBlock: 0,
-      emission: processedModules["emission"][moduleKey],
-      incentive: processedModules["incentive"][moduleKey],
-      dividends: processedModules["dividends"][moduleKey],
+      emission: processedModules.emission[moduleKey],
+      incentive: processedModules.incentive[moduleKey],
+      dividends: processedModules.dividends[moduleKey],
       delegationFee: 0,
       stakeFrom: 0n,
     });
@@ -625,6 +620,7 @@ async function queryChain<T extends SubspaceStorageName>(
   api: Api,
   props: Partial<Record<SubspacePalletName, T[]>>,
   netuidWhitelist?: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Record<T, Record<string, string | Record<string, any>>>> {
   if (Object.keys(props).length === 0) {
     return {} as Record<T, Record<string, string>>;
