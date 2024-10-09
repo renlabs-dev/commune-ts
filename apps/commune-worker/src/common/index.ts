@@ -1,5 +1,9 @@
 import type { ApiPromise } from "@commune-ts/subspace/queries";
-import type { DaoApplications, DaoApplicationStatus } from "@commune-ts/types";
+import type {
+  DaoApplications,
+  DaoApplicationStatus,
+  LastBlock,
+} from "@commune-ts/types";
 import {
   pushToWhitelist,
   queryDaosEntries,
@@ -9,8 +13,13 @@ import {
 } from "@commune-ts/subspace/queries";
 
 import type { VotesByProposal } from "../db";
-import type { WorkerProps } from "../types";
 import { computeTotalVotesPerDao, countCadreKeys } from "../db";
+
+export interface WorkerProps {
+  lastBlockNumber: number;
+  lastBlock: LastBlock;
+  api: ApiPromise;
+}
 
 // -- Constants -- //
 export const NETUID_ZERO = 0;

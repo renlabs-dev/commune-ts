@@ -3,7 +3,7 @@ import {
   querySubnetParams,
 } from "@commune-ts/subspace/queries";
 
-import type { WorkerProps } from "../types";
+import type { WorkerProps } from "../common";
 import { BLOCK_TIME, isNewBlock, log, sleep } from "../common";
 import { upsertSubnetData } from "../db";
 import { SubnetToDatabase } from "../db/type-transformations.js";
