@@ -1,3 +1,6 @@
+import { assert } from "tsafe";
+
+import type { ApiPromise } from "@commune-ts/subspace/queries";
 import { eq, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import { moduleData, userModuleData } from "@commune-ts/db/schema";
@@ -6,10 +9,14 @@ import { queryStakeOut } from "@commune-ts/subspace/queries";
 import { BLOCK_TIME, log, sleep } from "../common";
 import { calcFinalWeights, normalizeModuleWeights } from "../weights";
 
-export async function weightAggregatorLoop() {
+// TODO: split subnets/netuids
+// TODO: get comrads Substrate key from environment
+// TODO: update tables on DB
+
+export async function weightAggregatorWorker(api: ApiPromise) {
   while (true) {
     try {
-      await weightCompilerTask();
+      await weightCompilerTask(api);
     } catch (e) {
       log("UNEXPECTED ERROR: ", e);
       await sleep(BLOCK_TIME);
@@ -22,12 +29,13 @@ export async function weightAggregatorLoop() {
  * Fetches assigned weights by users and their stakes, to calculate the final
  * weights for the community validator.
  */
-export async function weightCompilerTask() {
+export async function weightCompilerTask(api: ApiPromise) {
   const stakeOutData = await queryStakeOut(
     String(process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL),
   );
   const stakeOutMap = objToMap(stakeOutData.perAddr);
 
+  const uidMap = await getModuleUids();
   const weightMap = await getUserWeightMap();
 
   const finalWeights = calcFinalWeights(stakeOutMap, weightMap);
@@ -35,18 +43,66 @@ export async function weightCompilerTask() {
 
   console.log(normalizedWeights);
 
-  // TODO: build the list of weights corresponding to UIDs and vote
-  // since we will need to edit the module table, i would propose to add the metadata and metadata fetching to the worker, it would be better for front end side of things :)
-  const modules = [{ key: "123" }];
-
-  const weightsToVote = [];
-  for (const module of modules) {
-    const moduleKey = module.key;
-    weightsToVote.push([moduleKey]);
+  const uids: number[] = [];
+  const weights: number[] = [];
+  for (const [moduleKey, weight] of normalizedWeights) {
+    const uid = uidMap.get(moduleKey);
+    if (uid == null) {
+      console.error(`Module key ${moduleKey} not found in uid map`);
+      continue;
+    }
+    uids.push(uid);
+    weights.push(Number(weight));
   }
+
+  setWeights(api, 666, uids, weights);
+
+  // TODO: update tables on DB
 }
 
-async function getUserWeightMap() {
+function setWeights(
+  api: ApiPromise,
+  netuid: number,
+  uids: number[],
+  weights: number[],
+) {
+  assert(api.tx.subspaceModule != undefined);
+  assert(api.tx.subspaceModule.setWeights != undefined);
+  const tx = api.tx.subspaceModule.setWeights(netuid, uids, weights);
+  // TODO
+  return tx;
+}
+
+/**
+ * Queries the module data table to build a mapping of module keys to UIDs.
+ */
+async function getModuleUids(): Promise<Map<string, number>> {
+  const result = await db
+    .select({
+      moduleKey: moduleData.moduleKey,
+      uid: moduleData.moduleId,
+    })
+    .from(moduleData)
+    .where(
+      eq(
+        moduleData.atBlock,
+        sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
+      ),
+    )
+    .execute();
+
+  const uidMap = new Map<string, number>();
+  result.forEach((row) => {
+    uidMap.set(row.moduleKey, row.uid);
+  });
+  return uidMap;
+}
+
+/**
+ * Queries the user-module data table to build a mapping of user keys to
+ * module keys to weights.
+ */
+async function getUserWeightMap(): Promise<Map<string, Map<string, bigint>>> {
   const result = await db
     .select({
       userKey: userModuleData.userKey,
