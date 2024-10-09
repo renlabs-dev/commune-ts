@@ -1,12 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { assert } from "tsafe";
+
 /** Related to weights computation */
 
 type Key = string;
 
+/**
+ * Calculates the final weights for the community validator, resulting in
+ * unbound integers.
+ *
+ * @param user_stakes        user -> amount staked
+ * @param user_weight_maps   user -> module key -> weight (0–100)
+ */
 export function calcFinalWeights(
-  user_stakes: Map<Key, bigint>, // user -> amount staked
-  user_weight_maps: Map<Key, Map<Key, bigint>>, // user -> module key -> weight (0–100)
+  user_stakes: Map<Key, bigint>,
+  user_weight_maps: Map<Key, Map<Key, bigint>>,
 ) {
   const acc_module_weights = new Map<Key, bigint>();
 
@@ -46,9 +55,11 @@ export function calcFinalWeights(
 /**
  * Normalize module weights to integer percentages.
  */
-export function normalizeModuleWeights(module_weights: Map<Key, bigint>) {
-  const module_key_arr = [];
-  const module_weight_arr = [];
+export function normalizeModuleWeights(
+  module_weights: Map<Key, bigint>,
+): Map<string, bigint> {
+  const module_key_arr: string[] = [];
+  const module_weight_arr: bigint[] = [];
 
   let max_weight = 0n;
   for (const [module_key, weight] of module_weights.entries()) {
@@ -57,15 +68,18 @@ export function normalizeModuleWeights(module_weights: Map<Key, bigint>) {
     if (weight > max_weight) max_weight = weight;
   }
 
-  const normalized_weights = [];
+  const normalized_weights: bigint[] = [];
   for (const weight of module_weight_arr) {
     normalized_weights.push((weight * 100n) / max_weight);
   }
 
-  const result = new Map();
-  for (let i = 0; i < module_key_arr.length; i++) {
-    result.set(module_key_arr[i], normalized_weights[i]);
-  }
+  const result = new Map<string, bigint>();
+  // for (let i = 0; i < module_key_arr.length; i++) {
+  module_key_arr.forEach((module_key, i) => {
+    const nw = normalized_weights[i];
+    assert(nw != null);
+    result.set(module_key, nw);
+  });
   return result;
 }
 
