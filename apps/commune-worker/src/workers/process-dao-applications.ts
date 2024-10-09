@@ -1,4 +1,4 @@
-import type { WorkerProps } from "../types";
+import type { WorkerProps } from "../common";
 import {
   BLOCK_TIME,
   getApplications,

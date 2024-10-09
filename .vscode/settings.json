@@ -15,5 +15,6 @@
     "worker",
     "package",
     "tooling"
-  ]
+  ],
+  "cSpell.words": ["netuid", "uid", "uids"]
 }

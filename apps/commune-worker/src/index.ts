@@ -74,5 +74,5 @@ app.get("/api/health", (_, res) => {
 const port = process.env.PORT ?? 3000;
 
 app.listen(port, () => {
-  log(`/heth listening on port ${port}`);
+  log(`/api/health listening on port ${port}`);
 });
