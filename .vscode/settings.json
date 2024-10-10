@@ -16,5 +16,6 @@
     "package",
     "tooling"
   ],
-  "cSpell.words": ["netuid", "uid", "uids"]
+  "cSpell.words": ["netuid", "polkadot", "uid", "uids"],
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }]
 }
