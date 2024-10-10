@@ -1,6 +1,8 @@
+import type { SS58Address } from "@commune-ts/types";
 import {
   queryLastBlock,
   queryRegisteredModulesInfo,
+  queryWhitelist,
 } from "@commune-ts/subspace/queries";
 
 import type { WorkerProps } from "../common";
@@ -13,30 +15,38 @@ export async function moduleFetcherWorker(props: WorkerProps) {
     try {
       const currentTime = new Date();
       const lastBlock = await queryLastBlock(props.api);
+
+      // Check if the last queried block is a new block
       if (!isNewBlock(props.lastBlock.blockNumber, lastBlock.blockNumber)) {
         await sleep(BLOCK_TIME);
         continue;
       }
       props.lastBlock = lastBlock;
 
-      log(`Block ${props.lastBlock.blockNumber}: processing`);
+      log(`Block ${lastBlock.blockNumber}: processing`);
 
-      // TODO: do this in a better way
+      const whitelist = new Set(await queryWhitelist(lastBlock.apiAtBlock));
+      const isWhitelisted = (addr: SS58Address) => whitelist.has(addr);
+
       const modules = await queryRegisteredModulesInfo(
-        props.lastBlock.apiAtBlock,
+        lastBlock.apiAtBlock,
         NETUID_ZERO,
       );
       const modulesData = modules.map((module) =>
-        SubspaceModuleToDatabase(module, props.lastBlock.blockNumber),
+        SubspaceModuleToDatabase(
+          module,
+          lastBlock.blockNumber,
+          isWhitelisted(module.key),
+        ),
       );
       log(
-        `Block ${props.lastBlock.blockNumber}: upserting  ${modules.length} modules`,
+        `Block ${lastBlock.blockNumber}: upserting  ${modules.length} modules`,
       );
 
       await upsertModuleData(modulesData);
 
       log(
-        `Block ${props.lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
+        `Block ${lastBlock.blockNumber}: module data upserted in ${(new Date().getTime() - currentTime.getTime()) / 1000} seconds`,
       );
     } catch (e) {
       log("UNEXPECTED ERROR: ", e);

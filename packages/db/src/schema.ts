@@ -1,6 +1,7 @@
 import { asc, eq, sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   index,
   integer,
   numeric,
@@ -52,6 +53,8 @@ export const moduleData = createTable(
     totalStaked: bigint("total_staked", { mode: "bigint" }),
     totalStakers: integer("total_stakers"),
     totalRewards: bigint("total_rewards", { mode: "bigint" }),
+
+    isWhitelisted: boolean("is_whitelisted").default(false),
 
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()

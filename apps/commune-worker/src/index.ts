@@ -58,7 +58,7 @@ async function main() {
     await weightAggregatorWorker(api);
   } else {
     console.error(
-      "Invalid worker type argument. Please specify 'process_dao_applications' or 'validator'",
+      "Invalid worker type argument. Please specify 'dao', 'notifier', 'subnet', 'validator', or 'weight-aggregator'",
     );
     process.exit(1);
   }

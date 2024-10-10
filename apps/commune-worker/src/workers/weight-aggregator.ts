@@ -1,7 +1,7 @@
 import { assert } from "tsafe";
 
 import type { ApiPromise } from "@commune-ts/subspace/queries";
-import { eq, sql } from "@commune-ts/db";
+import { and, eq, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import { moduleData, userModuleData } from "@commune-ts/db/schema";
 import { queryStakeOut } from "@commune-ts/subspace/queries";
@@ -9,8 +9,9 @@ import { queryStakeOut } from "@commune-ts/subspace/queries";
 import { BLOCK_TIME, log, sleep } from "../common";
 import { calcFinalWeights, normalizeModuleWeights } from "../weights";
 
-// TODO: split subnets/netuids
 // TODO: get comrads Substrate key from environment
+// TODO: subnets
+// TODO: send weights to chain
 // TODO: update tables on DB
 
 export async function weightAggregatorWorker(api: ApiPromise) {
@@ -112,9 +113,12 @@ async function getUserWeightMap(): Promise<Map<string, Map<string, bigint>>> {
     .from(moduleData)
     // filter modules updated on the last seen block
     .where(
-      eq(
-        moduleData.atBlock,
-        sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
+      and(
+        eq(
+          moduleData.atBlock,
+          sql`(SELECT at_block FROM module_data ORDER BY at_block DESC LIMIT 1)`,
+        ),
+        eq(moduleData.isWhitelisted, true),
       ),
     )
     .innerJoin(userModuleData, eq(moduleData.id, userModuleData.moduleId));
