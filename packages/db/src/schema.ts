@@ -387,3 +387,35 @@ export const governanceNotificationSchema = createTable(
     notifiedAt: timestamp("notified_at").defaultNow(),
   },
 );
+
+export const computedModuleWeights = createTable("computed_weights", {
+  id: serial("id").primaryKey(),
+
+  atBlock: integer("at_block").notNull(),
+
+  moduleKey: ss58Address("module_key")
+    .notNull()
+    .references(() => moduleData.moduleKey),
+
+  // Aggregated weights measured in nanos
+  stakeWeight: bigint("stake_weight", { mode: "bigint" }).notNull(),
+  // Normalized aggregated weights (100% sum)
+  percWeight: real("perc_weight").notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const computedSubnetWeights = createTable("computed_subnet_weights", {
+  id: serial("id").primaryKey(),
+
+  atBlock: integer("at_block").notNull(),
+
+  netuid: integer("netuid").notNull().references(() => subnetDataSchema.netuid),
+
+  // Aggregated weights measured in nanos
+  stakeWeight: integer("stake_weight").notNull(),
+  // Normalized aggregated weights (100% sum)
+  percWeight: real("perc_weight").notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

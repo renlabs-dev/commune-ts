@@ -42,6 +42,8 @@ export async function weightCompilerTask(api: ApiPromise) {
   const finalWeights = calcFinalWeights(stakeOutMap, weightMap);
   const normalizedWeights = normalizeModuleWeights(finalWeights);
 
+  // TODO: normalize weights with (sum(weights) == 100%) for DB
+
   console.log(normalizedWeights);
 
   const uids: number[] = [];
@@ -70,7 +72,7 @@ function setWeights(
   assert(api.tx.subspaceModule != undefined);
   assert(api.tx.subspaceModule.setWeights != undefined);
   const tx = api.tx.subspaceModule.setWeights(netuid, uids, weights);
-  // TODO
+  // TODO: send weights to chain
   return tx;
 }
 
