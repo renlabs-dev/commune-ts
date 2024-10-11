@@ -388,7 +388,8 @@ export const governanceNotificationSchema = createTable(
   },
 );
 
-export const computedModuleWeights = createTable("computed_weights", {
+/**
+export const computedModuleWeights = createTable("computed_module_weights", {
   id: serial("id").primaryKey(),
 
   atBlock: integer("at_block").notNull(),
@@ -419,3 +420,4 @@ export const computedSubnetWeights = createTable("computed_subnet_weights", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+*/
