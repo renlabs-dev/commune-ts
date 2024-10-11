@@ -109,8 +109,7 @@ export function assertOrThrow(
 export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
   if (b === 0n) return NaN;
   const base = 10n ** precision;
-  const baseNum = Number(base);
-  return (Number(a) * Number(base)) / Number(b) / baseNum;
+  return Number((a * base) / b) / Number(base);
 }
 
 const NANO_MULTIPLIER = new BN("1000000000");
