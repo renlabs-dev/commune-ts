@@ -22,11 +22,13 @@ export interface WorkerProps {
 }
 
 // -- Constants -- //
-export const NETUID_ZERO = 0;
+
+export const CONSENSUS_NETUID = 0;
 export const BLOCK_TIME = 8000;
 export const DAO_EXPIRATION_TIME = 75600; // 7 days in blocks
 
 // -- Functions -- //
+
 export function log(...args: unknown[]) {
   const [first, ...rest] = args;
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

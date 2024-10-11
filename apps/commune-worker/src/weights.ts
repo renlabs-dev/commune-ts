@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { bigintDivision } from "@commune-ts/subspace/utils";
-import { assert } from "tsafe";
 
 /** Related to weights computation */
 

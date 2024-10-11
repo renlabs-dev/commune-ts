@@ -6,7 +6,7 @@ import {
 } from "@commune-ts/subspace/queries";
 
 import type { WorkerProps } from "../common";
-import { BLOCK_TIME, isNewBlock, log, NETUID_ZERO, sleep } from "../common";
+import { BLOCK_TIME, isNewBlock, log, CONSENSUS_NETUID, sleep } from "../common";
 import { upsertModuleData } from "../db";
 import { SubspaceModuleToDatabase } from "../db/type-transformations.js";
 
@@ -30,7 +30,7 @@ export async function moduleFetcherWorker(props: WorkerProps) {
 
       const modules = await queryRegisteredModulesInfo(
         lastBlock.apiAtBlock,
-        NETUID_ZERO,
+        CONSENSUS_NETUID,
         props.lastBlock.blockNumber,
       );
       const modulesData = modules.map((module) =>
