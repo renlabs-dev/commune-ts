@@ -23,7 +23,7 @@
     "@commune-ts/db": "workspace:*",
     "@commune-ts/types": "workspace:*",
     "@commune-ts/utils": "workspace:*",
-    "@polkadot/util": "^12.6.2",
+    "@polkadot/util": "catalog:",
     "@polkadot/util-crypto": "catalog:",
     "@trpc/server": "catalog:",
     "jsonwebtoken": "^9.0.2",
