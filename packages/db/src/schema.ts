@@ -17,6 +17,8 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+const CONSENSUS_NETUID = 2;
+
 export const createTable = pgTableCreator((name) => `${name}`);
 
 export const ss58Address = (name: string) => varchar(name, { length: 256 });
@@ -33,7 +35,9 @@ export const moduleData = createTable(
   {
     id: serial("id").primaryKey(),
 
+    // TODO: SOLVE THE CASE FOR SUBNETS DIFFERENT FROM ZERO
     netuid: integer("netuid").notNull(),
+
     moduleId: integer("module_id").notNull(),
     moduleKey: ss58Address("module_key").notNull(),
 
@@ -76,6 +80,8 @@ export const moduleData = createTable(
 /**
  * Data for the relation a user have with a specific module.
  * The user can set a weight (vote) for a module, and favorite it.
+ * 
+ * This MUST store only modules for subnet 2.
  */
 export const userModuleData = createTable(
   "user_module_data",
@@ -389,14 +395,14 @@ export const governanceNotificationSchema = createTable(
 );
 
 /**
+ * This MUST store only info for modules on subnet 2.
+ */
 export const computedModuleWeights = createTable("computed_module_weights", {
   id: serial("id").primaryKey(),
 
   atBlock: integer("at_block").notNull(),
 
-  moduleKey: ss58Address("module_key")
-    .notNull()
-    .references(() => moduleData.moduleKey),
+  // TODO: add moduleId
 
   // Aggregated weights measured in nanos
   stakeWeight: bigint("stake_weight", { mode: "bigint" }).notNull(),
@@ -420,4 +426,3 @@ export const computedSubnetWeights = createTable("computed_subnet_weights", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-*/

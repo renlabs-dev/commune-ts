@@ -18,9 +18,7 @@ import {
   normalizeWeightsToPercent,
 } from "../weights";
 
-// TODO: get comrads Substrate key from environment
 // TODO: subnets
-// TODO: send weights to chain
 // TODO: update tables on DB
 
 export async function weightAggregatorWorker(api: ApiPromise) {
@@ -137,6 +135,7 @@ async function getModuleUids(): Promise<Map<string, number>> {
     )
     .execute();
 
+  // TODO: by module table id
   const uidMap = new Map<string, number>();
   result.forEach((row) => {
     uidMap.set(row.moduleKey, row.uid);
@@ -147,13 +146,16 @@ async function getModuleUids(): Promise<Map<string, number>> {
 /**
  * Queries the user-module data table to build a mapping of user keys to
  * module keys to weights.
+ * 
+ * @returns user key -> module id -> weight (0–100)
  */
-async function getUserWeightMap(): Promise<Map<string, Map<string, bigint>>> {
+async function getUserWeightMap(): Promise<Map<string, Map<number, bigint>>> {
   const result = await db
     .select({
       userKey: userModuleData.userKey,
       weight: userModuleData.weight,
       moduleKey: moduleData.moduleKey,
+      moduleId: moduleData.moduleId,
     })
     .from(moduleData)
     // filter modules updated on the last seen block
@@ -169,12 +171,12 @@ async function getUserWeightMap(): Promise<Map<string, Map<string, bigint>>> {
     .innerJoin(userModuleData, eq(moduleData.id, userModuleData.moduleId));
 
   // Maps: user key -> module key -> weight (0–100)
-  const weightMap = new Map<string, Map<string, bigint>>();
+  const weightMap = new Map<string, Map<number, bigint>>();
   result.forEach((entry) => {
     if (!weightMap.has(entry.userKey)) {
       weightMap.set(entry.userKey, new Map());
     }
-    weightMap.get(entry.userKey)?.set(entry.moduleKey, BigInt(entry.weight));
+    weightMap.get(entry.userKey)?.set(entry.moduleId, BigInt(entry.weight));
   });
   return weightMap;
 }
