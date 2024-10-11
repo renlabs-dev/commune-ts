@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@commune-ts/types": "workspace:*",
-    "@polkadot/util": "^12.6.2",
+    "@polkadot/util": "catalog:",
     "multiformats": "catalog:",
     "rustie": "catalog:",
     "tsafe": "catalog:"
