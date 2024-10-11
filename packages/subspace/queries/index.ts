@@ -23,6 +23,7 @@ import {
   checkSS58,
   GOVERNANCE_CONFIG_SCHEMA,
   isSS58,
+  STAKE_FROM_SCHEMA,
   MODULE_BURN_CONFIG_SCHEMA,
   NetworkSubnetConfigSchema,
   SUBSPACE_MODULE_SCHEMA,
@@ -33,6 +34,7 @@ import {
   handleProposals,
   standardizeUidToSS58address,
 } from "@commune-ts/utils";
+
 
 export { ApiPromise };
 
@@ -557,9 +559,26 @@ export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]
   return subnets;
 }
 
+export function keyStakeFrom(
+  targetKey: SS58Address,
+  stakeFromStorage: Map<SS58Address, Map<SS58Address, bigint>>
+) {
+  const stakerMap = stakeFromStorage.get(targetKey);
+  let totalStake = 0n;
+  if (stakerMap === undefined) {
+    console.log("could not find map for key: ", targetKey);
+    return totalStake;
+  }
+  for (const stake of stakerMap.values()) {
+    totalStake += stake;
+  }
+  return totalStake;
+}
+
 export async function queryRegisteredModulesInfo(
   api: Api,
   netuid: number,
+  blockNumber: number,
 ): Promise<SubspaceModule[]> {
   console.log("Fetching module keys from the chain...");
   const keyQuery: { subspaceModule: SubspaceStorageName[] } = {
@@ -576,13 +595,15 @@ export async function queryRegisteredModulesInfo(
     "emission",
     "incentive",
     "dividends",
-  ];
-  const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = {
-    subspaceModule: moduleProps,
-  };
+    "delegationFee",
+    "stakeFrom",
+  ]
+
+  const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: moduleProps }
   const modulesInfo = await queryChain(api, extraPropsQuery, netuid);
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
   const moduleMap: SubspaceModule[] = [];
+  const parsedStakeFromStorage = STAKE_FROM_SCHEMA.parse({ stakeFromStorage: processedModules.stakeFrom });
 
   for (const uid of Object.keys(uidToSS58)) {
     const moduleKey = uidToSS58[uid];
@@ -599,13 +620,15 @@ export async function queryRegisteredModulesInfo(
       registrationBlock: processedModules.registrationBlock[moduleKey],
       metadata: processedModules.metadata[moduleKey],
       lastUpdate: processedModules.lastUpdate[moduleKey],
-      atBlock: 0,
+      atBlock: blockNumber,
       emission: processedModules.emission[moduleKey],
       incentive: processedModules.incentive[moduleKey],
       dividends: processedModules.dividends[moduleKey],
-      delegationFee: 0,
-      stakeFrom: 0n,
-    });
+      delegationFee: processedModules.delegationFee[moduleKey],
+      totalStaked: keyStakeFrom(moduleKey, parsedStakeFromStorage.stakeFromStorage),
+      totalStakers: parsedStakeFromStorage.stakeFromStorage.get(moduleKey)?.size ?? 0,
+
+    })
     moduleMap.push(module);
   }
   return moduleMap;

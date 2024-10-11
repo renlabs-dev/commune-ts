@@ -4,12 +4,9 @@ import { assert } from "tsafe";
 import { z } from "zod";
 
 import type {
-  Codec,
   DaoApplicationStatus,
-  OptionalProperties,
   Proposal,
   SS58Address,
-  SubspaceModule,
 } from "./types";
 
 export function checkSS58(value: string | SS58Address): SS58Address {
@@ -145,6 +142,26 @@ export const NUMBER_SCHEMA = z.coerce.number();
 export const SUBSPACE_MODULE_REGISTRATION_BLOCK_SCHEMA = z.coerce.number();
 export const SUBSPACE_MODULE_METADATA_SCHEMA = z.string(); // TODO: validate it's a valid ipfs hash or something (?)
 export const SUBSPACE_MODULE_LAST_UPDATE_SCHEMA = z.any();
+export const STAKE_FROM_SCHEMA = z.object({
+  stakeFromStorage: z.record(
+    ADDRESS_SCHEMA,
+    z.record(ADDRESS_SCHEMA, z.coerce.bigint())
+  ).transform(
+    (val) => {
+      const map = new Map<SS58Address, Map<SS58Address, bigint>>();
+      const stakeMapEntries = Object.entries(val) as [SS58Address, Record<SS58Address, bigint>][];
+      for (const [stakedInto, stakerMap] of stakeMapEntries) {
+        const innerMap = new Map<SS58Address, bigint>();
+        const stakers = Object.entries(stakerMap) as [SS58Address, bigint][];
+        for (const [staker, stake] of stakers) {
+          innerMap.set(staker, BigInt(stake));
+        }
+        map.set(stakedInto, innerMap);
+      }
+      return map;
+    },
+  ),
+});
 
 export const SUBSPACE_MODULE_SCHEMA = z.object({
   netuid: z.coerce.number(),
@@ -162,5 +179,6 @@ export const SUBSPACE_MODULE_SCHEMA = z.object({
   dividends: z.coerce.bigint().optional(),
   delegationFee: z.coerce.number().optional(),
 
-  stakeFrom: z.bigint().optional(),
+  totalStaked: z.coerce.bigint(),
+  totalStakers: z.coerce.number(),
 });

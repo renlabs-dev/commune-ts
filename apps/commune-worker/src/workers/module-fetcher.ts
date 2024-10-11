@@ -31,6 +31,7 @@ export async function moduleFetcherWorker(props: WorkerProps) {
       const modules = await queryRegisteredModulesInfo(
         lastBlock.apiAtBlock,
         NETUID_ZERO,
+        props.lastBlock.blockNumber,
       );
       const modulesData = modules.map((module) =>
         SubspaceModuleToDatabase(
