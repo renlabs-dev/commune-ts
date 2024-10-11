@@ -1,21 +1,13 @@
 "use client";
 
-import type { TRPCLink } from "@trpc/client";
-import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  createTRPCClient,
-  httpBatchLink,
-  loggerLink,
-  TRPCClientError,
-} from "@trpc/client";
+import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
-import { observable } from "@trpc/server/observable";
 import SuperJSON from "superjson";
 
 import type { AppRouter } from "@commune-ts/api";
+import { createAuthLink, makeAuthenticateUserFn } from "@commune-ts/api/client";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { createAuthReqData, signData } from "@commune-ts/utils";
 
 import { env } from "~/env";
 
@@ -47,48 +39,20 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
 
   const { signHex } = useCommune();
 
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const getStoredAuthorization = () => localStorage.getItem("authorization");
+  const setStoredAuthorization = (authorization: string) =>
+    localStorage.setItem("authorization", authorization);
 
-  const authenticateUser = async () => {
-    if (isAuthenticating) {
-      console.log("Already authenticating, skipping.");
-      return;
-    }
-    setIsAuthenticating(true);
-
-    try {
-      const sessionData = createAuthReqData(env.NEXT_PUBLIC_AUTH_ORIGIN);
-      const signedData = await signData(signHex, sessionData);
-
-      const authClient = createTRPCClient<AppRouter>({
-        links: [
-          httpBatchLink({
-            url: getBaseUrl() + "/api/trpc",
-            transformer: SuperJSON,
-          }),
-        ],
-      });
-
-      const result = await authClient.auth.startSession.mutate(signedData);
-
-      if (result.token && result.authenticationType) {
-        const authorization = `${result.authenticationType} ${result.token}`;
-        localStorage.setItem("authorization", authorization);
-        console.log("Authentication successful");
-      } else {
-        throw new Error("Invalid authentication response");
-      }
-    } catch (error) {
-      console.error("Authentication error:", error);
-      throw error;
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
+  const authenticateUser = makeAuthenticateUserFn(
+    getBaseUrl(),
+    env.NEXT_PUBLIC_AUTH_ORIGIN,
+    setStoredAuthorization,
+    signHex,
+  );
 
   const trpcClient = api.createClient({
     links: [
-      createAuthLink(authenticateUser),
+      createAuthLink(authenticateUser, getStoredAuthorization),
       loggerLink({
         enabled: (op) =>
           env.NODE_ENV === "development" ||
@@ -117,61 +81,6 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
       </api.Provider>
     </QueryClientProvider>
   );
-}
-
-function createAuthLink(
-  authenticateUser: () => Promise<void>,
-): TRPCLink<AppRouter> {
-  return () => {
-    return ({ op, next }) => {
-      return observable<unknown, Error | TRPCClientError<AppRouter>>(
-        (observer) => {
-          let retried = false;
-
-          const execute = () => {
-            const subscription = next(op).subscribe({
-              next: (result) => {
-                observer.next(result);
-              },
-              error: (err) => {
-                if (
-                  !retried &&
-                  err instanceof TRPCClientError &&
-                  err.data?.code === "UNAUTHORIZED"
-                ) {
-                  retried = true;
-                  authenticateUser()
-                    .then(() => {
-                      op.context.headers = {
-                        ...(op.context.headers ?? {}),
-                        authorization:
-                          localStorage.getItem("authorization") ?? "",
-                      };
-                      execute();
-                    })
-                    .catch((error) => {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                      observer.error(error);
-                    });
-                } else {
-                  observer.error(err);
-                }
-              },
-              complete: () => {
-                observer.complete();
-              },
-            });
-
-            return () => {
-              subscription.unsubscribe();
-            };
-          };
-
-          return execute();
-        },
-      );
-    };
-  };
 }
 
 const getBaseUrl = () => {

@@ -718,6 +718,9 @@ importers:
       '@polkadot/util-crypto':
         specifier: 'catalog:'
         version: 13.0.2(@polkadot/util@13.0.2)
+      '@trpc/client':
+        specifier: 'catalog:'
+        version: 11.0.0-rc.502(@trpc/server@11.0.0-rc.502)
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.0.0-rc.502
