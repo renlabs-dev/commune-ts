@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { bigintDivision } from "@commune-ts/subspace/utils";
 import { assert } from "tsafe";
 
 /** Related to weights computation */
@@ -53,33 +54,44 @@ export function calcFinalWeights(
 }
 
 /**
- * Normalize module weights to integer percentages.
+ * Normalize weights to kinda arbitrary small integers. They need to fit in 
+ * a u16 which is what Subspace accepts as vote values.
  */
-export function normalizeModuleWeights(
-  module_weights: Map<Key, bigint>,
-): Map<string, bigint> {
-  const module_key_arr: string[] = [];
-  const module_weight_arr: bigint[] = [];
+export function normalizeWeightsForVote(
+  weights: Map<Key, bigint>,
+): Map<string, number> {
+  const SCALE = 2n << 8n;
 
   let max_weight = 0n;
-  for (const [module_key, weight] of module_weights.entries()) {
-    module_key_arr.push(module_key);
-    module_weight_arr.push(weight);
+  for (const  weight of weights.values()) {
     if (weight > max_weight) max_weight = weight;
   }
 
-  const normalized_weights: bigint[] = [];
-  for (const weight of module_weight_arr) {
-    normalized_weights.push((weight * 100n) / max_weight);
+  const result = new Map<string, number>();
+  for (const [module_key, weight] of weights.entries()) {
+    const normalized = (weight * SCALE) / max_weight;
+    result.set(module_key, Number(normalized));
+  }
+  return result;
+}
+
+/**
+ * Normalize weights to float percentages.
+ */
+export function normalizeWeightsToPercent(
+  module_weights: Map<Key, bigint>,
+): Map<Key, number> {
+  let total_weight = 0n;
+  for (const weight of module_weights.values()) {
+    total_weight += weight;
   }
 
-  const result = new Map<string, bigint>();
-  // for (let i = 0; i < module_key_arr.length; i++) {
-  module_key_arr.forEach((module_key, i) => {
-    const nw = normalized_weights[i];
-    assert(nw != null);
-    result.set(module_key, nw);
-  });
+  const result = new Map<string, number>();
+  for (const [module_key, weight] of module_weights.entries()) {
+    const normalized = bigintDivision(weight, total_weight);
+    result.set(module_key, Number(normalized));
+  }
+
   return result;
 }
 
@@ -139,10 +151,12 @@ function _testFinalWeights() {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const result = calcFinalWeights(user_stakes, user_weight_maps);
-  const normalized = normalizeModuleWeights(result);
+  const normalized = normalizeWeightsForVote(result);
+  const normalizedPerc = normalizeWeightsToPercent(result);
 
   console.log(result);
   console.log(normalized);
+  console.log(normalizedPerc);
 }
 
 // _testFinalWeights();
