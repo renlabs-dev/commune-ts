@@ -26,10 +26,10 @@ catalogs:
       version: 0.52.3
     "@polkadot/types":
       specifier: ^13.0.1
-      version: 13.0.1
+      version: 13.2.1
     "@polkadot/util":
       specifier: ^13.0.2
-      version: 13.0.2
+      version: 13.1.1
     "@polkadot/util-crypto":
       specifier: ^13.0.2
       version: 13.1.1
@@ -41,16 +41,16 @@ catalogs:
       version: 0.5.15
     "@tanstack/react-query":
       specifier: ^5.51.23
-      version: 5.59.11
+      version: 5.59.13
     "@trpc/client":
       specifier: ^11.0.0-rc.477
-      version: 11.0.0-rc.569
+      version: 11.0.0-rc.571
     "@trpc/react-query":
       specifier: ^11.0.0-rc.477
-      version: 11.0.0-rc.569
+      version: 11.0.0-rc.571
     "@trpc/server":
       specifier: ^11.0.0-rc.477
-      version: 11.0.0-rc.569
+      version: 11.0.0-rc.571
     "@types/node":
       specifier: ^20.14.15
       version: 20.16.11
@@ -236,16 +236,16 @@ importers:
         version: 0.10.1(typescript@5.6.3)(zod@3.23.8)
       "@tanstack/react-query":
         specifier: "catalog:"
-        version: 5.59.11(react@18.3.1)
+        version: 5.59.13(react@18.3.1)
       "@trpc/client":
         specifier: "catalog:"
-        version: 11.0.0-rc.569(@trpc/server@11.0.0-rc.569)
+        version: 11.0.0-rc.571(@trpc/server@11.0.0-rc.571)
       "@trpc/react-query":
         specifier: "catalog:"
-        version: 11.0.0-rc.569(@tanstack/react-query@5.59.11(react@18.3.1))(@trpc/client@11.0.0-rc.569(@trpc/server@11.0.0-rc.569))(@trpc/server@11.0.0-rc.569)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 11.0.0-rc.571(@tanstack/react-query@5.59.13(react@18.3.1))(@trpc/client@11.0.0-rc.571(@trpc/server@11.0.0-rc.571))(@trpc/server@11.0.0-rc.571)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       "@trpc/server":
         specifier: "catalog:"
-        version: 11.0.0-rc.569
+        version: 11.0.0-rc.571
       "@uiw/react-markdown-preview":
         specifier: ^5.1.1
         version: 5.1.3(@types/react@18.3.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -442,16 +442,16 @@ importers:
         version: 0.10.1(typescript@5.6.3)(zod@3.23.8)
       "@tanstack/react-query":
         specifier: "catalog:"
-        version: 5.59.11(react@18.3.1)
+        version: 5.59.13(react@18.3.1)
       "@trpc/client":
         specifier: "catalog:"
-        version: 11.0.0-rc.569(@trpc/server@11.0.0-rc.569)
+        version: 11.0.0-rc.571(@trpc/server@11.0.0-rc.571)
       "@trpc/react-query":
         specifier: "catalog:"
-        version: 11.0.0-rc.569(@tanstack/react-query@5.59.11(react@18.3.1))(@trpc/client@11.0.0-rc.569(@trpc/server@11.0.0-rc.569))(@trpc/server@11.0.0-rc.569)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 11.0.0-rc.571(@tanstack/react-query@5.59.13(react@18.3.1))(@trpc/client@11.0.0-rc.571(@trpc/server@11.0.0-rc.571))(@trpc/server@11.0.0-rc.571)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       "@trpc/server":
         specifier: "catalog:"
-        version: 11.0.0-rc.569
+        version: 11.0.0-rc.571
       next:
         specifier: "catalog:"
         version: 14.2.15(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -832,7 +832,7 @@ importers:
         version: 13.1.1(@polkadot/util@13.1.1)
       "@tanstack/react-query":
         specifier: "catalog:"
-        version: 5.59.11(react@18.3.1)
+        version: 5.59.13(react@18.3.1)
       multiformats:
         specifier: "catalog:"
         version: 13.3.0
@@ -1052,7 +1052,7 @@ importers:
         version: link:../types
       "@polkadot/util":
         specifier: "catalog:"
-        version: 13.0.2
+        version: 13.1.1
       multiformats:
         specifier: "catalog:"
         version: 13.3.0
@@ -1138,7 +1138,7 @@ importers:
         version: 7.37.1(eslint@9.12.0(jiti@1.21.6))
       eslint-plugin-react-hooks:
         specifier: rc
-        version: 5.1.0-rc-09111202-20241011(eslint@9.10.0(jiti@1.21.6))
+        version: 5.1.0-rc-09111202-20241011(eslint@9.12.0(jiti@1.21.6))
       eslint-plugin-turbo:
         specifier: ^2.1.1
         version: 2.1.3(eslint@9.12.0(jiti@1.21.6))
@@ -2631,10 +2631,10 @@ packages:
     peerDependencies:
       "@polkadot/util": 13.1.1
 
-  "@polkadot/util@13.0.2":
+  "@polkadot/util@13.1.1":
     resolution:
       {
-        integrity: sha512-/6bS9sfhJLhs8QuqWaR1eRapzfDdGC5XAQZEPL9NN5sTTA7HxWos8rVleai0UERm8QUMabjZ9rK9KpzbXl7ojg==,
+        integrity: sha512-M4iQ5Um8tFdDmD7a96nPzfrEt+kxyWOqQDPqXyaax4QBnq/WCbq0jo8IO61uz55mdMQnGZvq8jd8uge4V6JzzQ==,
       }
     engines: { node: ">=18" }
 
@@ -2695,10 +2695,10 @@ packages:
     peerDependencies:
       "@polkadot/util": "*"
 
-  "@polkadot/x-bigint@13.0.2":
+  "@polkadot/x-bigint@13.1.1":
     resolution:
       {
-        integrity: sha512-h2jKT/UaxiEal8LhQeH6+GCjO7GwEqVAD2SNYteCOXff6yNttqAZYJuHZsndbVjVNwqRNf8D5q/zZkD0HUd6xQ==,
+        integrity: sha512-Cq4Y6fd9UWtRBZz8RX2tWEBL1IFwUtY6cL8p6HC9yhZtUR6OPjKZe6RIZQa9gSOoIuqZWd6PmtvSNGVH32yfkQ==,
       }
     engines: { node: ">=18" }
 
@@ -2709,10 +2709,10 @@ packages:
       }
     engines: { node: ">=18" }
 
-  "@polkadot/x-global@13.0.2":
+  "@polkadot/x-global@13.1.1":
     resolution:
       {
-        integrity: sha512-OoNIXLB5y8vIKpk4R+XmpDPhipNXWSUvEwUnpQT7NAxNLmzgMq1FhbrwBWWPRNHPrQonp7mqxV/X+v5lv1HW/g==,
+        integrity: sha512-DViIMmmEs29Qlsp058VTg2Mn7e3/CpGazNnKJrsBa0o1Ptxl13/4Z0fjqCpNi2GB+kaOsnREzxUORrHcU+PqcQ==,
       }
     engines: { node: ">=18" }
 
@@ -2726,17 +2726,17 @@ packages:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-util": "*"
 
-  "@polkadot/x-textdecoder@13.0.2":
+  "@polkadot/x-textdecoder@13.1.1":
     resolution:
       {
-        integrity: sha512-mauglOkTJxLGmLwLc3J5Jlq/W+SHP53eiy3F8/8JxxfnXrZKgWoQXGpvXYPjFnMZj0MzDSy/6GjyGWnDCgdQFA==,
+        integrity: sha512-LpZ9KYc6HdBH+i86bCmun4g4GWMiWN/1Pzs0hNdanlQMfqp3UGzl1Dqp0nozMvjWAlvyG7ip235VgNMd8HEbqg==,
       }
     engines: { node: ">=18" }
 
-  "@polkadot/x-textencoder@13.0.2":
+  "@polkadot/x-textencoder@13.1.1":
     resolution:
       {
-        integrity: sha512-Lq08H2OnVXj97uaOwg7tcmRS7a4VJYkHEeWO4FyEMOk6P6lU6W8OVNjjxG0se9PCEgmyZPUDbJI//1ynzP4cXw==,
+        integrity: sha512-w1mT15B9ptN5CJNgN/A0CmBqD5y9OePjBdU6gmAd8KRhwXCF0MTBKcEZk1dHhXiXtX+28ULJWLrfefC5gxy69Q==,
       }
     engines: { node: ">=18" }
 
@@ -3689,16 +3689,16 @@ packages:
     peerDependencies:
       tailwindcss: ">=3.0.0 || insiders || >=4.0.0-alpha.20"
 
-  "@tanstack/query-core@5.59.10":
+  "@tanstack/query-core@5.59.13":
     resolution:
       {
-        integrity: sha512-XxvnKeBWqDTHstyjA1qmSD5VS/FZ2g/qYvPMhFM7IZF0JnMqMxtzbiUkiTFaZ4YZo/Q84LS0hZi0UncKJ3vIhg==,
+        integrity: sha512-Oou0bBu/P8+oYjXsJQ11j+gcpLAMpqW42UlokQYEz4dE7+hOtVO9rVuolJKgEccqzvyFzqX4/zZWY+R/v1wVsQ==,
       }
 
-  "@tanstack/react-query@5.59.11":
+  "@tanstack/react-query@5.59.13":
     resolution:
       {
-        integrity: sha512-m5I4+4NHy6p0uzKLiq30EdRGk37CHHjXJsfMT0bty/Z/aO11LgXUgDBCq/xma4eO5RlV95sFVmi2QB9nVaLlxg==,
+        integrity: sha512-GB2ELtiH8tL0rcFiM4sWvnXhazt1xRXX/LolMEV12kfEKu58aNA4lQoieslP61PO4vZO9JJMwm+6lqyS0E1HOA==,
       }
     peerDependencies:
       react: ^18 || ^19
@@ -3741,30 +3741,30 @@ packages:
         integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==,
       }
 
-  "@trpc/client@11.0.0-rc.569":
+  "@trpc/client@11.0.0-rc.571":
     resolution:
       {
-        integrity: sha512-crS1mJdJVKfqtzCJUbrurooxrZdToAHMZuPw9SAYU+dDdiIqlzCovWatv0MK+UD7Nkezs8/jZC4C/wcstA5Mxg==,
+        integrity: sha512-mUX47avAwgkirC91rtnde7B8QVbvd+121wgud3q22gYBI1hrGFn8isFwXdPquVneXNL5p1JjfhpZzDwzHmUJ4Q==,
       }
     peerDependencies:
-      "@trpc/server": 11.0.0-rc.569+8049266de
+      "@trpc/server": 11.0.0-rc.571+a70e169ce
 
-  "@trpc/react-query@11.0.0-rc.569":
+  "@trpc/react-query@11.0.0-rc.571":
     resolution:
       {
-        integrity: sha512-OSIsGeno/g0nMcpi5pQPYCUKPI7rlp7omZyvDvT7mvVQbBexwl7CgFWiWFo0Wv6VlQZYH0klrGsP5J4YRx+C2Q==,
+        integrity: sha512-+LNIou3JQ/wQybTk1Vt90cKWk8LGGHrhsHiTWJFRiApaNgl/y7EkOfoOZ/we8jY3hPnyG5CXcqXx9SDbrmy8lg==,
       }
     peerDependencies:
       "@tanstack/react-query": ^5.54.1
-      "@trpc/client": 11.0.0-rc.569+8049266de
-      "@trpc/server": 11.0.0-rc.569+8049266de
+      "@trpc/client": 11.0.0-rc.571+a70e169ce
+      "@trpc/server": 11.0.0-rc.571+a70e169ce
       react: ">=18.2.0"
       react-dom: ">=18.2.0"
 
-  "@trpc/server@11.0.0-rc.569":
+  "@trpc/server@11.0.0-rc.571":
     resolution:
       {
-        integrity: sha512-ClaeO8fNizYaUllxON7soAoZgX8CUZ9iuiJxajftTlh9W8/r/cyq2v/G9prPl0psdOHvOPJJ31y6aE2Wt+LdMQ==,
+        integrity: sha512-CISo9BoXSArTPt3MfxbOTPUcEdtKOl5Qgp8P+udiaA/nRmjndvVeZWQSmy1elRv0mQ/vvUI1VLsYm9Dn1/bysw==,
       }
 
   "@tsconfig/node10@1.0.11":
@@ -8155,10 +8155,10 @@ packages:
         integrity: sha512-twN+njEipszzlMJd4ONUYgSfZPDxgHhT9Ahed5uTigpQn90FggW4SA/AIPq/6a149fTbE9qBEcSwE3FAEp6wQQ==,
       }
 
-  parse5@7.1.2:
+  parse5@7.2.0:
     resolution:
       {
-        integrity: sha512-Czj1WaSVpaoj0wbhMzLmWD69anp2WH7FXMB9n1Sy8/ZFF9jolSQVMu1Ij5WIyGmcBmhk7EOndpO4mIpihVqAXw==,
+        integrity: sha512-ZkDsAOcxsUMZ4Lz5fVciOehNcJ+Gb8gTzcA4yl3wnc273BAybYWrQ+Ks/OjCjSEpjvQkDSeZbybK9qj2VHHdGA==,
       }
 
   parseurl@1.3.3:
@@ -11019,7 +11019,7 @@ snapshots:
       rxjs: 7.8.1
       tslib: 2.7.0
 
-  "@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2)":
+  "@polkadot/util-crypto@13.1.1(@polkadot/util@13.1.1)":
     dependencies:
       "@noble/curves": 1.6.0
       "@noble/hashes": 1.5.0
@@ -11032,7 +11032,7 @@ snapshots:
       "@scure/base": 1.1.9
       tslib: 2.7.0
 
-  "@polkadot/util@13.0.2":
+  "@polkadot/util@13.1.1":
     dependencies:
       "@polkadot/x-bigint": 13.1.1
       "@polkadot/x-global": 13.1.1
@@ -11042,19 +11042,19 @@ snapshots:
       bn.js: 5.2.1
       tslib: 2.7.0
 
-  "@polkadot/wasm-bridge@7.3.2(@polkadot/util@13.0.2)(@polkadot/x-randomvalues@13.0.2(@polkadot/util@13.0.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.0.2)))":
+  "@polkadot/wasm-bridge@7.3.2(@polkadot/util@13.1.1)(@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)))":
     dependencies:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-util": 7.3.2(@polkadot/util@13.1.1)
       "@polkadot/x-randomvalues": 13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1))
       tslib: 2.7.0
 
-  "@polkadot/wasm-crypto-asmjs@7.3.2(@polkadot/util@13.0.2)":
+  "@polkadot/wasm-crypto-asmjs@7.3.2(@polkadot/util@13.1.1)":
     dependencies:
       "@polkadot/util": 13.1.1
       tslib: 2.7.0
 
-  "@polkadot/wasm-crypto-init@7.3.2(@polkadot/util@13.0.2)(@polkadot/x-randomvalues@13.0.2(@polkadot/util@13.0.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.0.2)))":
+  "@polkadot/wasm-crypto-init@7.3.2(@polkadot/util@13.1.1)(@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)))":
     dependencies:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-bridge": 7.3.2(@polkadot/util@13.1.1)(@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)))
@@ -11064,13 +11064,13 @@ snapshots:
       "@polkadot/x-randomvalues": 13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1))
       tslib: 2.7.0
 
-  "@polkadot/wasm-crypto-wasm@7.3.2(@polkadot/util@13.0.2)":
+  "@polkadot/wasm-crypto-wasm@7.3.2(@polkadot/util@13.1.1)":
     dependencies:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-util": 7.3.2(@polkadot/util@13.1.1)
       tslib: 2.7.0
 
-  "@polkadot/wasm-crypto@7.3.2(@polkadot/util@13.0.2)(@polkadot/x-randomvalues@13.0.2(@polkadot/util@13.0.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.0.2)))":
+  "@polkadot/wasm-crypto@7.3.2(@polkadot/util@13.1.1)(@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)))":
     dependencies:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-bridge": 7.3.2(@polkadot/util@13.1.1)(@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)))
@@ -11081,12 +11081,12 @@ snapshots:
       "@polkadot/x-randomvalues": 13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1))
       tslib: 2.7.0
 
-  "@polkadot/wasm-util@7.3.2(@polkadot/util@13.0.2)":
+  "@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1)":
     dependencies:
       "@polkadot/util": 13.1.1
       tslib: 2.7.0
 
-  "@polkadot/x-bigint@13.0.2":
+  "@polkadot/x-bigint@13.1.1":
     dependencies:
       "@polkadot/x-global": 13.1.1
       tslib: 2.7.0
@@ -11097,23 +11097,23 @@ snapshots:
       node-fetch: 3.3.2
       tslib: 2.7.0
 
-  "@polkadot/x-global@13.0.2":
+  "@polkadot/x-global@13.1.1":
     dependencies:
       tslib: 2.7.0
 
-  "@polkadot/x-randomvalues@13.0.2(@polkadot/util@13.0.2)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.0.2))":
+  "@polkadot/x-randomvalues@13.1.1(@polkadot/util@13.1.1)(@polkadot/wasm-util@7.3.2(@polkadot/util@13.1.1))":
     dependencies:
       "@polkadot/util": 13.1.1
       "@polkadot/wasm-util": 7.3.2(@polkadot/util@13.1.1)
       "@polkadot/x-global": 13.1.1
       tslib: 2.7.0
 
-  "@polkadot/x-textdecoder@13.0.2":
+  "@polkadot/x-textdecoder@13.1.1":
     dependencies:
       "@polkadot/x-global": 13.1.1
       tslib: 2.7.0
 
-  "@polkadot/x-textencoder@13.0.2":
+  "@polkadot/x-textencoder@13.1.1":
     dependencies:
       "@polkadot/x-global": 13.1.1
       tslib: 2.7.0
@@ -11857,11 +11857,11 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.13(ts-node@10.9.2(@types/node@20.16.11)(typescript@5.6.3))
 
-  "@tanstack/query-core@5.59.10": {}
+  "@tanstack/query-core@5.59.13": {}
 
-  "@tanstack/react-query@5.59.11(react@18.3.1)":
+  "@tanstack/react-query@5.59.13(react@18.3.1)":
     dependencies:
-      "@tanstack/query-core": 5.59.10
+      "@tanstack/query-core": 5.59.13
       react: 18.3.1
 
   "@tanstack/react-table@8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
@@ -11882,19 +11882,19 @@ snapshots:
 
   "@tootallnate/quickjs-emscripten@0.23.0": {}
 
-  "@trpc/client@11.0.0-rc.569(@trpc/server@11.0.0-rc.569)":
+  "@trpc/client@11.0.0-rc.571(@trpc/server@11.0.0-rc.571)":
     dependencies:
-      "@trpc/server": 11.0.0-rc.569
+      "@trpc/server": 11.0.0-rc.571
 
-  "@trpc/react-query@11.0.0-rc.569(@tanstack/react-query@5.59.11(react@18.3.1))(@trpc/client@11.0.0-rc.569(@trpc/server@11.0.0-rc.569))(@trpc/server@11.0.0-rc.569)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
+  "@trpc/react-query@11.0.0-rc.571(@tanstack/react-query@5.59.13(react@18.3.1))(@trpc/client@11.0.0-rc.571(@trpc/server@11.0.0-rc.571))(@trpc/server@11.0.0-rc.571)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
     dependencies:
-      "@tanstack/react-query": 5.59.11(react@18.3.1)
-      "@trpc/client": 11.0.0-rc.569(@trpc/server@11.0.0-rc.569)
-      "@trpc/server": 11.0.0-rc.569
+      "@tanstack/react-query": 5.59.13(react@18.3.1)
+      "@trpc/client": 11.0.0-rc.571(@trpc/server@11.0.0-rc.571)
+      "@trpc/server": 11.0.0-rc.571
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  "@trpc/server@11.0.0-rc.569": {}
+  "@trpc/server@11.0.0-rc.571": {}
 
   "@tsconfig/node10@1.0.11": {}
 
@@ -13254,7 +13254,7 @@ snapshots:
       safe-regex-test: 1.0.3
       string.prototype.includes: 2.0.0
 
-  eslint-plugin-react-hooks@5.1.0-rc-09111202-20241011(eslint@9.10.0(jiti@1.21.6)):
+  eslint-plugin-react-hooks@5.1.0-rc-09111202-20241011(eslint@9.12.0(jiti@1.21.6)):
     dependencies:
       eslint: 9.12.0(jiti@1.21.6)
 
@@ -13725,7 +13725,7 @@ snapshots:
       "@types/hast": 3.0.4
       devlop: 1.1.0
       hast-util-from-parse5: 8.0.1
-      parse5: 7.1.2
+      parse5: 7.2.0
       vfile: 6.0.3
       vfile-message: 4.0.2
 
@@ -13769,7 +13769,7 @@ snapshots:
       hast-util-to-parse5: 8.0.0
       html-void-elements: 3.0.0
       mdast-util-to-hast: 13.2.0
-      parse5: 7.1.2
+      parse5: 7.2.0
       unist-util-position: 5.0.0
       unist-util-visit: 5.0.0
       vfile: 6.0.3
@@ -15068,7 +15068,7 @@ snapshots:
 
   parse-numeric-range@1.3.0: {}
 
-  parse5@7.1.2:
+  parse5@7.2.0:
     dependencies:
       entities: 4.5.0
 
