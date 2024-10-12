@@ -8,7 +8,7 @@ import type { LastBlock } from "@commune-ts/types";
 import { and, eq, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import { moduleData, userModuleData } from "@commune-ts/db/schema";
-import { queryLastBlock, queryStakeOut } from "@commune-ts/subspace/queries";
+import { queryLastBlock, queryStakeOutCORRECT } from "@commune-ts/subspace/queries";
 
 import { BLOCK_TIME, log, sleep } from "../common";
 import { env } from "../env";
@@ -17,7 +17,13 @@ import {
   normalizeWeightsForVote,
   normalizeWeightsToPercent,
 } from "../weights";
+import type{
+  ModuleWeight,
+} from "../db";
+import {
+  insertModuleWeight,
 
+} from "../db";
 // TODO: subnets
 // TODO: update tables on DB
 
@@ -43,7 +49,7 @@ export async function weightAggregatorWorker(api: ApiPromise) {
 
       log(`Block ${lastBlock.blockNumber}: processing`);
 
-      await weightAggregatorTask(api, keypair);
+      await weightAggregatorTask(api, keypair, lastBlock.blockNumber);
 
       await sleep(BLOCK_TIME * 2);
 
@@ -62,37 +68,51 @@ export async function weightAggregatorWorker(api: ApiPromise) {
 export async function weightAggregatorTask(
   api: ApiPromise,
   keypair: KeyringPair,
+  lastBlock: number,
 ) {
-  const stakeOutData = await queryStakeOut(
+  const stakeOutData = await queryStakeOutCORRECT(
     String(process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL),
   );
   const stakeOutMap = objToMap(stakeOutData.perAddr);
-
+  
   const uidMap = await getModuleUids();
   const weightMap = await getUserWeightMap();
-
   const finalWeights = calcFinalWeights(stakeOutMap, weightMap);
   const normalizedVoteWeights = normalizeWeightsForVote(finalWeights);
   const normalizedPercWeights = normalizeWeightsToPercent(finalWeights);
-
   // TODO: normalize weights with (sum(weights) == 100%) for DB
-
-  console.log(normalizedVoteWeights);
 
   const uids: number[] = [];
   const weights: number[] = [];
-  for (const [moduleKey, weight] of normalizedVoteWeights) {
-    const uid = uidMap.get(moduleKey);
-    if (uid == null) {
-      console.error(`Module key ${moduleKey} not found in uid map`);
+  const moduleWeights: ModuleWeight[] = [];
+  // Id or Uid? which is the network id and which is the db id?
+
+  for (const [moduleId, weight] of normalizedVoteWeights) {
+    // this here is actually the uid (i think)
+    uids.push(moduleId);
+    weights.push(weight);
+    const moduleActualId = uidMap.get(moduleId);
+    if(moduleActualId == undefined) {
+      console.error(`Module id ${moduleId} not found in uid map`);
       continue;
     }
-    uids.push(uid);
-    weights.push(weight);
+    const modulePercWeight = normalizedPercWeights.get(moduleId);
+    if(modulePercWeight == undefined) {
+      console.error(`Module id ${moduleId} not found in normalizedPercWeights`);
+      continue;
+    }
+    moduleWeights.push({
+      moduleId: moduleActualId,
+      percWeight: modulePercWeight,
+      stakeWeight: weight,
+      atBlock: lastBlock,
+    });
+
   }
 
   try {
     await setChainWeights(api, keypair, 2, uids, weights);
+    await insertModuleWeight(moduleWeights)
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.error(`Failed to set weights on chain: ${err}`); 
@@ -118,13 +138,13 @@ async function setChainWeights(
 }
 
 /**
- * Queries the module data table to build a mapping of module keys to UIDs.
+ * Queries the module data table to build a mapping of module UIDS to ids.
  */
-async function getModuleUids(): Promise<Map<string, number>> {
+async function getModuleUids(): Promise<Map<number, number>> {
   const result = await db
     .select({
-      moduleKey: moduleData.moduleKey,
-      uid: moduleData.moduleId,
+      moduleId: moduleData.moduleId,
+      uid: moduleData.id,
     })
     .from(moduleData)
     .where(
@@ -136,9 +156,9 @@ async function getModuleUids(): Promise<Map<string, number>> {
     .execute();
 
   // TODO: by module table id
-  const uidMap = new Map<string, number>();
+  const uidMap = new Map<number, number>();
   result.forEach((row) => {
-    uidMap.set(row.moduleKey, row.uid);
+    uidMap.set(row.moduleId, row.uid);
   });
   return uidMap;
 }

@@ -93,6 +93,13 @@ export interface StakeOutData {
   atTime: Date;
 }
 
+export const STAKE_OUT_DATA_SCHEMA = z.object({
+  total: z.coerce.bigint(),
+  perAddr: z.record(z.string(), z.coerce.bigint()),
+  atBlock: z.coerce.bigint(),
+  atTime: z.coerce.date(),
+});
+
 export interface StakeFromData {
   total: bigint;
   perAddr: Map<string, bigint>;

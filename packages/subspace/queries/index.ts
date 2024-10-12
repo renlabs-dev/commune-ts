@@ -21,6 +21,7 @@ import type {
 } from "@commune-ts/utils";
 import {
   checkSS58,
+  STAKE_OUT_DATA_SCHEMA,
   GOVERNANCE_CONFIG_SCHEMA,
   isSS58,
   STAKE_FROM_SCHEMA,
@@ -331,6 +332,23 @@ export async function queryStakeOut(
     throw new Error("Failed to fetch data");
   }
   const stakeOutData = response.json() as unknown as StakeOutData;
+  return stakeOutData;
+}
+
+//TODO: solve the duplication
+export async function queryStakeOutCORRECT(
+  communeCacheUrl: string,
+): Promise<StakeOutData> {
+  const response = await fetch(`${communeCacheUrl}/api/stake-out`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const stakeOutData = STAKE_OUT_DATA_SCHEMA.parse(await response.json())
   return stakeOutData;
 }
 
