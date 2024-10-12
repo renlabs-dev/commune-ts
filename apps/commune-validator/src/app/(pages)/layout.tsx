@@ -30,8 +30,8 @@ export default function RootLayout({
       <div className="mb-4 flex w-full gap-3 border-b border-white/20 text-center">
         <div className="flex w-full animate-fade-down flex-col gap-4 pb-4 backdrop-blur-md animate-delay-300 md:flex-row">
           <Link
-            href="/"
-            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-green-500 hover:bg-green-500/10 active:bg-green-500/50 ${pathname === "/" ? "border-green-500 bg-green-500/10 text-green-500" : "border-white/20 text-white"}`}
+            href="/modules"
+            className={`w-full gap-2 border bg-[#898989]/5 p-3 text-lg font-medium transition duration-200 hover:border-green-500 hover:bg-green-500/10 active:bg-green-500/50 ${pathname === "/modules" ? "border-green-500 bg-green-500/10 text-green-500" : "border-white/20 text-white"}`}
           >
             Modules
           </Link>

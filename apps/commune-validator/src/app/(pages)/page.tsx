@@ -1,49 +1,49 @@
-import { Suspense } from "react";
+import {
+  ChartPieIcon,
+  CircleStackIcon,
+  Squares2X2Icon,
+  SquaresPlusIcon,
+} from "@heroicons/react/24/outline";
 
-import { api } from "~/trpc/server";
-import { ModuleCard } from "../components/module-card";
-import { PaginationControls } from "../components/pagination-controls";
-import { ViewControls } from "../components/view-controls";
+import { AreaChartGradient } from "../components/charts/area-chart";
+import { BarChartTest } from "../components/charts/bar-chart";
+import { PieChard } from "../components/charts/pie-chart";
+import { StatsCard } from "../components/stats-card";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { page?: string; sortBy?: string; order?: string };
-}) {
-  const currentPage = Number(searchParams.page) || 1;
-  const sortBy = searchParams.sortBy ?? "id";
-  const order = searchParams.order === "desc" ? "desc" : "asc";
-
-  const { modules, metadata } = await api.module.paginatedAll({
-    page: currentPage,
-    limit: 24,
-    // @ts-expect-error - TS doesn't know about sortBy for some reason
-    sortBy: sortBy,
-    order: order,
-  });
-
+export default function Page() {
   return (
     <>
-      <Suspense fallback={<div>Loading view controls...</div>}>
-        <ViewControls />
-      </Suspense>
-      <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 backdrop-blur-md animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {modules.length ? (
-          modules.map((module) => (
-            <ModuleCard
-              id={module.id}
-              key={module.id}
-              name={module.name ?? ""}
-              moduleKey={module.moduleKey}
-            />
-          ))
-        ) : (
-          <p>No modules found</p>
-        )}
+      <div className="grid w-full grid-cols-4 gap-3 pb-3">
+        <StatsCard
+          Icon={Squares2X2Icon}
+          text="Total Modules"
+          value="400"
+          color="green"
+        />
+        <StatsCard
+          Icon={SquaresPlusIcon}
+          text="Your Modules"
+          value="24"
+          color="green"
+        />
+        <StatsCard
+          Icon={CircleStackIcon}
+          text="Total Subnets"
+          value="12"
+          color="cyan"
+        />
+        <StatsCard
+          Icon={ChartPieIcon}
+          text="Your Subnets"
+          value="24"
+          color="cyan"
+        />
       </div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <PaginationControls totalPages={metadata.totalPages} />
-      </Suspense>
+      <div className="grid w-full grid-cols-3 gap-3 pb-6">
+        <BarChartTest />
+        <PieChard />
+        <AreaChartGradient />
+      </div>
     </>
   );
 }
