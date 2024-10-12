@@ -8,13 +8,32 @@ import {
   governanceNotificationSchema,
   moduleData,
   subnetDataSchema,
+  computedModuleWeightsSchema,
 } from "@commune-ts/db/schema";
 
 export type NewVote = typeof daoVoteSchema.$inferInsert;
 export type Module = typeof moduleData.$inferInsert;
 export type Subnet = typeof subnetDataSchema.$inferInsert;
+export type ModuleWeight = typeof computedModuleWeightsSchema.$inferInsert;
 
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+
+
+export async function insertModuleWeight(weights: ModuleWeight[]){
+  await db
+    .insert(computedModuleWeightsSchema)
+    .values(
+      weights.map((w) => ({
+        moduleId: w.moduleId,
+        stakeWeight: w.stakeWeight,
+        percWeight: w.percWeight,
+        atBlock: w.atBlock,
+      })),
+    )
+    .execute();
+}
+
+
 
 export async function upsertSubnetData(subnets: Subnet[]) {
   await db

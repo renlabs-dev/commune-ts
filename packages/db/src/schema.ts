@@ -17,7 +17,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-const CONSENSUS_NETUID = 2;
 
 export const createTable = pgTableCreator((name) => `${name}`);
 
@@ -394,18 +393,21 @@ export const governanceNotificationSchema = createTable(
   },
 );
 
+
 /**
  * This MUST store only info for modules on subnet 2.
  */
-export const computedModuleWeights = createTable("computed_module_weights", {
+// TODO: append SCHEMA to name
+
+export const computedModuleWeightsSchema = createTable("computed_module_weights", {
   id: serial("id").primaryKey(),
 
   atBlock: integer("at_block").notNull(),
 
   // TODO: add moduleId
-
+  moduleId: integer("module_id").notNull().references(() => moduleData.id),
   // Aggregated weights measured in nanos
-  stakeWeight: bigint("stake_weight", { mode: "bigint" }).notNull(),
+  stakeWeight: integer("stake_weight").notNull(),
   // Normalized aggregated weights (100% sum)
   percWeight: real("perc_weight").notNull(),
 
