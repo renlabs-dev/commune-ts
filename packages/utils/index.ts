@@ -275,7 +275,7 @@ export function getExpirationTime(
 
 export interface ChainEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getMapModules(netuid?: number): Record<any, any>;
+  queryStorage(netuid?: number): Record<any, any>;
 }
 
 export type SubspacePalletName =
@@ -410,7 +410,7 @@ export async function getPropsToMap(
 export class StorageVecMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-  getMapModules(netuid: number) {
+  queryStorage(netuid: number) {
     const subnet_values = this.entry[netuid];
     if (subnet_values != undefined) {
       const values = subnet_values[1].toPrimitive() as string[];
@@ -425,7 +425,7 @@ export class StorageVecMap implements ChainEntry {
 export class SimpleMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-  getMapModules() {
+  queryStorage() {
     const modules_map = Object.fromEntries(
       this.entry.map((value, index) => [index, value[1].toPrimitive()]),
     );
@@ -435,7 +435,7 @@ export class SimpleMap implements ChainEntry {
 
 export class NetuidMapEntries implements ChainEntry {
   constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
-  getMapModules() {
+  queryStorage() {
     const moduleIdToPropValue: Record<number, string> = {};
     this.entries.forEach(entry => {
       const moduleCodec = entry[1];
@@ -449,7 +449,7 @@ export class NetuidMapEntries implements ChainEntry {
 
 export class DoubleMapEntries implements ChainEntry {
   constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
-  getMapModules() {
+  queryStorage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const moduleIdToPropValue: Record<any, Record<any, any>> = {};
 
@@ -623,3 +623,4 @@ export const signData = async <T>(
     address,
   };
 };
+
