@@ -4,11 +4,18 @@ import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { assert } from "tsafe";
 
 import type { ApiPromise } from "@commune-ts/subspace/queries";
-import type { LastBlock } from "@commune-ts/types";
+import type { LastBlock, SS58Address } from "@commune-ts/types";
+import {STAKE_FROM_SCHEMA} from "@commune-ts/types";
 import { and, eq, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
-import { moduleData, userModuleData } from "@commune-ts/db/schema";
-import { queryLastBlock, queryStakeOutCORRECT } from "@commune-ts/subspace/queries";
+import { moduleData, userModuleData, userSubnetDataSchema, subnetDataSchema } from "@commune-ts/db/schema";
+import { 
+  queryLastBlock, 
+  queryChain,
+} from "@commune-ts/subspace/queries";
+import type {
+  SubspaceStorageName,
+} from "@commune-ts/utils";
 
 import { BLOCK_TIME, log, sleep } from "../common";
 import { env } from "../env";
@@ -19,10 +26,11 @@ import {
 } from "../weights";
 import type{
   ModuleWeight,
+  SubnetWeight,
 } from "../db";
 import {
   insertModuleWeight,
-
+  insertSubnetWeight,
 } from "../db";
 // TODO: subnets
 // TODO: update tables on DB
@@ -61,6 +69,139 @@ export async function weightAggregatorWorker(api: ApiPromise) {
   }
 }
 
+function getNormalizedWeights(
+  stakeOnCommunityValidator: Map<SS58Address, bigint>, 
+  weightMap: Map<string, Map<number, bigint>>
+){
+  const finalWeights = calcFinalWeights(stakeOnCommunityValidator, weightMap);
+  const normalizedVoteWeights = normalizeWeightsForVote(finalWeights);
+  const normalizedPercWeights = normalizeWeightsToPercent(finalWeights);
+  return {
+    normalizedWeights: normalizedVoteWeights, 
+    percWeights: normalizedPercWeights
+  };
+}
+
+/**
+ * Builds network vote arrays from a vote map.
+ *
+ * @param voteMap - A Map object containing uid-weight pairs.
+ * @returns An object containing two arrays: uids and weights.
+ * - `uids`: An array of user IDs.
+ * - `weights`: An array of corresponding weights.
+ */
+function buildNetworkVote(voteMap: Map<number, number>){
+  const uids: number[] = [];
+  const weights: number[] = [];
+  for (const [uid, weight] of voteMap) {
+    uids.push(uid);
+    weights.push(weight);
+  }
+  return {uids, weights};
+}
+
+
+async function voteAndUpdate<T>(
+  api: ApiPromise,
+  keypair: KeyringPair,
+  uids: number[],
+  weights: number[],
+  netuid: number,
+  insertFunction: (data: T[]) => Promise<void>,
+  toInsert: T[],
+){
+  try {
+    // TODO: whats this 2, netuid? should be a constant
+    await setChainWeights(api, keypair, netuid, uids, weights);
+    await insertFunction(toInsert)
+  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.error(`Failed to set weights on chain: ${err}`); 
+    return;
+  }
+}
+async function postModuleAggregation(
+  stakeOnCommunityValidator: Map<SS58Address, bigint>,
+  api: ApiPromise,
+  keypair: KeyringPair,
+  lastBlock: number,
+){
+  const moduleWeightMap = await getUserWeightMap();
+  const moduleWeightsInfo = getNormalizedWeights(
+    stakeOnCommunityValidator, 
+    moduleWeightMap
+  );
+  const uidMap = await getModuleUids();
+  const moduleWeights: ModuleWeight[] = Array.from(
+    moduleWeightsInfo.normalizedWeights
+  )
+  .map(([moduleId, weight]): ModuleWeight | null => {
+    const moduleActualId = uidMap.get(moduleId);
+    if (moduleActualId === undefined) {
+      console.error(`Module id ${moduleId} not found in uid map`);
+      return null;
+    }
+    const modulePercWeight = moduleWeightsInfo.percWeights.get(moduleId);
+    if (modulePercWeight === undefined) {
+      console.error(`Module id ${moduleId} not found in normalizedPercWeights`);
+      return null;
+    }
+    return {
+      moduleId: moduleActualId,
+      percWeight: modulePercWeight,
+      stakeWeight: weight,
+      atBlock: lastBlock,
+    };
+  })
+  .filter((module): module is ModuleWeight => module !== null
+  );
+  const {uids, weights} = buildNetworkVote(moduleWeightsInfo.normalizedWeights);
+  await voteAndUpdate(
+    api, keypair, uids, weights, 2, insertModuleWeight, moduleWeights
+  );
+}
+
+
+async function postSubnetAggregation(
+  stakeOnCommunityValidator: Map<SS58Address, bigint>,
+  api: ApiPromise,
+  keypair: KeyringPair,
+  lastBlock: number,
+){
+  const subnetWeightMap = await getUserSubnetWeightMap();
+
+  const subnetWeightsInfo = getNormalizedWeights(
+    stakeOnCommunityValidator, 
+    subnetWeightMap
+  );
+  
+  const subnetWeights: SubnetWeight[] = Array.from(subnetWeightsInfo.normalizedWeights)
+  .map(([netuid, weight]): SubnetWeight | null => {
+    const subnetPercWeight = subnetWeightsInfo.percWeights.get(netuid);
+    if(subnetPercWeight === undefined) {
+      console.error(`Subnet id ${netuid} not found in normalizedPercWeights`);
+      return null;
+    }
+    return {
+      netuid: netuid,
+      percWeight: subnetPercWeight,
+      stakeWeight: weight,
+      atBlock: lastBlock,
+    }
+  }).filter((subnet): subnet is SubnetWeight => subnet !== null);
+  const {uids, weights} = buildNetworkVote(subnetWeightsInfo.normalizedWeights);
+  await voteAndUpdate(
+    api, 
+    keypair, 
+    uids, 
+    weights, 
+    0,
+    insertSubnetWeight, 
+    subnetWeights,
+  );
+}
+
+
 /**
  * Fetches assigned weights by users and their stakes, to calculate the final
  * weights for the community validator.
@@ -70,56 +211,22 @@ export async function weightAggregatorTask(
   keypair: KeyringPair,
   lastBlock: number,
 ) {
-  const stakeOutData = await queryStakeOutCORRECT(
-    String(process.env.NEXT_PUBLIC_CACHE_PROVIDER_URL),
-  );
-  const stakeOutMap = objToMap(stakeOutData.perAddr);
-  
-  const uidMap = await getModuleUids();
-  const weightMap = await getUserWeightMap();
-  const finalWeights = calcFinalWeights(stakeOutMap, weightMap);
-  const normalizedVoteWeights = normalizeWeightsForVote(finalWeights);
-  const normalizedPercWeights = normalizeWeightsToPercent(finalWeights);
-  // TODO: normalize weights with (sum(weights) == 100%) for DB
-
-  const uids: number[] = [];
-  const weights: number[] = [];
-  const moduleWeights: ModuleWeight[] = [];
-  // Id or Uid? which is the network id and which is the db id?
-
-  for (const [moduleId, weight] of normalizedVoteWeights) {
-    // this here is actually the uid (i think)
-    uids.push(moduleId);
-    weights.push(weight);
-    const moduleActualId = uidMap.get(moduleId);
-    if(moduleActualId == undefined) {
-      console.error(`Module id ${moduleId} not found in uid map`);
-      continue;
-    }
-    const modulePercWeight = normalizedPercWeights.get(moduleId);
-    if(modulePercWeight == undefined) {
-      console.error(`Module id ${moduleId} not found in normalizedPercWeights`);
-      continue;
-    }
-    moduleWeights.push({
-      moduleId: moduleActualId,
-      percWeight: modulePercWeight,
-      stakeWeight: weight,
-      atBlock: lastBlock,
-    });
-
+  const storages: SubspaceStorageName[] = ["stakeFrom"]
+  const storageMap = {subspaceModule: storages}
+  const queryResult = await queryChain(api, storageMap, lastBlock);
+  const stakeFromData = STAKE_FROM_SCHEMA.parse(
+    {stakeFromStorage: queryResult.stakeFrom}
+  ).stakeFromStorage;
+  const communityValidatorAddress = keypair.address as SS58Address;
+  const stakeOnCommunityValidator = stakeFromData.get(communityValidatorAddress);
+  if(stakeOnCommunityValidator == undefined) {
+    throw new Error(
+      `Community validator ${communityValidatorAddress} not found in stake data`
+    );
   }
-
-  try {
-    await setChainWeights(api, keypair, 2, uids, weights);
-    await insertModuleWeight(moduleWeights)
-  } catch (err) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.error(`Failed to set weights on chain: ${err}`); 
-    return;
-  }
-
-  // TODO: update tables on DB
+  await postModuleAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
+  // TODO: solve priority too low.
+  await postSubnetAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
 }
 
 async function setChainWeights(
@@ -189,8 +296,6 @@ async function getUserWeightMap(): Promise<Map<string, Map<number, bigint>>> {
       ),
     )
     .innerJoin(userModuleData, eq(moduleData.id, userModuleData.moduleId));
-
-  // Maps: user key -> module key -> weight (0–100)
   const weightMap = new Map<string, Map<number, bigint>>();
   result.forEach((entry) => {
     if (!weightMap.has(entry.userKey)) {
@@ -199,14 +304,35 @@ async function getUserWeightMap(): Promise<Map<string, Map<number, bigint>>> {
     weightMap.get(entry.userKey)?.set(entry.moduleId, BigInt(entry.weight));
   });
   return weightMap;
-}
-
-function objToMap<K extends string | number | symbol, V>(
-  obj: Record<K, V>,
-): Map<K, V> {
-  const map = new Map<K, V>();
-  for (const [key, value] of Object.entries(obj)) {
-    map.set(key as K, value as V);
   }
-  return map;
+
+  async function getUserSubnetWeightMap(): Promise<Map<string, Map<number, bigint>>> {
+  const result = await db
+    .select({
+      userKey: userSubnetDataSchema.userKey,
+      weight: userSubnetDataSchema.weight,
+      netuid: subnetDataSchema.netuid,
+    })
+    .from(subnetDataSchema)
+    // filter modules updated on the last seen block
+    .where(
+      and(
+        eq(
+          subnetDataSchema.atBlock,
+          sql`(SELECT at_block FROM subnet_data ORDER BY at_block DESC LIMIT 1)`,
+        ),
+        ),
+    )
+    .innerJoin(
+      userSubnetDataSchema, 
+      eq(subnetDataSchema.netuid, userSubnetDataSchema.netuid)
+    );
+  const weightMap = new Map<string, Map<number, bigint>>();
+  result.forEach((entry) => {
+    if (!weightMap.has(entry.userKey)) {
+      weightMap.set(entry.userKey, new Map());
+    }
+    weightMap.get(entry.userKey)?.set(entry.netuid, BigInt(entry.weight));
+  });
+  return weightMap;
 }
