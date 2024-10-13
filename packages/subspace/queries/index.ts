@@ -657,7 +657,7 @@ export async function queryRegisteredModulesInfo(
  *
  * @returns the same moduleMap passed as argument
  */
-async function queryChain<T extends SubspaceStorageName>(
+export async function queryChain<T extends SubspaceStorageName>(
   api: Api,
   props: Partial<Record<SubspacePalletName, T[]>>,
   netuidWhitelist?: number,
@@ -674,7 +674,7 @@ async function queryChain<T extends SubspaceStorageName>(
   const moduletas = await getPropsToMap(props, api, netuidWhitelist);
   const entries = Object.entries(moduletas) as [T, ChainEntry][];
   entries.map(([prop, entry]) => {
-    modulePropMap[prop] = entry.getMapModules(netuidWhitelist);
+    modulePropMap[prop] = entry.queryStorage(netuidWhitelist);
   });
   return modulePropMap;
 }
