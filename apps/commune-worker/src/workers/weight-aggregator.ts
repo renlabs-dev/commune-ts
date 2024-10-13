@@ -34,6 +34,7 @@ import {
 } from "../db";
 // TODO: subnets
 // TODO: update tables on DB
+type Aggregator = "module" | "subnet";
 
 export async function weightAggregatorWorker(api: ApiPromise) {
   await cryptoWaitReady();
@@ -56,9 +57,20 @@ export async function weightAggregatorWorker(api: ApiPromise) {
       knownLastBlock = lastBlock;
 
       log(`Block ${lastBlock.blockNumber}: processing`);
+      // to avoid priority too low when casting votes
+      if(lastBlock.blockNumber % 2 === 0) {
+        await weightAggregatorTask(
+          api, keypair, 
+          lastBlock.blockNumber, "module"
+        );
 
-      await weightAggregatorTask(api, keypair, lastBlock.blockNumber);
-
+      }
+      else{
+        await weightAggregatorTask(
+          api, keypair, 
+          lastBlock.blockNumber, "subnet"
+        );
+      }
       await sleep(BLOCK_TIME * 2);
 
     } catch (e) {
@@ -110,6 +122,13 @@ async function voteAndUpdate<T>(
   insertFunction: (data: T[]) => Promise<void>,
   toInsert: T[],
 ){
+  if (uids.length === 0) {
+    console.warn("No weights to set");
+    return;
+  }
+  if (uids.length !== weights.length) {
+    throw new Error("UIDs and weights arrays must have the same length");
+  }
   try {
     // TODO: whats this 2, netuid? should be a constant
     await setChainWeights(api, keypair, netuid, uids, weights);
@@ -210,6 +229,7 @@ export async function weightAggregatorTask(
   api: ApiPromise,
   keypair: KeyringPair,
   lastBlock: number,
+  aggregator: Aggregator,
 ) {
   const storages: SubspaceStorageName[] = ["stakeFrom"]
   const storageMap = {subspaceModule: storages}
@@ -224,9 +244,12 @@ export async function weightAggregatorTask(
       `Community validator ${communityValidatorAddress} not found in stake data`
     );
   }
-  await postModuleAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
-  // TODO: solve priority too low.
-  await postSubnetAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
+  if (aggregator == "module") {  
+    await postModuleAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
+  }
+  else{
+    await postSubnetAggregation(stakeOnCommunityValidator, api, keypair, lastBlock);
+  }
 }
 
 async function setChainWeights(
