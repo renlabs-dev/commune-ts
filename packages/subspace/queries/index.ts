@@ -395,6 +395,9 @@ export async function queryStakeFrom(
   return stakeOutData;
 }
 
+/**
+ * NOTE: This function might be wrong.
+ */
 export async function queryCalculateStakeFrom(api: Api) {
   // Stake From is the list of keys that the key has staked to.
 
@@ -408,7 +411,7 @@ export async function queryCalculateStakeFrom(api: Api) {
   const perAddr = new Map<string, bigint>();
 
   for (const [storageKey, value] of stakeFromQuery) {
-    const addr = storageKey.toString();
+    const addr = storageKey.toString(); // NOTE: this key should have two values like in `queryCalculateStakeOut`
 
     const staked = BigInt(value.toString());
 
