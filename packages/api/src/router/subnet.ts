@@ -71,11 +71,14 @@ export const subnetRouter = {
       })
       .from(computedSubnetWeights)
       .where(
-        sql`computed_subnet_weights.at_block = SELECT MAX(computed_subnet_weights.at_block) FROM computed_subnet_weights`,
+        eq(
+          computedSubnetWeights.atBlock,
+          sql`(SELECT MAX(at_block) FROM computed_subnet_weights)`,
+        ),
       )
       .innerJoin(
         subnetDataSchema,
         eq(computedSubnetWeights.netuid, subnetDataSchema.netuid),
       );
   }),
-} as TRPCRouterRecord;
+} satisfies TRPCRouterRecord;

@@ -27,7 +27,8 @@ export const description = "A bar chart with a custom label";
 
 interface ModuleData {
   moduleName: string;
-  stakeWeight: number;
+  stakeWeight: string;
+  percWeight: number;
 }
 
 interface ModuleBarChartProps {
@@ -35,7 +36,7 @@ interface ModuleBarChartProps {
 }
 
 const chartConfig = {
-  stakeWeight: {
+  percWeight: {
     label: "Stake",
     color: "hsl(var(--chart-1))",
   },
@@ -73,15 +74,15 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="stakeWeight" type="number" hide />
+            <XAxis dataKey="percWeight" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="stakeWeight"
+              dataKey="percWeight"
               layout="vertical"
-              fill="var(--color-stakeWeight)"
+              fill="var(--color-percWeight)"
               radius={4}
             >
               <LabelList
@@ -92,7 +93,7 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
                 fontSize={12}
               />
               <LabelList
-                dataKey="stakeWeight"
+                dataKey="percWeight"
                 position="right"
                 offset={8}
                 className="fill-foreground"
