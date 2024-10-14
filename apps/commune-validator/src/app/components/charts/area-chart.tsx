@@ -29,12 +29,12 @@ const chartData = [
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Modules",
     color: "hsl(var(--chart-1))",
   },
   mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
+    label: "Subnets",
+    color: "hsl(var(--chart-secondary-1))",
   },
 } satisfies ChartConfig;
 
@@ -42,9 +42,9 @@ export function AreaChartGradient() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Total stake Allocated</CardTitle>
+        <CardTitle>Area Chart - Stacked</CardTitle>
         <CardDescription>
-          Showing total stake for the last 6 months
+          Showing total visitors for the last 6 months
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -65,37 +65,14 @@ export function AreaChartGradient() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
             <Area
               dataKey="mobile"
               type="natural"
-              fill="url(#fillMobile)"
+              fill="var(--color-mobile)"
               fillOpacity={0.4}
               stroke="var(--color-mobile)"
               stackId="a"
@@ -103,7 +80,7 @@ export function AreaChartGradient() {
             <Area
               dataKey="desktop"
               type="natural"
-              fill="url(#fillDesktop)"
+              fill="var(--color-desktop)"
               fillOpacity={0.4}
               stroke="var(--color-desktop)"
               stackId="a"

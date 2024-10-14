@@ -34,8 +34,6 @@ const chartData = [
   { month: "magnificos", desktop: 214, mobile: 140 },
   { month: "manqu", desktop: 214, mobile: 120 },
   { month: "global", desktop: 123, mobile: 111 },
-  { month: "fratchety", desktop: 144, mobile: 300 },
-  { month: "exceptious", desktop: 250, mobile: 23 },
 ];
 
 const chartConfig = {
@@ -54,10 +52,12 @@ const chartConfig = {
 
 export function BarChartTest() {
   return (
-    <Card className="h-full w-full">
-      <CardHeader className="items-center">
+    <Card>
+      <CardHeader>
         <CardTitle>Current Module Allocation</CardTitle>
-        <CardDescription>Most Stake percentage allocated</CardDescription>
+        <CardDescription>
+          Showing total visitors for the last 6 months
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -76,7 +76,6 @@ export function BarChartTest() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
@@ -90,7 +89,6 @@ export function BarChartTest() {
               layout="vertical"
               fill="var(--color-desktop)"
               radius={4}
-              barSize={164}
             >
               <LabelList
                 dataKey="month"
@@ -112,11 +110,11 @@ export function BarChartTest() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          5.2% Other Modules
+          Trending up by 5.2% this month{" "}
           <ArrowTrendingUpIcon className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          From 9/24 to Today
+          Showing total visitors for the last 6 months
         </div>
       </CardFooter>
     </Card>
