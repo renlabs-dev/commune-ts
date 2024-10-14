@@ -5,7 +5,6 @@ import Link from "next/link";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import { Providers } from "@commune-ts/providers/context";
-import { Container } from "@commune-ts/ui";
 import { links } from "@commune-ts/ui/data";
 import { Footer } from "@commune-ts/ui/footer";
 import { Header } from "@commune-ts/ui/header";
@@ -63,7 +62,8 @@ export default function RootLayout({
             wallet={<WalletButton />}
           />
           <TRPCReactProvider>
-            <Container>{children}</Container> <DelegatedList />
+            <DelegatedList />
+            {children}
           </TRPCReactProvider>
           <Footer />
         </Providers>

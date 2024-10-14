@@ -7,6 +7,7 @@ import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import {
   cn,
+  Separator,
   Table,
   TableBody,
   TableCell,
@@ -87,7 +88,7 @@ export function DelegatedList() {
     refetch: refetchModules,
   } = api.module.byUserModuleData.useQuery(
     { userKey: selectedAccount?.address ?? "" },
-    { enabled: !!selectedAccount?.address && activeTab === "modules" },
+    { enabled: !!selectedAccount?.address },
   );
 
   const {
@@ -96,69 +97,57 @@ export function DelegatedList() {
     refetch: refetchSubnets,
   } = api.subnet.byUserSubnetData.useQuery(
     { userKey: selectedAccount?.address ?? "" },
-    { enabled: !!selectedAccount?.address && activeTab === "subnets" },
+    { enabled: !!selectedAccount?.address },
   );
 
-  const validatorAddresses = [
-    "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp",
-    "5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw",
-  ];
+  const validatorAddress = "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp";
 
   function userWeightPower(
     userStakes: { address: string; stake: string }[] | undefined,
-    validatorAddresses: string[],
+    validatorAddress: string,
   ) {
     if (!userStakes) {
       return BigInt(0);
     }
     const data = userStakes
-      .filter((stake) => validatorAddresses.includes(stake.address))
+      .filter((stake) => validatorAddress.includes(stake.address))
       .reduce((sum, stake) => sum + BigInt(stake.stake), BigInt(0));
 
     return formatToken(Number(data));
   }
 
-  const userStakeWeight = userWeightPower(userTotalStaked, validatorAddresses);
+  const userStakeWeight = userWeightPower(userTotalStaked, validatorAddress);
 
   useEffect(() => {
-    if (activeTab === "modules") {
-      if (moduleError) {
-        console.error("Error fetching user module data:", moduleError);
-      }
-      if (userModuleData) {
-        const formattedModules = userModuleData.map((module) => ({
-          id: module.module_data.id,
-          address: module.module_data.moduleKey,
-          title: module.module_data.name ?? "",
-          name: module.module_data.name ?? "",
-          percentage: module.user_module_data.weight,
-        }));
-        setDelegatedModulesFromDB(formattedModules);
-      }
-    } else {
-      if (subnetError) {
-        console.error("Error fetching user subnet data:", subnetError);
-      }
-      if (userSubnetData) {
-        const formattedSubnets = userSubnetData.map((subnet) => ({
-          id: subnet.subnet_data.id,
-          name: subnet.subnet_data.name,
-          percentage: subnet.user_subnet_data.weight,
-          founderAddress: subnet.subnet_data.founder,
-        }));
-        setDelegatedSubnetsFromDB(formattedSubnets);
-      }
+    if (moduleError) {
+      console.error("Error fetching user module data:", moduleError);
     }
-  }, [
-    userModuleData,
-    moduleError,
-    userSubnetData,
-    subnetError,
-    activeTab,
-    setDelegatedModulesFromDB,
-    setDelegatedSubnetsFromDB,
-    selectedAccount,
-  ]);
+    if (userModuleData) {
+      const formattedModules = userModuleData.map((module) => ({
+        id: module.module_data.id,
+        address: module.module_data.moduleKey,
+        title: module.module_data.name ?? "",
+        name: module.module_data.name ?? "",
+        percentage: module.user_module_data.weight,
+      }));
+      setDelegatedModulesFromDB(formattedModules);
+    }
+  }, [userModuleData, moduleError, setDelegatedModulesFromDB]);
+
+  useEffect(() => {
+    if (subnetError) {
+      console.error("Error fetching user subnet data:", subnetError);
+    }
+    if (userSubnetData) {
+      const formattedSubnets = userSubnetData.map((subnet) => ({
+        id: subnet.subnet_data.id,
+        name: subnet.subnet_data.name,
+        percentage: subnet.user_subnet_data.weight,
+        founderAddress: subnet.subnet_data.founder,
+      }));
+      setDelegatedSubnetsFromDB(formattedSubnets);
+    }
+  }, [userSubnetData, subnetError, setDelegatedSubnetsFromDB]);
 
   const handlePercentageChange = (id: number, percentage: number) => {
     if (percentage >= 0 && percentage <= 100) {
@@ -295,7 +284,7 @@ export function DelegatedList() {
 
   function handleModuleClick() {
     setActiveTab("modules");
-    router.push("/");
+    router.push("/modules");
   }
 
   function handleSubnetClick() {
@@ -333,10 +322,49 @@ export function DelegatedList() {
     return { disabled: false, message: "All changes saved!" };
   }
 
+  const handleRemoveAllWeight = async () => {
+    if (!selectedAccount?.address) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      if (activeTab === "modules") {
+        await deleteUserModuleData.mutateAsync({
+          userKey: selectedAccount.address,
+        });
+        setDelegatedModulesFromDB([]);
+      } else {
+        await deleteUserSubnetData.mutateAsync({
+          userKey: selectedAccount.address,
+        });
+        setDelegatedSubnetsFromDB([]);
+      }
+
+      // Refetch data after removal
+      if (activeTab === "modules") {
+        await refetchModules();
+      } else {
+        await refetchSubnets();
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Error removing weight:", error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const hasItemsToClear =
+    activeTab === "modules"
+      ? delegatedModules.length > 0
+      : delegatedSubnets.length > 0;
+
   const submitStatus = getSubmitStatus();
 
   return (
-    <>
+    <div className={`${pathname === "/" ? "hidden" : "block"}`}>
       {selectedAccount?.address && (
         <div className="fixed bottom-0 right-0 z-50 mt-8 hidden w-full flex-col-reverse text-sm md:bottom-4 md:mr-4 md:flex md:w-fit">
           <div className="flex animate-fade-up items-center justify-between divide-white/20 rounded-full border border-white/20 bg-[#898989]/5 font-semibold text-white backdrop-blur-md">
@@ -384,30 +412,15 @@ export function DelegatedList() {
               </b>{" "}
               Weighted
             </span>
-            <span className="border-r border-white/20 px-3">
+            <span className="px-3">
               <div className="flex gap-1 text-white">
                 <b
                   className={`${activeTab === "subnets" ? "text-cyan-500" : "text-green-500"}`}
                 >
                   {userStakeWeight}
                 </b>{" "}
-                COMAI (Weight Power)
+                COMAI
               </div>
-            </span>
-            <span className="px-3">
-              <span
-                className={`font-semibold ${
-                  submitStatus.message === "You have unsaved changes"
-                    ? "text-red-500"
-                    : submitStatus.message === "All changes saved!"
-                      ? activeTab === "subnets"
-                        ? "text-cyan-500"
-                        : "text-green-500"
-                      : "text-amber-500"
-                }`}
-              >
-                {submitStatus.message}
-              </span>
             </span>
             <span>
               <button
@@ -534,11 +547,28 @@ export function DelegatedList() {
                   )}
                 </TableBody>
               </Table>
+              <Separator />
+              <div className="w-full justify-center py-4 text-center">
+                <span
+                  className={`text-base font-semibold ${
+                    submitStatus.message === "You have unsaved changes"
+                      ? "text-pink-500"
+                      : submitStatus.message === "All changes saved!"
+                        ? activeTab === "subnets"
+                          ? "text-cyan-500"
+                          : "text-green-500"
+                        : "text-amber-500"
+                  }`}
+                >
+                  {submitStatus.message}
+                </span>
+              </div>
+              <Separator />
               <div className="flex flex-row gap-3">
                 <button
                   onClick={handleAutoCompletePercentage}
                   className={cn(
-                    "mt-4 w-[30%] animate-fade rounded-full border p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300",
+                    "mt-2 w-fit animate-fade text-nowrap rounded-full border p-2 px-4 text-white backdrop-blur-md transition duration-200 animate-delay-300",
                     totalPercentage === 100
                       ? "cursor-not-allowed border-white/20 bg-[#898989]/5 text-white opacity-50"
                       : "border-purple-500 bg-purple-500/10 text-purple-500 hover:border-purple-500 hover:bg-purple-500/15",
@@ -547,7 +577,20 @@ export function DelegatedList() {
                 >
                   Auto-Complete to 100%
                 </button>
-
+                {hasItemsToClear && (
+                  <button
+                    onClick={handleRemoveAllWeight}
+                    className={cn(
+                      "mt-4 w-fit animate-fade text-nowrap rounded-full border p-2 px-4 text-white backdrop-blur-md transition duration-200 animate-delay-300",
+                      "border-red-500 bg-red-500/10 text-red-500 hover:border-red-400 hover:bg-red-500/15 active:bg-red-500/50",
+                    )}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Removing..."
+                      : `Remove ${activeTab === "modules" ? "Modules" : "Subnets"}`}
+                  </button>
+                )}
                 <button
                   onClick={handleSubmit}
                   className={cn(
@@ -572,6 +615,6 @@ export function DelegatedList() {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
