@@ -1,0 +1,35 @@
+import React from "react";
+
+import { ScrollArea, Separator } from "@commune-ts/ui";
+
+interface DelegatedScrollProps {
+  data: {
+    name: string;
+    staked: number;
+    percentage: number;
+  }[];
+}
+
+export function DelegatedScroll({ data }: DelegatedScrollProps) {
+  return (
+    <ScrollArea className="h-72 w-full border border-white/20">
+      <div className="p-4">
+        {data.map((prop, index) => (
+          <React.Fragment key={prop.name}>
+            <div className="flex justify-between text-sm">
+              <p className="font-bold">{prop.name}</p>
+              <div className="flex gap-2">
+                <p className="text-right">
+                  <b className="text-green-500">{prop.staked}</b> COMAI
+                </p>
+                <Separator orientation="vertical" />
+                <p className="text-right">{prop.percentage}%</p>
+              </div>
+            </div>
+            {index < data.length - 1 && <Separator className="my-2" />}
+          </React.Fragment>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+}

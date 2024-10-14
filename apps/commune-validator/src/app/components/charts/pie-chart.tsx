@@ -59,10 +59,12 @@ export function PieChard() {
   }, []);
 
   return (
-    <Card className="flex h-full w-full flex-col">
+    <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Current Subnet Allocation</CardTitle>
-        <CardDescription>Most Stake Percentage allocated</CardDescription>
+        <CardDescription>
+          Showing total visitors for the last 6 months
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -78,7 +80,7 @@ export function PieChard() {
               data={chartData}
               dataKey="visitors"
               nameKey="browser"
-              innerRadius={70}
+              innerRadius={60}
               strokeWidth={5}
             >
               <Label
@@ -103,7 +105,7 @@ export function PieChard() {
                           y={(viewBox.cy ?? 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Subnets
+                          Visitors
                         </tspan>
                       </text>
                     );
@@ -114,8 +116,8 @@ export function PieChard() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 font-medium leading-none">
           Trending up by 5.2% this month{" "}
           <ArrowTrendingUpIcon className="h-4 w-4" />
         </div>

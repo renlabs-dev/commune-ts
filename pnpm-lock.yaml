@@ -716,16 +716,16 @@ importers:
         version: link:../utils
       "@polkadot/util":
         specifier: "catalog:"
-        version: 13.0.2
+        version: 13.1.1
       "@polkadot/util-crypto":
         specifier: "catalog:"
-        version: 13.0.2(@polkadot/util@13.0.2)
+        version: 13.1.1(@polkadot/util@13.1.1)
       "@trpc/client":
         specifier: "catalog:"
-        version: 11.0.0-rc.502(@trpc/server@11.0.0-rc.502)
+        version: 11.0.0-rc.571(@trpc/server@11.0.0-rc.571)
       "@trpc/server":
         specifier: "catalog:"
-        version: 11.0.0-rc.502
+        version: 11.0.0-rc.571
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
