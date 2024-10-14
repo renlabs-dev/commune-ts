@@ -405,8 +405,9 @@ export const computedModuleWeightsSchema = createTable(
     moduleId: integer("module_id")
       .notNull()
       .references(() => moduleData.id),
+
     // Aggregated weights measured in nanos
-    stakeWeight: integer("stake_weight").notNull(),
+    stakeWeight: bigint("stake_weight", { mode: "bigint" }).notNull(),
     // Normalized aggregated weights (100% sum)
     percWeight: real("perc_weight").notNull(),
 
@@ -424,7 +425,7 @@ export const computedSubnetWeights = createTable("computed_subnet_weights", {
     .references(() => subnetDataSchema.netuid),
 
   // Aggregated weights measured in nanos
-  stakeWeight: integer("stake_weight").notNull(),
+  stakeWeight: bigint("stake_weight", { mode: "bigint" }).notNull(),
   // Normalized aggregated weights (100% sum)
   percWeight: real("perc_weight").notNull(),
 

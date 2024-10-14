@@ -174,6 +174,7 @@ export interface VotesByProposal {
 export async function vote(new_vote: NewVote) {
   await db.insert(daoVoteSchema).values(new_vote);
 }
+
 export async function addSeenProposal(proposal: NewNotification) {
   await db.insert(governanceNotificationSchema).values(proposal);
 }

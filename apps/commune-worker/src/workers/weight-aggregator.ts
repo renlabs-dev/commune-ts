@@ -27,9 +27,10 @@ import {
   normalizeWeightsToPercent,
 } from "../weights";
 
-// TODO: subnets
-// TODO: update tables on DB
-type Aggregator = "module" | "subnet";
+const SUBNETS_NETUID = 0;
+const MODULES_NETUID = 2;
+
+type AggregatorKind = "module" | "subnet";
 
 export async function weightAggregatorWorker(api: ApiPromise) {
   await cryptoWaitReady();
@@ -52,7 +53,9 @@ export async function weightAggregatorWorker(api: ApiPromise) {
       knownLastBlock = lastBlock;
 
       log(`Block ${lastBlock.blockNumber}: processing`);
-      // to avoid priority too low when casting votes
+
+      // To avoid "Priority is too low" / conflicting transactions when casting
+      // votes we alternate the blocks in which each type of vote is done
       if (lastBlock.blockNumber % 2 === 0) {
         await weightAggregatorTask(
           api,
@@ -77,6 +80,50 @@ export async function weightAggregatorWorker(api: ApiPromise) {
   }
 }
 
+/**
+ * Fetches assigned weights by users and their stakes, to calculate the final
+ * weights for the community validator.
+ */
+export async function weightAggregatorTask(
+  api: ApiPromise,
+  keypair: KeyringPair,
+  lastBlock: number,
+  aggregator: AggregatorKind,
+) {
+  const storages: SubspaceStorageName[] = ["stakeFrom"];
+  const storageMap = { subspaceModule: storages };
+  const queryResult = await queryChain(api, storageMap, lastBlock);
+  const stakeFromData = STAKE_FROM_SCHEMA.parse({
+    stakeFromStorage: queryResult.stakeFrom,
+  }).stakeFromStorage;
+
+  const communityValidatorAddress = keypair.address as SS58Address;
+  const stakeOnCommunityValidator = stakeFromData.get(
+    communityValidatorAddress,
+  );
+  if (stakeOnCommunityValidator == undefined) {
+    throw new Error(
+      `Community validator ${communityValidatorAddress} not found in stake data`,
+    );
+  }
+
+  if (aggregator == "module") {
+    await postModuleAggregation(
+      stakeOnCommunityValidator,
+      api,
+      keypair,
+      lastBlock,
+    );
+  } else if (aggregator == "subnet") {
+    await postSubnetAggregation(
+      stakeOnCommunityValidator,
+      api,
+      keypair,
+      lastBlock,
+    );
+  }
+}
+
 function getNormalizedWeights(
   stakeOnCommunityValidator: Map<SS58Address, bigint>,
   weightMap: Map<string, Map<number, bigint>>,
@@ -85,6 +132,7 @@ function getNormalizedWeights(
   const normalizedVoteWeights = normalizeWeightsForVote(finalWeights);
   const normalizedPercWeights = normalizeWeightsToPercent(finalWeights);
   return {
+    stakeWeights: finalWeights,
     normalizedWeights: normalizedVoteWeights,
     percWeights: normalizedPercWeights,
   };
@@ -108,55 +156,50 @@ function buildNetworkVote(voteMap: Map<number, number>) {
   return { uids, weights };
 }
 
-async function voteAndUpdate<T>(
+async function doVote<T>(
   api: ApiPromise,
   keypair: KeyringPair,
-  uids: number[],
-  weights: number[],
   netuid: number,
-  insertFunction: (data: T[]) => Promise<void>,
-  toInsert: T[],
+  voteMap: Map<number, number>,
 ) {
+  const { uids, weights } = buildNetworkVote(voteMap);
   if (uids.length === 0) {
     console.warn("No weights to set");
     return;
   }
-  if (uids.length !== weights.length) {
-    throw new Error("UIDs and weights arrays must have the same length");
-  }
   try {
-    // TODO: whats this 2, netuid? should be a constant
     await setChainWeights(api, keypair, netuid, uids, weights);
-    await insertFunction(toInsert);
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.error(`Failed to set weights on chain: ${err}`);
     return;
   }
 }
+
 async function postModuleAggregation(
   stakeOnCommunityValidator: Map<SS58Address, bigint>,
   api: ApiPromise,
   keypair: KeyringPair,
   lastBlock: number,
 ) {
+  const uidMap = await getModuleUids();
   const moduleWeightMap = await getUserWeightMap();
-  const moduleWeightsInfo = getNormalizedWeights(
+  const { stakeWeights, normalizedWeights, percWeights } = getNormalizedWeights(
     stakeOnCommunityValidator,
     moduleWeightMap,
   );
-  const uidMap = await getModuleUids();
-  const moduleWeights: ModuleWeight[] = Array.from(
-    moduleWeightsInfo.normalizedWeights,
+
+  const dbModuleWeights: ModuleWeight[] = Array.from(
+    stakeWeights,
   )
-    .map(([moduleId, weight]): ModuleWeight | null => {
+    .map(([moduleId, stakeWeight]): ModuleWeight | null => {
       const moduleActualId = uidMap.get(moduleId);
       if (moduleActualId === undefined) {
         console.error(`Module id ${moduleId} not found in uid map`);
         return null;
       }
-      const modulePercWeight = moduleWeightsInfo.percWeights.get(moduleId);
-      if (modulePercWeight === undefined) {
+      const percWeight = percWeights.get(moduleId);
+      if (percWeight === undefined) {
         console.error(
           `Module id ${moduleId} not found in normalizedPercWeights`,
         );
@@ -164,23 +207,20 @@ async function postModuleAggregation(
       }
       return {
         moduleId: moduleActualId,
-        percWeight: modulePercWeight,
-        stakeWeight: weight,
+        percWeight: percWeight,
+        stakeWeight: stakeWeight,
         atBlock: lastBlock,
       };
     })
-    .filter((module): module is ModuleWeight => module !== null);
-  const { uids, weights } = buildNetworkVote(
-    moduleWeightsInfo.normalizedWeights,
-  );
-  await voteAndUpdate(
+    .filter((module) => module !== null);
+
+  await insertModuleWeight(dbModuleWeights);
+
+  await doVote(
     api,
     keypair,
-    uids,
-    weights,
-    2,
-    insertModuleWeight,
-    moduleWeights,
+    MODULES_NETUID,
+    normalizedWeights,
   );
 }
 
@@ -192,16 +232,16 @@ async function postSubnetAggregation(
 ) {
   const subnetWeightMap = await getUserSubnetWeightMap();
 
-  const subnetWeightsInfo = getNormalizedWeights(
+  const { stakeWeights, normalizedWeights, percWeights } = getNormalizedWeights(
     stakeOnCommunityValidator,
     subnetWeightMap,
   );
 
   const subnetWeights: SubnetWeight[] = Array.from(
-    subnetWeightsInfo.normalizedWeights,
+    stakeWeights,
   )
-    .map(([netuid, weight]): SubnetWeight | null => {
-      const subnetPercWeight = subnetWeightsInfo.percWeights.get(netuid);
+    .map(([netuid, stakeWeight]): SubnetWeight | null => {
+      const subnetPercWeight = percWeights.get(netuid);
       if (subnetPercWeight === undefined) {
         console.error(`Subnet id ${netuid} not found in normalizedPercWeights`);
         return null;
@@ -209,65 +249,18 @@ async function postSubnetAggregation(
       return {
         netuid: netuid,
         percWeight: subnetPercWeight,
-        stakeWeight: weight,
+        stakeWeight: stakeWeight,
         atBlock: lastBlock,
       };
     })
-    .filter((subnet): subnet is SubnetWeight => subnet !== null);
-  const { uids, weights } = buildNetworkVote(
-    subnetWeightsInfo.normalizedWeights,
-  );
-  await voteAndUpdate(
+    .filter((subnet) => subnet !== null);
+
+  await doVote(
     api,
     keypair,
-    uids,
-    weights,
-    0,
-    insertSubnetWeight,
-    subnetWeights,
+    SUBNETS_NETUID,
+    normalizedWeights,
   );
-}
-
-/**
- * Fetches assigned weights by users and their stakes, to calculate the final
- * weights for the community validator.
- */
-export async function weightAggregatorTask(
-  api: ApiPromise,
-  keypair: KeyringPair,
-  lastBlock: number,
-  aggregator: Aggregator,
-) {
-  const storages: SubspaceStorageName[] = ["stakeFrom"];
-  const storageMap = { subspaceModule: storages };
-  const queryResult = await queryChain(api, storageMap, lastBlock);
-  const stakeFromData = STAKE_FROM_SCHEMA.parse({
-    stakeFromStorage: queryResult.stakeFrom,
-  }).stakeFromStorage;
-  const communityValidatorAddress = keypair.address as SS58Address;
-  const stakeOnCommunityValidator = stakeFromData.get(
-    communityValidatorAddress,
-  );
-  if (stakeOnCommunityValidator == undefined) {
-    throw new Error(
-      `Community validator ${communityValidatorAddress} not found in stake data`,
-    );
-  }
-  if (aggregator == "module") {
-    await postModuleAggregation(
-      stakeOnCommunityValidator,
-      api,
-      keypair,
-      lastBlock,
-    );
-  } else {
-    await postSubnetAggregation(
-      stakeOnCommunityValidator,
-      api,
-      keypair,
-      lastBlock,
-    );
-  }
 }
 
 async function setChainWeights(
@@ -277,6 +270,7 @@ async function setChainWeights(
   uids: number[],
   weights: number[],
 ) {
+  assert(uids.length === weights.length, "UIDs and weights arrays must have the same length");
   assert(api.tx.subspaceModule != undefined);
   assert(api.tx.subspaceModule.setWeights != undefined);
   const tx = await api.tx.subspaceModule
@@ -351,7 +345,7 @@ async function getUserSubnetWeightMap(): Promise<
   Map<string, Map<number, bigint>>
 > {
   const result = await db
-    .select({
+    .select({>
       userKey: userSubnetDataSchema.userKey,
       weight: userSubnetDataSchema.weight,
       netuid: subnetDataSchema.netuid,
