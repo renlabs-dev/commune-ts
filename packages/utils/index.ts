@@ -426,10 +426,14 @@ export class SimpleMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
   queryStorage() {
-    const modules_map = Object.fromEntries(
-      this.entry.map((value, index) => [index, value[1].toPrimitive()]),
-    );
-    return modules_map as Record<string, string>;
+    const storageData: Record<string, string> = {};
+    this.entry.forEach(entry => {
+      const key = entry[0].args[0]?.toPrimitive() as string;
+      const value = entry[1].toPrimitive() as string;
+      storageData[key] = value;
+    }
+    )
+    return storageData;
   }
 }
 
