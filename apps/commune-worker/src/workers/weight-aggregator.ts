@@ -18,7 +18,13 @@ import { queryChain, queryLastBlock } from "@commune-ts/subspace/queries";
 import { STAKE_FROM_SCHEMA } from "@commune-ts/types";
 
 import type { ModuleWeight, SubnetWeight } from "../db";
-import { BLOCK_TIME, log, sleep } from "../common";
+import {
+  BLOCK_TIME,
+  CONSENSUS_NETUID,
+  log,
+  sleep,
+  SUBNETS_NETUID,
+} from "../common";
 import { insertModuleWeight, insertSubnetWeight } from "../db";
 import { env } from "../env";
 import {
@@ -26,8 +32,6 @@ import {
   normalizeWeightsForVote,
   normalizeWeightsToPercent,
 } from "../weights";
-
-import { SUBNETS_NETUID, CONSENSUS_NETUID } from "../common";
 
 type AggregatorKind = "module" | "subnet";
 
@@ -37,8 +41,10 @@ export async function weightAggregatorWorker(api: ApiPromise) {
   const keypair = keyring.addFromUri(env.COMMUNITY_VALIDATOR_MNEMONIC);
 
   let knownLastBlock: LastBlock | null = null;
+  let loopCounter = 0;
 
   while (true) {
+    loopCounter += 1;
     try {
       const lastBlock = await queryLastBlock(api);
       if (
@@ -55,7 +61,7 @@ export async function weightAggregatorWorker(api: ApiPromise) {
 
       // To avoid "Priority is too low" / conflicting transactions when casting
       // votes we alternate the blocks in which each type of vote is done
-      if (lastBlock.blockNumber % 2 === 0) {
+      if (loopCounter % 2 === 0) {
         await weightAggregatorTask(
           api,
           keypair,
@@ -107,6 +113,7 @@ export async function weightAggregatorTask(
   }
 
   if (aggregator == "module") {
+    log(`Committing module weights...`);
     await postModuleAggregation(
       stakeOnCommunityValidator,
       api,
@@ -114,6 +121,7 @@ export async function weightAggregatorTask(
       lastBlock,
     );
   } else if (aggregator == "subnet") {
+    log(`Committing subnet weights...`);
     await postSubnetAggregation(
       stakeOnCommunityValidator,
       api,
@@ -188,9 +196,7 @@ async function postModuleAggregation(
     moduleWeightMap,
   );
 
-  const dbModuleWeights: ModuleWeight[] = Array.from(
-    stakeWeights,
-  )
+  const dbModuleWeights: ModuleWeight[] = Array.from(stakeWeights)
     .map(([moduleId, stakeWeight]): ModuleWeight | null => {
       const moduleActualId = uidMap.get(moduleId);
       if (moduleActualId === undefined) {
@@ -213,14 +219,13 @@ async function postModuleAggregation(
     })
     .filter((module) => module !== null);
 
-  await insertModuleWeight(dbModuleWeights);
+  if (dbModuleWeights.length > 0) {
+    await insertModuleWeight(dbModuleWeights);
+  } else {
+    console.warn(`No weights to insert`);
+  }
 
-  await doVote(
-    api,
-    keypair,
-    CONSENSUS_NETUID,
-    normalizedWeights,
-  );
+  await doVote(api, keypair, CONSENSUS_NETUID, normalizedWeights);
 }
 
 async function postSubnetAggregation(
@@ -236,9 +241,7 @@ async function postSubnetAggregation(
     subnetWeightMap,
   );
 
-  const dbSubnetWeights: SubnetWeight[] = Array.from(
-    stakeWeights,
-  )
+  const dbSubnetWeights: SubnetWeight[] = Array.from(stakeWeights)
     .map(([netuid, stakeWeight]): SubnetWeight | null => {
       const subnetPercWeight = percWeights.get(netuid);
       if (subnetPercWeight === undefined) {
@@ -254,14 +257,13 @@ async function postSubnetAggregation(
     })
     .filter((subnet) => subnet !== null);
 
-  await insertSubnetWeight(dbSubnetWeights);
+  if (dbSubnetWeights.length > 0) {
+    await insertSubnetWeight(dbSubnetWeights);
+  } else {
+    console.warn(`No weights to insert`);
+  }
 
-  await doVote(
-    api,
-    keypair,
-    SUBNETS_NETUID,
-    normalizedWeights,
-  );
+  await doVote(api, keypair, SUBNETS_NETUID, normalizedWeights);
 }
 
 async function setChainWeights(
@@ -271,7 +273,10 @@ async function setChainWeights(
   uids: number[],
   weights: number[],
 ) {
-  assert(uids.length === weights.length, "UIDs and weights arrays must have the same length");
+  assert(
+    uids.length === weights.length,
+    "UIDs and weights arrays must have the same length",
+  );
   assert(api.tx.subspaceModule != undefined);
   assert(api.tx.subspaceModule.setWeights != undefined);
   const tx = await api.tx.subspaceModule
