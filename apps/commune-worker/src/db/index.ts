@@ -4,12 +4,12 @@ import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
   cadreSchema,
+  computedModuleWeightsSchema,
+  computedSubnetWeights,
   daoVoteSchema,
   governanceNotificationSchema,
   moduleData,
   subnetDataSchema,
-  computedModuleWeightsSchema,
-  computedSubnetWeights,
 } from "@commune-ts/db/schema";
 
 export type NewVote = typeof daoVoteSchema.$inferInsert;
@@ -19,8 +19,7 @@ export type ModuleWeight = typeof computedModuleWeightsSchema.$inferInsert;
 export type SubnetWeight = typeof computedSubnetWeights.$inferInsert;
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
 
-
-export async function insertModuleWeight(weights: ModuleWeight[]){
+export async function insertModuleWeight(weights: ModuleWeight[]) {
   await db
     .insert(computedModuleWeightsSchema)
     .values(
@@ -34,7 +33,7 @@ export async function insertModuleWeight(weights: ModuleWeight[]){
     .execute();
 }
 
-export async function insertSubnetWeight(weights: SubnetWeight[]){
+export async function insertSubnetWeight(weights: SubnetWeight[]) {
   await db
     .insert(computedSubnetWeights)
     .values(
@@ -47,7 +46,6 @@ export async function insertSubnetWeight(weights: SubnetWeight[]){
     )
     .execute();
 }
-
 
 export async function upsertSubnetData(subnets: Subnet[]) {
   await db
