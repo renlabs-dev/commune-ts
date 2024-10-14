@@ -38,11 +38,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface AreaChartGradientProps {
-  subnet: string;
-  module: string;
-}
-
 export function CombinedAreaChart() {
   return (
     <Card>
