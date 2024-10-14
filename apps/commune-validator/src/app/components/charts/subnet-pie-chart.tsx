@@ -19,19 +19,28 @@ import {
 
 export const description = "A donut chart with text";
 
-const chartData = [
-  { browser: "chrome", visitors: 6, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 7, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 2, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 3, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 6, fill: "var(--color-other)" },
+const chartData_ = [
+  { subnetName: "chrome", stakeWeight: 6, fill: "var(--color-subnetName)" },
+  { subnetName: "safari", stakeWeight: 7, fill: "var(--color-safari)" },
+  { subnetName: "firefox", stakeWeight: 2, fill: "var(--color-firefox)" },
+  { subnetName: "edge", stakeWeight: 3, fill: "var(--color-edge)" },
+  { subnetName: "other", stakeWeight: 6, fill: "var(--color-other)" },
 ];
 
+interface SubnetData {
+  subnetName: string;
+  stakeWeight: number;
+  percWeight: number;
+}
+
+interface SubnetPieChartProps {
+  chartData: SubnetData[];
+}
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  stakeWeight: {
+    label: "stakeWeight",
   },
-  chrome: {
+  subnetName: {
     label: "Chrome",
     color: "hsl(var(--chart-1))",
   },
@@ -53,17 +62,23 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function SubnetPieChart() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+export function SubnetPieChart({ chartData }: SubnetPieChartProps) {
+  // const totalStakeWeight = React.useMemo(() => {
+  //   return chartData_.reduce((acc, curr) => acc + curr.stakeWeight, 0);
+  // }, []);
+  //console.log(chartData);
+  const totalStakeWeight = 100;
+  const filledData = chartData.map((data) => ({
+    ...data,
+    fill: "hsl(var(--chart-1))",
+  }));
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Current Subnet Allocation</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Showing total stakeWeight for the last 6 months
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -78,8 +93,8 @@ export function SubnetPieChart() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="stakeWeight"
+              nameKey="subnetName"
               innerRadius={60}
               strokeWidth={5}
             >
@@ -98,14 +113,14 @@ export function SubnetPieChart() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {totalStakeWeight.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy ?? 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          stakeWeight
                         </tspan>
                       </text>
                     );
@@ -122,7 +137,7 @@ export function SubnetPieChart() {
           <ArrowTrendingUpIcon className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total stakeWeight for the last 6 months
         </div>
       </CardFooter>
     </Card>

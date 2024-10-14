@@ -8,7 +8,6 @@ import {
   Squares2X2Icon,
   SquaresPlusIcon,
 } from "@heroicons/react/24/outline";
-import { assert } from "tsafe";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 import {
@@ -19,49 +18,26 @@ import {
   CardTitle,
   Container,
 } from "@commune-ts/ui";
+import { fromNano } from "@commune-ts/utils";
 
 import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 import { api } from "~/trpc/react";
+import { separateTopNModules } from "./components/charts/_common";
 import { CombinedAreaChart } from "./components/charts/combined-area-chart";
 import { ModuleBarChart } from "./components/charts/module-bar-chart";
 import { SubnetPieChart } from "./components/charts/subnet-pie-chart";
 import { DelegatedScroll } from "./components/delegated-scroll";
 import { StatsCard } from "./components/stats-card";
 
-function repeatUntil<T>(total: number, xs: T[]) {
+function _repeatUntil<T>(total: number, xs: T[]) {
   const result: T[] = [];
   for (let i = 0; i < total; i++) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     result.push(xs[i % xs.length]!);
   }
   return result;
 }
-
-const separateTopAndOther =
-  <T,>(
-    numTop: number,
-    compare: (a: T, b: T) => number,
-    reduceRest: (xs: T[]) => T,
-  ) =>
-  (xs: T[]) => {
-    assert(xs.length >= numTop);
-    const sorted = xs.sort(compare);
-    const top = sorted.slice(0, numTop);
-    const rest = sorted.slice(numTop);
-    const other = reduceRest(rest);
-    return [...top, other];
-  };
-
-interface WeightData {
-  stakeWeight: number;
-  percWeight: number;
-}
-
-// const separateTop8Modules = separateTopAndOther<WeightData>(
-//   8,
-//   (a, b) => a.stakeWeight - b.stakeWeight,
-//   (xs) => xs.reduce((sum, x) => sum + x.stakeWeight, { moduleName: "Other", stakeWeight: 0, percWeight: 0 }),
-// );
 
 export default function Page() {
   const pathname = usePathname();
@@ -71,23 +47,20 @@ export default function Page() {
   const { delegatedModules } = useDelegateModuleStore();
 
   const { data: modules } = api.module.all.useQuery();
-
-  const { data: computedWeightedModules_ } =
+  const { data: computedWeightedModules } =
     api.module.allComputedModuleWeightsLastBlock.useQuery();
 
-  const computedWeightedModules = computedWeightedModules_
-    ? repeatUntil(20, computedWeightedModules_)
-    : null;
-
   const moduleStakeData = computedWeightedModules
-    ?.map((module) => {
-      return {
-        moduleName: module.moduleName ?? "",
-        stakeWeight: module.stakeWeight,
-        percWeight: module.percWeight,
-      };
-    })
-    .sort((a, b) => b.stakeWeight - a.stakeWeight);
+    ? separateTopNModules(8)(computedWeightedModules)
+        // .sort((a, b) => Number(b.stakeWeight - a.stakeWeight))
+        .map((module) => {
+          return {
+            moduleName: module.moduleName ?? "",
+            stakeWeight: String(module.stakeWeight),
+            percWeight: module.percWeight * 100,
+          };
+        })
+    : null;
 
   const delegatedModulesData = delegatedModules.map((module) => ({
     name: module.name,
@@ -97,9 +70,18 @@ export default function Page() {
   // Subnets Logic
   const { delegatedSubnets } = useDelegateSubnetStore();
 
-  // const { data: subnets } = api.subnet.all.useQuery();
-  // const { data: computedWeightedSubnets } =
-  //   api.subnet.allComputedSubnetWeightsLastBlock.useQuery();
+  const { data: subnets } = api.subnet.all.useQuery();
+
+  const { data: computedWeightedSubnets } =
+    api.subnet.allComputedSubnetWeightsLastBlock.useQuery();
+  console.log(computedWeightedSubnets);
+  const subnetData = computedWeightedSubnets?.map((s) => ({
+    stakeWeight: parseInt(fromNano(s.stakeWeight)),
+    subnetName: s.subnetName,
+    percWeight: s.percWeight,
+  }));
+
+  console.log("subnetStakeData", subnetData);
 
   const delegatedSubnetsData = delegatedSubnets.map((subnet) => ({
     name: subnet.name,
@@ -181,8 +163,12 @@ export default function Page() {
         </div>
       </div>
       <div className="gird-cols-1 grid w-full gap-3 pb-3 md:grid-cols-3">
-        <ModuleBarChart chartData={moduleStakeData} />
-        <SubnetPieChart />
+        {moduleStakeData ? (
+          <ModuleBarChart chartData={moduleStakeData} />
+        ) : (
+          <></>
+        )}
+        {subnetData ? <SubnetPieChart chartData={subnetData} /> : <></>}
         <CombinedAreaChart />
       </div>
       <div className="p flex w-full flex-col gap-3 pb-4 md:flex-row">
