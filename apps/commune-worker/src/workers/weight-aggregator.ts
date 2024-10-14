@@ -345,13 +345,13 @@ async function getUserSubnetWeightMap(): Promise<
   Map<string, Map<number, bigint>>
 > {
   const result = await db
-    .select({>
+    .select({
       userKey: userSubnetDataSchema.userKey,
       weight: userSubnetDataSchema.weight,
       netuid: subnetDataSchema.netuid,
     })
     .from(subnetDataSchema)
-    // filter modules updated on the last seen block
+    // filter subnets updated on the last seen block
     .where(
       and(
         eq(
@@ -364,6 +364,7 @@ async function getUserSubnetWeightMap(): Promise<
       userSubnetDataSchema,
       eq(subnetDataSchema.netuid, userSubnetDataSchema.netuid),
     );
+
   const weightMap = new Map<string, Map<number, bigint>>();
   result.forEach((entry) => {
     if (!weightMap.has(entry.userKey)) {
