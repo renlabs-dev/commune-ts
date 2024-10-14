@@ -53,7 +53,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function PieChard() {
+export function SubnetPieChart() {
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
   }, []);

@@ -25,38 +25,32 @@ import {
 
 export const description = "A bar chart with a custom label";
 
-const chartData = [
-  { month: "yama-test", desktop: 186, mobile: 80 },
-  { month: "rootnet1", desktop: 305, mobile: 200 },
-  { month: "chop", desktop: 237, mobile: 120 },
-  { month: "testing", desktop: 73, mobile: 190 },
-  { month: "unattentively", desktop: 209, mobile: 130 },
-  { month: "magnificos", desktop: 214, mobile: 140 },
-  { month: "manqu", desktop: 214, mobile: 120 },
-  { month: "global", desktop: 123, mobile: 111 },
-];
+interface ModuleData {
+  moduleName: string;
+  stakeWeight: number;
+}
+
+interface ModuleBarChartProps {
+  chartData: ModuleData[];
+}
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  stakeWeight: {
+    label: "Stake",
     color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
   },
   label: {
     color: "hsl(var(--background))",
   },
 } satisfies ChartConfig;
 
-export function BarChartTest() {
+export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Current Module Allocation</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Showing aggregated module allocation from user inputs.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -71,7 +65,7 @@ export function BarChartTest() {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="moduleName"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -79,26 +73,26 @@ export function BarChartTest() {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+            <XAxis dataKey="stakeWeight" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="desktop"
+              dataKey="stakeWeight"
               layout="vertical"
-              fill="var(--color-desktop)"
+              fill="var(--color-stakeWeight)"
               radius={4}
             >
               <LabelList
-                dataKey="month"
+                dataKey="moduleName"
                 position="insideLeft"
                 offset={8}
                 className="fill-[--color-label]"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="stakeWeight"
                 position="right"
                 offset={8}
                 className="fill-foreground"
