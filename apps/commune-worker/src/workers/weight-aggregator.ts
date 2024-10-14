@@ -27,8 +27,7 @@ import {
   normalizeWeightsToPercent,
 } from "../weights";
 
-const SUBNETS_NETUID = 0;
-const MODULES_NETUID = 2;
+import { SUBNETS_NETUID, CONSENSUS_NETUID } from "../common";
 
 type AggregatorKind = "module" | "subnet";
 
@@ -219,7 +218,7 @@ async function postModuleAggregation(
   await doVote(
     api,
     keypair,
-    MODULES_NETUID,
+    CONSENSUS_NETUID,
     normalizedWeights,
   );
 }
@@ -237,7 +236,7 @@ async function postSubnetAggregation(
     subnetWeightMap,
   );
 
-  const subnetWeights: SubnetWeight[] = Array.from(
+  const dbSubnetWeights: SubnetWeight[] = Array.from(
     stakeWeights,
   )
     .map(([netuid, stakeWeight]): SubnetWeight | null => {
@@ -254,6 +253,8 @@ async function postSubnetAggregation(
       };
     })
     .filter((subnet) => subnet !== null);
+
+  await insertSubnetWeight(dbSubnetWeights);
 
   await doVote(
     api,
