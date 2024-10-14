@@ -17,7 +17,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-
 export const createTable = pgTableCreator((name) => `${name}`);
 
 export const ss58Address = (name: string) => varchar(name, { length: 256 });
@@ -79,7 +78,7 @@ export const moduleData = createTable(
 /**
  * Data for the relation a user have with a specific module.
  * The user can set a weight (vote) for a module, and favorite it.
- * 
+ *
  * This MUST store only modules for subnet 2.
  */
 export const userModuleData = createTable(
@@ -393,33 +392,39 @@ export const governanceNotificationSchema = createTable(
   },
 );
 
-
 /**
  * This MUST store only info for modules on subnet 2.
  */
 // TODO: append SCHEMA to name
 
-export const computedModuleWeightsSchema = createTable("computed_module_weights", {
-  id: serial("id").primaryKey(),
+export const computedModuleWeightsSchema = createTable(
+  "computed_module_weights",
+  {
+    id: serial("id").primaryKey(),
 
-  atBlock: integer("at_block").notNull(),
+    atBlock: integer("at_block").notNull(),
 
-  // TODO: add moduleId
-  moduleId: integer("module_id").notNull().references(() => moduleData.id),
-  // Aggregated weights measured in nanos
-  stakeWeight: integer("stake_weight").notNull(),
-  // Normalized aggregated weights (100% sum)
-  percWeight: real("perc_weight").notNull(),
+    // TODO: add moduleId
+    moduleId: integer("module_id")
+      .notNull()
+      .references(() => moduleData.id),
+    // Aggregated weights measured in nanos
+    stakeWeight: integer("stake_weight").notNull(),
+    // Normalized aggregated weights (100% sum)
+    percWeight: real("perc_weight").notNull(),
 
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+);
 
 export const computedSubnetWeights = createTable("computed_subnet_weights", {
   id: serial("id").primaryKey(),
 
   atBlock: integer("at_block").notNull(),
 
-  netuid: integer("netuid").notNull().references(() => subnetDataSchema.netuid),
+  netuid: integer("netuid")
+    .notNull()
+    .references(() => subnetDataSchema.netuid),
 
   // Aggregated weights measured in nanos
   stakeWeight: integer("stake_weight").notNull(),

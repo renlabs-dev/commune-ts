@@ -6,7 +6,13 @@ import {
 } from "@commune-ts/subspace/queries";
 
 import type { WorkerProps } from "../common";
-import { BLOCK_TIME, isNewBlock, log, CONSENSUS_NETUID, sleep } from "../common";
+import {
+  BLOCK_TIME,
+  CONSENSUS_NETUID,
+  isNewBlock,
+  log,
+  sleep,
+} from "../common";
 import { upsertModuleData } from "../db";
 import { SubspaceModuleToDatabase } from "../db/type-transformations.js";
 
