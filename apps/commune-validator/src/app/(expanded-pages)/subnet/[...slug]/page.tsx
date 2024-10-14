@@ -38,7 +38,7 @@ export default async function SubnetPage({ params }: Params) {
       <div className="flex w-full flex-col items-center justify-between gap-6 md:my-16 md:flex-row md:gap-0">
         <div className="z-10 flex gap-3 md:absolute">
           <Link
-            href="/"
+            href="/subnets"
             className="flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10"
           >
             <ArrowLeftIcon className="h-5 w-5 text-cyan-500" />

@@ -1,8 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq } from "@commune-ts/db";
-import { subnetDataSchema, userSubnetDataSchema } from "@commune-ts/db/schema";
+import { eq, sql } from "@commune-ts/db";
+import {
+  computedSubnetWeights,
+  subnetDataSchema,
+  userSubnetDataSchema,
+} from "@commune-ts/db/schema";
 import { USER_SUBNET_DATA_INSERT_SCHEMA } from "@commune-ts/db/validation";
 
 import { publicProcedure } from "../trpc";
@@ -57,4 +61,21 @@ export const subnetRouter = {
           set: { weight: input.weight },
         });
     }),
-} satisfies TRPCRouterRecord;
+  allComputedSubnetWeightsLastBlock: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select({
+        subnetName: subnetDataSchema.name,
+        subnetId: computedSubnetWeights.netuid,
+        stakeWeight: computedSubnetWeights.stakeWeight,
+        percWeight: computedSubnetWeights.percWeight,
+      })
+      .from(computedSubnetWeights)
+      .where(
+        sql`computed_subnet_weights.at_block = SELECT MAX(computed_subnet_weights.at_block) FROM computed_subnet_weights`,
+      )
+      .innerJoin(
+        subnetDataSchema,
+        eq(computedSubnetWeights.netuid, subnetDataSchema.netuid),
+      );
+  }),
+} as TRPCRouterRecord;

@@ -58,7 +58,7 @@ export default async function ModulePage({ params }: Params) {
     <div className="container mx-auto min-h-[calc(100vh-169px)] p-4 pb-28 text-white">
       <div className="my-16 flex w-full items-center justify-between">
         <Link
-          href="/"
+          href="/modules"
           className="absolute z-10 flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10"
         >
           <ArrowLeftIcon className="h-5 w-5 text-green-500" />

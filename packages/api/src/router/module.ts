@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { eq, sql } from "@commune-ts/db";
 import {
+  computedModuleWeightsSchema,
   moduleData,
   moduleReport,
   userModuleData,
@@ -38,7 +39,6 @@ export const moduleRouter = {
         .where(eq(userModuleData.userKey, input.userKey))
         .execute();
     }),
-
   paginatedAll: publicProcedure
     .input(
       z.object({
@@ -123,4 +123,21 @@ export const moduleRouter = {
         userKey,
       });
     }),
+  allComputedModuleWeightsLastBlock: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select({
+        moduleName: moduleData.name,
+        moduleId: computedModuleWeightsSchema.moduleId,
+        stakeWeight: computedModuleWeightsSchema.stakeWeight,
+        percWeight: computedModuleWeightsSchema.percWeight,
+      })
+      .from(computedModuleWeightsSchema)
+      .where(
+        sql`computed_module_weights.at_block = (SELECT MAX(computed_module_weights.at_block) FROM computed_module_weights)`,
+      )
+      .innerJoin(
+        moduleData,
+        eq(computedModuleWeightsSchema.moduleId, moduleData.id),
+      );
+  }),
 } satisfies TRPCRouterRecord;
