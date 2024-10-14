@@ -158,10 +158,7 @@ export const subnetDataSchema = createTable(
     maxAllowedValidators: integer("max_allowed_validators"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at").default(sql`null`),
-  },
-  (t) => ({
-    unq: unique().on(t.netuid, t.id),
-  }),
+  }
 );
 
 export const userSubnetDataSchema = createTable(
