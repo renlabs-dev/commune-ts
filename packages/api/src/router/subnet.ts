@@ -23,6 +23,51 @@ export const subnetRouter = {
         where: eq(subnetDataSchema.id, input.id),
       });
     }),
+  paginatedAll: publicProcedure
+    .input(
+      z.object({
+        page: z.number().int().positive().default(1),
+        limit: z.number().int().positive().max(100).default(50),
+        sortBy: z
+          .enum([
+            "id",
+            "founderShare",
+            "incentiveRatio",
+            "proposalRewardTreasuryAllocation",
+            "minValidatorStake",
+            "createdAt",
+          ])
+          .default("id"),
+        order: z.enum(["asc", "desc"]).default("asc"),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, sortBy, order } = input;
+      const offset = (page - 1) * limit;
+
+      const subnets = await ctx.db.query.subnetDataSchema.findMany({
+        limit: limit,
+        offset: offset,
+        orderBy: (subnetData, { asc, desc }) => [
+          order === "asc" ? asc(subnetData[sortBy]) : desc(subnetData[sortBy]),
+        ],
+      });
+
+      const totalCount = await ctx.db
+        .select({ count: sql`count(*)` })
+        .from(subnetDataSchema)
+        .then((result) => Number(result[0]?.count));
+
+      return {
+        subnets,
+        metadata: {
+          currentPage: page,
+          pageSize: limit,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+        },
+      };
+    }),
   byUserSubnetData: publicProcedure
     .input(z.object({ userKey: z.string() }))
     .query(async ({ ctx, input }) => {
