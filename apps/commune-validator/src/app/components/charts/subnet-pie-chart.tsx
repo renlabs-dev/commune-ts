@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ArrowTrendingUpIcon } from "@heroicons/react/16/solid";
-import { Label, Pie, PieChart } from "recharts";
+import { Label, Pie, PieChart, Cell } from "recharts";
 
 import type { ChartConfig } from "@commune-ts/ui";
 import {
@@ -18,14 +18,32 @@ import {
 } from "@commune-ts/ui";
 
 export const description = "A donut chart with text";
+const generateColors = (numColors: number) => {
+  const hueRanges = [
+    { start: 0, end: 60 }, // Red to Yellow
+    { start: 60, end: 120 }, // Yellow to Green
+    { start: 120, end: 180 }, // Green to Cyan
+    { start: 180, end: 240 }, // Cyan to Blue
+    { start: 240, end: 300 }, // Blue to Magenta
+    { start: 300, end: 360 }, // Magenta to Red
+  ];
 
-const chartData_ = [
-  { subnetName: "chrome", stakeWeight: 6, fill: "var(--color-subnetName)" },
-  { subnetName: "safari", stakeWeight: 7, fill: "var(--color-safari)" },
-  { subnetName: "firefox", stakeWeight: 2, fill: "var(--color-firefox)" },
-  { subnetName: "edge", stakeWeight: 3, fill: "var(--color-edge)" },
-  { subnetName: "other", stakeWeight: 6, fill: "var(--color-other)" },
-];
+  const colors = [];
+
+  for (let i = 0; i < numColors; i++) {
+    const hueRange = hueRanges[i % hueRanges.length];
+    const hue = Math.floor(
+      hueRange.start + ((i / hueRanges.length) % 1) * (hueRange.end - hueRange.start)
+    );
+    const saturation = 70 + Math.random() * 30; // Random saturation between 70% and 100%
+    const lightness = 50 + Math.random() * 20; // Random lightness between 50% and 70%
+    const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    colors.push(color);
+  }
+
+  return colors;
+};
+
 
 interface SubnetData {
   subnetName: string;
@@ -63,16 +81,12 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SubnetPieChart({ chartData }: SubnetPieChartProps) {
-  // const totalStakeWeight = React.useMemo(() => {
-  //   return chartData_.reduce((acc, curr) => acc + curr.stakeWeight, 0);
-  // }, []);
-  //console.log(chartData);
   const totalStakeWeight = 100;
-  const filledData = chartData.map((data) => ({
-    ...data,
-    fill: "hsl(var(--chart-1))",
-  }));
-
+  const colors = React.useMemo(() => generateColors(50), []);
+  // const colors = generateColors(50);
+  const getFillColor = (index: number) => {
+    return colors[index % colors.length];
+  };
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -93,11 +107,14 @@ export function SubnetPieChart({ chartData }: SubnetPieChartProps) {
             />
             <Pie
               data={chartData}
-              dataKey="stakeWeight"
+              dataKey="percWeight"
               nameKey="subnetName"
               innerRadius={60}
               strokeWidth={5}
             >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getFillColor(index)} />
+              ))}
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
