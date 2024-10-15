@@ -144,7 +144,7 @@ export function DelegatedList() {
     }
     if (userSubnetData) {
       const formattedSubnets = userSubnetData.map((subnet) => ({
-        id: subnet.subnet_data.id,
+        id: subnet.subnet_data.netuid,
         name: subnet.subnet_data.name,
         percentage: subnet.user_subnet_data.weight,
         founderAddress: subnet.subnet_data.founder,
@@ -263,7 +263,7 @@ export function DelegatedList() {
         await refetchSubnets();
         if (updatedSubnetData) {
           const formattedSubnets = updatedSubnetData.map((subnet) => ({
-            id: subnet.subnet_data.id,
+            id: subnet.subnet_data.netuid,
             name: subnet.subnet_data.name,
             percentage: subnet.user_subnet_data.weight,
             founderAddress: subnet.subnet_data.founder,
@@ -490,8 +490,7 @@ export function DelegatedList() {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center">
-                          No modules found. Select a module to allocate weight
-                          through the modules page and they will appear here.
+                          Select a module to allocate through the modules page.
                         </TableCell>
                       </TableRow>
                     )
@@ -535,9 +534,8 @@ export function DelegatedList() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">
-                        No subnets found. Select a subnet to allocate weight
-                        through the subnets page and they will appear here.
+                      <TableCell colSpan={4} className="text-wrap text-center">
+                        Select a subnet to allocate through the subnets page.
                       </TableCell>
                     </TableRow>
                   )}

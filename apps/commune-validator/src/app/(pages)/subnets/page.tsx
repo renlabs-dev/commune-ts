@@ -10,7 +10,7 @@ export default async function SubnetsPage() {
         <SubnetCard
           key={subnet.id}
           founderAddress={subnet.founder}
-          id={subnet.id}
+          id={subnet.netuid}
           name={subnet.name}
         />
       ))}

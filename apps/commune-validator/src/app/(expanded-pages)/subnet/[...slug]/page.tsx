@@ -72,7 +72,6 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
     {
       title: "General Information",
       fields: [
-        { label: "Subnet ID", value: subnet.id },
         { label: "Netuid", value: subnet.netuid },
         { label: "Name", value: subnet.name },
         { label: "Tempo", value: subnet.tempo },

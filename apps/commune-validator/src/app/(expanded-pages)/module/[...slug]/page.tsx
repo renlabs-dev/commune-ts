@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 
+import { Card } from "@commune-ts/ui";
 import { MarkdownView } from "@commune-ts/ui/markdown-view";
 import {
   fetchCustomMetadata,
@@ -73,10 +74,10 @@ export default async function ModulePage({ params }: Params) {
       </div>
       <div className="flex flex-col-reverse gap-6 md:flex-row">
         <div className="animate-fade-down animate-delay-300 md:w-[60%] xl:w-[70%]">
-          <div className="border border-white/20 bg-[#898989]/5 p-8 backdrop-blur-md">
+          <Card className="p-8">
             <h2 className="mb-4 text-xl font-semibold">Description</h2>
             <MarkdownView source={description} />
-          </div>
+          </Card>
         </div>
         <div className="flex animate-fade-down flex-col gap-6 animate-delay-500 md:w-[40%] xl:w-[30%]">
           <ModuleDataGrid module={mdl} />
@@ -127,10 +128,7 @@ function ModuleDataGrid({ module }: { module: Module }) {
   return (
     <div className="grid gap-6">
       {dataGroups.map((group, index) => (
-        <div
-          key={index}
-          className="border border-white/20 bg-[#898989]/5 p-6 backdrop-blur-md"
-        >
+        <Card key={index} className="p-6">
           <h3 className="mb-4 text-lg font-semibold">{group.title}</h3>
           <div className="grid gap-2">
             {group.fields.map((field, fieldIndex) => (
@@ -140,7 +138,7 @@ function ModuleDataGrid({ module }: { module: Module }) {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );
