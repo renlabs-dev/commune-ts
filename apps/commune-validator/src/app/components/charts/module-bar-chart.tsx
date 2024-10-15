@@ -71,6 +71,7 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />

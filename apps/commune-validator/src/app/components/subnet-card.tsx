@@ -31,7 +31,7 @@ export default function SubnetCard({
       <div className="flex flex-col items-center justify-between gap-3 border-white/20 px-4 md:flex-row">
         <div className="flex w-full flex-col md:flex-row md:gap-6">
           <NameCard label="Name" name={name} />
-          <NameCard label="Subnet id" name={`${id}`} />
+          <NameCard label="NETUID" name={`${id}`} />
           <NameCard label="Founder" name={smallAddress(founderAddress)} />
           {percentage && <NameCard label="Allocated" name={`${percentage}%`} />}
         </div>

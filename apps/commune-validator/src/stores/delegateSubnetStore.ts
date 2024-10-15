@@ -34,12 +34,12 @@ export const useDelegateSubnetStore = create<DelegateState>()(
         })),
       removeSubnet: (id) =>
         set((state) => ({
-          delegatedSubnets: state.delegatedSubnets.filter((m) => m.id !== id),
+          delegatedSubnets: state.delegatedSubnets.filter((s) => s.id !== id),
         })),
       updatePercentage: (id, percentage) =>
         set((state) => ({
-          delegatedSubnets: state.delegatedSubnets.map((m) =>
-            m.id === id ? { ...m, percentage } : m,
+          delegatedSubnets: state.delegatedSubnets.map((s) =>
+            s.id === id ? { ...s, percentage } : s,
           ),
         })),
       getTotalPercentage: () => {

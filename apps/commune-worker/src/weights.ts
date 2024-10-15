@@ -53,7 +53,7 @@ export function calcFinalWeights<K>(
 }
 
 /**
- * Normalize weights to kinda arbitrary small integers. They need to fit in 
+ * Normalize weights to kinda arbitrary small integers. They need to fit in
  * a u16 which is what Subspace accepts as vote values.
  */
 export function normalizeWeightsForVote<K>(
@@ -62,7 +62,7 @@ export function normalizeWeightsForVote<K>(
   const SCALE = 2n << 8n;
 
   let max_weight = 0n;
-  for (const  weight of weights.values()) {
+  for (const weight of weights.values()) {
     if (weight > max_weight) max_weight = weight;
   }
 

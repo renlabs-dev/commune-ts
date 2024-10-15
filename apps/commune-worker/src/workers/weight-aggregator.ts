@@ -120,6 +120,7 @@ export async function weightAggregatorTask(
       keypair,
       lastBlock,
     );
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } else if (aggregator == "subnet") {
     log(`Committing subnet weights...`);
     await postSubnetAggregation(
@@ -163,7 +164,7 @@ function buildNetworkVote(voteMap: Map<number, number>) {
   return { uids, weights };
 }
 
-async function doVote<T>(
+async function doVote(
   api: ApiPromise,
   keypair: KeyringPair,
   netuid: number,
