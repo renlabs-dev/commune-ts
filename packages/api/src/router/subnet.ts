@@ -9,7 +9,7 @@ import {
 } from "@commune-ts/db/schema";
 import { USER_SUBNET_DATA_INSERT_SCHEMA } from "@commune-ts/db/validation";
 
-import { publicProcedure } from "../trpc";
+import { authenticatedProcedure, publicProcedure } from "../trpc";
 
 export const subnetRouter = {
   // GET
@@ -38,29 +38,6 @@ export const subnetRouter = {
         .where(eq(userSubnetDataSchema.userKey, input.userKey))
         .execute();
     }),
-  // POST
-  deleteUserSubnetData: publicProcedure
-    .input(z.object({ userKey: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .delete(userSubnetDataSchema)
-        .where(eq(userSubnetDataSchema.userKey, input.userKey));
-    }),
-  createUserSubnetData: publicProcedure
-    .input(USER_SUBNET_DATA_INSERT_SCHEMA)
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .insert(userSubnetDataSchema)
-        .values({
-          netuid: input.netuid,
-          userKey: input.userKey,
-          weight: input.weight,
-        })
-        .onConflictDoUpdate({
-          target: [userSubnetDataSchema.userKey, userSubnetDataSchema.netuid],
-          set: { weight: input.weight },
-        });
-    }),
   allComputedSubnetWeightsLastBlock: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select({
@@ -81,4 +58,31 @@ export const subnetRouter = {
         eq(computedSubnetWeights.netuid, subnetDataSchema.netuid),
       );
   }),
+  // POST
+  deleteUserSubnetData: authenticatedProcedure
+    .input(z.object({ userKey: z.string() }))
+    .mutation(async ({ ctx }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+      await ctx.db
+        .delete(userSubnetDataSchema)
+        .where(eq(userSubnetDataSchema.userKey, userKey));
+    }),
+  createUserSubnetData: authenticatedProcedure
+    .input(USER_SUBNET_DATA_INSERT_SCHEMA)
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+      await ctx.db
+        .insert(userSubnetDataSchema)
+        .values({
+          netuid: input.netuid,
+          userKey,
+          weight: input.weight,
+        })
+        .onConflictDoUpdate({
+          target: [userSubnetDataSchema.userKey, userSubnetDataSchema.netuid],
+          set: { weight: input.weight },
+        });
+    }),
 } satisfies TRPCRouterRecord;
