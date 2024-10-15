@@ -6,7 +6,11 @@ import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
 import {
+  Button,
+  Card,
   cn,
+  Input,
+  Label,
   Separator,
   Table,
   TableBody,
@@ -203,16 +207,13 @@ export function DelegatedList() {
     if (!selectedAccount?.address || totalPercentage !== 100) {
       return;
     }
-
     setIsSubmitting(true);
-
     try {
       if (activeTab === "modules") {
         // Delete existing user module data
         await deleteUserModuleData.mutateAsync({
           userKey: selectedAccount.address,
         });
-
         // Submit new user module data
         for (const delegatedModule of delegatedModules) {
           await createUserModuleData.mutateAsync({
@@ -221,14 +222,12 @@ export function DelegatedList() {
             weight: delegatedModule.percentage,
           });
         }
-
         updateOriginalModules();
       } else {
         // Delete existing user subnet data
         void deleteUserSubnetData.mutateAsync({
           userKey: selectedAccount.address,
         });
-
         // Submit new user subnet data
         for (const delegatedSubnet of delegatedSubnets) {
           void createUserSubnetData.mutateAsync({
@@ -237,10 +236,8 @@ export function DelegatedList() {
             weight: delegatedSubnet.percentage,
           });
         }
-
         updateOriginalSubnets();
       }
-
       // Fetch updated data from the database
       if (activeTab === "modules") {
         const { data: updatedModuleData } =
@@ -274,7 +271,6 @@ export function DelegatedList() {
           setDelegatedSubnetsFromDB(formattedSubnets);
         }
       }
-
       setIsSubmitting(false);
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -286,11 +282,44 @@ export function DelegatedList() {
     setActiveTab("modules");
     router.push("/modules");
   }
-
   function handleSubnetClick() {
     setActiveTab("subnets");
     router.push("/subnets");
   }
+
+  const handleRemoveAllWeight = async () => {
+    if (!selectedAccount?.address) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      if (activeTab === "modules") {
+        await deleteUserModuleData.mutateAsync({
+          userKey: selectedAccount.address,
+        });
+        setDelegatedModulesFromDB([]);
+      } else {
+        await deleteUserSubnetData.mutateAsync({
+          userKey: selectedAccount.address,
+        });
+        setDelegatedSubnetsFromDB([]);
+      }
+      if (activeTab === "modules") {
+        await refetchModules();
+      } else {
+        await refetchSubnets();
+      }
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Error removing weight:", error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const hasItemsToClear =
+    activeTab === "modules"
+      ? delegatedModules.length > 0
+      : delegatedSubnets.length > 0;
 
   const hasZeroPercentage = () => {
     const items = activeTab === "modules" ? delegatedModules : delegatedSubnets;
@@ -321,130 +350,90 @@ export function DelegatedList() {
     }
     return { disabled: false, message: "All changes saved!" };
   }
-
-  const handleRemoveAllWeight = async () => {
-    if (!selectedAccount?.address) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      if (activeTab === "modules") {
-        await deleteUserModuleData.mutateAsync({
-          userKey: selectedAccount.address,
-        });
-        setDelegatedModulesFromDB([]);
-      } else {
-        await deleteUserSubnetData.mutateAsync({
-          userKey: selectedAccount.address,
-        });
-        setDelegatedSubnetsFromDB([]);
-      }
-
-      // Refetch data after removal
-      if (activeTab === "modules") {
-        await refetchModules();
-      } else {
-        await refetchSubnets();
-      }
-
-      setIsSubmitting(false);
-    } catch (error) {
-      console.error("Error removing weight:", error);
-      setIsSubmitting(false);
-    }
-  };
-
-  const hasItemsToClear =
-    activeTab === "modules"
-      ? delegatedModules.length > 0
-      : delegatedSubnets.length > 0;
-
   const submitStatus = getSubmitStatus();
 
   return (
     <div className={`${pathname === "/" ? "hidden" : "block"}`}>
       {selectedAccount?.address && (
         <div className="fixed bottom-0 right-0 z-50 mt-8 hidden w-full flex-col-reverse text-sm md:bottom-4 md:mr-4 md:flex md:w-fit">
-          <div className="flex animate-fade-up items-center justify-between divide-white/20 rounded-full border border-white/20 bg-[#898989]/5 font-semibold text-white backdrop-blur-md">
-            <div className="mx-1 flex gap-1 border-white/20 pr-1">
-              <button
-                onClick={handleModuleClick}
-                className={`rounded-full px-3 py-2 ${
-                  activeTab === "modules"
-                    ? "bg-white/10 text-white"
-                    : "text-gray-400 hover:bg-white/5"
-                }`}
-              >
-                Modules
-              </button>
-              <button
-                onClick={handleSubnetClick}
-                className={`rounded-full px-3 py-2 ${
-                  activeTab === "subnets"
-                    ? "bg-white/10 text-white"
-                    : "text-gray-400 hover:bg-white/5"
-                }`}
-              >
-                Subnets
-              </button>
+          <Card className="mb-2 flex animate-fade-up flex-col rounded-3xl border border-white/20 bg-[#898989]/5 font-semibold text-white backdrop-blur-lg">
+            <div className="flex items-center justify-center px-7">
+              {["modules", "subnets", "stake"].map((type, index) => (
+                <div key={type} className="flex items-center">
+                  <Label
+                    className={cn(
+                      "flex items-center gap-1 text-sm font-semibold",
+                      {
+                        "text-cyan-500": activeTab === "subnets",
+                        "text-green-500": activeTab !== "subnets",
+                        "text-amber-500":
+                          index === 1 && totalPercentage !== 100,
+                      },
+                    )}
+                  >
+                    <b>
+                      {index === 0
+                        ? activeTab === "modules"
+                          ? delegatedModules.length
+                          : delegatedSubnets.length
+                        : index === 1
+                          ? `${totalPercentage}%`
+                          : userStakeWeight}
+                    </b>
+                    <span className="text-white">
+                      {index === 0
+                        ? activeTab === "modules"
+                          ? "Modules"
+                          : "Subnets"
+                        : index === 1
+                          ? "Allocated"
+                          : "COMAI"}
+                    </span>
+                  </Label>
+                  {index < 2 && (
+                    <Separator className="mx-4 h-8" orientation="vertical" />
+                  )}
+                </div>
+              ))}
             </div>
-            <p className="border-x border-white/20 px-3">
-              <b
-                className={`${activeTab === "subnets" ? "text-cyan-500" : "text-green-500"}`}
-              >
-                {activeTab === "modules"
-                  ? delegatedModules.length
-                  : delegatedSubnets.length}
-              </b>{" "}
-              {activeTab === "modules" ? "Modules" : "Subnets"}
-            </p>
-            <span className="border-r border-white/20 px-3">
-              <b
-                className={`${
-                  totalPercentage !== 100
-                    ? "text-amber-500"
-                    : `${activeTab === "subnets" ? "text-cyan-500" : "text-green-500"}`
-                }`}
-              >
-                {totalPercentage}%
-              </b>{" "}
-              Weighted
-            </span>
-            <span className="px-3">
-              <div className="flex gap-1 text-white">
-                <b
-                  className={`${activeTab === "subnets" ? "text-cyan-500" : "text-green-500"}`}
+            <Separator />
+            <div className="flex w-full gap-2 p-3">
+              {["modules", "subnets"].map((tab) => (
+                <Button
+                  key={tab}
+                  variant="ghost"
+                  onClick={
+                    tab === "modules" ? handleModuleClick : handleSubnetClick
+                  }
+                  className={cn(
+                    "rounded-full border",
+                    activeTab === tab ? "border-white" : "border-white/20",
+                  )}
                 >
-                  {userStakeWeight}
-                </b>{" "}
-                COMAI
-              </div>
-            </span>
-            <span>
-              <button
+                  {tab.toUpperCase()}
+                </Button>
+              ))}
+              <Button
+                variant="base"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                  "relative flex w-fit items-center gap-1 text-nowrap rounded-full border px-5 py-3 font-semibold transition duration-200",
+                  "w-full gap-1 rounded-full",
                   activeTab === "subnets"
                     ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
                     : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50",
                 )}
               >
-                <span>{isOpen ? "COLLAPSE VIEW" : "EXPAND VIEW"}</span>
-                <span>
-                  <ChevronUpIcon
-                    className={`h-5 w-5 transform transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </span>
-              </button>
-            </span>
-          </div>
+                {isOpen ? "COLLAPSE " : "EXPAND "}
+                <ChevronUpIcon
+                  className={`h-5 w-5 transform transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </Button>
+            </div>
+          </Card>
           {isOpen && (
-            <div className="mb-2 flex animate-fade-up flex-col divide-white/20 rounded-3xl border border-white/20 bg-[#898989]/5 p-4 font-semibold text-white backdrop-blur-md">
+            <Card className="mb-2 flex animate-fade-up flex-col rounded-3xl border border-white/20 bg-[#898989]/5 p-4 font-semibold text-white backdrop-blur-lg">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -455,6 +444,7 @@ export function DelegatedList() {
                       {activeTab === "modules" ? "Address" : "Founder"}
                     </TableHead>
                     <TableHead>Percentage</TableHead>
+                    <TableHead>Clear</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -466,31 +456,34 @@ export function DelegatedList() {
                             {module.name}
                           </TableCell>
                           <TableCell className="text-gray-400">
-                            {smallAddress(module.address)}
+                            {smallAddress(module.address, 4)}
+                          </TableCell>
+                          <TableCell className="flex items-center gap-1">
+                            <Input
+                              type="number"
+                              value={module.percentage}
+                              onChange={(e) =>
+                                handlePercentageChange(
+                                  module.id,
+                                  Number(e.target.value),
+                                )
+                              }
+                              min="0"
+                              max="100"
+                              className="w-16"
+                            />
+                            <Label className="relative right-5 text-gray-400">
+                              %
+                            </Label>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center">
-                              <input
-                                type="number"
-                                value={module.percentage}
-                                onChange={(e) =>
-                                  handlePercentageChange(
-                                    module.id,
-                                    Number(e.target.value),
-                                  )
-                                }
-                                className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
-                                min="0"
-                                max="100"
-                              />
-                              <span className="mr-2 text-white">%</span>
-                              <button
-                                onClick={() => removeModule(module.id)}
-                                className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
-                              >
-                                <XMarkIcon className="h-4 w-4" />
-                              </button>
-                            </div>
+                            <Button
+                              size="icon"
+                              variant="default-red"
+                              onClick={() => removeModule(module.id)}
+                            >
+                              <XMarkIcon className="h-5 w-5" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))
@@ -509,31 +502,34 @@ export function DelegatedList() {
                           {subnet.name}
                         </TableCell>
                         <TableCell className="text-gray-400">
-                          {smallAddress(subnet.founderAddress)}
+                          {smallAddress(subnet.founderAddress, 4)}
+                        </TableCell>
+                        <TableCell className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={subnet.percentage}
+                            onChange={(e) =>
+                              handlePercentageChange(
+                                subnet.id,
+                                Number(e.target.value),
+                              )
+                            }
+                            min="0"
+                            max="100"
+                            className="w-16"
+                          />
+                          <Label className="relative right-5 text-gray-400">
+                            %
+                          </Label>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center">
-                            <input
-                              type="number"
-                              value={subnet.percentage}
-                              onChange={(e) =>
-                                handlePercentageChange(
-                                  subnet.id,
-                                  Number(e.target.value),
-                                )
-                              }
-                              className="mr-1 w-12 bg-[#898989]/10 p-1 text-white"
-                              min="0"
-                              max="100"
-                            />
-                            <span className="mr-2 text-white">%</span>
-                            <button
-                              onClick={() => removeSubnet(subnet.id)}
-                              className="ml-2 flex items-center rounded-full bg-red-500/10 p-1 text-red-500 hover:bg-red-500/20 hover:text-red-400"
-                            >
-                              <XMarkIcon className="h-4 w-4" />
-                            </button>
-                          </div>
+                          <Button
+                            size="icon"
+                            variant="default-red"
+                            onClick={() => removeSubnet(subnet.id)}
+                          >
+                            <XMarkIcon className="h-5 w-5" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))
@@ -548,70 +544,66 @@ export function DelegatedList() {
                 </TableBody>
               </Table>
               <Separator />
-              <div className="w-full justify-center py-4 text-center">
-                <span
-                  className={`text-base font-semibold ${
-                    submitStatus.message === "You have unsaved changes"
-                      ? "text-pink-500"
-                      : submitStatus.message === "All changes saved!"
-                        ? activeTab === "subnets"
-                          ? "text-cyan-500"
-                          : "text-green-500"
-                        : "text-amber-500"
-                  }`}
-                >
-                  {submitStatus.message}
-                </span>
-              </div>
-              <Separator />
-              <div className="flex flex-row gap-3">
-                <button
+              <div className="flex flex-row gap-3 pt-4">
+                <Button
                   onClick={handleAutoCompletePercentage}
-                  className={cn(
-                    "mt-2 w-fit animate-fade text-nowrap rounded-full border p-2 px-4 text-white backdrop-blur-md transition duration-200 animate-delay-300",
-                    totalPercentage === 100
-                      ? "cursor-not-allowed border-white/20 bg-[#898989]/5 text-white opacity-50"
-                      : "border-purple-500 bg-purple-500/10 text-purple-500 hover:border-purple-500 hover:bg-purple-500/15",
-                  )}
                   disabled={totalPercentage === 100}
+                  variant="default-purple"
+                  className="w-full rounded-full"
                 >
                   Auto-Complete to 100%
-                </button>
+                </Button>
                 {hasItemsToClear && (
-                  <button
+                  <Button
                     onClick={handleRemoveAllWeight}
-                    className={cn(
-                      "mt-4 w-fit animate-fade text-nowrap rounded-full border p-2 px-4 text-white backdrop-blur-md transition duration-200 animate-delay-300",
-                      "border-red-500 bg-red-500/10 text-red-500 hover:border-red-400 hover:bg-red-500/15 active:bg-red-500/50",
-                    )}
                     disabled={isSubmitting}
+                    variant="default-red"
+                    className="w-full rounded-full"
                   >
                     {isSubmitting
                       ? "Removing..."
                       : `Remove ${activeTab === "modules" ? "Modules" : "Subnets"}`}
-                  </button>
+                  </Button>
                 )}
-                <button
-                  onClick={handleSubmit}
-                  className={cn(
-                    "mt-4 w-full animate-fade rounded-full border p-2 text-white backdrop-blur-md transition duration-200 animate-delay-300",
-                    submitStatus.disabled
-                      ? "cursor-not-allowed border-white/20 bg-[#898989]/5 opacity-50"
-                      : activeTab === "subnets"
-                        ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
-                        : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50",
-                  )}
-                  disabled={submitStatus.disabled}
-                  title={submitStatus.disabled ? submitStatus.message : ""}
-                >
-                  {isSubmitting
-                    ? "Submitting..."
-                    : activeTab === "modules"
-                      ? "Submit Modules"
-                      : "Submit Subnets"}
-                </button>
               </div>
-            </div>
+              <Separator className="my-4" />
+              <Button
+                onClick={handleSubmit}
+                variant="base"
+                className={cn(
+                  "w-full rounded-full",
+                  activeTab === "subnets"
+                    ? "border-cyan-500 bg-cyan-600/15 text-cyan-500 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
+                    : "border-green-500 bg-green-600/15 text-green-500 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50",
+                )}
+                disabled={submitStatus.disabled}
+                title={submitStatus.disabled ? submitStatus.message : ""}
+              >
+                {isSubmitting
+                  ? "Submitting..."
+                  : activeTab === "modules"
+                    ? "Submit Modules"
+                    : "Submit Subnets"}
+              </Button>
+              <Label
+                className={cn("pt-2 text-center text-sm", {
+                  "text-pink-500":
+                    submitStatus.message === "You have unsaved changes",
+                  "text-cyan-500":
+                    submitStatus.message === "All changes saved!" &&
+                    activeTab === "subnets",
+                  "text-green-500":
+                    submitStatus.message === "All changes saved!" &&
+                    activeTab !== "subnets",
+                  "text-amber-500": ![
+                    "You have unsaved changes",
+                    "All changes saved!",
+                  ].includes(submitStatus.message),
+                })}
+              >
+                {submitStatus.message}
+              </Label>
+            </Card>
           )}
         </div>
       )}
