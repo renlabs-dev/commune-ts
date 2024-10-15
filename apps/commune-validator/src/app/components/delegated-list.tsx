@@ -555,24 +555,27 @@ export function DelegatedList() {
               <div className="flex flex-row gap-3 pt-4">
                 <Button
                   onClick={handleAutoCompletePercentage}
-                  disabled={totalPercentage === 100}
+                  disabled={
+                    totalPercentage === 100 || activeTab === "modules"
+                      ? delegatedModules.length === 0
+                      : delegatedSubnets.length === 0
+                  }
                   variant="default-purple"
                   className="w-full rounded-full"
                 >
                   Auto-Complete to 100%
                 </Button>
-                {hasItemsToClear && (
-                  <Button
-                    onClick={handleRemoveAllWeight}
-                    disabled={isSubmitting}
-                    variant="default-red"
-                    className="w-full rounded-full"
-                  >
-                    {isSubmitting
-                      ? "Removing..."
-                      : `Remove ${activeTab === "modules" ? "Modules" : "Subnets"}`}
-                  </Button>
-                )}
+
+                <Button
+                  onClick={handleRemoveAllWeight}
+                  disabled={isSubmitting || !hasItemsToClear}
+                  variant="default-red"
+                  className="w-full rounded-full"
+                >
+                  {isSubmitting
+                    ? "Removing..."
+                    : `Remove ${activeTab === "modules" ? "Modules" : "Subnets"}`}
+                </Button>
               </div>
               <Separator className="my-4" />
               <Button
