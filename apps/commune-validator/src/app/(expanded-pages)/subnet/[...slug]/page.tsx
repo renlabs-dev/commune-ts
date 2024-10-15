@@ -27,7 +27,7 @@ export default async function SubnetPage({ params }: Params) {
     notFound();
   }
 
-  const sbnt = await api.subnet.byId({ id: Number(id) });
+  const sbnt = await api.subnet.byId({ id: Number(id) + 1 });
 
   if (!sbnt) {
     notFound();
