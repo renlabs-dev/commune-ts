@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 
+import type { Module } from "~/utils/types";
 import { ModuleCard } from "~/app/components/module-card";
 import { PaginationControls } from "~/app/components/pagination-controls";
 import { ViewControls } from "~/app/components/view-controls";
 import { api } from "~/trpc/server";
 
-export default async function Page({
+export default async function ModulesPage({
   searchParams,
 }: {
   searchParams: { page?: string; sortBy?: string; order?: string };
@@ -17,7 +18,6 @@ export default async function Page({
   const { modules, metadata } = await api.module.paginatedAll({
     page: currentPage,
     limit: 24,
-    // @ts-expect-error - TS doesn't know about sortBy for some reason
     sortBy: sortBy,
     order: order,
   });
@@ -29,7 +29,7 @@ export default async function Page({
       </Suspense>
       <div className="mb-16 grid w-full animate-fade-up grid-cols-1 gap-4 backdrop-blur-md animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {modules.length ? (
-          modules.map((module) => (
+          modules.map((module: Module) => (
             <ModuleCard
               id={module.id}
               key={module.id}
