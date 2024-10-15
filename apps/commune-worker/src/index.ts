@@ -23,59 +23,80 @@ async function setup(): Promise<ApiPromise> {
   return api;
 }
 
-const workerType = process.argv[2] ?? "validator";
-
 async function main() {
   const api = await setup();
   const lastBlockNumber = -1;
   const lastBlock = await queryLastBlock(api);
 
-  if (workerType === "dao") {
-    await processDaoApplicationsWorker({
-      lastBlock,
-      api,
-      lastBlockNumber,
-    });
-  } else if (workerType === "notifier") {
-    await notifyNewApplicationsWorker({
-      lastBlock,
-      api,
-      lastBlockNumber,
-    });
-  } else if (workerType === "subnet") {
-    await subnetFetcherWorker({
-      lastBlock,
-      api,
-      lastBlockNumber,
-    });
-  } else if (workerType === "validator") {
-    await moduleFetcherWorker({
-      lastBlock,
-      api,
-      lastBlockNumber,
-    });
-  } else if (workerType === "weight-aggregator") {
-    await weightAggregatorWorker(api);
-  } else {
-    console.error(
-      "Invalid worker type argument. Please specify 'dao', 'notifier', 'subnet', 'validator', or 'weight-aggregator'",
-    );
-    process.exit(1);
+  const workerTypes: Record<string, () => Promise<void>> = {
+    "dao": async () => {
+      await processDaoApplicationsWorker({
+        lastBlock,
+        api,
+        lastBlockNumber,
+      });
+    },
+    "dao-notifier": async () => {
+      await notifyNewApplicationsWorker({
+        lastBlock,
+        api,
+        lastBlockNumber,
+      });
+    },
+    "subnet-fetcher": async () => {
+      await subnetFetcherWorker({
+        lastBlock,
+        api,
+        lastBlockNumber,
+      });
+    },
+    "module-fetcher": async () => {
+      await moduleFetcherWorker({
+        lastBlock,
+        api,
+        lastBlockNumber,
+      });
+    },
+    "weight-aggregator": async () => {
+      await weightAggregatorWorker(api);
+    },
+  };
+
+  const workerTypeArg = process.argv[2];
+
+  if (workerTypeArg == undefined) {
+    console.error("ERROR: You must provide the worker type in a CLI argument.")
+    process.exit(1)
   }
+
+  const workerFn = workerTypes[workerTypeArg];
+
+  if (workerFn == undefined) {
+    const workerTypesTxt = Object.keys(workerTypes).join(", ")
+    console.error(`ERROR: Invalid worker type '${workerTypeArg}'.`)
+    console.error(`Valid worker types are: ${workerTypesTxt}.`)
+    process.exit(1)
+  }
+
+  startHealthCheckServer(workerTypeArg);
+
+  await workerFn();
+}
+
+function startHealthCheckServer(workerType: string) {
+  const app = express();
+
+  app.get("/api/health", (_, res) => {
+    res.send(`${workerType} OK`);
+  });
+
+  const port = process.env.PORT ?? 3000;
+
+  app.listen(port, () => {
+    log(`/api/health listening on port ${port}`);
+  });
 }
 
 main()
   .catch(console.error)
   .finally(() => process.exit());
-
-const app = express();
-
-app.get("/api/health", (_, res) => {
-  res.send(`${workerType} OK`);
-});
-
-const port = process.env.PORT ?? 3000;
-
-app.listen(port, () => {
-  log(`/api/health listening on port ${port}`);
-});
