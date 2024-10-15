@@ -11,7 +11,7 @@ export default function Page() {
 
   if (!selectedAccount?.address)
     return (
-      <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
+      <span className="w-full items-center justify-start pt-12 text-center text-lg">
         Connect Wallet to view your weighted subnets.
       </span>
     );
@@ -35,8 +35,8 @@ export default function Page() {
           ))}
         </div>
       ) : (
-        <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
-          No weighted subnets found.
+        <span className="w-full items-center justify-start pt-12 text-center text-lg">
+          <p>No weighted subnets found.</p>
         </span>
       )}
     </div>

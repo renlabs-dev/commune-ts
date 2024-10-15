@@ -102,16 +102,16 @@ const TutorialPage = () => {
             <WalletIcon className="h-6 w-6" /> Open Wallet Modal
           </button>
           <Link
-            href="/"
+            href="/modules"
             className="flex w-fit items-center gap-2 text-nowrap border border-green-500 bg-green-600/5 px-4 py-2.5 font-semibold text-green-500 backdrop-blur-md transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
           >
-            <Squares2X2Icon className="h-6 w-6" /> Go back to Modules
+            <Squares2X2Icon className="h-6 w-6" /> Go to Modules
           </Link>
           <Link
             href="/subnets"
             className="flex w-fit items-center gap-2 text-nowrap border border-cyan-500 bg-cyan-600/5 px-4 py-2.5 font-semibold text-cyan-500 backdrop-blur-md transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
           >
-            <RectangleGroupIcon className="h-6 w-6" /> Go back to Subnets
+            <RectangleGroupIcon className="h-6 w-6" /> Go to Subnets
           </Link>
         </div>
       </div>
