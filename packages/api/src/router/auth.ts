@@ -55,7 +55,6 @@ export const authRouter = {
  * Checks if the user request for a session token is valid.
  */
 function verifyAuthRequest(data: AuthReq, authOrigin: string) {
-  console.log(authOrigin);
   if (data.uri !== authOrigin) {
     throw new Error(`Invalid origin: ${data.uri}`);
   }
