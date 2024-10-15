@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
 import {
   Button,
   Card,
@@ -205,6 +206,15 @@ export function DelegatedList() {
 
   const handleSubmit = async () => {
     if (!selectedAccount?.address || totalPercentage !== 100) {
+      toast.error(
+        "Please connect your wallet and ensure total percentage is 100%",
+      );
+      return;
+    }
+    if (Number(userStakeWeight) <= 50) {
+      toast.error(
+        "You must have at least 50 COMAI staked to delegate modules or subnets",
+      );
       return;
     }
     setIsSubmitting(true);
