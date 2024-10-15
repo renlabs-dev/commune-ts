@@ -17,8 +17,11 @@ import {
   CardHeader,
   CardTitle,
   Container,
+  Label,
+  Separator,
 } from "@commune-ts/ui";
-import { fromNano } from "@commune-ts/utils";
+
+// import { fromNano } from "@commune-ts/utils";
 
 import { useDelegateModuleStore } from "~/stores/delegateModuleStore";
 import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
@@ -75,13 +78,11 @@ export default function Page() {
   const { data: computedWeightedSubnets } =
     api.subnet.allComputedSubnetWeightsLastBlock.useQuery();
   console.log(computedWeightedSubnets);
-  const subnetData = computedWeightedSubnets?.map((s) => ({
-    stakeWeight: parseInt(fromNano(s.stakeWeight)),
-    subnetName: s.subnetName,
-    percWeight: s.percWeight,
-  }));
-
-  console.log("subnetStakeData", subnetData);
+  // const subnetData = computedWeightedSubnets?.map((s) => ({
+  //   stakeWeight: parseInt(fromNano(s.stakeWeight)),
+  //   subnetName: s.subnetName,
+  //   percWeight: s.percWeight,
+  // }));
 
   const delegatedSubnetsData = delegatedSubnets.map((subnet) => ({
     name: subnet.name,
@@ -172,6 +173,16 @@ export default function Page() {
         {subnetData ? <SubnetPieChart chartData={subnetData} /> : <></>}
         <CombinedAreaChart />
       </div> */}
+        <Card className="flex w-full animate-fade-down flex-col items-center justify-between p-4 animate-delay-[650ms] md:flex-row">
+          <Label>
+            Feeling lost? Check out our tutorial on how to get started with the{" "}
+            <b className="text-green-500">Community Validator</b>:
+          </Label>
+          <Button variant="default-green" asChild>
+            <Link href="/tutorial">Get Started!</Link>
+          </Button>
+        </Card>
+        <Separator className="my-4" />
         <div className="p flex w-full animate-fade-down flex-col gap-3 pb-4 animate-delay-700 md:flex-row">
           <Card className="w-full">
             <CardHeader>
