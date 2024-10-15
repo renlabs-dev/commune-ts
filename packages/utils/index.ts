@@ -235,7 +235,8 @@ export function handleDaos(
 }
 
 export const copyToClipboard = (text: string) => {
-  // @ts-expect-error navigator is a global object
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   navigator.clipboard.writeText(text);
 };
