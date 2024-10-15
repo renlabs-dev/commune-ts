@@ -26,10 +26,10 @@
   },
   "devDependencies": {
     "@commune-ts/db": "workspace:*",
-    "@commune-ts/utils": "workspace:*",
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
+    "@commune-ts/utils": "workspace:*",
     "@polkadot/api": "^11.1.1",
     "@polkadot/api-augment": "catalog:",
     "@types/express": "^4.17.21",
