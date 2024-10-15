@@ -19,7 +19,7 @@ export function DelegateSubnetWeight(props: DelegateSubnetWeightProps) {
 
   const { selectedAccount } = useCommune();
 
-  const isSubnetDelegated = delegatedSubnets.some((m) => m.id === props.id);
+  const isSubnetDelegated = delegatedSubnets.some((s) => s.id === props.id);
 
   const handleDelegateClick = () => {
     if (!selectedAccount?.address) {

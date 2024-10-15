@@ -37,7 +37,7 @@ const reduceModuleItems =
       },
     );
 
-export const separateTopNModules = (n: number) =>
+export const separateTopNModules = () =>
   separateTopAndOther(
     8,
     (a, b) => Number(-(a.stakeWeight - b.stakeWeight)),
