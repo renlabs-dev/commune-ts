@@ -27,7 +27,7 @@ export const tutorialData = {
     description: "Staking on the Community Validator",
     steps: [
       "Navigate to the staking tab in your wallet",
-      "Add this validator address: 5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp (Community Validator official validator)",
+      "Add this validator address: 5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2 (Community Validator official validator)",
       "Stake your desired amount (this determines your allocation power for modules and subnets)",
       "Note: Your staked balance remains untouched; it only represents your voting power",
     ],

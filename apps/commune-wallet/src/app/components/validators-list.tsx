@@ -30,6 +30,11 @@ export function ValidatorsList(props: ValidatorsListProps) {
       address: "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp",
     },
     {
+      name: "Community Validator",
+      description: "Community Validator official validator.",
+      address: "5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2",
+    },
+    {
       name: "vali::comstats",
       description: "Validator of Comstats platform.",
       address: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX",
@@ -59,7 +64,6 @@ export function ValidatorsList(props: ValidatorsListProps) {
   }
 
   const currentList = getValidatorsList();
-
 
   return (
     <div className="mt-4 w-full animate-fade-down border-t border-white/20 pt-2">

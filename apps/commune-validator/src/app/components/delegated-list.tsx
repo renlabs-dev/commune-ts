@@ -105,7 +105,7 @@ export function DelegatedList() {
     { enabled: !!selectedAccount?.address },
   );
 
-  const validatorAddress = "5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp";
+  const validatorAddress = "5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2";
 
   function userWeightPower(
     userStakes: { address: string; stake: string }[] | undefined,
