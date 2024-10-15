@@ -24,17 +24,17 @@ export const tutorialData = {
   },
   "2": {
     icon: <BoltIcon className="h-5 w-5" />,
-    description: "Staking on the CommuneX Validator",
+    description: "Staking on the Community Validator",
     steps: [
       "Navigate to the staking tab in your wallet",
-      "Add this validator address: 5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp (CommuneX)",
-      "Stake your desired amount (this determines your voting weight for modules)",
+      "Add this validator address: 5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp (Community Validator official validator)",
+      "Stake your desired amount (this determines your allocation power for modules and subnets)",
       "Note: Your staked balance remains untouched; it only represents your voting power",
     ],
   },
   "3": {
     icon: <ScaleIcon className="h-5 w-5" />,
-    description: "Assigning weights to modules",
+    description: "Assigning weights to modules or subnets",
     steps: [
       "Visit the modules page and select your preferred modules",
       "Review your selected modules in 'Your Modules List'",
