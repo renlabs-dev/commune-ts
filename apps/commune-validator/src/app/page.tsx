@@ -167,14 +167,18 @@ export default function Page() {
             />
           </div>
         </div>
-        <div className="gird-cols-1 grid w-full gap-3 pb-3 md:grid-cols-3">
+        <div className="gird-cols-1 grid w-full animate-fade-down gap-3 pb-3 animate-delay-[650ms] md:grid-cols-3">
           {/* TODO: spinners */}
-          {moduleStakeData ? (
+          {moduleStakeData?.length ? (
             <ModuleBarChart chartData={moduleStakeData} />
           ) : (
-            <></>
+            <Card className="h-full w-full animate-pulse" />
           )}
-          {subnetData ? <SubnetPieChart chartData={subnetData} /> : <></>}
+          {subnetData?.length ? (
+            <SubnetPieChart chartData={subnetData} />
+          ) : (
+            <Card className="h-full w-full animate-pulse" />
+          )}
           <div className="p flex h-fit w-full animate-fade-down flex-col gap-3 animate-delay-700">
             <Card className="min-h-full w-full">
               <CardHeader className="flex flex-col items-end justify-between md:flex-row">

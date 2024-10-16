@@ -17,8 +17,6 @@ import {
   CardHeader,
   CardTitle,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
 } from "@commune-ts/ui";
 
 export const description = "A bar chart with a custom label";
@@ -84,10 +82,6 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
               type="number"
               domain={xAxisDomain}
               hide
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
               dataKey="percWeight"
