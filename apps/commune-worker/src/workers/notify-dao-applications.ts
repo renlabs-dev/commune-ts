@@ -20,10 +20,9 @@ export async function notifyNewApplicationsWorker(props: WorkerProps) {
     if (cid === null) {
       console.log(`Failed to parse ${proposal.id} cid`);
     } else {
-      const url = buildIpfsGatewayUrl(cid); // this is wrong
+      const url = buildIpfsGatewayUrl(cid);
       const metadata = await processDaoMetadata(url, proposal.id);
       const resolved_metadata = flattenResult(metadata);
-      // shadowheart
       if (resolved_metadata === null) {
         console.log(`Failed to get metadata on proposal ${proposal.id}`);
       } else {
@@ -44,7 +43,6 @@ export async function notifyNewApplicationsWorker(props: WorkerProps) {
             headers,
           })
           .then(async function (response) {
-            console.log(response);
             await addSeenProposal(seen_proposal);
           })
           .catch((reason) => console.log(`Reject bc ${reason}`));
@@ -64,7 +62,7 @@ export async function notifyNewApplicationsWorker(props: WorkerProps) {
     (application) => !proposalsSet.has(application.id),
   );
   const notifications_promises = unseen_proposals.map(pushNotification);
-  Promise.all(notifications_promises).catch((error) =>
+  await Promise.all(notifications_promises).catch((error) =>
     console.log(`Failed to notify proposal for reason: ${error}`),
   );
 }
