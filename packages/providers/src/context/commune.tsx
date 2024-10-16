@@ -18,6 +18,7 @@ import type {
   InjectedExtension,
   LastBlock,
   ProposalState,
+  RegisterModule,
   RemoveVote,
   SS58Address,
   Stake,
@@ -62,7 +63,10 @@ interface CommuneContextType {
   accounts: InjectedAccountWithMeta[] | undefined;
   selectedAccount: InjectedAccountWithMeta | null;
   setSelectedAccount: (arg: InjectedAccountWithMeta | null) => void;
-  estimateFee: (recipientAddress: string, amount: string) => Promise<Balance | null>
+  estimateFee: (
+    recipientAddress: string,
+    amount: string,
+  ) => Promise<Balance | null>;
   handleWalletModal(state?: boolean): void;
   openWalletModal: boolean;
 
@@ -73,6 +77,7 @@ interface CommuneContextType {
   voteProposal: (vote: Vote) => Promise<void>;
   removeVoteProposal: (removeVote: RemoveVote) => Promise<void>;
 
+  registerModule: (registerModule: RegisterModule) => Promise<void>;
   addCustomProposal: (proposal: AddCustomProposal) => Promise<void>;
   addDaoApplication: (application: AddDaoApplication) => Promise<void>;
   addTransferDaoTreasuryProposal: (
@@ -349,6 +354,30 @@ export function CommuneProvider({
     await sendTransaction("Transfer Stake", transaction, callback);
   }
 
+  // == Subspace ==
+
+  async function registerModule({
+    subnetName,
+    address,
+    name,
+    moduleId,
+    metadata,
+    callback,
+  }: RegisterModule): Promise<void> {
+    if (!api?.tx.subspaceModule?.register) return;
+
+    console.log(api.tx.subspaceModule);
+
+    const transaction = api.tx.subspaceModule.register(
+      subnetName,
+      name,
+      address,
+      moduleId,
+      metadata,
+    );
+    await sendTransaction("Register Module", transaction, callback);
+  }
+
   // == Governance ==
 
   async function voteProposal({
@@ -422,28 +451,30 @@ export function CommuneProvider({
     amount: string,
   ): Promise<Balance | null> {
     try {
-
       // Check if the API is ready and has the transfer function
       if (!api || !api.isReady) {
-        console.error('API is not ready');
+        console.error("API is not ready");
         return null;
       }
 
       // Check if all required parameters are provided
       if (!amount || !selectedAccount) {
-        console.error('Missing required parameters');
+        console.error("Missing required parameters");
         return null;
       }
 
       // Create the transaction
-      const transaction = api.tx.balances.transferKeepAlive(recipientAddress, amount);
+      const transaction = api.tx.balances.transferKeepAlive(
+        recipientAddress,
+        amount,
+      );
 
       // Estimate the fee
       const info = await transaction.paymentInfo(selectedAccount.address);
 
-      return info.partialFee
+      return info.partialFee;
     } catch (error) {
-      console.error('Error estimating fee:', error);
+      console.error("Error estimating fee:", error);
       return null;
     }
   }
@@ -552,9 +583,9 @@ export function CommuneProvider({
   });
 
   /**
- * Sings a message in hex format
- * @param msgHex message in hex to sign
- */
+   * Sings a message in hex format
+   * @param msgHex message in hex to sign
+   */
   async function signHex(
     msgHex: `0x${string}`,
   ): Promise<{ signature: `0x${string}`; address: string }> {
@@ -603,6 +634,8 @@ export function CommuneProvider({
         removeStake,
         transfer,
         transferStake,
+
+        registerModule,
 
         voteProposal,
         removeVoteProposal,

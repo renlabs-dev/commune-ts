@@ -1,19 +1,18 @@
 import { assert } from "tsafe";
 
-const separateTopAndOther =
-  <T>(
-    numTop: number,
-    compare: (a: T, b: T) => number,
-    reduceRest: (xs: T[]) => T,
-  ) =>
-  (xs: T[]) => {
-    assert(xs.length >= numTop);
-    const sorted = xs.sort(compare);
-    const top = sorted.slice(0, numTop);
-    const rest = sorted.slice(numTop);
-    const other = reduceRest(rest);
-    return [...top, other];
-  };
+const separateTopAndOther = <T>(
+  numTop: number,
+  compare: (a: T, b: T) => number,
+  reduceRest: (xs: T[]) => T,
+  xs: T[],
+) => {
+  assert(xs.length >= numTop);
+  const sorted = xs.sort(compare);
+  const top = sorted.slice(0, numTop);
+  const rest = sorted.slice(numTop);
+  const other = reduceRest(rest);
+  return [...top, other];
+};
 
 interface ModuleStakeItem {
   moduleName: string | null;
@@ -37,9 +36,12 @@ const reduceModuleItems =
       },
     );
 
-export const separateTopNModules = () =>
+const nonZeroModuleItem = (x: ModuleStakeItem) => x.stakeWeight > 0n;
+
+export const separateTopNModules = (n: number) => (xs: ModuleStakeItem[]) =>
   separateTopAndOther(
-    8,
+    n,
     (a, b) => Number(-(a.stakeWeight - b.stakeWeight)),
     reduceModuleItems("Other"),
-  );
+    xs,
+  ).filter(nonZeroModuleItem);
