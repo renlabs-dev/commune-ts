@@ -29,6 +29,7 @@ interface ModuleData {
   moduleName: string;
   stakeWeight: string;
   percWeight: number;
+  percFormat: string;
 }
 
 interface ModuleBarChartProps {
@@ -94,7 +95,7 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
                 fontSize={12}
               />
               <LabelList
-                dataKey="percWeight"
+                dataKey="percFormat"
                 position="right"
                 offset={8}
                 className="fill-foreground"

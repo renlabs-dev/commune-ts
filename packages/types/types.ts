@@ -46,10 +46,10 @@ type ValueOfUnion<T, K extends KeysOfUnion<T>> = Extract<
 
 export type UnionToVariants<T> =
   KeysOfUnion<T> extends infer K
-  ? K extends KeysOfUnion<T>
-  ? Variant<K, ValueOfUnion<T, K>>
-  : never
-  : never;
+    ? K extends KeysOfUnion<T>
+      ? Variant<K, ValueOfUnion<T, K>>
+      : never
+    : never;
 
 // ==========================
 
@@ -167,6 +167,15 @@ export interface Vote {
 
 export interface RemoveVote {
   proposalId: number;
+  callback?: (status: TransactionResult) => void;
+}
+
+export interface RegisterModule {
+  subnetName: string;
+  address: string;
+  name: string;
+  moduleId: string;
+  metadata: string;
   callback?: (status: TransactionResult) => void;
 }
 
