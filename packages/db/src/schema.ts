@@ -86,6 +86,10 @@ export const userModuleData = createTable(
   {
     id: serial("id").primaryKey(),
     userKey: ss58Address("user_key").notNull(),
+    /* actually points to moduleDataId instead of 
+    the module id (of the network), 
+    but for legacy reasons we keep the name wrong.
+    */
     moduleId: integer("module_id")
       .references(() => moduleData.id)
       .notNull(),
