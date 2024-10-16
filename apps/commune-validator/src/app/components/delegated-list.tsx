@@ -164,16 +164,17 @@ export function DelegatedList() {
     }
   };
 
-  const createUserModuleData = api.module.createUserModuleData.useMutation({
-    onSuccess: () => {
-      router.refresh();
-      setIsSubmitting(false);
-    },
-    onError: (error) => {
-      console.error("Error submitting data:", error);
-      setIsSubmitting(false);
-    },
-  });
+  const createManyUserModuleData =
+    api.module.createManyUserModuleData.useMutation({
+      onSuccess: () => {
+        router.refresh();
+        setIsSubmitting(false);
+      },
+      onError: (error) => {
+        console.error("Error submitting data:", error);
+        setIsSubmitting(false);
+      },
+    });
 
   const deleteUserModuleData = api.module.deleteUserModuleData.useMutation({
     onSuccess: () => {
@@ -184,16 +185,17 @@ export function DelegatedList() {
     },
   });
 
-  const createUserSubnetData = api.subnet.createUserSubnetData.useMutation({
-    onSuccess: () => {
-      router.refresh();
-      setIsSubmitting(false);
-    },
-    onError: (error) => {
-      console.error("Error submitting data:", error);
-      setIsSubmitting(false);
-    },
-  });
+  const createManyUserSubnetData =
+    api.subnet.createManyUserSubnetData.useMutation({
+      onSuccess: () => {
+        router.refresh();
+        setIsSubmitting(false);
+      },
+      onError: (error) => {
+        console.error("Error submitting data:", error);
+        setIsSubmitting(false);
+      },
+    });
 
   const deleteUserSubnetData = api.subnet.deleteUserSubnetData.useMutation({
     onSuccess: () => {
@@ -205,6 +207,7 @@ export function DelegatedList() {
   });
 
   const handleSubmit = async () => {
+    console.log(totalPercentage !== 100);
     if (!selectedAccount?.address || totalPercentage !== 100) {
       toast.error(
         "Please connect your wallet and ensure total percentage is 100%",
@@ -224,28 +227,33 @@ export function DelegatedList() {
         await deleteUserModuleData.mutateAsync({
           userKey: selectedAccount.address,
         });
-        // Submit new user module data
-        for (const delegatedModule of delegatedModules) {
-          await createUserModuleData.mutateAsync({
-            userKey: selectedAccount.address,
-            moduleId: delegatedModule.id,
-            weight: delegatedModule.percentage,
-          });
-        }
+
+        // Prepare data for createManyUserModuleData
+        const modulesData = delegatedModules.map((module) => ({
+          moduleId: module.id,
+          weight: module.percentage,
+          userKey: selectedAccount.address,
+        }));
+
+        // Submit new user module data in a single call
+        await createManyUserModuleData.mutateAsync(modulesData);
+
         updateOriginalModules();
       } else {
         // Delete existing user subnet data
         void deleteUserSubnetData.mutateAsync({
           userKey: selectedAccount.address,
         });
-        // Submit new user subnet data
-        for (const delegatedSubnet of delegatedSubnets) {
-          void createUserSubnetData.mutateAsync({
-            userKey: selectedAccount.address,
-            netuid: delegatedSubnet.id,
-            weight: delegatedSubnet.percentage,
-          });
-        }
+        // Prepare data for createUserSubnetData
+        const subnetsData = delegatedSubnets.map((subnet) => ({
+          netuid: subnet.id,
+          weight: subnet.percentage,
+          userKey: selectedAccount.address,
+        }));
+
+        // Submit new user subnet data in a single call
+        await createManyUserSubnetData.mutateAsync(subnetsData);
+
         updateOriginalSubnets();
       }
       // Fetch updated data from the database
