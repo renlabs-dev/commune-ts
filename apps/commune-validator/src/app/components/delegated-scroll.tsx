@@ -11,7 +11,7 @@ interface DelegatedScrollProps {
 
 export function DelegatedScroll({ data }: DelegatedScrollProps) {
   return (
-    <ScrollArea className="h-72 w-full border border-white/20">
+    <ScrollArea className="h-28 w-full border border-white/20">
       <div className="p-4">
         {data.map((prop, index) => (
           <React.Fragment key={prop.name}>

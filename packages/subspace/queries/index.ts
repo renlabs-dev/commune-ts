@@ -692,3 +692,15 @@ export async function queryChain<T extends SubspaceStorageName>(
   });
   return modulePropMap;
 }
+
+export async function getSubnetList(api: Api): Promise<Record<string, string>> {
+  const result = await queryChain(api, { subspaceModule: ["subnetNames"] });
+  const subnetNames = result.subnetNames;
+  return subnetNames as Record<string, string>;
+}
+
+export async function getModuleBurn(api: Api): Promise<Record<string, string>> {
+  const result = await queryChain(api, { subspaceModule: ["burn"] });
+  const burn = result.burn;
+  return burn as Record<string, string>;
+}

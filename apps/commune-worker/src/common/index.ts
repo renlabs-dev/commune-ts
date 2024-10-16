@@ -71,8 +71,8 @@ export async function getApplications(
   applicationTypes: DaoApplicationStatus[],
 ) {
   const dao_entries = await queryDaosEntries(api);
-  const pending_daos = dao_entries.filter(
-    (app) => applicationTypes.includes(app.status),
+  const pending_daos = dao_entries.filter((app) =>
+    applicationTypes.includes(app.status),
   );
   const dao_hash_map: Record<number, DaoApplications> = pending_daos.reduce(
     (hashmap, dao) => {

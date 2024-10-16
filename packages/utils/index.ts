@@ -2,6 +2,7 @@ import { BN, stringToHex } from "@polkadot/util";
 import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import { AssertionError } from "tsafe";
+
 import type {
   AnyTuple,
   Api,
@@ -107,10 +108,14 @@ export function assertOrThrow(
 // == Calc ==
 
 // TODO: fix wrong `bigintDivision`
-export function bigintDivision_WRONG(a: bigint, b: bigint, precision = 8n): number {
+export function bigintDivision_WRONG(
+  a: bigint,
+  b: bigint,
+  precision = 8n,
+): number {
   if (b === 0n) return NaN;
   const base = 10n ** precision;
-  return Number(a) * Number(base) / Number(b) / Number(base);
+  return (Number(a) * Number(base)) / Number(b) / Number(base);
 }
 
 export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
@@ -285,15 +290,37 @@ export type SubspacePalletName =
   | "subnetEmissionModule";
 
 export type SubspaceStorageName =
-  | "emission" | "incentive" | "dividends" | "lastUpdate"
-  | "metadata" | "registrationBlock" | "name" | "address"
-  | "keys" | "subnetNames" | "immunityPeriod" | "minAllowedWeights"
-  | "maxAllowedWeights" | "tempo" | "maxAllowedUids" | "founder"
-  | "founderShare" | "incentiveRatio" | "trustRatio" | "maxWeightAge"
-  | "bondsMovingAverage" | "maximumSetWeightCallsPerEpoch" | "minValidatorStake"
-  | "maxAllowedValidators" | "moduleBurnConfig" | "subnetMetadata"
-  | "subnetGovernanceConfig" | "subnetEmission" | "delegationFee"
-  | "stakeFrom";
+  | "emission"
+  | "incentive"
+  | "dividends"
+  | "lastUpdate"
+  | "metadata"
+  | "registrationBlock"
+  | "name"
+  | "address"
+  | "keys"
+  | "subnetNames"
+  | "immunityPeriod"
+  | "minAllowedWeights"
+  | "maxAllowedWeights"
+  | "tempo"
+  | "maxAllowedUids"
+  | "founder"
+  | "founderShare"
+  | "incentiveRatio"
+  | "trustRatio"
+  | "maxWeightAge"
+  | "bondsMovingAverage"
+  | "maximumSetWeightCallsPerEpoch"
+  | "minValidatorStake"
+  | "maxAllowedValidators"
+  | "moduleBurnConfig"
+  | "subnetMetadata"
+  | "subnetGovernanceConfig"
+  | "subnetEmission"
+  | "delegationFee"
+  | "stakeFrom"
+  | "burn";
 
 // TODO: add MinimumAllowedStake, stakeFrom
 
@@ -301,7 +328,10 @@ export function standardizeUidToSS58address<T extends SubspaceStorageName, R>(
   outerRecord: Record<T, Record<string, R>>,
   uidToKey: Record<string, SS58Address>,
 ): Record<T, Record<string, R>> {
-  const processedRecord: Record<T, Record<string, R>> = {} as Record<T, Record<string, R>>;
+  const processedRecord: Record<T, Record<string, R>> = {} as Record<
+    T,
+    Record<string, R>
+  >;
 
   const entries = Object.entries(outerRecord) as [T, Record<string, R>][];
   for (const [outerKey, innerRecord] of entries) {
@@ -324,29 +354,48 @@ export function standardizeUidToSS58address<T extends SubspaceStorageName, R>(
   return processedRecord;
 }
 
-
 type StorageTypes = "VecMapping" | "NetuidMap" | "SimpleMap" | "DoubleMap";
 
 export function getSubspaceStorageMappingKind(
   prop: SubspaceStorageName,
 ): StorageTypes | null {
   const vecProps: SubspaceStorageName[] = [
-    "emission", "incentive", "dividends", "lastUpdate",
+    "emission",
+    "incentive",
+    "dividends",
+    "lastUpdate",
   ];
   const netuidMapProps: SubspaceStorageName[] = [
-    "metadata", "registrationBlock", "name", "address", "keys"
+    "metadata",
+    "registrationBlock",
+    "name",
+    "address",
+    "keys",
   ];
   const simpleMapProps: SubspaceStorageName[] = [
-    "minAllowedWeights", "maxWeightAge", "maxAllowedWeights", "trustRatio",
-    "tempo", "founderShare", "subnetNames", "immunityPeriod", "maxAllowedUids",
-    "founder", "incentiveRatio", "bondsMovingAverage",
-    "maximumSetWeightCallsPerEpoch", "minValidatorStake", "maxAllowedValidators",
-    "moduleBurnConfig", "subnetMetadata", "subnetGovernanceConfig", "subnetEmission",
-    "delegationFee"
-  ]
-  const doubleMapProps: SubspaceStorageName[] = [
-    "stakeFrom"
+    "minAllowedWeights",
+    "maxWeightAge",
+    "maxAllowedWeights",
+    "trustRatio",
+    "tempo",
+    "founderShare",
+    "subnetNames",
+    "immunityPeriod",
+    "maxAllowedUids",
+    "founder",
+    "incentiveRatio",
+    "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch",
+    "minValidatorStake",
+    "maxAllowedValidators",
+    "moduleBurnConfig",
+    "subnetMetadata",
+    "subnetGovernanceConfig",
+    "subnetEmission",
+    "delegationFee",
+    "burn",
   ];
+  const doubleMapProps: SubspaceStorageName[] = ["stakeFrom"];
   const mapping = {
     VecMapping: vecProps,
     NetuidMap: netuidMapProps,
@@ -373,7 +422,8 @@ export async function getPropsToMap(
       const value = getSubspaceStorageMappingKind(storageName);
 
       if (value === "NetuidMap") {
-        const entries = await api.query[palletName]?.[storageName]?.entries(netuid);
+        const entries =
+          await api.query[palletName]?.[storageName]?.entries(netuid);
         if (entries === undefined) {
           throw new Error(`No entries for ${palletName}.${storageName}`);
         }
@@ -382,7 +432,10 @@ export async function getPropsToMap(
       if (storageQuery === undefined) {
         throw new Error(`${palletName}.${storageName} doesn't exist`);
       }
-      const entries = value === "NetuidMap" ? await storageQuery(netuid) : await storageQuery();
+      const entries =
+        value === "NetuidMap"
+          ? await storageQuery(netuid)
+          : await storageQuery();
 
       switch (value) {
         case "VecMapping":
@@ -428,21 +481,20 @@ export class SimpleMap implements ChainEntry {
 
   queryStorage() {
     const storageData: Record<string, string> = {};
-    this.entry.forEach(entry => {
+    this.entry.forEach((entry) => {
       const key = entry[0].args[0]?.toPrimitive() as string;
       const value = entry[1].toPrimitive() as string;
       storageData[key] = value;
-    }
-    )
+    });
     return storageData;
   }
 }
 
 export class NetuidMapEntries implements ChainEntry {
-  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
+  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) {}
   queryStorage() {
     const moduleIdToPropValue: Record<number, string> = {};
-    this.entries.forEach(entry => {
+    this.entries.forEach((entry) => {
       const moduleCodec = entry[1];
       const moduleId = entry[0].args[1]?.toPrimitive() as number;
       moduleIdToPropValue[moduleId] = moduleCodec.toPrimitive() as string;
@@ -451,26 +503,23 @@ export class NetuidMapEntries implements ChainEntry {
   }
 }
 
-
 export class DoubleMapEntries implements ChainEntry {
-  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
+  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) {}
   queryStorage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const moduleIdToPropValue: Record<any, Record<any, any>> = {};
 
-    this.entries.forEach(entry => {
+    this.entries.forEach((entry) => {
       const keyFrom = entry[0].args[0]?.toPrimitive() as string;
       const keyTo = entry[0].args[1]?.toPrimitive() as string;
       if (moduleIdToPropValue[keyFrom] === undefined) {
         moduleIdToPropValue[keyFrom] = {};
       }
       moduleIdToPropValue[keyFrom][keyTo] = entry[1].toPrimitive() as string;
-
     });
     return moduleIdToPropValue;
   }
 }
-
 
 export function parseAddress(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
@@ -628,4 +677,3 @@ export const signData = async <T>(
     address,
   };
 };
-
