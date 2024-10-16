@@ -42,7 +42,7 @@ import {
   useUnrewardedProposals,
   useUserTotalStaked,
 } from "../hooks";
-import { calculateAmount, formatToken, fromNano, toNano } from "../utils";
+import { calculateAmount } from "../utils";
 
 interface CommuneApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;

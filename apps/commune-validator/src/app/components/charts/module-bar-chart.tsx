@@ -1,7 +1,6 @@
 "use client";
 
 import type { ChartConfig } from "node_modules/@commune-ts/ui/src/components/chart";
-import { ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import {
   Bar,
   BarChart,
@@ -15,7 +14,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
   ChartContainer,
@@ -47,6 +45,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
+  const maxPercWeight = Math.max(
+    ...chartData.map((module) => module.percWeight),
+  );
+  const xAxisDomain = [0, maxPercWeight * 1.2];
+
   return (
     <Card>
       <CardHeader>
@@ -76,7 +79,12 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="percWeight" type="number" hide />
+            <XAxis
+              dataKey="percWeight"
+              type="number"
+              domain={xAxisDomain}
+              hide
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
@@ -105,15 +113,6 @@ export function ModuleBarChart({ chartData }: ModuleBarChartProps) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month{" "}
-          <ArrowTrendingUpIcon className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   );
 }

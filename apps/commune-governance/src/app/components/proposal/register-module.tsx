@@ -4,12 +4,18 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
 
 import type { TransactionResult } from "@commune-ts/types";
+import { useModuleBurn, useSubnetList } from "@commune-ts/providers/hooks";
 import { useCommune } from "@commune-ts/providers/use-commune";
 import { toast } from "@commune-ts/providers/use-toast";
 import {
   Button,
   Input,
   Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Separator,
   Tabs,
   TabsContent,
@@ -18,6 +24,7 @@ import {
   Textarea,
   TransactionStatus,
 } from "@commune-ts/ui";
+import { formatToken } from "@commune-ts/utils";
 
 import { cairo } from "~/utils/fonts";
 
@@ -28,7 +35,11 @@ const moduleSchema = z.object({
 
 export function RegisterModule(): JSX.Element {
   const router = useRouter();
-  const { isConnected, registerModule, balance } = useCommune();
+  const { isConnected, registerModule, balance, api } = useCommune();
+  const { data: subnetList, isLoading: isSubnetListLoading } =
+    useSubnetList(api);
+
+  const { data: moduleBurn } = useModuleBurn(api);
 
   const [subnetName, setSubnetName] = useState("");
   const [address, setAddress] = useState("");
@@ -51,6 +62,17 @@ export function RegisterModule(): JSX.Element {
 
   function handleCallback(callbackReturn: TransactionResult): void {
     setTransactionStatus(callbackReturn);
+  }
+
+  function getModuleBurn(subnetId: string) {
+    if (!moduleBurn) {
+      return 0;
+    }
+    if (Number(subnetId) === 0) {
+      return 0;
+    }
+
+    return formatToken(Number(moduleBurn[subnetId]));
   }
 
   async function uploadFile(fileToUpload: File): Promise<void> {
@@ -139,10 +161,7 @@ export function RegisterModule(): JSX.Element {
   }
 
   return (
-    <form
-      onSubmit={HandleSubmit}
-      className="flex flex-col gap-4 text-green-500"
-    >
+    <form onSubmit={HandleSubmit} className="flex flex-col gap-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="edit">Edit Content</TabsTrigger>
@@ -161,12 +180,28 @@ export function RegisterModule(): JSX.Element {
             type="text"
             value={moduleId}
           />
-          <Input
-            onChange={(e) => setSubnetName(e.target.value)}
-            placeholder="Subnet Name (eg. General)"
-            type="text"
-            value={subnetName}
-          />
+          <Select onValueChange={setSubnetName} value={subnetName}>
+            <SelectTrigger className="text-white">
+              <SelectValue placeholder="Subnet Name (eg. General)" />
+            </SelectTrigger>
+            <SelectContent>
+              {isSubnetListLoading ? (
+                <SelectItem value="loading" disabled>
+                  Loading...
+                </SelectItem>
+              ) : subnetList ? (
+                Object.entries(subnetList).map(([key, value]) => (
+                  <SelectItem key={key} value={value}>
+                    {key} | {value} | {getModuleBurn(key)} COMAI (Current Burn)
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="error" disabled>
+                  Error loading subnets
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
           <Input
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Address (eg. 0.0.0.0:8000)"
@@ -209,9 +244,11 @@ export function RegisterModule(): JSX.Element {
         type="submit"
         variant="default-green"
         disabled={!isConnected}
+        className="text-green-500"
       >
         {uploading ? "Uploading..." : "Submit Module"}
       </Button>
+
       {transactionStatus.status && (
         <TransactionStatus
           status={transactionStatus.status}
