@@ -1,6 +1,6 @@
 import type { SQL, Table } from "@commune-ts/db";
 import type { GovernanceModeType } from "@commune-ts/types";
-import { getTableColumns, sql } from "@commune-ts/db";
+import { getTableColumns, is, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
   cadreSchema,
@@ -142,6 +142,7 @@ export async function upsertModuleData(modules: Module[]) {
         totalStaked: m.totalStaked,
         totalStakers: m.totalStakers,
         totalRewards: m.totalRewards,
+        isWhitelisted: m.isWhitelisted,
       })),
     )
     .onConflictDoUpdate({
@@ -159,6 +160,7 @@ export async function upsertModuleData(modules: Module[]) {
         "totalStaked",
         "totalStakers",
         "totalRewards",
+        "isWhitelisted"
       ]),
     })
     .execute();
