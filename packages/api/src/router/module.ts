@@ -132,6 +132,20 @@ export const moduleRouter = {
         userKey,
       });
     }),
+  createManyUserModuleData: authenticatedProcedure
+    .input(z.array(USER_MODULE_DATA_INSERT_SCHEMA))
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+
+      const dataToInsert = input.map((item) => ({
+        moduleId: item.moduleId,
+        weight: item.weight,
+        userKey,
+      }));
+
+      await ctx.db.insert(userModuleData).values(dataToInsert);
+    }),
   createModuleReport: authenticatedProcedure
     .input(MODULE_REPORT_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {

@@ -130,4 +130,18 @@ export const subnetRouter = {
           set: { weight: input.weight },
         });
     }),
+  createManyUserSubnetData: authenticatedProcedure
+    .input(z.array(USER_SUBNET_DATA_INSERT_SCHEMA))
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+
+      const dataToInsert = input.map((item) => ({
+        netuid: item.netuid,
+        weight: item.weight,
+        userKey,
+      }));
+
+      await ctx.db.insert(userSubnetDataSchema).values(dataToInsert);
+    }),
 } satisfies TRPCRouterRecord;
