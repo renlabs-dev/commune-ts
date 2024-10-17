@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Button, Container } from "@commune-ts/ui";
+import { Button, Container, Separator } from "@commune-ts/ui";
 
 export const metadata: Metadata = {
   robots: "all",
@@ -21,14 +21,12 @@ export default function RootLayout({
         <div className="mb-4 flex w-full gap-3 border-b border-white/20 text-center">
           <div className="flex w-full animate-fade-down flex-col gap-4 pb-4 animate-delay-300 md:flex-row">
             <Button size="xl" className="w-full" asChild>
-              <Link href="/">Home</Link>
-            </Button>
-            <Button size="xl" className="w-full" asChild>
               <Link href="/modules">Modules</Link>
             </Button>
             <Button size="xl" className="w-full" asChild>
-              <Link href="/weighted-modules">Weighted Modules</Link>
+              <Link href="/weighted-modules">Your Selected Modules</Link>
             </Button>
+            <Separator orientation="vertical" />
             <Button
               asChild
               size="xl"
@@ -41,7 +39,7 @@ export default function RootLayout({
               size="xl"
               className="w-full hover:border-cyan-500 hover:bg-background-cyan hover:text-cyan-500 active:bg-cyan-500/30"
             >
-              <Link href="/weighted-subnets">Weighted Subnets</Link>
+              <Link href="/weighted-subnets">Your Selected Subnets</Link>
             </Button>
           </div>
         </div>
