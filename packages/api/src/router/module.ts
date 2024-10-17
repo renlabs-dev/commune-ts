@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, sql } from "@commune-ts/db";
+import { eq, sql, and } from "@commune-ts/db";
 import {
   computedModuleWeightsSchema,
   moduleData,
@@ -28,6 +28,24 @@ export const moduleRouter = {
       return ctx.db.query.moduleData.findFirst({
         where: eq(moduleData.id, input.id),
       });
+    }),
+    ByKeyLastBlock: publicProcedure
+    .input(z.object({ moduleKey: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const queryResult = await ctx.db
+      .select()
+      .from(moduleData)
+      .where(
+        and(
+          sql`${moduleData.atBlock} = (SELECT MAX(${moduleData.atBlock}) FROM ${moduleData})`,
+          eq(moduleData.moduleKey, input.moduleKey)
+        )
+      
+      )
+      .limit(1)
+      .then((result) => result[0]);
+      
+      return queryResult;
     }),
   byUserModuleData: publicProcedure
     .input(z.object({ userKey: z.string() }))
