@@ -53,7 +53,7 @@ export function ModuleCard(props: ModuleCardProps) {
         />
         <Link
           className="flex w-full items-center justify-between border border-white/20 bg-[#898989]/5 p-2 pl-3 text-white backdrop-blur-md transition duration-200 hover:border-green-500 hover:bg-green-500/10"
-          href={`module/${props.id}`}
+          href={`module/${props.moduleKey}`}
         >
           View More <ArrowRightIcon className="h-5 w-5 text-green-500" />
         </Link>

@@ -34,13 +34,11 @@ export default async function ModulePage({ params }: Params) {
     notFound();
   }
 
-  const id = slug[0];
-
-  if (!/^\d+$/.test(String(id))) {
+  const moduleKey = slug[0];
+  if (!moduleKey) {
     notFound();
   }
-
-  const mdl = await api.module.byId({ id: Number(id) });
+  const mdl = await api.module.ByKeyLastBlock({ moduleKey: moduleKey });
 
   if (!mdl) {
     notFound();
