@@ -160,7 +160,8 @@ export async function upsertModuleData(modules: Module[]) {
         "totalStaked",
         "totalStakers",
         "totalRewards",
-        "isWhitelisted"
+        "isWhitelisted",
+        "moduleId",
       ]),
     })
     .execute();
