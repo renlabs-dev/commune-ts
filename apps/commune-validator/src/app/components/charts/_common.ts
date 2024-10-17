@@ -1,12 +1,12 @@
-import { assert } from "tsafe";
-
 const separateTopAndOther = <T>(
   numTop: number,
   compare: (a: T, b: T) => number,
   reduceRest: (xs: T[]) => T,
   xs: T[],
 ) => {
-  assert(xs.length >= numTop);
+  if (xs.length < numTop) {
+    return xs;
+  }
   const sorted = xs.sort(compare);
   const top = sorted.slice(0, numTop);
   const rest = sorted.slice(numTop);
