@@ -18,7 +18,9 @@ import { authenticatedProcedure, publicProcedure } from "../trpc";
 export const moduleRouter = {
   // GET
   all: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.moduleData.findMany();
+    return ctx.db.query.moduleData.findMany({
+      where: eq(moduleData.isWhitelisted, true),
+    });
   }),
   byId: publicProcedure
     .input(z.object({ id: z.number() }))
