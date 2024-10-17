@@ -29,7 +29,7 @@ export interface WebhookPayload {
 
 export async function sendDiscordWebhook(
   webhookUrl: string,
-  payload: WebhookPayload
+  payload: WebhookPayload,
 ): Promise<void> {
   return await axios.post(webhookUrl, payload, {
     headers: { "Content-Type": "application/json" },
