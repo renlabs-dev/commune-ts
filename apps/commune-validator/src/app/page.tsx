@@ -112,10 +112,7 @@ export default function Page() {
         <div className="mb-4 flex w-full flex-col border-b border-white/20 text-center md:flex-row md:gap-3">
           <div className="flex w-full animate-fade-down flex-col gap-4 pb-4 animate-delay-300 md:flex-row">
             <Button size="xl" className="w-full" asChild>
-              <Link href="/modules">Modules</Link>
-            </Button>
-            <Button size="xl" className="w-full" asChild>
-              <Link href="/weighted-modules">Weighted Modules</Link>
+              <Link href="/modules">Go to Modules view</Link>
             </Button>
           </div>
           <div className="mb-4 hidden border-l border-white/20 md:block" />
@@ -125,14 +122,7 @@ export default function Page() {
               size="xl"
               className="w-full hover:border-cyan-500 hover:bg-background-cyan hover:text-cyan-500 active:bg-cyan-500/30"
             >
-              <Link href="/subnets">Subnets</Link>
-            </Button>
-            <Button
-              asChild
-              size="xl"
-              className="w-full hover:border-cyan-500 hover:bg-background-cyan hover:text-cyan-500 active:bg-cyan-500/30"
-            >
-              <Link href="/weighted-subnets">Weighted Subnets</Link>
+              <Link href="/subnets">Go to Subnets view</Link>
             </Button>
           </div>
         </div>

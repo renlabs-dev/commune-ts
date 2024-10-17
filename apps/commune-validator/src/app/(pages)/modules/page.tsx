@@ -23,7 +23,7 @@ export default async function ModulesPage({
   });
 
   return (
-    <>
+    <div className="min-h-[calc(100vh-169px)] w-full">
       <Suspense fallback={<div>Loading view controls...</div>}>
         <ViewControls />
       </Suspense>
@@ -44,6 +44,6 @@ export default async function ModulesPage({
       <Suspense fallback={<div>Loading...</div>}>
         <PaginationControls totalPages={metadata.totalPages} />
       </Suspense>
-    </>
+    </div>
   );
 }
