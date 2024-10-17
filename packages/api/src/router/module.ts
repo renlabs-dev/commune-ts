@@ -67,6 +67,7 @@ export const moduleRouter = {
       const offset = (page - 1) * limit;
 
       const modules = await ctx.db.query.moduleData.findMany({
+        where: eq(moduleData.isWhitelisted, true),
         limit: limit,
         offset: offset,
         orderBy: (moduleData, { asc, desc }) => [
