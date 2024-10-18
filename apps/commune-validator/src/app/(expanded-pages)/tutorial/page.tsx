@@ -11,6 +11,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { Button, CopyButton } from "@commune-ts/ui";
+import { copyToClipboard } from "@commune-ts/utils";
 
 export const tutorialData = {
   "1": {
@@ -27,7 +29,22 @@ export const tutorialData = {
     description: "Staking on the Community Validator",
     steps: [
       "Navigate to the staking tab in your wallet",
-      "Add this validator address: 5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2 (Community Validator official validator)",
+      <div key="validator-address" className="flex items-center">
+        <span>Add this validator address: </span>
+        <Button
+          variant="link"
+          className="px-1 text-base text-green-500"
+          onClick={() =>
+            copyToClipboard("5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2")
+          }
+        >
+          Copy Validator Address
+        </Button>
+        <span>
+          (5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2 / Community
+          Validator official validator)
+        </span>
+      </div>,
       "Stake your desired amount (this determines your allocation power for modules and subnets)",
       "Note: Your staked balance remains untouched; it only represents your voting power",
     ],
