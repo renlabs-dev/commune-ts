@@ -1,8 +1,5 @@
 import axios from "axios";
 
-const webhookUrl =
-  "https://discord.com/api/webhooks/1296153912126214204/Vs7WKkAs4xyjkou7LV0moKEOlow6YgHEwZ2mvWvLT6lp9gNw3pRivXAvqTnDpWrztNNS";
-
 export interface EmbedField {
   name: string;
   value: string;
