@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, sql } from "@commune-ts/db";
+import { and, eq, sql } from "@commune-ts/db";
 import {
   computedSubnetWeights,
   subnetDataSchema,
@@ -22,6 +22,22 @@ export const subnetRouter = {
       return ctx.db.query.subnetDataSchema.findFirst({
         where: eq(subnetDataSchema.id, input.id),
       });
+    }),
+  byNetuidLastBlock: publicProcedure
+    .input(z.object({ netuid: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const queryResult = await ctx.db
+        .select()
+        .from(subnetDataSchema)
+        .where(
+          and(
+            sql`${subnetDataSchema.atBlock} = (SELECT MAX(${subnetDataSchema.atBlock}) FROM ${subnetDataSchema})`,
+            eq(subnetDataSchema.netuid, input.netuid),
+          ),
+        )
+        .limit(1)
+        .then((result) => result[0]);
+      return queryResult;
     }),
   paginatedAll: publicProcedure
     .input(

@@ -5,6 +5,19 @@ import { ModuleCard } from "~/app/components/module-card";
 import { PaginationControls } from "~/app/components/pagination-controls";
 import { ViewControls } from "~/app/components/view-controls";
 import { api } from "~/trpc/server";
+import { z } from "zod";
+
+const SORT_KEYS_SCHEMA = z.enum([
+  "id",
+  "emission",
+  "incentive",
+  "dividend",
+  "delegationFee",
+  "totalStakers",
+  "totalStaked",
+  "totalRewards",
+  "createdAt",
+]);
 
 export default async function ModulesPage({
   searchParams,
@@ -15,10 +28,12 @@ export default async function ModulesPage({
   const sortBy = searchParams.sortBy ?? "id";
   const order = searchParams.order === "desc" ? "desc" : "asc";
 
+  const sortBy_ = SORT_KEYS_SCHEMA.parse(sortBy);
+
   const { modules, metadata } = await api.module.paginatedAll({
     page: currentPage,
     limit: 24,
-    sortBy: sortBy,
+    sortBy: sortBy_,
     order: order,
   });
 
