@@ -9,7 +9,7 @@ import { useDelegateSubnetStore } from "~/stores/delegateSubnetStore";
 import { DelegateSubnetWeight } from "./delegate-subnet-weight";
 
 interface SubnetCardWeightProps {
-  id: number;
+  id: number; // TODO: rename to `netuid`
   name: string;
   founderAddress: string;
   percentage?: number;
