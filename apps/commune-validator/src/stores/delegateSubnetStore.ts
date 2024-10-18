@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface DelegatedSubnet {
-  id: number;
+  id: number; // TODO: rename to `netuid`
   name: string;
   percentage: number;
   founderAddress: string;

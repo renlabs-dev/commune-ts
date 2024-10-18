@@ -94,7 +94,7 @@ export const subnetRouter = {
         .from(subnetDataSchema)
         .innerJoin(
           userSubnetDataSchema,
-          eq(subnetDataSchema.id, userSubnetDataSchema.netuid),
+          eq(subnetDataSchema.netuid, userSubnetDataSchema.netuid),
         )
         .where(eq(userSubnetDataSchema.userKey, input.userKey))
         .execute();
