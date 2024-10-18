@@ -1,6 +1,6 @@
 import type { SQL, Table } from "@commune-ts/db";
 import type { GovernanceModeType } from "@commune-ts/types";
-import { getTableColumns, is, sql } from "@commune-ts/db";
+import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
   cadreSchema,
