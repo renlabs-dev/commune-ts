@@ -11,8 +11,14 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { Button, CopyButton } from "@commune-ts/ui";
+import { toast } from "@commune-ts/providers/use-toast";
+import { Button } from "@commune-ts/ui";
 import { copyToClipboard } from "@commune-ts/utils";
+
+function handleCopyClick(text: string) {
+  copyToClipboard(text);
+  toast.success("Copied validator address to clipboard");
+}
 
 export const tutorialData = {
   "1": {
@@ -35,7 +41,7 @@ export const tutorialData = {
           variant="link"
           className="px-1 text-base text-green-500"
           onClick={() =>
-            copyToClipboard("5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2")
+            handleCopyClick("5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2")
           }
         >
           Copy Validator Address
