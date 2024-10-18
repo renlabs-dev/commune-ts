@@ -89,6 +89,7 @@ export async function upsertSubnetData(subnets: Subnet[]) {
     .onConflictDoUpdate({
       target: [subnetDataSchema.netuid],
       set: buildConflictUpdateColumns(subnetDataSchema, [
+        "atBlock",
         "name",
         "tempo",
         "minAllowedWeights",
