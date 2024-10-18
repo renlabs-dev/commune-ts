@@ -211,7 +211,7 @@ export default function Page() {
           </div>
         </div>
         <Separator className="mb-3" />
-        <Card className="flex w-full animate-fade-down flex-col items-center justify-between gap-3 p-4 animate-delay-[650ms] md:flex-row">
+        <Card className="flex mb-3 w-full animate-fade-down flex-col items-center justify-between gap-3 p-4 animate-delay-[650ms] md:flex-row">
           <Label>
             Feeling lost? Check out our tutorial on how to get started with the{" "}
             <b className="text-green-500">Community Validator</b>:
