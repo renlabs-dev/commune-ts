@@ -38,7 +38,7 @@ export default async function ModulePage({ params }: Params) {
   if (!moduleKey) {
     notFound();
   }
-  const mdl = await api.module.ByKeyLastBlock({ moduleKey: moduleKey });
+  const mdl = await api.module.byKeyLastBlock({ moduleKey: moduleKey });
 
   if (!mdl) {
     notFound();
