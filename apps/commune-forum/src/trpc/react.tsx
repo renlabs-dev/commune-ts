@@ -45,7 +45,7 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
 
   const authenticateUser = makeAuthenticateUserFn(
     getBaseUrl(),
-    env.NEXT_PUBLIC_AUTH_ORIGIN as string,
+    env.NEXT_PUBLIC_AUTH_ORIGIN,
     setStoredAuthorization,
     signHex,
   );

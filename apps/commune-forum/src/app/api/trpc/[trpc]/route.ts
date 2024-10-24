@@ -31,8 +31,8 @@ const handler = async (req: Request) => {
       createTRPCContext({
         session: null,
         headers: req.headers,
-        jwtSecret: env.JWT_SECRET as string,
-        authOrigin: env.AUTH_ORIGIN as string,
+        jwtSecret: env.JWT_SECRET,
+        authOrigin: env.AUTH_ORIGIN,
       }),
     onError({ error, path }) {
       console.error(`>>> tRPC Error on '${path}'`, error);
