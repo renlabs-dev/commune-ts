@@ -4,6 +4,8 @@ import { getTableColumns, sql } from "@commune-ts/db";
 import { db } from "@commune-ts/db/client";
 import {
   cadreSchema,
+  computedModuleWeightsSchema,
+  computedSubnetWeights,
   daoVoteSchema,
   governanceNotificationSchema,
   moduleData,
@@ -13,8 +15,37 @@ import {
 export type NewVote = typeof daoVoteSchema.$inferInsert;
 export type Module = typeof moduleData.$inferInsert;
 export type Subnet = typeof subnetDataSchema.$inferInsert;
-
+export type ModuleWeight = typeof computedModuleWeightsSchema.$inferInsert;
+export type SubnetWeight = typeof computedSubnetWeights.$inferInsert;
 export type NewNotification = typeof governanceNotificationSchema.$inferInsert;
+
+export async function insertModuleWeight(weights: ModuleWeight[]) {
+  await db
+    .insert(computedModuleWeightsSchema)
+    .values(
+      weights.map((w) => ({
+        moduleId: w.moduleId,
+        stakeWeight: w.stakeWeight,
+        percWeight: w.percWeight,
+        atBlock: w.atBlock,
+      })),
+    )
+    .execute();
+}
+
+export async function insertSubnetWeight(weights: SubnetWeight[]) {
+  await db
+    .insert(computedSubnetWeights)
+    .values(
+      weights.map((w) => ({
+        netuid: w.netuid,
+        stakeWeight: w.stakeWeight,
+        percWeight: w.percWeight,
+        atBlock: w.atBlock,
+      })),
+    )
+    .execute();
+}
 
 export async function upsertSubnetData(subnets: Subnet[]) {
   await db
@@ -143,6 +174,7 @@ export interface VotesByProposal {
 export async function vote(new_vote: NewVote) {
   await db.insert(daoVoteSchema).values(new_vote);
 }
+
 export async function addSeenProposal(proposal: NewNotification) {
   await db.insert(governanceNotificationSchema).values(proposal);
 }

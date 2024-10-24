@@ -1,14 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { bigintDivision } from "@commune-ts/subspace/utils";
+
 /** Related to weights computation */
 
-type Key = string;
+type UserKey = string;
 
-export function calcFinalWeights(
-  user_stakes: Map<Key, bigint>, // user -> amount staked
-  user_weight_maps: Map<Key, Map<Key, bigint>>, // user -> module key -> weight (0–100)
+/**
+ * Calculates the final weights for the community validator, resulting in
+ * unbound integers.
+ *
+ * @param user_stakes        user -> amount staked
+ * @param user_weight_maps   user -> module key -> weight (0–100)
+ */
+export function calcFinalWeights<K>(
+  user_stakes: Map<UserKey, bigint>,
+  user_weight_maps: Map<UserKey, Map<K, bigint>>,
 ) {
-  const acc_module_weights = new Map<Key, bigint>();
+  const acc_module_weights = new Map<K, bigint>();
 
   for (const [user_key, user_stake] of user_stakes.entries()) {
     const user_weights = user_weight_maps.get(user_key);
@@ -44,28 +53,44 @@ export function calcFinalWeights(
 }
 
 /**
- * Normalize module weights to integer percentages.
+ * Normalize weights to kinda arbitrary small integers. They need to fit in 
+ * a u16 which is what Subspace accepts as vote values.
  */
-export function normalizeModuleWeights(module_weights: Map<Key, bigint>) {
-  const module_key_arr = [];
-  const module_weight_arr = [];
+export function normalizeWeightsForVote<K>(
+  weights: Map<K, bigint>,
+): Map<K, number> {
+  const SCALE = 2n << 8n;
 
   let max_weight = 0n;
-  for (const [module_key, weight] of module_weights.entries()) {
-    module_key_arr.push(module_key);
-    module_weight_arr.push(weight);
+  for (const  weight of weights.values()) {
     if (weight > max_weight) max_weight = weight;
   }
 
-  const normalized_weights = [];
-  for (const weight of module_weight_arr) {
-    normalized_weights.push((weight * 100n) / max_weight);
+  const result = new Map<K, number>();
+  for (const [module_key, weight] of weights.entries()) {
+    const normalized = (weight * SCALE) / max_weight;
+    result.set(module_key, Number(normalized));
+  }
+  return result;
+}
+
+/**
+ * Normalize weights to float percentages.
+ */
+export function normalizeWeightsToPercent<K>(
+  module_weights: Map<K, bigint>,
+): Map<K, number> {
+  let total_weight = 0n;
+  for (const weight of module_weights.values()) {
+    total_weight += weight;
   }
 
-  const result = new Map();
-  for (let i = 0; i < module_key_arr.length; i++) {
-    result.set(module_key_arr[i], normalized_weights[i]);
+  const result = new Map<K, number>();
+  for (const [module_key, weight] of module_weights.entries()) {
+    const normalized = bigintDivision(weight, total_weight);
+    result.set(module_key, Number(normalized));
   }
+
   return result;
 }
 
@@ -125,10 +150,12 @@ function _testFinalWeights() {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const result = calcFinalWeights(user_stakes, user_weight_maps);
-  const normalized = normalizeModuleWeights(result);
+  const normalized = normalizeWeightsForVote(result);
+  const normalizedPerc = normalizeWeightsToPercent(result);
 
   console.log(result);
   console.log(normalized);
+  console.log(normalizedPerc);
 }
 
 // _testFinalWeights();

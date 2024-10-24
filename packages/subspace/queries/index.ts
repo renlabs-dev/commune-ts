@@ -3,32 +3,39 @@ import "@polkadot/api-augment";
 
 import { ApiPromise, Keyring } from "@polkadot/api";
 import { encodeAddress } from "@polkadot/util-crypto";
+import { assert } from "tsafe";
 
 import type {
   Api,
   LastBlock,
+  NetworkSubnetConfig,
   SS58Address,
   StakeOutData,
   SubspaceModule,
   VoteWithStake,
 } from "@commune-ts/types";
-import {
-  isSS58,
-  NetworkSubnetConfig,
-  NetworkSubnetConfigSchema,
-  MODULE_BURN_CONFIG_SCHEMA,
-  GOVERNANCE_CONFIG_SCHEMA,
-  SUBSPACE_MODULE_SCHEMA,
-} from "@commune-ts/types";
-import {
+import type {
   ChainEntry,
-  handleDaos,
-  handleProposals,
-  getPropsToMap,
-  standardizeUidToSS58address,
   SubspacePalletName,
   SubspaceStorageName,
 } from "@commune-ts/utils";
+import {
+  checkSS58,
+  STAKE_OUT_DATA_SCHEMA,
+  GOVERNANCE_CONFIG_SCHEMA,
+  isSS58,
+  STAKE_FROM_SCHEMA,
+  MODULE_BURN_CONFIG_SCHEMA,
+  NetworkSubnetConfigSchema,
+  SUBSPACE_MODULE_SCHEMA,
+} from "@commune-ts/types";
+import {
+  getPropsToMap,
+  handleDaos,
+  handleProposals,
+  standardizeUidToSS58address,
+} from "@commune-ts/utils";
+
 
 export { ApiPromise };
 
@@ -112,6 +119,23 @@ export async function pushToWhitelist(
       console.log(`Extrinsic: ${extrinsic}`);
       return true;
     });
+}
+
+export async function queryWhitelist(api: Api): Promise<SS58Address[]> {
+  assert(api.query.governanceModule?.legitWhitelist != undefined);
+
+  const whitelist = [];
+
+  const entries = await api.query.governanceModule.legitWhitelist.entries();
+  for (const [keys, _value] of entries) {
+    assert(keys.args[0]);
+    const key = keys.args[0].toPrimitive();
+    assert(typeof key === "string");
+    const address = checkSS58(key);
+    whitelist.push(address);
+  }
+
+  return whitelist;
 }
 
 export async function removeFromWhitelist(
@@ -311,6 +335,23 @@ export async function queryStakeOut(
   return stakeOutData;
 }
 
+//TODO: solve the duplication
+export async function queryStakeOutCORRECT(
+  communeCacheUrl: string,
+): Promise<StakeOutData> {
+  const response = await fetch(`${communeCacheUrl}/api/stake-out`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const stakeOutData = STAKE_OUT_DATA_SCHEMA.parse(await response.json())
+  return stakeOutData;
+}
+
 export async function queryCalculateStakeOut(api: Api) {
   // StakeTo is the list of keys that have staked to that key.
   const stakeToQuery = await api.query.subspaceModule?.stakeTo?.entries();
@@ -354,6 +395,9 @@ export async function queryStakeFrom(
   return stakeOutData;
 }
 
+/**
+ * NOTE: This function might be wrong.
+ */
 export async function queryCalculateStakeFrom(api: Api) {
   // Stake From is the list of keys that the key has staked to.
 
@@ -367,7 +411,7 @@ export async function queryCalculateStakeFrom(api: Api) {
   const perAddr = new Map<string, bigint>();
 
   for (const [storageKey, value] of stakeFromQuery) {
-    const addr = storageKey.toString();
+    const addr = storageKey.toString(); // NOTE: this key should have two values like in `queryCalculateStakeOut`
 
     const staked = BigInt(value.toString());
 
@@ -478,65 +522,92 @@ export async function queryUserTotalStaked(
  */
 
 
-export async function querySubnetParams(api: Api): Promise<Array<NetworkSubnetConfig>> {
-  const subnetProps: Array<SubspaceStorageName> = [
+export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]> {
+  const subnetProps: SubspaceStorageName[] = [
     "subnetNames",
     "immunityPeriod",
     "minAllowedWeights",
-    "maxAllowedWeights", "tempo", "maxAllowedUids", "founder", "founderShare",
-    "incentiveRatio", "trustRatio", "maxWeightAge", "bondsMovingAverage",
-    "maximumSetWeightCallsPerEpoch", "minValidatorStake", "maxAllowedValidators",
-    "moduleBurnConfig", "subnetMetadata"
-  ]
-  const props: Record<SubspacePalletName, SubspaceStorageName[]> =
-    {
-      subspaceModule: subnetProps,
-      subnetEmissionModule: ["subnetEmission"],
-      governanceModule: ["subnetGovernanceConfig"]
-    } as Record<SubspacePalletName, SubspaceStorageName[]>;
+    "maxAllowedWeights",
+    "tempo",
+    "maxAllowedUids",
+    "founder",
+    "founderShare",
+    "incentiveRatio",
+    "trustRatio",
+    "maxWeightAge",
+    "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch",
+    "minValidatorStake",
+    "maxAllowedValidators",
+    "moduleBurnConfig",
+    "subnetMetadata",
+  ];
+  const props: Record<SubspacePalletName, SubspaceStorageName[]> = {
+    subspaceModule: subnetProps,
+    subnetEmissionModule: ["subnetEmission"],
+    governanceModule: ["subnetGovernanceConfig"],
+  } as Record<SubspacePalletName, SubspaceStorageName[]>;
   const subnetInfo = await queryChain(api, props);
-  const subnetNames = subnetInfo["subnetNames"];
+  const subnetNames = subnetInfo.subnetNames;
 
 
-  let subnets: Array<NetworkSubnetConfig> = [];
-  for (const [netuid, name] of Object.entries(subnetNames)) {
+  const subnets: NetworkSubnetConfig[] = [];
+  for (const [netuid, _] of Object.entries(subnetNames)) {
     const subnet: NetworkSubnetConfig = NetworkSubnetConfigSchema.parse({
-      subnetNames: subnetInfo["subnetNames"][netuid]!,
-      immunityPeriod: subnetInfo["immunityPeriod"][netuid]!,
-      minAllowedWeights: subnetInfo["minAllowedWeights"][netuid]!,
-      maxAllowedWeights: subnetInfo["maxAllowedWeights"][netuid]!,
-      tempo: subnetInfo["tempo"][netuid]!,
-      maxAllowedUids: subnetInfo["maxAllowedUids"][netuid]!,
-      founder: subnetInfo["founder"][netuid]!,
-      founderShare: subnetInfo["founderShare"][netuid]!,
-      incentiveRatio: subnetInfo["incentiveRatio"][netuid]!,
-      trustRatio: subnetInfo["trustRatio"][netuid]!,
-      maxWeightAge: subnetInfo["maxWeightAge"][netuid]!,
-      bondsMovingAverage: subnetInfo["bondsMovingAverage"][netuid],
-      maximumSetWeightCallsPerEpoch: subnetInfo["maximumSetWeightCallsPerEpoch"][netuid],
-      minValidatorStake: subnetInfo["minValidatorStake"][netuid]!,
-      maxAllowedValidators: subnetInfo["maxAllowedValidators"][netuid],
-      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(subnetInfo["moduleBurnConfig"][netuid]),
-      subnetMetadata: subnetInfo["subnetMetadata"][netuid],
+      subnetNames: subnetInfo.subnetNames[netuid]!,
+      immunityPeriod: subnetInfo.immunityPeriod[netuid]!,
+      minAllowedWeights: subnetInfo.minAllowedWeights[netuid]!,
+      maxAllowedWeights: subnetInfo.maxAllowedWeights[netuid]!,
+      tempo: subnetInfo.tempo[netuid]!,
+      maxAllowedUids: subnetInfo.maxAllowedUids[netuid]!,
+      founder: subnetInfo.founder[netuid]!,
+      founderShare: subnetInfo.founderShare[netuid]!,
+      incentiveRatio: subnetInfo.incentiveRatio[netuid]!,
+      trustRatio: subnetInfo.trustRatio[netuid]!,
+      maxWeightAge: subnetInfo.maxWeightAge[netuid]!,
+      bondsMovingAverage: subnetInfo.bondsMovingAverage[netuid],
+      maximumSetWeightCallsPerEpoch: subnetInfo.maximumSetWeightCallsPerEpoch[netuid],
+      minValidatorStake: subnetInfo.minValidatorStake[netuid]!,
+      maxAllowedValidators: subnetInfo.maxAllowedValidators[netuid],
+      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(subnetInfo.moduleBurnConfig[netuid]),
+      subnetMetadata: subnetInfo.subnetMetadata[netuid],
       netuid: netuid,
-      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(subnetInfo["subnetGovernanceConfig"][netuid]),
-      subnetEmission: subnetInfo["subnetEmission"][netuid],
+      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(subnetInfo.subnetGovernanceConfig[netuid]),
+      subnetEmission: subnetInfo.subnetEmission[netuid],
     });
     subnets.push(subnet);
   }
   return subnets;
 }
 
+export function keyStakeFrom(
+  targetKey: SS58Address,
+  stakeFromStorage: Map<SS58Address, Map<SS58Address, bigint>>
+) {
+  const stakerMap = stakeFromStorage.get(targetKey);
+  let totalStake = 0n;
+  if (stakerMap === undefined) {
+    console.log("could not find map for key: ", targetKey);
+    return totalStake;
+  }
+  for (const stake of stakerMap.values()) {
+    totalStake += stake;
+  }
+  return totalStake;
+}
 
 export async function queryRegisteredModulesInfo(
   api: Api,
   netuid: number,
+  blockNumber: number,
 ): Promise<SubspaceModule[]> {
   console.log("Fetching module keys from the chain...");
-  const keyQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: ["keys"] }
+  const keyQuery: { subspaceModule: SubspaceStorageName[] } = {
+    subspaceModule: ["keys"],
+  };
   const uidToSS58Query = await queryChain(api, keyQuery, netuid);
-  const uidToSS58 = uidToSS58Query['keys'] as Record<string, SS58Address>;
-  const moduleProps: Array<SubspaceStorageName> = [
+  const uidToSS58 = uidToSS58Query.keys as Record<string, SS58Address>;
+  const moduleProps: SubspaceStorageName[] = [
     "name",
     "address",
     "registrationBlock",
@@ -545,12 +616,15 @@ export async function queryRegisteredModulesInfo(
     "emission",
     "incentive",
     "dividends",
-
+    "delegationFee",
+    "stakeFrom",
   ]
+
   const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: moduleProps }
   const modulesInfo = await queryChain(api, extraPropsQuery, netuid);
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
   const moduleMap: SubspaceModule[] = [];
+  const parsedStakeFromStorage = STAKE_FROM_SCHEMA.parse({ stakeFromStorage: processedModules.stakeFrom });
 
   for (const uid of Object.keys(uidToSS58)) {
     const moduleKey = uidToSS58[uid];
@@ -562,17 +636,18 @@ export async function queryRegisteredModulesInfo(
       uid: uid,
       key: moduleKey,
       netuid: netuid,
-      name: processedModules["name"][moduleKey],
-      address: processedModules["address"][moduleKey],
-      registrationBlock: processedModules["registrationBlock"][moduleKey],
-      metadata: processedModules["metadata"][moduleKey],
-      lastUpdate: processedModules["lastUpdate"][moduleKey],
-      atBlock: 0,
-      emission: processedModules["emission"][moduleKey],
-      incentive: processedModules["incentive"][moduleKey],
-      dividends: processedModules["dividends"][moduleKey],
-      delegationFee: 0,
-      stakeFrom: 0n,
+      name: processedModules.name[moduleKey],
+      address: processedModules.address[moduleKey],
+      registrationBlock: processedModules.registrationBlock[moduleKey],
+      metadata: processedModules.metadata[moduleKey],
+      lastUpdate: processedModules.lastUpdate[moduleKey],
+      atBlock: blockNumber,
+      emission: processedModules.emission[moduleKey],
+      incentive: processedModules.incentive[moduleKey],
+      dividends: processedModules.dividends[moduleKey],
+      delegationFee: processedModules.delegationFee[moduleKey],
+      totalStaked: keyStakeFrom(moduleKey, parsedStakeFromStorage.stakeFromStorage),
+      totalStakers: parsedStakeFromStorage.stakeFromStorage.get(moduleKey)?.size ?? 0,
 
     })
     moduleMap.push(module);
@@ -585,22 +660,24 @@ export async function queryRegisteredModulesInfo(
  *
  * @returns the same moduleMap passed as argument
  */
-async function queryChain<
-  T extends SubspaceStorageName,
->(
+export async function queryChain<T extends SubspaceStorageName>(
   api: Api,
   props: Partial<Record<SubspacePalletName, T[]>>,
   netuidWhitelist?: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Record<T, Record<string, string | Record<string, any>>>> {
   if (Object.keys(props).length === 0) {
     return {} as Record<T, Record<string, string>>;
   }
   // TODO: accept multiple netuids
-  const modulePropMap: Record<T, Record<string, string>> = {} as Record<T, Record<string, string>>;
+  const modulePropMap: Record<T, Record<string, string>> = {} as Record<
+    T,
+    Record<string, string>
+  >;
   const moduletas = await getPropsToMap(props, api, netuidWhitelist);
   const entries = Object.entries(moduletas) as [T, ChainEntry][];
   entries.map(([prop, entry]) => {
-    modulePropMap[prop] = entry.getMapModules(netuidWhitelist);
+    modulePropMap[prop] = entry.queryStorage(netuidWhitelist);
   });
   return modulePropMap;
 }

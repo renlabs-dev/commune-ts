@@ -10,6 +10,7 @@ import { moduleFetcherWorker } from "./workers/module-fetcher";
 import { notifyNewApplicationsWorker } from "./workers/notify-dao-applications";
 import { processDaoApplicationsWorker } from "./workers/process-dao-applications";
 import { subnetFetcherWorker } from "./workers/subnet-fetcher";
+import { weightAggregatorWorker } from "./workers/weight-aggregator";
 
 async function setup(): Promise<ApiPromise> {
   const wsEndpoint = process.env.NEXT_PUBLIC_WS_PROVIDER_URL;
@@ -53,9 +54,11 @@ async function main() {
       api,
       lastBlockNumber,
     });
+  } else if (workerType === "weight-aggregator") {
+    await weightAggregatorWorker(api);
   } else {
     console.error(
-      "Invalid worker type argument. Please specify 'process_dao_applications' or 'validator'",
+      "Invalid worker type argument. Please specify 'dao', 'notifier', 'subnet', 'validator', or 'weight-aggregator'",
     );
     process.exit(1);
   }
@@ -74,5 +77,5 @@ app.get("/api/health", (_, res) => {
 const port = process.env.PORT ?? 3000;
 
 app.listen(port, () => {
-  log(`/heth listening on port ${port}`);
+  log(`/api/health listening on port ${port}`);
 });

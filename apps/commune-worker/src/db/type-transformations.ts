@@ -5,6 +5,7 @@ import type { Module, Subnet } from "./index.js";
 export function SubspaceModuleToDatabase(
   module: SubspaceModule,
   atBlock: number,
+  whitelisted: boolean,
 ): Module {
   return {
     netuid: module.netuid,
@@ -18,10 +19,10 @@ export function SubspaceModuleToDatabase(
     incentive: module.incentive ?? null,
     dividend: module.dividends ?? null,
     delegationFee: module.delegationFee ?? null,
-    totalStaked: null,
-    totalStakers: null,
-    totalRewards: null,
+    totalStaked: module.totalStaked,
+    totalStakers: module.totalStakers,
     moduleId: module.uid,
+    isWhitelisted: whitelisted,
   };
 }
 

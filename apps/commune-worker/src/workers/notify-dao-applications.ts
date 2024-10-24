@@ -8,8 +8,8 @@ import {
   processDaoMetadata,
 } from "@commune-ts/subspace/utils";
 
+import type { WorkerProps } from "../common";
 import type { NewNotification } from "../db";
-import type { WorkerProps } from "../types";
 import { getApplications } from "../common";
 import { addSeenProposal, getProposalIdsByType } from "../db";
 

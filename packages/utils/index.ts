@@ -2,7 +2,6 @@ import { BN, stringToHex } from "@polkadot/util";
 import { CID } from "multiformats/cid";
 import { match } from "rustie";
 import { AssertionError } from "tsafe";
-
 import type {
   AnyTuple,
   Api,
@@ -107,11 +106,17 @@ export function assertOrThrow(
 
 // == Calc ==
 
+// TODO: fix wrong `bigintDivision`
+export function bigintDivision_WRONG(a: bigint, b: bigint, precision = 8n): number {
+  if (b === 0n) return NaN;
+  const base = 10n ** precision;
+  return Number(a) * Number(base) / Number(b) / Number(base);
+}
+
 export function bigintDivision(a: bigint, b: bigint, precision = 8n): number {
   if (b === 0n) return NaN;
   const base = 10n ** precision;
-  const baseNum = Number(base);
-  return (Number(a) * Number(base)) / Number(b) / baseNum;
+  return Number((a * base) / b) / Number(base);
 }
 
 const NANO_MULTIPLIER = new BN("1000000000");
@@ -269,7 +274,8 @@ export function getExpirationTime(
 }
 
 export interface ChainEntry {
-  getMapModules(netuid?: number): Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  queryStorage(netuid?: number): Record<any, any>;
 }
 
 export type SubspacePalletName =
@@ -278,49 +284,27 @@ export type SubspacePalletName =
   | "subnetEmissionModule";
 
 export type SubspaceStorageName =
-  | "emission"
-  | "incentive"
-  | "dividends"
-  | "lastUpdate"
-  | "metadata"
-  | "registrationBlock"
-  | "name"
-  | "address"
-  | "keys"
-  | "subnetNames"
-  | "immunityPeriod"
-  | "minAllowedWeights"
-  | "maxAllowedWeights"
-  | "tempo"
-  | "maxAllowedUids"
-  | "founder"
-  | "founderShare"
-  | "incentiveRatio"
-  | "trustRatio"
-  | "maxWeightAge"
-  | "bondsMovingAverage"
-  | "maximumSetWeightCallsPerEpoch"
-  | "minValidatorStake"
-  | "maxAllowedValidators"
-  | "moduleBurnConfig"
-  | "subnetMetadata"
-  | "subnetGovernanceConfig"
-  | "subnetEmission";
+  | "emission" | "incentive" | "dividends" | "lastUpdate"
+  | "metadata" | "registrationBlock" | "name" | "address"
+  | "keys" | "subnetNames" | "immunityPeriod" | "minAllowedWeights"
+  | "maxAllowedWeights" | "tempo" | "maxAllowedUids" | "founder"
+  | "founderShare" | "incentiveRatio" | "trustRatio" | "maxWeightAge"
+  | "bondsMovingAverage" | "maximumSetWeightCallsPerEpoch" | "minValidatorStake"
+  | "maxAllowedValidators" | "moduleBurnConfig" | "subnetMetadata"
+  | "subnetGovernanceConfig" | "subnetEmission" | "delegationFee"
+  | "stakeFrom";
 
 // TODO: add MinimumAllowedStake, stakeFrom
 
-export function standardizeUidToSS58address<T extends SubspaceStorageName>(
-  outerRecord: Record<T, Record<string, any>>,
+export function standardizeUidToSS58address<T extends SubspaceStorageName, R>(
+  outerRecord: Record<T, Record<string, R>>,
   uidToKey: Record<string, SS58Address>,
-): Record<T, Record<string, string | number>> {
-  const processedRecord: Record<
-    T,
-    Record<string, string | number>
-  > = {} as Record<T, Record<string, string | number>>;
+): Record<T, Record<string, R>> {
+  const processedRecord: Record<T, Record<string, R>> = {} as Record<T, Record<string, R>>;
 
-  const entries = Object.entries(outerRecord) as [T, Record<string, any>][];
+  const entries = Object.entries(outerRecord) as [T, Record<string, R>][];
   for (const [outerKey, innerRecord] of entries) {
-    const processedInnerRecord: Record<string, string | number> = {};
+    const processedInnerRecord: Record<string, R> = {};
 
     for (const [innerKey, value] of Object.entries(innerRecord)) {
       if (!isNaN(Number(innerKey))) {
@@ -339,53 +323,39 @@ export function standardizeUidToSS58address<T extends SubspaceStorageName>(
   return processedRecord;
 }
 
-type StorageTypes = "VecMapping" | "DoubleMap" | "SimpleMap";
+
+type StorageTypes = "VecMapping" | "NetuidMap" | "SimpleMap" | "DoubleMap";
 
 export function getSubspaceStorageMappingKind(
   prop: SubspaceStorageName,
 ): StorageTypes | null {
   const vecProps: SubspaceStorageName[] = [
-    "emission",
-    "incentive",
-    "dividends",
-    "lastUpdate",
+    "emission", "incentive", "dividends", "lastUpdate",
   ];
-  const doubleMapProps: SubspaceStorageName[] = [
-    "metadata",
-    "registrationBlock",
-    "name",
-    "address",
-    "keys",
+  const netuidMapProps: SubspaceStorageName[] = [
+    "metadata", "registrationBlock", "name", "address", "keys"
   ];
   const simpleMapProps: SubspaceStorageName[] = [
-    "minAllowedWeights",
-    "maxWeightAge",
-    "maxAllowedWeights",
-    "trustRatio",
-    "tempo",
-    "founderShare",
-    "subnetNames",
-    "immunityPeriod",
-    "maxAllowedUids",
-    "founder",
-    "incentiveRatio",
-    "bondsMovingAverage",
-    "maximumSetWeightCallsPerEpoch",
-    "minValidatorStake",
-    "maxAllowedValidators",
-    "moduleBurnConfig",
-    "subnetMetadata",
-    "subnetGovernanceConfig",
-    "subnetEmission",
+    "minAllowedWeights", "maxWeightAge", "maxAllowedWeights", "trustRatio",
+    "tempo", "founderShare", "subnetNames", "immunityPeriod", "maxAllowedUids",
+    "founder", "incentiveRatio", "bondsMovingAverage",
+    "maximumSetWeightCallsPerEpoch", "minValidatorStake", "maxAllowedValidators",
+    "moduleBurnConfig", "subnetMetadata", "subnetGovernanceConfig", "subnetEmission",
+    "delegationFee"
+  ]
+  const doubleMapProps: SubspaceStorageName[] = [
+    "stakeFrom"
   ];
   const mapping = {
     VecMapping: vecProps,
-    DoubleMap: doubleMapProps,
+    NetuidMap: netuidMapProps,
     SimpleMap: simpleMapProps,
+    DoubleMap: doubleMapProps,
   };
   if (mapping.VecMapping.includes(prop)) return "VecMapping";
-  else if (mapping.DoubleMap.includes(prop)) return "DoubleMap";
+  else if (mapping.NetuidMap.includes(prop)) return "NetuidMap";
   else if (mapping.SimpleMap.includes(prop)) return "SimpleMap";
+  else if (mapping.DoubleMap.includes(prop)) return "DoubleMap";
   else return null;
 }
 
@@ -401,34 +371,33 @@ export async function getPropsToMap(
     const asyncOperations = storageNames.map(async (storageName) => {
       const value = getSubspaceStorageMappingKind(storageName);
 
-      if (value === "VecMapping") {
-        const entries = await api.query[palletName]?.[storageName]?.entries();
-
+      if (value === "NetuidMap") {
+        const entries = await api.query[palletName]?.[storageName]?.entries(netuid);
         if (entries === undefined) {
-          console.log(`No entries for ${palletName}.${storageName}`);
-          // TODO: panic
-          process.exit(1);
+          throw new Error(`No entries for ${palletName}.${storageName}`);
         }
-        mapped_prop_entries[storageName] = new StorageVecMap(entries);
-      } else if (value === "DoubleMap") {
-        const entries =
-          await api.query[palletName]?.[storageName]?.entries(netuid);
+      }
+      const storageQuery = api.query[palletName]?.[storageName]?.entries;
+      if (storageQuery === undefined) {
+        throw new Error(`${palletName}.${storageName} doesn't exist`);
+      }
+      const entries = value === "NetuidMap" ? await storageQuery(netuid) : await storageQuery();
 
-        if (entries === undefined) {
-          console.log(`No entries for ${palletName}.${storageName}`);
-          // TODO: panic
-          process.exit(1);
-        }
-        mapped_prop_entries[storageName] = new DoubleMapEntries(entries);
-      } else if (value === "SimpleMap") {
-        const entries = await api.query[palletName]?.[storageName]?.entries();
-
-        if (entries === undefined) {
-          console.log(`No entries for ${palletName}.${storageName}`);
-          // TODO: panic
-          process.exit(1);
-        }
-        mapped_prop_entries[storageName] = new SimpleMap(entries);
+      switch (value) {
+        case "VecMapping":
+          mapped_prop_entries[storageName] = new StorageVecMap(entries);
+          break;
+        case "NetuidMap":
+          mapped_prop_entries[storageName] = new NetuidMapEntries(entries);
+          break;
+        case "SimpleMap":
+          mapped_prop_entries[storageName] = new SimpleMap(entries);
+          break;
+        case "DoubleMap":
+          mapped_prop_entries[storageName] = new DoubleMapEntries(entries);
+          break;
+        default:
+          throw new Error(`Unknown storage type ${value}`);
       }
     });
 
@@ -441,10 +410,7 @@ export async function getPropsToMap(
 export class StorageVecMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-  getMapModules(netuid: number) {
-    if (netuid === undefined) {
-      throw new Error("netuid is required for StorageVecMap");
-    }
+  queryStorage(netuid: number) {
     const subnet_values = this.entry[netuid];
     if (subnet_values != undefined) {
       const values = subnet_values[1].toPrimitive() as string[];
@@ -459,20 +425,23 @@ export class StorageVecMap implements ChainEntry {
 export class SimpleMap implements ChainEntry {
   constructor(private readonly entry: [StorageKey<AnyTuple>, Codec][]) {}
 
-  getMapModules() {
-    const modules_map = Object.fromEntries(
-      this.entry.map((value, index) => [index, value[1].toPrimitive()]),
-    );
-    return modules_map as Record<string, string>;
+  queryStorage() {
+    const storageData: Record<string, string> = {};
+    this.entry.forEach(entry => {
+      const key = entry[0].args[0]?.toPrimitive() as string;
+      const value = entry[1].toPrimitive() as string;
+      storageData[key] = value;
+    }
+    )
+    return storageData;
   }
 }
 
-export class DoubleMapEntries implements ChainEntry {
-  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) {}
-  getMapModules() {
+export class NetuidMapEntries implements ChainEntry {
+  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
+  queryStorage() {
     const moduleIdToPropValue: Record<number, string> = {};
-
-    this.entries.forEach((entry) => {
+    this.entries.forEach(entry => {
       const moduleCodec = entry[1];
       const moduleId = entry[0].args[1]?.toPrimitive() as number;
       moduleIdToPropValue[moduleId] = moduleCodec.toPrimitive() as string;
@@ -480,6 +449,27 @@ export class DoubleMapEntries implements ChainEntry {
     return moduleIdToPropValue;
   }
 }
+
+
+export class DoubleMapEntries implements ChainEntry {
+  constructor(private readonly entries: [StorageKey<AnyTuple>, Codec][]) { }
+  queryStorage() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const moduleIdToPropValue: Record<any, Record<any, any>> = {};
+
+    this.entries.forEach(entry => {
+      const keyFrom = entry[0].args[0]?.toPrimitive() as string;
+      const keyTo = entry[0].args[1]?.toPrimitive() as string;
+      if (moduleIdToPropValue[keyFrom] === undefined) {
+        moduleIdToPropValue[keyFrom] = {};
+      }
+      moduleIdToPropValue[keyFrom][keyTo] = entry[1].toPrimitive() as string;
+
+    });
+    return moduleIdToPropValue;
+  }
+}
+
 
 export function parseAddress(valueRaw: Codec): DaoApplications | null {
   const value = valueRaw.toPrimitive();
@@ -637,3 +627,4 @@ export const signData = async <T>(
     address,
   };
 };
+
