@@ -2,6 +2,8 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@commune-ts/api";
 
+import { env } from "~/env";
+
 /**
  * Configure basic CORS headers
  */
@@ -29,6 +31,8 @@ const handler = async (req: Request) => {
       createTRPCContext({
         session: null,
         headers: req.headers,
+        jwtSecret: env.JWT_SECRET as string,
+        authOrigin: env.AUTH_ORIGIN as string,
       }),
     onError({ error, path }) {
       console.error(`>>> tRPC Error on '${path}'`, error);
