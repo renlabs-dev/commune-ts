@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface DelegatedSubnet {
-  id: number;
+  id: number; // TODO: rename to `netuid`
   name: string;
   percentage: number;
   founderAddress: string;
@@ -34,12 +34,12 @@ export const useDelegateSubnetStore = create<DelegateState>()(
         })),
       removeSubnet: (id) =>
         set((state) => ({
-          delegatedSubnets: state.delegatedSubnets.filter((m) => m.id !== id),
+          delegatedSubnets: state.delegatedSubnets.filter((s) => s.id !== id),
         })),
       updatePercentage: (id, percentage) =>
         set((state) => ({
-          delegatedSubnets: state.delegatedSubnets.map((m) =>
-            m.id === id ? { ...m, percentage } : m,
+          delegatedSubnets: state.delegatedSubnets.map((s) =>
+            s.id === id ? { ...s, percentage } : s,
           ),
         })),
       getTotalPercentage: () => {

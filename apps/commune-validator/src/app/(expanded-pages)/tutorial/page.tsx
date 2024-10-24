@@ -11,6 +11,14 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useCommune } from "@commune-ts/providers/use-commune";
+import { toast } from "@commune-ts/providers/use-toast";
+import { Button } from "@commune-ts/ui";
+import { copyToClipboard } from "@commune-ts/utils";
+
+function handleCopyClick(text: string) {
+  copyToClipboard(text);
+  toast.success("Copied validator address to clipboard");
+}
 
 export const tutorialData = {
   "1": {
@@ -24,17 +32,32 @@ export const tutorialData = {
   },
   "2": {
     icon: <BoltIcon className="h-5 w-5" />,
-    description: "Staking on the CommuneX Validator",
+    description: "Staking on the Community Validator",
     steps: [
       "Navigate to the staking tab in your wallet",
-      "Add one of those validator addresses: 5DUWKpGBneBbna6PFHZk18Gp9wyvLUFPiWy5maAARjRjayPp (CommuneX), 5HEUfzHf8uRUq1AfX2Wgga9xC2u12wfyF4FTKUMaYvDFH7dw (MarketCompass)",
-      "Stake your desired amount (this determines your voting weight for modules)",
+      <div key="validator-address" className="flex items-center">
+        <span>Add this validator address: </span>
+        <Button
+          variant="link"
+          className="px-1 text-base text-green-500"
+          onClick={() =>
+            handleCopyClick("5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2")
+          }
+        >
+          Copy Validator Address
+        </Button>
+        <span>
+          (5Hgik8Kf7nq5VBtW41psbpXu1kinXpqRs4AHotPe6u1w6QX2 / Community
+          Validator official validator)
+        </span>
+      </div>,
+      "Stake your desired amount (this determines your allocation power for modules and subnets)",
       "Note: Your staked balance remains untouched; it only represents your voting power",
     ],
   },
   "3": {
     icon: <ScaleIcon className="h-5 w-5" />,
-    description: "Assigning weights to modules",
+    description: "Assigning weights to modules or subnets",
     steps: [
       "Visit the modules page and select your preferred modules",
       "Review your selected modules in 'Your Modules List'",
@@ -102,16 +125,16 @@ const TutorialPage = () => {
             <WalletIcon className="h-6 w-6" /> Open Wallet Modal
           </button>
           <Link
-            href="/"
+            href="/modules"
             className="flex w-fit items-center gap-2 text-nowrap border border-green-500 bg-green-600/5 px-4 py-2.5 font-semibold text-green-500 backdrop-blur-md transition duration-200 hover:border-green-400 hover:bg-green-500/15 active:bg-green-500/50"
           >
-            <Squares2X2Icon className="h-6 w-6" /> Go back to Modules
+            <Squares2X2Icon className="h-6 w-6" /> Go to Modules
           </Link>
           <Link
             href="/subnets"
             className="flex w-fit items-center gap-2 text-nowrap border border-cyan-500 bg-cyan-600/5 px-4 py-2.5 font-semibold text-cyan-500 backdrop-blur-md transition duration-200 hover:border-cyan-400 hover:bg-cyan-500/15 active:bg-cyan-500/50"
           >
-            <RectangleGroupIcon className="h-6 w-6" /> Go back to Subnets
+            <RectangleGroupIcon className="h-6 w-6" /> Go to Subnets
           </Link>
         </div>
       </div>

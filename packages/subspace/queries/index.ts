@@ -348,7 +348,7 @@ export async function queryStakeOutCORRECT(
   if (!response.ok) {
     throw new Error("Failed to fetch data");
   }
-  const stakeOutData = STAKE_OUT_DATA_SCHEMA.parse(await response.json())
+  const stakeOutData = STAKE_OUT_DATA_SCHEMA.parse(await response.json());
   return stakeOutData;
 }
 
@@ -521,8 +521,9 @@ export async function queryUserTotalStaked(
  * @param netuidWhitelist if empty, modules from all subnets are returned
  */
 
-
-export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]> {
+export async function querySubnetParams(
+  api: Api,
+): Promise<NetworkSubnetConfig[]> {
   const subnetProps: SubspaceStorageName[] = [
     "subnetNames",
     "immunityPeriod",
@@ -550,7 +551,6 @@ export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]
   const subnetInfo = await queryChain(api, props);
   const subnetNames = subnetInfo.subnetNames;
 
-
   const subnets: NetworkSubnetConfig[] = [];
   for (const [netuid, _] of Object.entries(subnetNames)) {
     const subnet: NetworkSubnetConfig = NetworkSubnetConfigSchema.parse({
@@ -566,13 +566,18 @@ export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]
       trustRatio: subnetInfo.trustRatio[netuid]!,
       maxWeightAge: subnetInfo.maxWeightAge[netuid]!,
       bondsMovingAverage: subnetInfo.bondsMovingAverage[netuid],
-      maximumSetWeightCallsPerEpoch: subnetInfo.maximumSetWeightCallsPerEpoch[netuid],
+      maximumSetWeightCallsPerEpoch:
+        subnetInfo.maximumSetWeightCallsPerEpoch[netuid],
       minValidatorStake: subnetInfo.minValidatorStake[netuid]!,
       maxAllowedValidators: subnetInfo.maxAllowedValidators[netuid],
-      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(subnetInfo.moduleBurnConfig[netuid]),
+      moduleBurnConfig: MODULE_BURN_CONFIG_SCHEMA.parse(
+        subnetInfo.moduleBurnConfig[netuid],
+      ),
       subnetMetadata: subnetInfo.subnetMetadata[netuid],
       netuid: netuid,
-      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(subnetInfo.subnetGovernanceConfig[netuid]),
+      subnetGovernanceConfig: GOVERNANCE_CONFIG_SCHEMA.parse(
+        subnetInfo.subnetGovernanceConfig[netuid],
+      ),
       subnetEmission: subnetInfo.subnetEmission[netuid],
     });
     subnets.push(subnet);
@@ -582,7 +587,7 @@ export async function querySubnetParams(api: Api): Promise<NetworkSubnetConfig[]
 
 export function keyStakeFrom(
   targetKey: SS58Address,
-  stakeFromStorage: Map<SS58Address, Map<SS58Address, bigint>>
+  stakeFromStorage: Map<SS58Address, Map<SS58Address, bigint>>,
 ) {
   const stakerMap = stakeFromStorage.get(targetKey);
   let totalStake = 0n;
@@ -618,13 +623,17 @@ export async function queryRegisteredModulesInfo(
     "dividends",
     "delegationFee",
     "stakeFrom",
-  ]
+  ];
 
-  const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = { subspaceModule: moduleProps }
+  const extraPropsQuery: { subspaceModule: SubspaceStorageName[] } = {
+    subspaceModule: moduleProps,
+  };
   const modulesInfo = await queryChain(api, extraPropsQuery, netuid);
   const processedModules = standardizeUidToSS58address(modulesInfo, uidToSS58);
   const moduleMap: SubspaceModule[] = [];
-  const parsedStakeFromStorage = STAKE_FROM_SCHEMA.parse({ stakeFromStorage: processedModules.stakeFrom });
+  const parsedStakeFromStorage = STAKE_FROM_SCHEMA.parse({
+    stakeFromStorage: processedModules.stakeFrom,
+  });
 
   for (const uid of Object.keys(uidToSS58)) {
     const moduleKey = uidToSS58[uid];
@@ -646,10 +655,13 @@ export async function queryRegisteredModulesInfo(
       incentive: processedModules.incentive[moduleKey],
       dividends: processedModules.dividends[moduleKey],
       delegationFee: processedModules.delegationFee[moduleKey],
-      totalStaked: keyStakeFrom(moduleKey, parsedStakeFromStorage.stakeFromStorage),
-      totalStakers: parsedStakeFromStorage.stakeFromStorage.get(moduleKey)?.size ?? 0,
-
-    })
+      totalStaked: keyStakeFrom(
+        moduleKey,
+        parsedStakeFromStorage.stakeFromStorage,
+      ),
+      totalStakers:
+        parsedStakeFromStorage.stakeFromStorage.get(moduleKey)?.size ?? 0,
+    });
     moduleMap.push(module);
   }
   return moduleMap;
@@ -680,4 +692,16 @@ export async function queryChain<T extends SubspaceStorageName>(
     modulePropMap[prop] = entry.queryStorage(netuidWhitelist);
   });
   return modulePropMap;
+}
+
+export async function getSubnetList(api: Api): Promise<Record<string, string>> {
+  const result = await queryChain(api, { subspaceModule: ["subnetNames"] });
+  const subnetNames = result.subnetNames;
+  return subnetNames as Record<string, string>;
+}
+
+export async function getModuleBurn(api: Api): Promise<Record<string, string>> {
+  const result = await queryChain(api, { subspaceModule: ["burn"] });
+  const burn = result.burn;
+  return burn as Record<string, string>;
 }

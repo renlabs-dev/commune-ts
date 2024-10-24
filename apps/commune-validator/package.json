@@ -9,7 +9,7 @@
     "dev": "next dev --port 3002",
     "lint": "eslint",
     "start": "next start",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {

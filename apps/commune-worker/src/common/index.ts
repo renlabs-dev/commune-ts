@@ -23,7 +23,9 @@ export interface WorkerProps {
 
 // -- Constants -- //
 
-export const CONSENSUS_NETUID = 0;
+export const SUBNETS_NETUID = 0;
+export const CONSENSUS_NETUID = 2;
+
 export const BLOCK_TIME = 8000;
 export const DAO_EXPIRATION_TIME = 75600; // 7 days in blocks
 
@@ -69,8 +71,8 @@ export async function getApplications(
   applicationTypes: DaoApplicationStatus[],
 ) {
   const dao_entries = await queryDaosEntries(api);
-  const pending_daos = dao_entries.filter(
-    (app) => app.status in applicationTypes,
+  const pending_daos = dao_entries.filter((app) =>
+    applicationTypes.includes(app.status),
   );
   const dao_hash_map: Record<number, DaoApplications> = pending_daos.reduce(
     (hashmap, dao) => {

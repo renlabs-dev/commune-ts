@@ -146,3 +146,13 @@ export {
 } from "./pagination";
 
 
+export {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ChartStyle,
+} from "./chart";
+export type { ChartConfig } from "./chart";
+export { ScrollArea, ScrollBar } from "./scroll-area";

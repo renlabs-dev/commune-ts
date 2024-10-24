@@ -8,6 +8,8 @@ import { formatToken, smallAddress } from "@commune-ts/utils";
 import type { Subnet } from "~/utils/types";
 import { api } from "~/trpc/server";
 
+const DIGITS = /^\d+$/;
+
 interface Params {
   params: {
     slug: string[];
@@ -21,15 +23,15 @@ export default async function SubnetPage({ params }: Params) {
     notFound();
   }
 
-  const id = slug[0];
-
-  if (!/^\d+$/.test(String(id))) {
+  const netuid_ = slug[0];
+  if (!DIGITS.test(String(netuid_))) {
     notFound();
   }
+  const netuid = Number(netuid_);
 
-  const sbnt = await api.subnet.byId({ id: Number(id) });
+  const subnet = await api.subnet.byNetuidLastBlock({ netuid: netuid });
 
-  if (!sbnt) {
+  if (!subnet) {
     notFound();
   }
 
@@ -38,16 +40,16 @@ export default async function SubnetPage({ params }: Params) {
       <div className="flex w-full flex-col items-center justify-between gap-6 md:my-16 md:flex-row md:gap-0">
         <div className="z-10 flex gap-3 md:absolute">
           <Link
-            href="/"
+            href="/subnets"
             className="flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10"
           >
             <ArrowLeftIcon className="h-5 w-5 text-cyan-500" />
             Go back to Subnets list
           </Link>
-          {sbnt.subnetMetadata && (
+          {subnet.subnetMetadata && (
             <Link
               target="_blank"
-              href={sbnt.subnetMetadata}
+              href={subnet.subnetMetadata}
               className="flex animate-fade-left items-center gap-1 border border-white/20 bg-[#898989]/5 p-2 pr-3 text-white backdrop-blur-md transition duration-200 hover:border-cyan-500 hover:bg-cyan-500/10"
             >
               <GlobeAltIcon className="h-5 w-5 text-cyan-500" />
@@ -57,12 +59,12 @@ export default async function SubnetPage({ params }: Params) {
         </div>
         <h1 className="flex-grow animate-fade-right text-center font-semibold text-gray-300">
           <span className="text-3xl font-semibold text-cyan-500">
-            {sbnt.name}
+            {subnet.name}
           </span>{" "}
-          / NETUID: {sbnt.netuid}
+          / NETUID: {subnet.netuid}
         </h1>
       </div>
-      <SubnetDataGrid subnet={sbnt} />
+      <SubnetDataGrid subnet={subnet} />
     </div>
   );
 }
@@ -72,7 +74,6 @@ function SubnetDataGrid({ subnet }: { subnet: Subnet }) {
     {
       title: "General Information",
       fields: [
-        { label: "Subnet ID", value: subnet.id },
         { label: "Netuid", value: subnet.netuid },
         { label: "Name", value: subnet.name },
         { label: "Tempo", value: subnet.tempo },

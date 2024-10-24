@@ -89,6 +89,7 @@ export async function upsertSubnetData(subnets: Subnet[]) {
     .onConflictDoUpdate({
       target: [subnetDataSchema.netuid],
       set: buildConflictUpdateColumns(subnetDataSchema, [
+        "atBlock",
         "name",
         "tempo",
         "minAllowedWeights",
@@ -142,6 +143,7 @@ export async function upsertModuleData(modules: Module[]) {
         totalStaked: m.totalStaked,
         totalStakers: m.totalStakers,
         totalRewards: m.totalRewards,
+        isWhitelisted: m.isWhitelisted,
       })),
     )
     .onConflictDoUpdate({
@@ -159,6 +161,8 @@ export async function upsertModuleData(modules: Module[]) {
         "totalStaked",
         "totalStakers",
         "totalRewards",
+        "isWhitelisted",
+        "moduleId",
       ]),
     })
     .execute();

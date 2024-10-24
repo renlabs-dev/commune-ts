@@ -11,7 +11,7 @@ export default function Page() {
 
   if (!selectedAccount?.address)
     return (
-      <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
+      <span className="w-full items-center justify-start pt-12 text-center text-lg">
         Connect Wallet to view your weighted modules.
       </span>
     );
@@ -21,7 +21,7 @@ export default function Page() {
   );
 
   return (
-    <div className="min-h-[calc(100vh-169px)] w-full">
+    <div className="h-full min-h-[calc(100vh-169px)] w-full">
       {weightedModules.length ? (
         <div className="mb-16 grid h-full w-full animate-fade-up grid-cols-1 gap-4 backdrop-blur-md animate-delay-700 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {weightedModules.map((module) => (
@@ -35,8 +35,8 @@ export default function Page() {
           ))}
         </div>
       ) : (
-        <span className="min-h-[60vh] w-full justify-center pt-12 text-center text-xl">
-          No weighted modules found.
+        <span className="w-full items-center justify-start pt-12 text-center text-lg">
+          <p>No weighted modules found</p>.
         </span>
       )}
     </div>

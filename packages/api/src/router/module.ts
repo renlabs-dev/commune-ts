@@ -1,8 +1,9 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { eq, sql } from "@commune-ts/db";
+import { and, eq, sql } from "@commune-ts/db";
 import {
+  computedModuleWeightsSchema,
   moduleData,
   moduleReport,
   userModuleData,
@@ -17,7 +18,9 @@ import { authenticatedProcedure, publicProcedure } from "../trpc";
 export const moduleRouter = {
   // GET
   all: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.moduleData.findMany();
+    return ctx.db.query.moduleData.findMany({
+      where: eq(moduleData.isWhitelisted, true),
+    });
   }),
   byId: publicProcedure
     .input(z.object({ id: z.number() }))
@@ -25,6 +28,22 @@ export const moduleRouter = {
       return ctx.db.query.moduleData.findFirst({
         where: eq(moduleData.id, input.id),
       });
+    }),
+  byKeyLastBlock: publicProcedure
+    .input(z.object({ moduleKey: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const queryResult = await ctx.db
+        .select()
+        .from(moduleData)
+        .where(
+          and(
+            sql`${moduleData.atBlock} = (SELECT MAX(${moduleData.atBlock}) FROM ${moduleData})`,
+            eq(moduleData.moduleKey, input.moduleKey),
+          ),
+        )
+        .limit(1)
+        .then((result) => result[0]);
+      return queryResult;
     }),
   byUserModuleData: publicProcedure
     .input(z.object({ userKey: z.string() }))
@@ -38,7 +57,6 @@ export const moduleRouter = {
         .where(eq(userModuleData.userKey, input.userKey))
         .execute();
     }),
-
   paginatedAll: publicProcedure
     .input(
       z.object({
@@ -65,6 +83,7 @@ export const moduleRouter = {
       const offset = (page - 1) * limit;
 
       const modules = await ctx.db.query.moduleData.findMany({
+        where: eq(moduleData.isWhitelisted, true),
         limit: limit,
         offset: offset,
         orderBy: (moduleData, { asc, desc }) => [
@@ -94,14 +113,33 @@ export const moduleRouter = {
         where: eq(moduleReport.id, input.id),
       });
     }),
-  // POST
-  deleteUserModuleData: authenticatedProcedure.mutation(async ({ ctx }) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const userKey = ctx.sessionData!.userKey;
-    await ctx.db
-      .delete(userModuleData)
-      .where(eq(userModuleData.userKey, userKey));
+  allComputedModuleWeightsLastBlock: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select({
+        moduleName: moduleData.name,
+        moduleId: computedModuleWeightsSchema.moduleId,
+        stakeWeight: computedModuleWeightsSchema.stakeWeight,
+        percWeight: computedModuleWeightsSchema.percWeight,
+      })
+      .from(computedModuleWeightsSchema)
+      .where(
+        sql`computed_module_weights.at_block = (SELECT MAX(computed_module_weights.at_block) FROM computed_module_weights)`,
+      )
+      .innerJoin(
+        moduleData,
+        eq(computedModuleWeightsSchema.moduleId, moduleData.id),
+      );
   }),
+  // POST
+  deleteUserModuleData: authenticatedProcedure
+    .input(z.object({ userKey: z.string() }))
+    .mutation(async ({ ctx }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+      await ctx.db
+        .delete(userModuleData)
+        .where(eq(userModuleData.userKey, userKey));
+    }),
   createUserModuleData: authenticatedProcedure
     .input(USER_MODULE_DATA_INSERT_SCHEMA)
     .mutation(async ({ ctx, input }) => {
@@ -112,6 +150,20 @@ export const moduleRouter = {
         weight: input.weight,
         userKey,
       });
+    }),
+  createManyUserModuleData: authenticatedProcedure
+    .input(z.array(USER_MODULE_DATA_INSERT_SCHEMA))
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userKey = ctx.sessionData!.userKey;
+
+      const dataToInsert = input.map((item) => ({
+        moduleId: item.moduleId,
+        weight: item.weight,
+        userKey,
+      }));
+
+      await ctx.db.insert(userModuleData).values(dataToInsert);
     }),
   createModuleReport: authenticatedProcedure
     .input(MODULE_REPORT_INSERT_SCHEMA)

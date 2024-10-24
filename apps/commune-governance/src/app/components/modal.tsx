@@ -12,6 +12,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
   Separator,
@@ -22,6 +23,7 @@ import {
 import { CreateDao } from "./dao/create-dao";
 import { CreateProposal } from "./proposal/create-proposal";
 import { CreateTransferDaoTreasuryProposal } from "./proposal/create-transfer-dao-treasury-proposal";
+import { RegisterModule } from "./proposal/register-module";
 
 export function CreateModal() {
   const [selectedView, setSelectedView] = useState("proposal");
@@ -49,6 +51,8 @@ export function CreateModal() {
             <SelectItem value="create-transfer-dao-treasury">
               Create Transfer Dao Treasury Proposal
             </SelectItem>
+            <SelectSeparator />
+            <SelectItem value="register-module">Register a Module</SelectItem>
           </SelectContent>
         </Select>
         <Separator />
@@ -56,8 +60,10 @@ export function CreateModal() {
           <CreateProposal />
         ) : selectedView === "dao" ? (
           <CreateDao />
-        ) : (
+        ) : selectedView === "create-transfer-dao-treasury" ? (
           <CreateTransferDaoTreasuryProposal />
+        ) : (
+          <RegisterModule />
         )}
       </DialogContent>
     </Dialog>

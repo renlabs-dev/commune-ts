@@ -26,6 +26,7 @@
     "@commune-ts/utils": "workspace:*",
     "@polkadot/util": "catalog:",
     "@polkadot/util-crypto": "catalog:",
+    "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
     "@trpc/client": "catalog:",
     "jsonwebtoken": "^9.0.2",
