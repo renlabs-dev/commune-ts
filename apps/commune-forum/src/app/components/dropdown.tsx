@@ -1,7 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import {
   ChevronDownIcon,
-  // DocumentDuplicateIcon,
 } from '@heroicons/react/20/solid'
 
 interface DropdownButton {
@@ -16,10 +15,10 @@ export const Dropdown = (props: DropdownButton) => {
   const { actionsList, title } = props;
 
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu as="div" className="relative inline-block text-left w-full">
       <div>
-        <MenuButton className="inline-flex w-full justify-center gap-x-1.5  px-3 py-2 text-sm font-semibold shadow-sm border-white/20 border bg-white/5
-        animate-fade-down p-5 text-white transition duration-200 animate-delay-700 hover:border-green-500 hover:bg-green-500/10 hover:text-green-500
+        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 px-4 py-1.5 text-sm font-semibold shadow-sm border-white/20 border bg-white/5
+        animate-fade-down p-4 text-white transition hover:border-green-500 hover:bg-green-500/10 hover:text-green-500
         ">
           {title}
           <ChevronDownIcon aria-hidden="true" className="w-5 h-5 -mr-1 text-gray-400" />
@@ -33,8 +32,9 @@ export const Dropdown = (props: DropdownButton) => {
         <div className="p-0.5">
           {actionsList.map((action) => {
             return (
-              <MenuItem>
+              <MenuItem key={action.title}>
                 <button
+                  onClick={() => action.handle()}
                   className="group w-full flex items-center px-4 py-2 text-sm text-white data-[focus]:bg-white/5 data-[focus]:text-green-500"
                 >
                   {action.title}

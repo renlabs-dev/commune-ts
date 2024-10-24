@@ -1,81 +1,115 @@
-// filters.tsx
 "use client"
 
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLongDownIcon } from "@heroicons/react/16/solid";
 import type { Category } from "./categories-selector";
 import { CategoriesSelector } from "./categories-selector";
+import { cairo } from "~/utils/fonts";
 
-type SortField = "date" | "upvotes"
+type SortField = "createdAt" | "upvotes";
 type SortOrder = "asc" | "desc";
+interface RenderSortersProps {
+  sortFieldLabels: Record<SortField, string>;
+  handleSortChange: (field: SortField) => void;
+  sortField: SortField;
+  orderStyles: Record<SortOrder, string>;
+  sortOrder: SortOrder;
+}
 
 const sortFieldLabels: Record<SortField, string> = {
-  date: "Date",
+  createdAt: "Date",
   upvotes: "Upvotes",
 };
 
 const orderStyles: Record<SortOrder, string> = {
-  asc: "rotate-0",
-  desc: "-rotate-180"
+  asc: "-rotate-180",
+  desc: "rotate-0"
 };
 
-export const Filters = () => {
+const RenderSorters: React.FC<RenderSortersProps> = React.memo(({ sortFieldLabels, handleSortChange, sortField, orderStyles, sortOrder }) => {
+  return (
+    <>
+      {Object.entries(sortFieldLabels).map(([field, label]) => (
+        <button
+          key={field}
+          onClick={() => handleSortChange(field as SortField)}
+          className={`flex animate-fade justify-center items-center gap-1 px-4 pl-8 py-1.5 text-sm font-semibold border w-full
+        ${sortField === field ? 'border-green-500 bg-green-500/10 text-green-500' : 'bg-white/5  border-white/20 hover:border-green-500 hover:text-green-500'}`}
+        >
+          {label}
+          <ArrowLongDownIcon
+            height={16}
+            className={`transition duration-200 animate-delay-700 text-green-500
+          ${sortField === field ? orderStyles[sortOrder] : 'invisible'}`}
+          />
+        </button>
+      ))}
+    </>
+  )
+});
+
+interface FiltersProps {
+  categories: Category[];
+}
+
+export const Filters: React.FC<FiltersProps> = ({ categories }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
   const [sortField, setSortField] = useState<SortField>(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    (searchParams.get("sortBy") as SortField) || "date"
+    (searchParams.get("sortBy") as SortField) || "createdAt"
   );
   const [sortOrder, setSortOrder] = useState<SortOrder>(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     (searchParams.get("order") as SortOrder) || "desc"
   );
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("sortBy", sortField);
     newSearchParams.set("order", sortOrder);
-    if (selectedCategory) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newSearchParams.set("category", selectedCategory.category!);
+    if (selectedCategory?.id) {
+      newSearchParams.set("categoryId", String(selectedCategory.id));
     } else {
-      newSearchParams.delete("category");
+      newSearchParams.delete("categoryId");
     }
     router.push(`?${newSearchParams.toString()}`, { scroll: false });
-  }, [sortField, sortOrder, selectedCategory, router, searchParams]);
+  }, [sortField, sortOrder, selectedCategory?.id, router, searchParams]);
 
   const handleSortChange = useCallback((field: SortField) => {
-    setSortField(field);
-    setSortOrder(prevOrder => field === sortField ? (prevOrder === "asc" ? "desc" : "asc") : "asc");
+    if (field === sortField) {
+      setSortOrder(prevOrder => (prevOrder === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("desc");
+    }
   }, [sortField]);
 
-  const handleCategoryChange = (category: Category | null) => {
-    setSelectedCategory(category);
-  };
+  const handleCategoryChange = useCallback(
+    (category: Category | null) => {
+      if (category?.id === selectedCategory?.id) return
+      setSelectedCategory(category);
+    },
+    [selectedCategory?.id]
+  );
 
   return (
-    <div className="flex gap-4">
+    <div className={`flex items-center flex-col sm:flex-row gap-4 w-full sm:w-fit ${cairo.className}`}>
       <CategoriesSelector
+        categories={categories}
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
       />
-      {(Object.entries(sortFieldLabels) as [SortField, string][]).map(([field, label]) => (
-        <button
-          key={field}
-          onClick={() => handleSortChange(field)}
-          className={`flex animate-fade justify-center items-center gap-1 px-4 pl-8 py-1.5 text-sm font-semibold border
-            ${sortField === field ? 'border-green-500 bg-green-500/10 text-green-500' : 'bg-white/5  border-white/20 hover:border-green-500 hover:text-green-500'}`}
-        >
-          {label}
-          <ArrowLongDownIcon
-            height={16}
-            className={`transition duration-200 animate-delay-700
-              ${sortField === field ? orderStyles[sortOrder] : 'invisible'}`}
-          />
-        </button>
-      ))}
+      <RenderSorters
+        sortFieldLabels={sortFieldLabels}
+        handleSortChange={handleSortChange}
+        sortField={sortField}
+        orderStyles={orderStyles}
+        sortOrder={sortOrder}
+      />
     </div>
   );
-}
+};

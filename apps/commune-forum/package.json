@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@commune-ts/api": "workspace:*",
+    "@commune-ts/db": "workspace:*",
     "@commune-ts/providers": "workspace:*",
     "@commune-ts/types": "workspace:*",
     "@commune-ts/ui": "workspace:*",
@@ -24,6 +25,7 @@
     "@trpc/react-query": "catalog:",
     "@trpc/server": "catalog:",
     "@uiw/react-markdown-preview": "^5.1.1",
+    "luxon": "^3.5.0",
     "next": "catalog:",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
@@ -36,6 +38,7 @@
     "@commune-ts/tailwind-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",
     "@next/eslint-plugin-next": "catalog:",
+    "@types/luxon": "^3.4.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:react18",
     "@types/react-dom": "catalog:react18",

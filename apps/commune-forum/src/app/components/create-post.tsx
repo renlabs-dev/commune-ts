@@ -1,147 +1,123 @@
 "use client"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { z } from "zod";
 
-import type { TransactionResult } from "@commune-ts/types";
 import { useCommune } from "@commune-ts/providers/use-commune";
-import { toast } from "@commune-ts/providers/use-toast";
-import { TransactionStatus } from "@commune-ts/ui";
+import { Checkbox } from "@commune-ts/ui";
 
 import { cairo } from "~/utils/fonts";
+import { api } from "~/trpc/react";
+import type { Category } from "./filters";
+import { CategoriesSelector } from "./filters";
+import { toast } from "@commune-ts/providers/use-toast";
 
-const proposalSchema = z.object({
+const postSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  body: z.string().min(1, "Body is required"),
+  content: z.string().min(1, "Content is required"),
 });
 
-export const CreatePost = (): JSX.Element => {
-  const router = useRouter();
-  const { isConnected, addCustomProposal, balance } = useCommune();
+interface CreatePostProps {
+  categories: Category[];
+  handleModal: () => void;
+}
 
+export const CreatePost: React.FC<CreatePostProps> = (props) => {
+  const { categories, handleModal } = props;
+
+  const utils = api.useUtils();
+  const { mutate: createPost, isPending } = api.forum.createPost.useMutation({
+    onSuccess: async () => {
+      toast.success("Post created successfully");
+      handleCleanStates()
+      await utils.forum.all.invalidate();
+      handleModal();
+    },
+  })
+
+  const { isConnected, selectedAccount } = useCommune();
+
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [content, setContent] = useState("");
 
   const [editMode, setEditMode] = useState(true);
+  const [isAnon, setIsAnon] = useState(false);
+
   function toggleEditMode(): void {
     setEditMode(!editMode);
   }
 
-  const [transactionStatus, setTransactionStatus] = useState<TransactionResult>(
-    {
-      status: null,
-      message: null,
-      finalized: false,
+  const handleCategoryChange = useCallback(
+    (category: Category | null) => {
+      if (category?.id === selectedCategory?.id) return
+      setSelectedCategory(category);
+      console.log(selectedCategory)
     },
+    [selectedCategory]
   );
 
-  function handleCallback(callbackReturn: TransactionResult): void {
-    setTransactionStatus(callbackReturn);
-  }
-
-  async function uploadFile(fileToUpload: File): Promise<void> {
-    try {
-      setUploading(true);
-      const data = new FormData();
-      data.set("file", fileToUpload);
-      const res = await fetch("/api/files", {
-        method: "POST",
-        body: data,
-      });
-      const ipfs = (await res.json()) as { IpfsHash: string };
-      setUploading(false);
-
-      if (ipfs.IpfsHash === "undefined" || !ipfs.IpfsHash) {
-        toast.error("Error uploading transfer dao treasury proposal");
-        return;
-      }
-
-      if (!balance) {
-        toast.error("Balance is still loading");
-        return;
-      }
-
-      const proposalCost = 10000;
-
-      if (Number(balance) > proposalCost) {
-        void addCustomProposal({
-          IpfsHash: `ipfs://${ipfs.IpfsHash}`,
-          callback: handleCallback,
-        });
-      } else {
-        toast.error(
-          `Insufficient balance to create proposal. Required: ${proposalCost} but got ${balance}`,
-        );
-        setTransactionStatus({
-          status: "ERROR",
-          finalized: true,
-          message: "Insufficient balance",
-        });
-      }
-      router.refresh();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      setUploading(false);
-      toast.error("Error uploading proposal");
-    }
+  const handleIsAnonCheckbox = () => {
+    setIsAnon(!isAnon);
   }
 
   function HandleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    setTransactionStatus({
-      status: "STARTING",
-      finalized: false,
-      message: "Starting proposal creation...",
-    });
 
-    const result = proposalSchema.safeParse({
+    const result = postSchema.safeParse({
       title,
-      body,
+      content,
     });
+    if (!result.success || !selectedAccount?.address) return
 
-    if (!result.success) {
-      toast.error(result.error.errors.map((e) => e.message).join(", "));
-      setTransactionStatus({
-        status: "ERROR",
-        finalized: true,
-        message: "Error on form validation",
-      });
-      return;
-    }
+    // TODO: Implement check for minimum balance required to create a post
 
-    const proposalData = JSON.stringify({
+    createPost({
       title,
-      body,
-    });
-    const blob = new Blob([proposalData], { type: "application/json" });
-    const fileToUpload = new File([blob], "proposal.json", {
-      type: "application/json",
-    });
-    void uploadFile(fileToUpload);
+      content,
+      userKey: selectedAccount.address,
+      isAnonymous: isAnon,
+      categoryId: selectedCategory?.id ?? 1,
+    })
   }
 
+  const handleCleanStates = () => {
+    setTitle("");
+    setContent("");
+    setIsAnon(false);
+    setSelectedCategory(null);
+    setEditMode(true);
+  }
   return (
     <form onSubmit={HandleSubmit}>
       <div className="flex flex-col gap-4 mt-4">
-        <div className="flex gap-2">
-          <button
-            className={`border px-4 py-1 ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
-            onClick={toggleEditMode}
-            type="button"
-          >
-            Edit
-          </button>
-          <button
-            className={`border px-4 py-1 ${!editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
-            onClick={toggleEditMode}
-            type="button"
-          >
-            Preview
-          </button>
+        <div className="flex justify-between">
+          <div className="flex gap-2">
+            <button
+              className={`border px-4 py-1 ${editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+              onClick={toggleEditMode}
+              type="button"
+            >
+              Edit
+            </button>
+            <button
+              className={`border px-4 py-1 ${!editMode ? "border-green-500 bg-green-500/5 text-green-500" : "border-gray-500 text-gray-400"} hover:border-green-600 hover:bg-green-600/5 hover:text-green-600`}
+              onClick={toggleEditMode}
+              type="button"
+            >
+              Preview
+            </button>
+          </div>
+          <div className="flex items-center">
+            <CategoriesSelector
+              categories={categories}
+              onCategoryChange={handleCategoryChange}
+              selectedCategory={selectedCategory}
+              defaultCategoryName="Select post category" />
+          </div>
         </div>
         <div className="flex flex-col">
+          {/* TODO: Take off this nested ternary statement */}
           {editMode ? (
             <div className="flex flex-col gap-3">
               <input
@@ -149,51 +125,53 @@ export const CreatePost = (): JSX.Element => {
                 onChange={(e) => {
                   setTitle(e.target.value);
                 }}
-                placeholder="Your proposal title here..."
+                placeholder="Your post title here..."
                 type="text"
                 value={title}
               />
               <textarea
                 className="w-full p-3 text-white bg-white/10"
                 onChange={(e) => {
-                  setBody(e.target.value);
+                  setContent(e.target.value);
                 }}
                 placeholder="here... (Markdown supported / HTML tags are not supported)"
                 rows={5}
-                value={body}
+                value={content}
               />
             </div>
           ) : (
-            <div className="p-4">
-              {body ? (
+            <div className="py-10">
+              {content ? (
                 <MarkdownPreview
                   className={`${cairo.className} max-h-[40vh] overflow-auto`}
-                  source={`# ${title}\n${body}`}
+                  source={`# ${title}\n${content}`}
                   style={{
                     backgroundColor: "transparent",
                     color: "white",
                   }}
                 />
-              ) : null}
-              {/* TODO: skeleton for markdown body */}
+              ) : "Nothing to preview"}
             </div>
           )}
         </div>
+        {editMode && (
+          <div className="flex items-center mb-6 space-x-2">
+            <Checkbox iconColor="bg-green-500/20 text-white" className="border-green-500" id="anonymous" onCheckedChange={handleIsAnonCheckbox} checked={isAnon} />
+            <label htmlFor="anonymous"
+              className="text-sm font-medium cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >Post anonymously</label>
+          </div>
+        )}
+
         <div className="flex flex-col gap-1">
           <button
-            className={`relative w-full border px-4 py-2 font-semibold ${isConnected ? "border-green-500 text-green-500 hover:bg-green-500/5 active:top-1" : "border-gray-500 text-gray-500"}`}
-            disabled={!isConnected}
+            className="flex w-full justify-center text-nowrap border disabled:border-gray-600/50 disabled:text-gray-600/50  disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:bg-transparent border-green-500 bg-green-600/5 px-6 py-2.5 font-semibold text-green-500 transition duration-200 hover:border-green-400 hover:bg-green-500/15"
+            disabled={!isConnected || !title || !content || !selectedAccount}
             type="submit"
           >
-            {uploading ? "Uploading..." : "Submit Proposal"}
+            {isPending ? "Uploading..." : "Submit post"}
           </button>
         </div>
-        {transactionStatus.status && (
-          <TransactionStatus
-            status={transactionStatus.status}
-            message={transactionStatus.message}
-          />
-        )}
       </div>
     </form>
   );

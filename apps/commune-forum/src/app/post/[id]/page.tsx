@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 
-import { ProposalExpandedView } from "./_components/post-expanded-view";
+import { Post } from "./_components/post";
 
-export default function CardView({
+export default function ViewPostPage({
   params,
 }: {
   params: { id: string };
@@ -21,8 +21,8 @@ export default function CardView({
         <ArrowLeftIcon className="h-6 text-green-500" />
         Go Back to Posts List
       </Link>
-      <div className="mb-6 flex h-full w-full flex-col justify-between divide-gray-500 text-white md:mb-12 lg:flex-row">
-        <ProposalExpandedView paramId={Number(params.id)} />
+      <div className="flex flex-col justify-between w-full h-full mb-6 text-white divide-gray-500 md:mb-12 lg:flex-row">
+        <Post postId={params.id} />
       </div>
     </div>
   );
