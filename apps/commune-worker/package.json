@@ -26,7 +26,6 @@
   },
   "devDependencies": {
     "@commune-ts/db": "workspace:*",
-    "@commune-ts/utils": "workspace:*",
     "@commune-ts/eslint-config": "workspace:*",
     "@commune-ts/prettier-config": "workspace:*",
     "@commune-ts/tsconfig": "workspace:*",

@@ -2,6 +2,7 @@ import { asc, eq, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   index,
   integer,
   numeric,
@@ -15,7 +16,6 @@ import {
   unique,
   uuid,
   varchar,
-  check,
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `${name}`);
@@ -222,7 +222,9 @@ export const proposalCommentSchema = createTable(
     deletedAt: timestamp("deleted_at").default(sql`null`),
   },
   (t) => ({
-    proposalIdIndex: index("proposal_comment_proposal_id_index").on(t.proposalId),
+    proposalIdIndex: index("proposal_comment_proposal_id_index").on(
+      t.proposalId,
+    ),
   }),
 );
 
@@ -247,8 +249,13 @@ export const commentInteractionSchema = createTable(
   },
   (t) => ({
     unq: unique().on(t.commentId, t.userKey),
-    commentIdIndex: index("comment_interaction_comment_id_index").on(t.commentId),
-    commentVoteIndex: index("comment_interaction_comment_vote_index").on(t.commentId, t.voteType),
+    commentIdIndex: index("comment_interaction_comment_id_index").on(
+      t.commentId,
+    ),
+    commentVoteIndex: index("comment_interaction_comment_vote_index").on(
+      t.commentId,
+      t.voteType,
+    ),
   }),
 );
 
@@ -435,135 +442,146 @@ export const computedSubnetWeights = createTable("computed_subnet_weights", {
 
 // ----- FORUM SCHEMAS -------
 
-export const forumVoteType = pgEnum('forum_vote_type_enum', [
-  'UPVOTE',
-  'DOWNVOTE',
+export const forumVoteType = pgEnum("forum_vote_type_enum", [
+  "UPVOTE",
+  "DOWNVOTE",
 ]);
 
-export const forumCategoriesSchema = createTable('forum_categories', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull().unique(),
-  description: text('description'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
-  deletedAt: timestamp('deleted_at').default(sql`null`),
+export const forumCategoriesSchema = createTable("forum_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+  deletedAt: timestamp("deleted_at").default(sql`null`),
 });
 
 export const forumPostSchema = createTable(
-  'forum_post',
+  "forum_post",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    categoryId: integer('category_id')
+    id: uuid("id").primaryKey().defaultRandom(),
+    categoryId: integer("category_id")
       .references(() => forumCategoriesSchema.id)
       .notNull(),
-    userKey: ss58Address('user_key').notNull(),
-    isAnonymous: boolean('is_anonymous').default(false).notNull(),
-    isPinned: boolean('is_pinned').default(false).notNull(),
-    title: text('title').notNull(),
-    content: text('content'),
-    href: text('href'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
-    deletedAt: timestamp('deleted_at').default(sql`null`),
+    userKey: ss58Address("user_key").notNull(),
+    isAnonymous: boolean("is_anonymous").default(false).notNull(),
+    isPinned: boolean("is_pinned").default(false).notNull(),
+    title: text("title").notNull(),
+    content: text("content"),
+    href: text("href"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
   },
   (t) => ({
     contentOrHrefCheck: check(
-      'content_or_href_check',
-      sql`(content IS NOT NULL AND href IS NULL) OR (content IS NULL AND href IS NOT NULL)`
+      "content_or_href_check",
+      sql`(content IS NOT NULL AND href IS NULL) OR (content IS NULL AND href IS NOT NULL)`,
     ),
-    categoryIdIndex: index('forum_post_category_id_index').on(t.categoryId),
-    userKeyIndex: index('forum_post_user_key_index').on(t.userKey),
-  })
+    categoryIdIndex: index("forum_post_category_id_index").on(t.categoryId),
+    userKeyIndex: index("forum_post_user_key_index").on(t.userKey),
+  }),
 );
 
-export const forumPostViewCountSchema = createTable('forum_post_view_count', {
-  postId: uuid('post_id')
+export const forumPostViewCountSchema = createTable("forum_post_view_count", {
+  postId: uuid("post_id")
     .references(() => forumPostSchema.id)
     .notNull()
     .primaryKey(),
-  viewCount: integer('view_count').default(0).notNull(),
+  viewCount: integer("view_count").default(0).notNull(),
 });
 
 export const forumCommentSchema = createTable(
-  'forum_comment',
+  "forum_comment",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id")
       .references(() => forumPostSchema.id)
       .notNull(),
-    userKey: ss58Address('user_key').notNull(),
-    content: text('content').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
-    deletedAt: timestamp('deleted_at').default(sql`null`),
+    userKey: ss58Address("user_key").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+    deletedAt: timestamp("deleted_at").default(sql`null`),
   },
   (t) => ({
-    postIdIndex: index('forum_comment_post_id_index').on(t.postId),
-  })
+    postIdIndex: index("forum_comment_post_id_index").on(t.postId),
+  }),
 );
 
 export const forumPostVotesSchema = createTable(
-  'forum_post_votes',
+  "forum_post_votes",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    postId: uuid('post_id')
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id")
       .references(() => forumPostSchema.id)
       .notNull(),
-    userKey: ss58Address('user_key').notNull(),
-    voteType: forumVoteType('vote_type').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date()),
+    userKey: ss58Address("user_key").notNull(),
+    voteType: forumVoteType("vote_type").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (t) => ({
     unq: unique().on(t.postId, t.userKey),
-    postIdIndex: index('forum_post_votes_post_id_index').on(t.postId),
-    postVoteIndex: index('forum_post_votes_post_vote_index').on(
+    postIdIndex: index("forum_post_votes_post_id_index").on(t.postId),
+    postVoteIndex: index("forum_post_votes_post_vote_index").on(
       t.postId,
-      t.voteType
+      t.voteType,
     ),
-    userKeyIndex: index('forum_post_votes_user_key_index').on(t.userKey),
-  })
+    userKeyIndex: index("forum_post_votes_user_key_index").on(t.userKey),
+  }),
 );
 
 export const forumCommentVotesSchema = createTable(
-  'forum_comment_votes',
+  "forum_comment_votes",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    commentId: uuid('comment_id')
+    id: uuid("id").primaryKey().defaultRandom(),
+    commentId: uuid("comment_id")
       .references(() => forumCommentSchema.id)
       .notNull(),
-    userKey: ss58Address('user_key').notNull(),
-    voteType: forumVoteType('vote_type').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
+    userKey: ss58Address("user_key").notNull(),
+    voteType: forumVoteType("vote_type").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
       .defaultNow()
       .notNull()
       .$onUpdate(() => new Date()),
   },
   (t) => ({
     uniqueVote: unique().on(t.commentId, t.userKey),
-    commentIdIndex: index('forum_comment_votes_comment_id_index').on(t.commentId),
-    voteTypeIndex: index('forum_comment_votes_vote_type_index').on(t.voteType),
-    userKeyIndex: index('forum_comment_votes_user_key_index').on(t.userKey),
-  })
+    commentIdIndex: index("forum_comment_votes_comment_id_index").on(
+      t.commentId,
+    ),
+    voteTypeIndex: index("forum_comment_votes_vote_type_index").on(t.voteType),
+    userKeyIndex: index("forum_comment_votes_user_key_index").on(t.userKey),
+  }),
 );
 
-export const reportedTypeEnum = pgEnum("reportedType", [
-  "POST",
-  "COMMENT",
-]);
+export const reportedTypeEnum = pgEnum("reportedType", ["POST", "COMMENT"]);
 
-export const forumReportSchema = createTable('forum_report', {
-  id: serial('id').primaryKey(),
-  userKey: ss58Address('user_key').notNull(),
-  reportedId: uuid('reported_id').notNull(),
-  reportedType: reportedTypeEnum('reported_type').notNull(),
-  content: text('content').notNull(),
-  reason: ReportReasonEnum('reason').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+export const forumReportSchema = createTable("forum_report", {
+  id: serial("id").primaryKey(),
+  userKey: ss58Address("user_key").notNull(),
+  reportedId: uuid("reported_id").notNull(),
+  reportedType: reportedTypeEnum("reported_type").notNull(),
+  content: text("content").notNull(),
+  reason: ReportReasonEnum("reason").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const forumCommentDigestView = pgView('forum_comment_digest').as((qb) =>
+export const forumCommentDigestView = pgView("forum_comment_digest").as((qb) =>
   qb
     .select({
       id: forumCommentSchema.id,
@@ -579,7 +597,9 @@ export const forumCommentDigestView = pgView('forum_comment_digest').as((qb) =>
              AND ${forumCommentVotesSchema.voteType} = 'UPVOTE'),
           0
         )
-      `.mapWith(Number).as('upvotes'),
+      `
+        .mapWith(Number)
+        .as("upvotes"),
       downvotes: sql<number>`
         COALESCE(
           (SELECT COUNT(*) FROM ${forumCommentVotesSchema}
@@ -587,13 +607,15 @@ export const forumCommentDigestView = pgView('forum_comment_digest').as((qb) =>
              AND ${forumCommentVotesSchema.voteType} = 'DOWNVOTE'),
           0
         )
-      `.mapWith(Number).as('downvotes'),
+      `
+        .mapWith(Number)
+        .as("downvotes"),
     })
     .from(forumCommentSchema)
-    .where(sql`${forumCommentSchema.deletedAt} IS NULL`)
+    .where(sql`${forumCommentSchema.deletedAt} IS NULL`),
 );
 
-export const forumPostDigestView = pgView('forum_post_digest').as((qb) =>
+export const forumPostDigestView = pgView("forum_post_digest").as((qb) =>
   qb
     .select({
       id: forumPostSchema.id,
@@ -614,7 +636,9 @@ export const forumPostDigestView = pgView('forum_post_digest').as((qb) =>
              AND ${forumPostVotesSchema.voteType} = 'UPVOTE'),
           0
         )
-      `.mapWith(Number).as('upvotes'),
+      `
+        .mapWith(Number)
+        .as("upvotes"),
       downvotes: sql<number>`
         COALESCE(
           (SELECT COUNT(*) FROM ${forumPostVotesSchema}
@@ -622,7 +646,9 @@ export const forumPostDigestView = pgView('forum_post_digest').as((qb) =>
              AND ${forumPostVotesSchema.voteType} = 'DOWNVOTE'),
           0
         )
-      `.mapWith(Number).as('downvotes'),
+      `
+        .mapWith(Number)
+        .as("downvotes"),
       commentCount: sql<number>`
         COALESCE(
           (SELECT COUNT(*) FROM ${forumCommentSchema}
@@ -630,13 +656,14 @@ export const forumPostDigestView = pgView('forum_post_digest').as((qb) =>
              AND ${forumCommentSchema.deletedAt} IS NULL),
           0
         )
-      `.mapWith(Number).as('commentCount'),
+      `
+        .mapWith(Number)
+        .as("commentCount"),
     })
     .from(forumPostSchema)
     .leftJoin(
       forumCategoriesSchema,
-      eq(forumPostSchema.categoryId, forumCategoriesSchema.id)
+      eq(forumPostSchema.categoryId, forumCategoriesSchema.id),
     )
-    .where(sql`${forumPostSchema.deletedAt} IS NULL`)
+    .where(sql`${forumPostSchema.deletedAt} IS NULL`),
 );
-

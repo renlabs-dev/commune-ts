@@ -28,7 +28,6 @@
     "@polkadot/util-crypto": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
-    "@trpc/client": "catalog:",
     "jsonwebtoken": "^9.0.2",
     "superjson": "2.2.1",
     "zod": "catalog:"

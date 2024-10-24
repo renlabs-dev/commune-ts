@@ -2,10 +2,10 @@
   "name": "commune-ts",
   "private": true,
   "scripts": {
+    "api:build": "turbo -F @commune-ts/api build",
     "build": "turbo run build",
     "clean": "git clean -xdf node_modules",
     "clean:all": "find . -type d \\( -name 'node_modules' -o -name '.next' -o -name '.turbo' -o -name 'dist' -o -name '.cache' \\) -prune -exec rm -rf '{}' +",
-    "api:build": "turbo -F @commune-ts/api build",
     "clean:workspaces": "turbo run clean",
     "db:push": "turbo -F @commune-ts/db push",
     "db:studio": "turbo -F @commune-ts/db studio",

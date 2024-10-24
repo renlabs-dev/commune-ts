@@ -1,9 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { and, eq, desc, asc, sql } from "@commune-ts/db";
-
-import { authenticatedProcedure, publicProcedure } from "../trpc";
+import { and, asc, desc, eq, sql } from "@commune-ts/db";
 import {
   forumCategoriesSchema,
   forumCommentSchema,
@@ -13,77 +11,81 @@ import {
   forumPostVotesSchema,
 } from "@commune-ts/db/schema";
 
-let cachedCategories: { id: number; name: string; description?: string }[] | null = null;
+import { authenticatedProcedure, publicProcedure } from "../trpc";
+
+let cachedCategories:
+  | { id: number; name: string; description?: string }[]
+  | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour in milliseconds
 
 export const forumRouter = {
   // GET
   all: publicProcedure
-  .input(
-    z.object({
-      sortOrder: z.enum(['ASC', 'DESC']).default('DESC'),
-      sortBy: z.enum(['createdAt', 'upvotes']).default('createdAt'),
-      page: z.number().min(1).default(1),
-      pageSize: z.number().min(1).max(100).default(15),
-      categoryId: z.number().nullable().default(null),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    const offset = (input.page - 1) * input.pageSize;
-
-    const whereConditions = [];
-
-    if (input.categoryId !== null) {
-      whereConditions.push(eq(forumPostDigestView.categoryId, input.categoryId));
-    }
-
-    const sortByColumn =
-      input.sortBy === 'createdAt'
-        ? forumPostDigestView.createdAt
-        : forumPostDigestView.upvotes;
-
-    const totalPostsResult = await ctx.db
-    .select({
-      count: sql<number>`count(*)`,
-    })
-    .from(forumPostDigestView)
-    .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
-
-  const totalPosts = totalPostsResult[0]?.count ?? 0;
-
-    const posts = await ctx.db
-    .select({
-      id: forumPostDigestView.id,
-      title: forumPostDigestView.title,
-      userKey: forumPostDigestView.userKey,
-      isAnonymous: forumPostDigestView.isAnonymous,
-      categoryName: forumPostDigestView.categoryName,
-      href: forumPostDigestView.href,
-      createdAt: forumPostDigestView.createdAt,
-      downvotes: forumPostDigestView.downvotes,
-      upvotes: forumPostDigestView.upvotes,
-      categoryId: forumPostDigestView.categoryId,
-      isPinned: forumPostDigestView.isPinned,
-      commentCount: forumPostDigestView.commentCount,
-      viewCount: forumPostViewCountSchema.viewCount,
-    })
-    .from(forumPostDigestView)
-    .leftJoin(
-      forumPostViewCountSchema,
-      eq(forumPostDigestView.id, forumPostViewCountSchema.postId)
+    .input(
+      z.object({
+        sortOrder: z.enum(["ASC", "DESC"]).default("DESC"),
+        sortBy: z.enum(["createdAt", "upvotes"]).default("createdAt"),
+        page: z.number().min(1).default(1),
+        pageSize: z.number().min(1).max(100).default(15),
+        categoryId: z.number().nullable().default(null),
+      }),
     )
-      .where(
-        whereConditions.length > 0 ? and(...whereConditions) : undefined
-      )
-      .orderBy(
-        desc(forumPostDigestView.isPinned),
-        input.sortOrder === 'DESC'
-          ? desc(sortByColumn)
-          : asc(sortByColumn)
-      )
-      .limit(input.pageSize)
-      .offset(offset);
+    .query(async ({ ctx, input }) => {
+      const offset = (input.page - 1) * input.pageSize;
+
+      const whereConditions = [];
+
+      if (input.categoryId !== null) {
+        whereConditions.push(
+          eq(forumPostDigestView.categoryId, input.categoryId),
+        );
+      }
+
+      const sortByColumn =
+        input.sortBy === "createdAt"
+          ? forumPostDigestView.createdAt
+          : forumPostDigestView.upvotes;
+
+      const totalPostsResult = await ctx.db
+        .select({
+          count: sql<number>`count(*)`,
+        })
+        .from(forumPostDigestView)
+        .where(
+          whereConditions.length > 0 ? and(...whereConditions) : undefined,
+        );
+
+      const totalPosts = totalPostsResult[0]?.count ?? 0;
+
+      const posts = await ctx.db
+        .select({
+          id: forumPostDigestView.id,
+          title: forumPostDigestView.title,
+          userKey: forumPostDigestView.userKey,
+          isAnonymous: forumPostDigestView.isAnonymous,
+          categoryName: forumPostDigestView.categoryName,
+          href: forumPostDigestView.href,
+          createdAt: forumPostDigestView.createdAt,
+          downvotes: forumPostDigestView.downvotes,
+          upvotes: forumPostDigestView.upvotes,
+          categoryId: forumPostDigestView.categoryId,
+          isPinned: forumPostDigestView.isPinned,
+          commentCount: forumPostDigestView.commentCount,
+          viewCount: forumPostViewCountSchema.viewCount,
+        })
+        .from(forumPostDigestView)
+        .leftJoin(
+          forumPostViewCountSchema,
+          eq(forumPostDigestView.id, forumPostViewCountSchema.postId),
+        )
+        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+        .orderBy(
+          desc(forumPostDigestView.isPinned),
+          input.sortOrder === "DESC" ? desc(sortByColumn) : asc(sortByColumn),
+        )
+        .limit(input.pageSize)
+        .offset(offset);
 
       const totalPages = Math.ceil(totalPosts / input.pageSize);
 
@@ -92,7 +94,7 @@ export const forumRouter = {
         totalPosts,
         totalPages,
       };
-  }),
+    }),
   byId: publicProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
@@ -116,7 +118,7 @@ export const forumRouter = {
         .from(forumPostDigestView)
         .leftJoin(
           forumPostViewCountSchema,
-          eq(forumPostDigestView.id, forumPostViewCountSchema.postId)
+          eq(forumPostDigestView.id, forumPostViewCountSchema.postId),
         )
         .where(eq(forumPostDigestView.id, input.id))
         .limit(1);
@@ -132,8 +134,8 @@ export const forumRouter = {
         .where(
           and(
             eq(forumCommentSchema.postId, input.postId),
-            sql`${forumCommentSchema.deletedAt} IS NULL`
-          )
+            sql`${forumCommentSchema.deletedAt} IS NULL`,
+          ),
         )
         .orderBy(asc(forumCommentSchema.createdAt));
       return comments;
@@ -156,7 +158,7 @@ export const forumRouter = {
         .orderBy(forumCategoriesSchema.name);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore 
+      // @ts-ignore
       cachedCategories = categories;
       cacheTimestamp = now;
 
@@ -188,41 +190,45 @@ export const forumRouter = {
   getPostVotesByUserId: publicProcedure
     .input(
       z.object({
-       userKey: z.string(),
-      })
+        userKey: z.string(),
+      }),
     )
     .query(async ({ ctx, input }) => {
-    try {
-      const votes = await ctx.db.query.forumPostVotesSchema.findMany({
-        where: input.userKey ? eq(forumPostVotesSchema.userKey, input.userKey) : undefined,
-      })
+      try {
+        const votes = await ctx.db.query.forumPostVotesSchema.findMany({
+          where: input.userKey
+            ? eq(forumPostVotesSchema.userKey, input.userKey)
+            : undefined,
+        });
 
-      return votes;
-
-    } catch (error) {
-      console.error("Error fetching views by id:", error);
-      throw new Error("Something went wrong while fetching views by id.");
-    }
-  }),
+        return votes;
+      } catch (error) {
+        console.error("Error fetching views by id:", error);
+        throw new Error("Something went wrong while fetching views by id.");
+      }
+    }),
 
   getPostVotesByPostId: publicProcedure
-  .input(
-    z.object({
-      postId: z.string()
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    try {
-      const votes = await ctx.db.query.forumPostVotesSchema.findMany({
-        where: input.postId ? eq(forumPostVotesSchema.postId, input.postId) : undefined,
-      })
-      return votes;
-
-    } catch (error) {
-      console.error("Error fetching votes by post id:", error);
-      throw new Error("Something went wrong while fetching votes by post id.");
-    }
-  }),
+    .input(
+      z.object({
+        postId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const votes = await ctx.db.query.forumPostVotesSchema.findMany({
+          where: input.postId
+            ? eq(forumPostVotesSchema.postId, input.postId)
+            : undefined,
+        });
+        return votes;
+      } catch (error) {
+        console.error("Error fetching votes by post id:", error);
+        throw new Error(
+          "Something went wrong while fetching votes by post id.",
+        );
+      }
+    }),
 
   // POST
   createPost: authenticatedProcedure
@@ -234,15 +240,14 @@ export const forumRouter = {
         content: z.string().optional(),
         href: z.string().url().optional(),
         categoryId: z.number().int(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-
         // Ensure either content or href is provided, but not both
         if (!(input.content || input.href) || (input.content && input.href)) {
           throw new Error(
-            "Either content or href must be provided, but not both."
+            "Either content or href must be provided, but not both.",
           );
         }
 
@@ -253,8 +258,8 @@ export const forumRouter = {
           .where(
             and(
               eq(forumCategoriesSchema.id, input.categoryId),
-              sql`${forumCategoriesSchema.deletedAt} IS NULL`
-            )
+              sql`${forumCategoriesSchema.deletedAt} IS NULL`,
+            ),
           )
           .limit(1);
 
@@ -287,7 +292,7 @@ export const forumRouter = {
         userKey: z.string(),
         postId: z.string().uuid(),
         content: z.string().min(1),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const newComment = await ctx.db
@@ -307,43 +312,45 @@ export const forumRouter = {
         userKey: z.string(),
         postId: z.string().uuid(),
         voteType: z.enum(["UPVOTE", "DOWNVOTE"]),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const existingVote = await ctx.db.query.forumPostVotesSchema.findFirst({
+          where: and(
+            eq(forumPostVotesSchema.postId, input.postId),
+            eq(forumPostVotesSchema.userKey, input.userKey),
+          ),
+        });
 
-          const existingVote = await ctx.db.query.forumPostVotesSchema.findFirst({
-            where: and(
-              eq(forumPostVotesSchema.postId, input.postId),
-              eq(forumPostVotesSchema.userKey, input.userKey)
-            ),
-          });
-
-          if (existingVote?.voteType === input.voteType) {
-            await ctx.db.delete(forumPostVotesSchema).where(eq(forumPostVotesSchema.id, existingVote.id));
-            return { success: true };
-          }
-    
-          if (existingVote) {
-            await ctx.db.update(forumPostVotesSchema)
-              .set({ voteType: input.voteType })
-              .where(eq(forumPostVotesSchema.id, existingVote.id));
-          } else {
-            await ctx.db.insert(forumPostVotesSchema).values({
-              postId: input.postId,
-              userKey: input.userKey,
-              voteType: input.voteType,
-            });
-          }
-    
+        if (existingVote?.voteType === input.voteType) {
+          await ctx.db
+            .delete(forumPostVotesSchema)
+            .where(eq(forumPostVotesSchema.id, existingVote.id));
           return { success: true };
-        } catch (error) {
-          console.error("Error processing vote:", error);
-          throw new Error("Something went wrong while processing the vote.");
         }
-      }),
 
-      // TODO: IMPLEMENT UPDATE COMMENTS FUNCTIONALITY
+        if (existingVote) {
+          await ctx.db
+            .update(forumPostVotesSchema)
+            .set({ voteType: input.voteType })
+            .where(eq(forumPostVotesSchema.id, existingVote.id));
+        } else {
+          await ctx.db.insert(forumPostVotesSchema).values({
+            postId: input.postId,
+            userKey: input.userKey,
+            voteType: input.voteType,
+          });
+        }
+
+        return { success: true };
+      } catch (error) {
+        console.error("Error processing vote:", error);
+        throw new Error("Something went wrong while processing the vote.");
+      }
+    }),
+
+  // TODO: IMPLEMENT UPDATE COMMENTS FUNCTIONALITY
   // updateComment: authenticatedProcedure
   //   .input(
   //     z.object({
@@ -367,7 +374,7 @@ export const forumRouter = {
   //     return { success: result.count > 0 };
   //   }),
 
-// TODO: IMPLEMENT DELETE COMMENTS FUNCTIONALITY
+  // TODO: IMPLEMENT DELETE COMMENTS FUNCTIONALITY
   // deleteComment: authenticatedProcedure
   //   .input(
   //     z.object({
@@ -389,7 +396,7 @@ export const forumRouter = {
   //     return { success: result.count > 0 };
   //   }),
 
-    // TODO: IMPLEMENT PIN POST FUNCTIONALITY
+  // TODO: IMPLEMENT PIN POST FUNCTIONALITY
   // pinPost: authenticatedProcedure // This should be restricted to admins
   //   .input(z.object({ postId: z.string().uuid(), isPinned: z.boolean() }))
   //   .mutation(async ({ ctx, input }) => {
@@ -410,8 +417,8 @@ export const forumRouter = {
         .where(
           and(
             eq(forumPostSchema.id, input.postId),
-            sql`${forumPostSchema.deletedAt} IS NULL`
-          )
+            sql`${forumPostSchema.deletedAt} IS NULL`,
+          ),
         )
         .limit(1);
 

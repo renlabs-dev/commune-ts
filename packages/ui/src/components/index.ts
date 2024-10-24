@@ -135,16 +135,15 @@ export {
   TableCaption,
 } from "./table";
 export { Separator } from "./separator";
-export { 
-  Pagination, 
-  PaginationContent, 
+export {
+  Pagination,
+  PaginationContent,
   PaginationEllipsis,
-  PaginationItem, 
+  PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious 
+  PaginationPrevious,
 } from "./pagination";
-
 
 export {
   ChartContainer,

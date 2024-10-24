@@ -6,14 +6,15 @@ import { CheckIcon } from "@radix-ui/react-icons";
 
 import { cn } from ".";
 
-interface CheckboxProps extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
+interface CheckboxProps
+  extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
   iconColor?: string;
 }
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   CheckboxProps
->(({ className, iconColor = '', ...props }, ref) => (
+>(({ className, iconColor = "", ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(

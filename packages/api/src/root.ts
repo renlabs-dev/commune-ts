@@ -1,9 +1,9 @@
 import { authRouter } from "./router/auth";
 import { daoRouter } from "./router/dao";
+import { forumRouter } from "./router/forum";
 import { moduleRouter } from "./router/module";
 import { proposalCommentRouter } from "./router/proposal-comment";
 import { subnetRouter } from "./router/subnet";
-import { forumRouter } from "./router/forum";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
