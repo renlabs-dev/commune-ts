@@ -4,12 +4,12 @@ Communai Ai provides a [public testnet](https://telemetry.testnet.communeai.net/
 
 ## Connecting To Testnet Nodes
 
-If you want to perform any onchain operation on a testnet, with CLI, simply pass the **--testnet** flag 
+If you want to perform any onchain operation on a testnet, with CLI, simply pass the **--testnet** flag
 
 Structure usage
 
 ```bash
-comx --testnet [SUBCOMMAND] COMMAND [ARGS] 
+comx --testnet [SUBCOMMAND] COMMAND [ARGS]
 ```
 
 For example, list your balances on a testnet by
@@ -18,6 +18,10 @@ For example, list your balances on a testnet by
 comx --testnet key balances
 ```
 
-### Faucet 
+### Faucet
 
-The faucet functionality is planned, and will soon be introduced as a POW token generation method for the testnet.
+To run a faucet
+
+```bash
+comx --testnet balance run-faucet <key>
+```

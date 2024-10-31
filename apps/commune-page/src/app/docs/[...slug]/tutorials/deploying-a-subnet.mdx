@@ -8,33 +8,22 @@ First follow the guides at:
 ## Registering a New Subnet
 
 After you have your full subnet code ready, according to all of the predefined requirements.
-Proceed with registering a new subnet storage. The cost of doing so might vary based on several factors, where the primary factor is whether the maximum amount of subnets is registered.
-In the case that the protocol has reached the subnet limit, you have to deploy more tokens than the **least staked** subnet in order to register.
+Proceed with registering a new subnet storage. 
 
 You can register a new subnet by proceeding with the following command:
 
 ```bash
-comx module register <name> <key-name>  [--new-subnet-name <your-subnet-name>]
+comx subnet register <key-name> <subnet-name>  [--metadata]
 ```
 
-In case the subnet storage is full, which you can see by listing all of the subnets
+Note that you will be asked to pay a subnet burn fee, these tokens will be permanently lost.
+To determine the cost beforehand, you can query:
 
 ```bash
-comx subnet list
+comx subnet params
 ```
 
-And then comparing it to the **max_allowed_subnets** field, which you can query by
-
-```bash
-comx network params
-```
-
-Then you will have to pass a large enough stake value.
-
-```bash
-comx module register <name> <key-name>  [--new-subnet-name <your-subnet-name>] [--stake <amount-higher-than-lowest-subnet-stake>]
-```
+and look for the *subnet_registration_cost* field.
 
 After you registered your subnet, you are still not eligible for an emission distribution.
-For **emissions** to start your subnet will have to pass the **subnet_stake_threshold** global parameter field, in the moment of writing, defined as 5% of the overall network stake.
-To accomplish this, we would recommend reaching out to the community and pitching your idea, into convincing members why they should stake to your subnet.
+For **emissions** to start your subnet there will need to be enough consensus weight set on it by rootnet validators.

@@ -1,0 +1,212 @@
+# EVM
+
+EVM (Ethereum Virtual Machine): A computation engine that handles smart contract deployment and execution in Ethereum-compatible blockchains.
+
+Commune is EVM compatible, we are currently in the process of **testing** this feature on our **testnet**
+
+## EVM Tutorials
+
+### Installation
+
+First, install the required Python packages:
+
+```bash
+pip install substrate-interface eth-account web3 python-dotenv communex
+```
+
+### Environment Setup
+
+Create a `.env` file in your project root and initialize it with the following:
+
+```env
+ETH_PRIVATE_KEY=your_private_key_here
+SUBSTRATE_PRIVATE_KEY=your_sub_seed_here
+RPC_URL=https://testnet.api.communeai.net
+WS_URL=wss://testnet.api.communeai.net
+```
+
+Replace `your_private_key_here` and `your_sub_seed_here` with your actual keys.
+
+### Getting Funds to EVM
+
+To interact with smart contracts and use EVM features on Commune, you need to have funds in your EVM-compatible address. This section explains how to transfer funds from your native Commune address to your EVM address.
+
+The EVM in Commune uses the secp256k1 key type, which differs from the native mainnet keys of type sr25519. To deploy your funds on the EVM, you'll need to use address mapping, converting your ss58 address to the corresponding h160 address.
+
+#### Using MetaMask
+
+1. Install [MetaMask](https://metamask.io/) browser extension if you haven't already.
+2. Click on the network dropdown in MetaMask and select "Add Network".
+3. Enter the following details:
+   - Network Name: Commune Testnet
+   - New RPC URL: https://testnet.api.communeai.net
+   - Chain ID: 9461
+   - Currency Symbol: COMAI
+   - Explorer: https://communeai.tryethernal.com/
+4. Click "Save" to add the network.
+5. Your MetaMask address is now your h160 address on the Commune EVM.
+
+#### Transfer Using Python
+
+```py
+import os
+import asyncio
+from dotenv import load_dotenv
+from substrateinterface import SubstrateInterface, Keypair
+from eth_account import Account
+from web3 import Web3
+from eth_utils import to_bytes
+from scalecodec.utils.ss58 import ss58_encode
+import hashlib
+from communex.client import CommuneClient
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access environment variables
+ETH_PRIVATE_KEY = os.getenv('ETH_PRIVATE_KEY')
+SUBSTRATE_PRIVATE_KEY = os.getenv('SUBSTRATE_PRIVATE_KEY')
+RPC_URL = os.getenv('RPC_URL')
+WS_URL = os.getenv('WS_URL')
+def convert_h160_to_ss58(eth_address):
+    # Ensure the eth_address starts with '0x'
+    if not eth_address.startswith('0x'):
+        eth_address = '0x' + eth_address
+
+    # Convert the prefix to bytes
+    prefix = b'evm:'
+
+    # Convert the Ethereum address to bytes
+    address_bytes = to_bytes(hexstr=eth_address)
+
+    # Combine prefix and address
+    combined = prefix + address_bytes
+
+    # Hash the combined data using Blake2 256-bit
+    blake2_hash = hashlib.blake2b(combined, digest_size=32).digest()
+
+    # Convert the public key to SS58 format
+    ss58_address = ss58_encode(blake2_hash, ss58_format=42)  # Using 42 as the network ID, adjust as needed
+
+    return ss58_address
+
+
+async def perform_transfer():
+    keypair = Keypair.create_from_uri(SUBSTRATE_PRIVATE_KEY)
+
+    eth_account = Account.from_key(ETH_PRIVATE_KEY)
+    recipient_ethereum_address = eth_account.address
+
+    ss58_address = convert_h160_to_ss58(recipient_ethereum_address)
+    print(f"Mirror: {ss58_address}")
+
+    amount = 10_000_000_000 # 10 tokens
+
+    client = CommuneClient(WS_URL)
+
+    print(client.transfer(key=keypair, dest=ss58_address, amount=amount))
+    print(f"Transfer sent to {recipient_ethereum_address} (its ss58 mirror address is: {ss58_address})")
+
+if __name__ == "__main__":
+    asyncio.run(perform_transfer())
+
+```
+
+You should now have funds in your EVM account.
+
+### Deploying A Smartcontract
+
+*Adapation of: Moonbeam article at [https://docs.moonbeam.network/builders/ethereum/dev-env/remix/](https://docs.moonbeam.network/builders/ethereum/dev-env/remix/)*
+
+Now that you have some funds in your EVM account, you can deploy a smart contract.
+
+#### Getting to Know Remix
+
+When you visit [Remix](https://remix.ethereum.org/), you'll notice it is divided into four main sections:
+
+1. Plugin panel: This area displays icons for each preloaded plugin, the plugin manager, and settings menu. You'll see icons for File explorer, Search in files, Solidity compiler, and Deploy and run transactions. As you activate more plugins, their icons will appear here too.
+
+2. Side panel: This shows the content of the currently active plugin. By default, you'll see the File explorer, which displays your workspace and files. Clicking other icons in the plugin panel will switch the content here.
+
+3. Main panel: This is where you'll do most of your work. It opens with a "Home" tab full of helpful resources. You can always reopen this by clicking the blue Remix icon in the top left. As you open files, they'll appear as tabs here.
+
+4. Terminal: This works like a standard terminal. You can run scripts, view logs, and even interact with Ethers and Web3 JavaScript libraries directly.
+
+#### Creating Your Smart Contract
+
+Let's create a simple ERC-20 token contract:
+
+1. In the File explorer, click the new file icon.
+2. Name your new file `MyToken.sol`.
+3. In the main panel, paste this code:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MyToken is ERC20 {
+    constructor(uint256 initialSupply) ERC20("MyToken", "MYTOK") {
+        _mint(msg.sender, initialSupply);
+    }
+}
+```
+
+This contract creates a token called "MyToken" with the symbol "MYTOK". It mints the initial supply to the contract creator.
+
+#### Compiling Your Contract
+
+Before compiling, make sure you've selected the right file in the File explorer. Then:
+
+1. Click the Solidity Compiler icon in the plugin panel.
+2. Check that the compiler version matches your contract requirements. For this example, you need 0.8.20 or newer to be compatible with OpenZeppelin's `ERC20.sol`.
+3. If you want, you can check "Auto compile" for automatic recompilation when you make changes.
+4. Click "Compile MyToken.sol".
+
+A green checkmark will appear next to the Solidity compiler icon if compilation is successful.
+
+#### Deploying to Commune
+
+Now, let's deploy your contract to Commune:
+
+1. Select the Deploy and run transactions plugin.
+2. From the "ENVIRONMENT" dropdown, choose your wallet (e.g., "Injected Provider - MetaMask").
+3. Connect your wallet to Remix when prompted.
+4. Ensure you're connected to the Commune network in your wallet.
+5. Keep the default gas limit of 3,000,000.
+6. For "VALUE", leave it as 0.
+7. Make sure `MyToken.sol` is selected in the "CONTRACT" dropdown.
+8. For initial supply, let's use 8 million tokens: 8000000000000000000000000 (remember, ERC-20 tokens typically use 18 decimal places).
+9. Click "Deploy" and confirm the transaction in your wallet.
+
+Once deployed, you'll see transaction details in the Remix terminal and your contract will appear under "Deployed Contracts".
+
+#### Interacting with Your Contract
+
+Under "Deployed Contracts", you'll see all the functions you can interact with:
+
+- Orange buttons are for non-payable functions that write to the blockchain.
+- Red buttons are for payable functions that write to the blockchain.
+- Blue buttons are for functions that only read data.
+
+To use a function:
+1. Click on its name to expand it.
+2. Fill in any required parameters.
+3. Click the function button to execute it.
+
+For example, to use the `approve` function:
+1. Enter the spender's address (e.g., 0x3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0).
+2. Enter the amount to approve (e.g., 10000000000000000000 for 10 tokens).
+3. Click "transact" and confirm in your wallet.
+
+To view your balance or transfer tokens, you'll need to add the token to your wallet. Check your wallet's documentation for instructions on adding custom tokens.
+
+Remember, every interaction that changes the blockchain state will require a transaction, so keep an eye on your wallet for confirmation prompts.
+
+
+#### Precompiles
+
+Precompiles: Built-in contracts that can directly access and modify the blockchain's runtime storage, enabling powerful core-level operations.
+
+We are actively working on completing the documentation for precompiles. In the meantime, you can refer to our [Subspace Precompiles Section](https://github.com/renlabs-dev/subspace-network/tree/feat/merged-weight-copying/runtime/src/precompiles) for preliminary information.

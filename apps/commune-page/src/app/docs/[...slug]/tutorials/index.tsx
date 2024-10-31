@@ -25,7 +25,6 @@ import RunningPrivateChain from "./running-private-chain.mdx";
 // Installation
 import SetupCommune from "./setup-commune.mdx";
 import SetupWallet from "./setup-wallet.mdx";
-import SubnetList from "./subnet-list.mdx";
 import SubnetParameters from "./subnet-parameters.mdx";
 import SubnetTemplate from "./subnet-template.mdx";
 import Testnet from "./testnet.mdx";
@@ -40,6 +39,8 @@ import WhatIsMining from "./what-is-mining.mdx";
 import WhatIsValidating from "./what-is-validating.mdx";
 import YumaConsensus from "./yuma-consensus.mdx";
 import YumaSubnets from "./yuma-subnets.mdx";
+import RootSubnet from "./root-subnet.mdx";
+import EVM from "./evm.mdx";
 
 const gettingStartedSection = [
   {
@@ -146,10 +147,10 @@ const subnetsSection = [
     name: "Yuma Subnets",
   },
   {
-    component: <SubnetList />,
-    href: `subnet-list`,
-    name: "Subnet List",
-  },
+    component: <RootSubnet />,
+    href: `root-subnet`,
+    name: "Root Subnet",
+  }
 ];
 
 const workingWithKeysSection = [
@@ -217,11 +218,7 @@ const validatingSection = [
 //     href: `deploy-subnet`,
 //     name: 'Deploy a subnet',
 //   },
-//   {
-//     component: <SubnetList />,
-//     href: `subnet-list`,
-//     name: 'Subnet List',
-//   },
+
 //   {
 //     component: <StakeThresholdCalcualtion />,
 //     href: `subnet-threshold-calculation`,
@@ -264,6 +261,11 @@ const subspaceSection = [
     component: <Testnet />,
     href: `testnet`,
     name: "Testnet",
+  },
+  {
+    component: <EVM />,
+    href: `evm`,
+    name: "EVM",
   },
   {
     component: <RunningLocalNode />,

@@ -2,7 +2,7 @@
 
 Subnet parameters are local to each subnet and do not impact anything outside of it. They provide a set of tools for the subnet founder to configure its constraints to optimize its functioning.
 
-## Fields
+## Important Fields
 
 - **name**: The name of the subnet.
 
@@ -34,4 +34,16 @@ To list the parameters on a certain subnet
 
 ```bash
 comx subnet info <subnet-id>
+```
+
+Or for all subnets
+
+```bash
+comx subnet list
+``` 
+
+To update subnet parameters on your subnet
+
+```bash
+comx subnet update <founder-key> <netuid> [--param 1] [--param 2]
 ```
