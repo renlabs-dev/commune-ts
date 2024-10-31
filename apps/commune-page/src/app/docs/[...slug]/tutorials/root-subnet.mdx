@@ -1,0 +1,7 @@
+## Root Subnet
+
+The root subnet operates with **Root** consensus and is maintained by the protocol itself. Users cannot register this subnet.
+
+The root subnet controls emission distribution across other protocol subnets. Instead of traditional miners, it uses subnets as miners. To become a validator on the root subnet, your stake must exceed that of the lowest-staked validator. The subnet has a 256-validator limit.
+
+Root subnet consensus is determined by a weight-stake distribution through a sigmoid function, whose steepness is controlled by network parameters.
