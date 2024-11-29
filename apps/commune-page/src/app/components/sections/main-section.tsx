@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { landingPageButtons, links } from "@commune-ts/ui";
 
-import Animation from "../animation";
+import { CubeObject } from "../cube-object";
 import { ViewMoreModal } from "../view-more-modal";
 
 export function MainSection(): JSX.Element {
@@ -23,9 +23,9 @@ export function MainSection(): JSX.Element {
   return (
     <div id="hero" className="flex justify-center">
       <div
-        className={`animate-fade opacity-20 transition duration-700 animate-delay-700`}
+        className={`absolute h-full w-full animate-fade opacity-20 transition duration-700 animate-delay-700`}
       >
-        <Animation />
+        <CubeObject />
       </div>
       <div
         className={`mt-4 h-full w-full max-w-screen-2xl flex-col lg:mt-0 ${viewMoreIsVisible ? "hidden" : "flex"}`}
@@ -78,7 +78,7 @@ export function MainSection(): JSX.Element {
             <Link href={links.discord}>
               <button
                 onClick={handleButtonClick}
-                className=" relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:hidden lg:w-fit"
+                className="relative inline-flex w-full animate-fade-up items-center justify-center gap-2 border border-white/20 bg-[#898989]/5 px-4 py-2 text-gray-400 backdrop-blur-md transition duration-300 animate-delay-500 hover:border-green-500 hover:bg-green-500/10 lg:hidden lg:w-fit"
               >
                 <Image
                   src="/join-community.svg"

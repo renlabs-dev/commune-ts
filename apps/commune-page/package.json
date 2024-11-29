@@ -17,11 +17,13 @@
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
     "@next/mdx": "^14.2.5",
+    "@react-three/drei": "^9.117.3",
+    "@react-three/fiber": "^8.17.10",
     "@t3-oss/env-nextjs": "catalog:",
     "@types/mdx": "^2.0.13",
     "@types/three": "^0.165.0",
-    "gsap": "^3.12.5",
-    "lil-gui": "^0.19.2",
+    "lamina": "^1.1.23",
+    "leva": "^0.9.35",
     "next": "catalog:",
     "parse-numeric-range": "^1.3.0",
     "react": "catalog:react18",
@@ -46,7 +48,6 @@
     "@types/react-dom": "catalog:react18",
     "jiti": "catalog:",
     "postcss": "catalog:",
-    "raw-loader": "^4.0.2",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
