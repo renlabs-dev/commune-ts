@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { Loading } from "@commune-ts/ui/loading";
-
 import { MainSection } from "./components/sections/main-section";
 
 export const metadata: Metadata = {
@@ -14,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Page(): JSX.Element {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={null}>
       <MainSection />
     </Suspense>
   );
