@@ -1,0 +1,3 @@
+environmentName: dev
+
+wssApiEndpoint: wss://testnet.api.communeai.net
