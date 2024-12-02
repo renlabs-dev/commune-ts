@@ -47,6 +47,11 @@ deployment:
         secretKeyRef: 
           name: '{{ .Values.environmentName }}-web-apps-secret'
           key: community_validator_db_url
+    DAO_NOTIFIER_DISCORD_WEBHOOK_URL:
+      valueFrom:
+        secretKeyRef: 
+          name: '{{ .Values.environmentName }}-web-apps-secret'
+          key: dao_notifier_discord_webhook_url
 
   additionalContainers:
     - name: module-fetcher
