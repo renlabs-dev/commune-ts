@@ -35,6 +35,14 @@ deployment:
     enabled: false
   livenessProbe:
     enabled: false
+  
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 1
+    requests:
+      memory: 200Mi
+      cpu: 0.4
 
   env:
     COMMUNITY_VALIDATOR_MNEMONIC:
@@ -66,6 +74,13 @@ deployment:
       useMainEnv: true
       command: ["pnpm"]
       args: ["tsx", "./src/index.ts", "module-fetcher"]
+      resources:
+        limits:
+          memory: 500Mi
+          cpu: 0.5
+        requests:
+          memory: 280Mi
+          cpu: 0.25
 
     - name: subnet-fetcher
       image:
@@ -79,6 +94,13 @@ deployment:
       useMainEnv: true
       command: ["pnpm"]
       args: ["tsx", "./src/index.ts", "subnet-fetcher"]
+      resources:
+        limits:
+          memory: 256Mi
+          cpu: 0.3
+        requests:
+          memory: 180Mi
+          cpu: 0.02
 
     - name: weight-aggregator
       image:
@@ -92,4 +114,11 @@ deployment:
       useMainEnv: true
       command: ["pnpm"]
       args: ["tsx", "./src/index.ts", "weight-aggregator"]
+      resources:
+        limits:
+          memory: 350Mi
+          cpu: 0.3
+        requests:
+          memory: 200Mi
+          cpu: 0.05
 
