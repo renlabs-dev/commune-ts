@@ -1,0 +1,20 @@
+cacheUrl: ""
+
+deployment:
+  image:
+    repository: ghcr.io/renlabs-dev/commune-cache
+
+  command: ["pnpm"]
+  args: ["tsx", "./src/index.ts"]
+
+  startupProbe:
+    httpGet:
+      path: /api/stake-out
+
+  readinessProbe:
+    httpGet:
+      path: /api/stake-out
+
+  livenessProbe:
+    httpGet:
+      path: /api/stake-out

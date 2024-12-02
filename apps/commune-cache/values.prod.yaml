@@ -1,0 +1,10 @@
+environmentName: prod
+
+wssApiEndpoint: wss://api.communeai.net
+
+ingress:
+  hosts:
+    - host: cache.communeai.org
+      paths:
+      - path: /
+        pathType: Prefix
