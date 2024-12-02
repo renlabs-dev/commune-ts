@@ -1,0 +1,15 @@
+deployment:
+  image:
+    repository: ghcr.io/renlabs-dev/community-validator
+
+  env:
+    JWT_SECRET:
+      valueFrom:
+        secretKeyRef: 
+          name: '{{ .Values.environmentName }}-web-apps-secret'
+          key: jwt_secret
+    POSTGRES_URL:
+      valueFrom:
+        secretKeyRef: 
+          name: '{{ .Values.environmentName }}-web-apps-secret'
+          key: community_validator_db_url

@@ -1,0 +1,90 @@
+cacheUrl: ""
+
+ingress:
+  enabled: false
+
+service:
+  enabled: false
+
+configMap:
+  enabled: true
+  files:
+    module-fetcher:
+      PORT: "8001"
+      NEXT_PUBLIC_PORT: "8001"
+    subnet-fetcher:
+      PORT: "8002"
+      NEXT_PUBLIC_PORT: "8002"
+    weight-aggregator:
+      PORT: "8003"
+      NEXT_PUBLIC_PORT: "8003"
+    
+deployment:
+  containerName: dao
+  image:
+    repository: ghcr.io/renlabs-dev/commune-worker
+
+  command: ["pnpm"]
+  args: ["tsx", "./src/index.ts", "dao"]
+
+  ports: []
+
+  startupProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+
+  env:
+    COMMUNITY_VALIDATOR_MNEMONIC:
+      valueFrom:
+        secretKeyRef: 
+          name: '{{ .Values.environmentName }}-web-apps-secret'
+          key: community_validator_mnemonic
+    POSTGRES_URL:
+      valueFrom:
+        secretKeyRef: 
+          name: '{{ .Values.environmentName }}-web-apps-secret'
+          key: community_validator_db_url
+
+  additionalContainers:
+    - name: module-fetcher
+      image:
+        repository: 
+          fromMain: true 
+        tag: 
+          fromMain: true
+      envFrom:
+      - configMapRef:
+          name: '{{ .Release.Name }}-module-fetcher'
+      useMainEnv: true
+      command: ["pnpm"]
+      args: ["tsx", "./src/index.ts", "module-fetcher"]
+
+    - name: subnet-fetcher
+      image:
+        repository: 
+          fromMain: true 
+        tag: 
+          fromMain: true
+      envFrom:
+      - configMapRef:
+          name: '{{ .Release.Name }}-subnet-fetcher'
+      useMainEnv: true
+      command: ["pnpm"]
+      args: ["tsx", "./src/index.ts", "subnet-fetcher"]
+
+    - name: weight-aggregator
+      image:
+        repository: 
+          fromMain: true 
+        tag: 
+          fromMain: true
+      envFrom:
+      - configMapRef:
+          name: '{{ .Release.Name }}-weight-aggregator'
+      useMainEnv: true
+      command: ["pnpm"]
+      args: ["tsx", "./src/index.ts", "weight-aggregator"]
+
