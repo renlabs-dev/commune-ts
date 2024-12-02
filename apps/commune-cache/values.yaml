@@ -4,6 +4,14 @@ deployment:
   image:
     repository: ghcr.io/renlabs-dev/commune-cache
 
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 1
+    requests:
+      memory: 320Mi
+      cpu: 0.3
+
   command: ["pnpm"]
   args: ["tsx", "./src/index.ts"]
 
