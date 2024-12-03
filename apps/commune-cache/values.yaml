@@ -20,9 +20,13 @@ deployment:
       path: /api/stake-out
 
   readinessProbe:
+    periodSeconds: 30
+    timeoutSeconds: 3
     httpGet:
       path: /api/stake-out
 
   livenessProbe:
+    periodSeconds: 30
+    timeoutSeconds: 3
     httpGet:
       path: /api/stake-out
