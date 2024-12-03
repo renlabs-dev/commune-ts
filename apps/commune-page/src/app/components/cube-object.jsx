@@ -79,7 +79,7 @@ function Cube(props) {
         <Fresnel
           mode="add"
           color="white"
-          intensity={0.5}
+          intensity={0.4}
           power={1.5}
           bias={0.05}
         />
