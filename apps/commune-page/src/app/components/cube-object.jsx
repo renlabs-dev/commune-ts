@@ -1,23 +1,21 @@
 // @ts-nocheck
 import { useRef } from "react";
-import { Bounds, Edges, useGLTF } from "@react-three/drei";
+import { Bounds, Edges } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-// use ↓ "DebugLayerMaterial as LayerMaterial" ↓ here for integrated leva debug panels
 import { Depth, Fresnel, LayerMaterial } from "lamina";
-import { useControls } from "leva";
 
 export const CubeObject = () => (
   <Canvas
     orthographic
     dpr={[2, 4]}
-    camera={{ position: [0, 0, 10], zoom: 200 }}
+    camera={{ position: [0, 0, 20], zoom: 400 }}
   >
     <group rotation={[Math.PI / 5, -Math.PI / 5, Math.PI / 2]}>
-      <Bounds fit clip observe margin={1.6}>
-        <Cursor scale={[0.5, 1, 0.5]} opacity={0.5} />
+      <Bounds clip observe margin={1.6}>
+        <Cube scale={[1, 1, 1]} opacity={0.5} position={[0.25, 0, 0]} />
       </Bounds>
       <gridHelper
-        args={[10, 40, "#101010", "#050505"]}
+        args={[10, 40, "#191919", "#191919"]}
         position={[-0.25, 0, 0]}
         rotation={[0, 0, Math.PI / 2]}
       />
@@ -25,11 +23,8 @@ export const CubeObject = () => (
   </Canvas>
 );
 
-function Cursor(props) {
+function Cube(props) {
   const ref = useRef();
-  const { nodes } = useGLTF("/cursor.glb");
-
-  const gradient = { value: 0.7, min: 0, max: 1 };
 
   // Animate gradient
   useFrame((state) => {
@@ -42,7 +37,8 @@ function Cursor(props) {
   });
 
   return (
-    <mesh {...props} geometry={nodes.Cube.geometry}>
+    <mesh {...props}>
+      <boxGeometry args={[1, 1, 1]} />
       <LayerMaterial ref={ref} toneMapped={false}>
         <Depth
           colorA="#ff0080"
