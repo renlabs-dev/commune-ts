@@ -4,11 +4,13 @@ environments:
       - releasePrefix: dev-commune-worker
       - environmentName: dev
       - wssApiEndpoint: wss://testnet.api.communeai.net
+      - namespace: commune-dev-web-apps
   prod:
     values:
       - releasePrefix: commune-worker
       - environmentName: prod
       - wssApiEndpoint: wss://api.communeai.net
+      - namespace: commune-prod-web-apps
 
 ---
 helmDefaults:
@@ -21,7 +23,7 @@ repositories:
 
 releases:
   - name: '{{ .Values.releasePrefix }}-dao'
-    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
       - ../../values.yaml
@@ -40,7 +42,7 @@ releases:
               cpu: 0.4
 
   - name: '{{ .Values.releasePrefix }}-module-fetcher'
-    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
       - ../../values.yaml
@@ -59,7 +61,7 @@ releases:
               cpu: 0.25
   
   - name: '{{ .Values.releasePrefix }}-subnet-fetcher'
-    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
       - ../../values.yaml
@@ -78,7 +80,7 @@ releases:
               cpu: 0.02
 
   - name: '{{ .Values.releasePrefix }}-weight-aggregator'
-    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
       - ../../values.yaml
