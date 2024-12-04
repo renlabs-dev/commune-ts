@@ -1,0 +1,43 @@
+environments:
+  dev:
+    values:
+      - ../../helm/values.yaml
+      - values.yaml
+      - namespace: commune-dev-web-apps
+      - environmentName: dev
+      - wssApiEndpoint: wss://testnet.api.communeai.net
+      - cacheUrl: https://dev.cache.communeai.org
+      - releaseName: dev-commune-wallet
+      - ingressHost: dev.wallet.communeai.org
+  prod:
+    values:
+      - ../../helm/values.yaml
+      - values.yaml
+      - namespace: commune-prod-web-apps
+      - environmentName: prod
+      - wssApiEndpoint: wss://api.communeai.net
+      - cacheUrl: https://cache.communeai.org
+      - releaseName: commune-wallet
+      - ingressHost: wallet.communeai.org
+
+---
+helmDefaults:
+  wait: true
+  createNamespace: false
+
+repositories:
+  - name: renlabs
+    url: https://charts.renlabs.dev/
+
+releases:
+  - name: '{{ .Values.releaseName }}'
+    namespace: '{{ .Values.namespace }}'
+    chart: renlabs/application
+    values:
+      - ../../helm/values.yaml.gotmpl
+      - ingress:
+          hosts:
+            - host: '{{ .Values.ingressHost }}'
+              paths:
+              - path: /
+                pathType: Prefix

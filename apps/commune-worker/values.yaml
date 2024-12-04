@@ -17,13 +17,10 @@ deployment:
       path: /api/health
 
   readinessProbe:
-    httpGet:
-      path: /api/health
+    enabled: false
 
   livenessProbe:
-    httpGet:
-      path: /api/health
-
+    enabled: false
 
   env:
     COMMUNITY_VALIDATOR_MNEMONIC:
