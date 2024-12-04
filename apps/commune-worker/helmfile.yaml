@@ -1,0 +1,99 @@
+environments:
+  dev:
+    values:
+      - releasePrefix: dev-commune-worker
+      - environmentName: dev
+      - wssApiEndpoint: wss://testnet.api.communeai.net
+  prod:
+    values:
+      - releasePrefix: commune-worker
+      - environmentName: prod
+      - wssApiEndpoint: wss://api.communeai.net
+
+---
+helmDefaults:
+  wait: true
+  createNamespace: false
+
+repositories:
+  - name: renlabs
+    url: https://charts.renlabs.dev/
+
+releases:
+  - name: '{{ .Values.releasePrefix }}-dao'
+    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    chart: renlabs/application
+    values:
+      - ../../values.yaml
+      - values.yaml
+      - environmentName: '{{ .Values.environmentName }}'
+      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - deployment:
+          containerName: dao
+          args: ["dao"]
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 1
+            requests:
+              memory: 200Mi
+              cpu: 0.4
+
+  - name: '{{ .Values.releasePrefix }}-module-fetcher'
+    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    chart: renlabs/application
+    values:
+      - ../../values.yaml
+      - values.yaml
+      - environmentName: '{{ .Values.environmentName }}'
+      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - deployment:
+          containerName: module-fetcher
+          args: ["module-fetcher"]
+          resources:
+            limits:
+              memory: 500Mi
+              cpu: 0.5
+            requests:
+              memory: 280Mi
+              cpu: 0.25
+  
+  - name: '{{ .Values.releasePrefix }}-subnet-fetcher'
+    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    chart: renlabs/application
+    values:
+      - ../../values.yaml
+      - values.yaml
+      - environmentName: '{{ .Values.environmentName }}'
+      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - deployment:
+          containerName: subnet-fetcher
+          args: ["subnet-fetcher"]
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 0.3
+            requests:
+              memory: 180Mi
+              cpu: 0.02
+
+  - name: '{{ .Values.releasePrefix }}-weight-aggregator'
+    namespace: 'commune-{{ .Environment.Name }}-web-apps'
+    chart: renlabs/application
+    values:
+      - ../../values.yaml
+      - values.yaml
+      - environmentName: '{{ .Values.environmentName }}'
+      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - deployment:
+          containerName: weight-aggregator
+          args: ["weight-aggregator"]
+          resources:
+            limits:
+              memory: 350Mi
+              cpu: 0.3
+            requests:
+              memory: 200Mi
+              cpu: 0.05
+
+    
