@@ -12,14 +12,18 @@ deployment:
 
   command: ["pnpm", "tsx", "./src/index.ts"]
 
-  ports: []
-
   startupProbe:
-    enabled: false
+    httpGet:
+      path: /api/health
+
   readinessProbe:
-    enabled: false
+    httpGet:
+      path: /api/health
+
   livenessProbe:
-    enabled: false
+    httpGet:
+      path: /api/health
+
 
   env:
     COMMUNITY_VALIDATOR_MNEMONIC:
