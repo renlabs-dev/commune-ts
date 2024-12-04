@@ -1,12 +1,16 @@
 environments:
   dev:
     values:
+      - ../../helm/values.yaml
+      - values.yaml
       - releasePrefix: dev-commune-worker
       - environmentName: dev
       - wssApiEndpoint: wss://testnet.api.communeai.net
       - namespace: commune-dev-web-apps
   prod:
     values:
+      - ../../helm/values.yaml
+      - values.yaml
       - releasePrefix: commune-worker
       - environmentName: prod
       - wssApiEndpoint: wss://api.communeai.net
@@ -26,10 +30,7 @@ releases:
     namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
-      - ../../values.yaml
-      - values.yaml
-      - environmentName: '{{ .Values.environmentName }}'
-      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - ../../helm/values.yaml.gotmpl
       - deployment:
           containerName: dao
           args: ["dao"]
@@ -45,10 +46,7 @@ releases:
     namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
-      - ../../values.yaml
-      - values.yaml
-      - environmentName: '{{ .Values.environmentName }}'
-      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - ../../helm/values.yaml.gotmpl
       - deployment:
           containerName: module-fetcher
           args: ["module-fetcher"]
@@ -64,10 +62,7 @@ releases:
     namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
-      - ../../values.yaml
-      - values.yaml
-      - environmentName: '{{ .Values.environmentName }}'
-      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - ../../helm/values.yaml.gotmpl
       - deployment:
           containerName: subnet-fetcher
           args: ["subnet-fetcher"]
@@ -83,10 +78,7 @@ releases:
     namespace: '{{ .Values.namespace }}'
     chart: renlabs/application
     values:
-      - ../../values.yaml
-      - values.yaml
-      - environmentName: '{{ .Values.environmentName }}'
-      - wssApiEndpoint: '{{ .Values.wssApiEndpoint }}'
+      - ../../helm/values.yaml.gotmpl
       - deployment:
           containerName: weight-aggregator
           args: ["weight-aggregator"]

@@ -40,13 +40,13 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f values.yaml -f apps/"$APP_NAME"/values.yaml
+        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
         -f apps/"$APP_NAME"/values."$env_name".yaml
         --set deployment.image.tag="$COMMIT_SHORT_SHA"
         --wait renlabs/application
@@ -110,13 +110,13 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f values.yaml -f apps/"$APP_NAME"/values.yaml
+        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
         -f apps/"$APP_NAME"/values."$env_name".yaml
         --set deployment.image.tag="$COMMIT_SHORT_SHA"
         --wait renlabs/application
@@ -179,7 +179,7 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application charts
@@ -246,13 +246,13 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f values.yaml -f apps/"$APP_NAME"/values.yaml
+        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
         -f apps/"$APP_NAME"/values."$env_name".yaml
         --set deployment.image.tag="$COMMIT_SHORT_SHA"
         --wait renlabs/application
@@ -316,13 +316,13 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f values.yaml -f apps/"$APP_NAME"/values.yaml
+        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
         -f apps/"$APP_NAME"/values."$env_name".yaml
         --set deployment.image.tag="$COMMIT_SHORT_SHA"
         --wait renlabs/application
@@ -386,13 +386,13 @@ steps:
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
-        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f values.yaml -f apps/"$APP_NAME"/values.yaml
+        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
         -f apps/"$APP_NAME"/values."$env_name".yaml
         --set deployment.image.tag="$COMMIT_SHORT_SHA"
         --wait renlabs/application
