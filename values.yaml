@@ -15,7 +15,7 @@ deployment:
     PINATA_JWT:
       valueFrom:
         secretKeyRef: 
-          name: '{{ .Values.environmentName }}-web-apps-secret'
+          name: 'commune-{{ .Values.environmentName }}-web-apps-secret'
           key: pinata_jwt
 
   startupProbe:
@@ -88,16 +88,3 @@ configMap:
       next_public_ws_url: "{{ .Values.wssApiEndpoint }}"
       next_public_cache_provider_url: "{{ .Values.cacheUrl }}"
 
-staticSecret:
-  enabled: true
-  secrets:
-    - name: web-apps
-      type: kv-v2
-      mount: commune_infra
-      path: '{{ .Values.environmentName }}_web_apps'
-      destination:
-        name: '{{ .Values.environmentName }}-web-apps-secret'
-        create: true
-        overwrite: true
-      refreshAfter: 30s
-      vaultAuthRef: 'commune-{{ .Values.environmentName }}-web-apps-commune-{{ .Values.environmentName }}-web-apps-default'
