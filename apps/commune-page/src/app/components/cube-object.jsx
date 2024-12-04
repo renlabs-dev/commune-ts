@@ -7,16 +7,16 @@ import { Depth, Fresnel, LayerMaterial } from "lamina";
 export const CubeObject = () => (
   <Canvas
     orthographic
-    dpr={[2, 4]}
-    camera={{ position: [0, 0, 20], zoom: 400 }}
+    dpr={[1, 2]}
+    camera={{ position: [0, 0, 10], zoom: 200 }}
   >
     <group rotation={[Math.PI / 5, -Math.PI / 5, Math.PI / 2]}>
-      <Bounds clip observe margin={1.6}>
-        <Cube scale={[1, 1, 1]} opacity={0.5} position={[0.25, 0, 0]} />
+      <Bounds fit clip observe margin={2}>
+        <Cube scale={[1, 1, 1]} />
       </Bounds>
       <gridHelper
         args={[10, 40, "#191919", "#191919"]}
-        position={[-0.25, 0, 0]}
+        position={[-0.5, 0, 0]}
         rotation={[0, 0, Math.PI / 2]}
       />
     </group>
