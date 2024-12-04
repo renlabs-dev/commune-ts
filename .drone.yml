@@ -36,20 +36,15 @@ steps:
       # Set auxiliary environment variables
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
-      - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
         -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
-      # Install application chart
-      - >-
-        helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
-        -f apps/"$APP_NAME"/values."$env_name".yaml
-        --set deployment.image.tag="$COMMIT_SHORT_SHA"
-        --wait renlabs/application
+      # Install application charts
+      - cd apps/"$APP_NAME"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
@@ -106,20 +101,15 @@ steps:
       # Set auxiliary environment variables
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
-      - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
         -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
-      # Install application chart
-      - >-
-        helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
-        -f apps/"$APP_NAME"/values."$env_name".yaml
-        --set deployment.image.tag="$COMMIT_SHORT_SHA"
-        --wait renlabs/application
+      # Install application charts
+      - cd apps/"$APP_NAME"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
@@ -184,8 +174,7 @@ steps:
         renlabs/utils | kubectl apply -f -
       # Install application charts
       - cd apps/"$APP_NAME"
-      - export HELMFILE_ENVIRONMENT=$env_name
-      - helmfile sync --set deployment.image.tag="$COMMIT_SHORT_SHA"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
@@ -242,20 +231,15 @@ steps:
       # Set auxiliary environment variables
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
-      - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
         -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
-      # Install application chart
-      - >-
-        helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
-        -f apps/"$APP_NAME"/values."$env_name".yaml
-        --set deployment.image.tag="$COMMIT_SHORT_SHA"
-        --wait renlabs/application
+      # Install application charts
+      - cd apps/"$APP_NAME"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
@@ -312,20 +296,15 @@ steps:
       # Set auxiliary environment variables
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
-      - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
         -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
-      # Install application chart
-      - >-
-        helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
-        -f apps/"$APP_NAME"/values."$env_name".yaml
-        --set deployment.image.tag="$COMMIT_SHORT_SHA"
-        --wait renlabs/application
+      # Install application charts
+      - cd apps/"$APP_NAME"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
@@ -382,20 +361,15 @@ steps:
       # Set auxiliary environment variables
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
-      - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
       # Install shared resources
       - >-
         helm template commune-"$env_name"-aux
         -f helm/values-utils.yaml -n commune-"$env_name"-web-apps
         --set environmentName="$env_name"
         renlabs/utils | kubectl apply -f -
-      # Install application chart
-      - >-
-        helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
-        -f helm/values.yaml -f apps/"$APP_NAME"/values.yaml
-        -f apps/"$APP_NAME"/values."$env_name".yaml
-        --set deployment.image.tag="$COMMIT_SHORT_SHA"
-        --wait renlabs/application
+      # Install application charts
+      - cd apps/"$APP_NAME"
+      - helmfile sync -e "$env_name" --set deployment.image.tag="$COMMIT_SHORT_SHA"
 
 trigger:
   branch:
