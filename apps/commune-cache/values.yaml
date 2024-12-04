@@ -9,8 +9,8 @@ deployment:
       memory: 512Mi
       cpu: 1
     requests:
-      memory: 320Mi
-      cpu: 0.3
+      memory: 200Mi
+      cpu: 0.1
 
   command: ["pnpm"]
   args: ["tsx", "./src/index.ts"]
