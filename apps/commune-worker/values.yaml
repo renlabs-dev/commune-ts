@@ -5,44 +5,25 @@ ingress:
 
 service:
   enabled: false
-
-configMap:
-  enabled: true
-  files:
-    module-fetcher:
-      PORT: "8001"
-      NEXT_PUBLIC_PORT: "8001"
-    subnet-fetcher:
-      PORT: "8002"
-      NEXT_PUBLIC_PORT: "8002"
-    weight-aggregator:
-      PORT: "8003"
-      NEXT_PUBLIC_PORT: "8003"
     
 deployment:
-  containerName: dao
   image:
     repository: ghcr.io/renlabs-dev/commune-worker
 
-  command: ["pnpm"]
-  args: ["tsx", "./src/index.ts", "dao"]
-
-  ports: []
+  command: ["pnpm", "tsx", "./src/index.ts"]
 
   startupProbe:
-    enabled: false
+    httpGet:
+      path: /api/health
+
   readinessProbe:
-    enabled: false
+    httpGet:
+      path: /api/health
+
   livenessProbe:
-    enabled: false
-  
-  resources:
-    limits:
-      memory: 256Mi
-      cpu: 1
-    requests:
-      memory: 200Mi
-      cpu: 0.4
+    httpGet:
+      path: /api/health
+
 
   env:
     COMMUNITY_VALIDATOR_MNEMONIC:
@@ -60,65 +41,3 @@ deployment:
         secretKeyRef: 
           name: 'commune-{{ .Values.environmentName }}-web-apps-secret'
           key: dao_notifier_discord_webhook_url
-
-  additionalContainers:
-    - name: module-fetcher
-      image:
-        repository: 
-          fromMain: true 
-        tag: 
-          fromMain: true
-      envFrom:
-      - configMapRef:
-          name: '{{ .Release.Name }}-module-fetcher'
-      useMainEnv: true
-      command: ["pnpm"]
-      args: ["tsx", "./src/index.ts", "module-fetcher"]
-      resources:
-        limits:
-          memory: 500Mi
-          cpu: 0.5
-        requests:
-          memory: 280Mi
-          cpu: 0.25
-
-    - name: subnet-fetcher
-      image:
-        repository: 
-          fromMain: true 
-        tag: 
-          fromMain: true
-      envFrom:
-      - configMapRef:
-          name: '{{ .Release.Name }}-subnet-fetcher'
-      useMainEnv: true
-      command: ["pnpm"]
-      args: ["tsx", "./src/index.ts", "subnet-fetcher"]
-      resources:
-        limits:
-          memory: 256Mi
-          cpu: 0.3
-        requests:
-          memory: 180Mi
-          cpu: 0.02
-
-    - name: weight-aggregator
-      image:
-        repository: 
-          fromMain: true 
-        tag: 
-          fromMain: true
-      envFrom:
-      - configMapRef:
-          name: '{{ .Release.Name }}-weight-aggregator'
-      useMainEnv: true
-      command: ["pnpm"]
-      args: ["tsx", "./src/index.ts", "weight-aggregator"]
-      resources:
-        limits:
-          memory: 350Mi
-          cpu: 0.3
-        requests:
-          memory: 200Mi
-          cpu: 0.05
-
