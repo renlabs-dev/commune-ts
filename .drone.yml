@@ -37,6 +37,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
@@ -101,6 +107,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
@@ -165,6 +177,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
@@ -229,6 +247,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
@@ -293,6 +317,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps
@@ -357,6 +387,12 @@ steps:
       - export COMMIT_SHORT_SHA=${DRONE_COMMIT_SHA:0:7}
       - env_name=$( [ "$DRONE_BRANCH" = "main" ] && echo "prod" || echo "dev" )
       - release_name=$( [ "$env_name" = "prod" ] && echo "$APP_NAME" || echo "$env_name""-""$APP_NAME" )
+      # Install shared resources
+      - >-
+        helm template commune-"$env_name"-aux
+        -f values-utils.yaml -n commune-"$env_name"-web-apps
+        --set environmentName="$env_name"
+        renlabs/utils | kubectl apply -f -
       # Install application chart
       - >-
         helm upgrade --install "$release_name" -n commune-"$env_name"-web-apps

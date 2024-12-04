@@ -1,0 +1,13 @@
+staticSecret:
+  enabled: true
+  secrets:
+    commune-{{ .Values.environmentName }}-web-apps:
+      type: kv-v2
+      mount: commune_infra
+      path: '{{ .Values.environmentName }}_web_apps'
+      destination:
+        name: 'commune-{{ .Values.environmentName }}-web-apps-secret'
+        create: true
+        overwrite: true
+      refreshAfter: 30s
+      vaultAuthRef: 'commune-{{ .Values.environmentName }}-web-apps-commune-{{ .Values.environmentName }}-web-apps-default'
