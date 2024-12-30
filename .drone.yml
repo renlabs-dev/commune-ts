@@ -30,7 +30,7 @@ steps:
       APP_NAME: commune-page
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
@@ -95,7 +95,7 @@ steps:
       APP_NAME: commune-validator
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
@@ -160,7 +160,7 @@ steps:
       APP_NAME: commune-worker
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
@@ -225,7 +225,7 @@ steps:
       APP_NAME: commune-governance
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
@@ -290,7 +290,7 @@ steps:
       APP_NAME: commune-wallet
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
@@ -355,7 +355,7 @@ steps:
       APP_NAME: commune-cache
     commands:
       # Download helm chart and authenticate to Kubernetes
-      - /apps/k8s_auth_w_approle.sh
+      - /apps/k8s_auth_w_approle_sa.sh
       - helm repo add renlabs https://charts.renlabs.dev/
       - helm repo update
       # Set auxiliary environment variables
