@@ -7,7 +7,7 @@ on:
     branches:
       - main
       - dev
-      - drone
+      - cicd
     paths-ignore:
       - 'apps/commune-worker/**'
       - 'apps/commune-governance/**'
