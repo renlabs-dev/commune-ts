@@ -1,5 +1,5 @@
-# .github/workflows/docker-build-template.yml
-name: Docker Build Template
+# .github/workflows/app-deployment-template.yml
+name: App Deployment Template
 
 on:
   workflow_call:
