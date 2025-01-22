@@ -1,0 +1,28 @@
+# .github/workflows/commune-cache.yml
+name: commune-cache
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+      - cicd
+    paths-ignore:
+      - 'apps/commune-page/**'
+      - 'apps/commune-validator/**'
+      - 'apps/communex-page/**'
+      - 'apps/commune-worker/**'
+      - 'apps/sample-app/**'
+      - 'apps/commune-governance/**'
+      - 'apps/commune-wallet/**'
+
+jobs:
+  kubernetes:
+    uses: ./.github/workflows/app-deployment-template.yml
+    with:
+      app_name: commune-cache
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
