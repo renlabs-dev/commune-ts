@@ -1,0 +1,28 @@
+# .github/workflows/commune-validator.yml
+name: commune-validator
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+      - drone
+    paths-ignore:
+      - 'apps/commune-worker/**'
+      - 'apps/commune-governance/**'
+      - 'apps/commune-page/**'
+      - 'apps/communex-page/**'
+      - 'apps/sample-app/**'
+      - 'apps/commune-wallet/**'
+      - 'apps/commune-cache/**'
+
+jobs:
+  kubernetes:
+    uses: ./.github/workflows/app-deployment-template.yml
+    with:
+      app_name: commune-validator
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
