@@ -1,6 +1,6 @@
 deployment:
   image:
-    repository: ghcr.io/renlabs-dev/community-validator
+    repository: ghcr.io/renlabs-dev/commune-validator
 
   env:
     JWT_SECRET:
