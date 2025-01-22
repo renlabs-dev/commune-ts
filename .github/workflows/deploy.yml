@@ -1,0 +1,23 @@
+name: commune-page-deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+      - drone
+    paths-ignore:
+      - 'apps/commune-governance/**'
+      - 'apps/commune-validator/**'
+      - 'apps/communex-page/**'
+      - 'apps/commune-worker/**'
+      - 'apps/sample-app/**'
+      - 'apps/commune-wallet/**'
+      - 'apps/commune-cache/**'
+
+jobs:
+  build:
+    uses: ./.github/workflows/docker-build-template.yml
+    with:
+      app_name: commune-page
