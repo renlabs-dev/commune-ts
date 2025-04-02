@@ -2,7 +2,7 @@ cacheUrl: ""
 
 deployment:
   image:
-    repository: ghcr.io/renlabs-dev/commune-cache
+    repository: ghcr.io/commune-ai/commune-cache
 
   resources:
     limits:

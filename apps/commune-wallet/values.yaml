@@ -1,3 +1,3 @@
 deployment:
   image:
-    repository: ghcr.io/renlabs-dev/commune-wallet
+    repository: ghcr.io/commune-ai/commune-wallet

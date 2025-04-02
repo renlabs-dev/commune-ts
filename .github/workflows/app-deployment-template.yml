@@ -22,7 +22,7 @@ concurrency:
 jobs:
   docker-build:
     permissions: write-all
-    runs-on: ubuntu-22.04-32core-karl
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -53,8 +53,8 @@ jobs:
           build-args: |
             APP_NAME=${{ inputs.app_name }}
           tags: |
-            ghcr.io/renlabs-dev/${{ inputs.app_name }}:${{ steps.commit.outputs.short }}
-            ghcr.io/renlabs-dev/${{ inputs.app_name }}:${{ env.SANITIZED_REF }}
+            ghcr.io/commune-ai/${{ inputs.app_name }}:${{ steps.commit.outputs.short }}
+            ghcr.io/commune-ai/${{ inputs.app_name }}:${{ env.SANITIZED_REF }}
 
   clean-stale:
     runs-on: ubuntu-latest

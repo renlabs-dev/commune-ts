@@ -8,7 +8,7 @@ service:
     
 deployment:
   image:
-    repository: ghcr.io/renlabs-dev/commune-worker
+    repository: ghcr.io/commune-ai/commune-worker
 
   command: ["pnpm", "tsx", "./src/index.ts"]
 

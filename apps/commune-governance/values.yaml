@@ -1,6 +1,6 @@
 deployment:
   image:
-    repository: ghcr.io/renlabs-dev/commune-governance
+    repository: ghcr.io/commune-ai/commune-governance
 
   env:
     JWT_SECRET:

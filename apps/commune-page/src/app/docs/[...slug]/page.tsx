@@ -71,7 +71,7 @@ export default function Docs({ params }: { params: { slug: string } }) {
           <div className="mb-6 flex w-full">
             <Link
               className="text-titleDark flex rounded-xl text-center text-sm font-medium no-underline hover:underline"
-              href={`https://github.com/renlabs-dev/commune-ts/blob/main/apps/commune-page/src/app/docs/%5B...slug%5D/tutorials/${params.slug[1]}.mdx`}
+              href={`https://github.com/commune-ai/commune-ts/blob/main/apps/commune-page/src/app/docs/%5B...slug%5D/tutorials/${params.slug[1]}.mdx`}
               target="_blank"
             >
               <span>Edit this doc</span>
