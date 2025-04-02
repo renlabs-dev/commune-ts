@@ -59,7 +59,7 @@ jobs:
   clean-stale:
     runs-on: ubuntu-latest
     container: 
-      image: ghcr.io/renlabs-dev/devops-ci:latest
+      image: ghcr.io/commune-ai/devops-ci:latest
     
     env:
       VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
@@ -82,7 +82,7 @@ jobs:
     needs: [docker-build, clean-stale]
     runs-on: ubuntu-latest
     container: 
-      image: ghcr.io/renlabs-dev/devops-ci:latest
+      image: ghcr.io/commune-ai/devops-ci:latest
   
     env:
       VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
